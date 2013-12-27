@@ -7,31 +7,29 @@ tags: [angularjs,javascript]
 ---
 今天要和大家分享的是angular从1.2版本开始带来了新语法Controller as。再次之前我们对于angular在view上的绑定都必须使用直接的scope对象，对于controller来说我们也得必须注入$scope这个service。如下：
 
-```js
+
 	angular.module("app",[])
   	.controller("demoController",["$scope",function($scope){
     	$scope.title = "angualr";
  	 }])
-```
-```html 	
+
  	<div ng-app="app" ng-controller="demoController">
       	hello : {% raw %}{{title}}{% endraw %} !
     </div>
-```
+
 
 有些人觉得即使这样我们的controller还是不够POJO，以及对于coffescript爱好者不足够友好，所以在angular在1.2给我带来了一个新的语法糖这就是本文将要说的controller as的语法糖，修改上面的demo将会变成：
 
-```js
+
 	angular.module("app",[])
   	.controller("demoController",[function(){
     	this.title = "angualr";
   	}])
- ```
-```html 	
+ 	
   	<div ng-app="app" ng-controller="demoController as demo">
    		 hello : {% raw %}{{demo.title}}{% endraw %} !
   	</div>
-```
+
 
 这里我们可以看见现在controller不再有$scope的注入了，感觉controller就是一个很简单的平面的JavaScript对象了，不存在任何的差别了。再则就是view上多增加了个demoController as demo，给controller起了一个别名，在此后的view模板中靠这个别名来访问数据对象。
 
@@ -39,13 +37,13 @@ tags: [angularjs,javascript]
 
 下面是一段来自angular的code：在1499行开始(行数只能保证在写作的时候有效)
 
-```js
+
 
 	  if (directive.controllerAs) {
               locals.$scope[directive.controllerAs] = controllerInstance;
        }
        
-```
+
 
 如果你希望看更完全的code请猛击这里[https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js](https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js).
 
@@ -57,7 +55,7 @@ tags: [angularjs,javascript]
 
 我规定对于controller as的写法如下：
 
-```js
+
     angular.module("app",[])
      .controller("demoController",[function(){
             var vm = this;
@@ -66,7 +64,7 @@ tags: [angularjs,javascript]
 
             return vm;
      }])
-```    
+ 
      
 其优势为：
 
@@ -80,7 +78,7 @@ tags: [angularjs,javascript]
 
 注释:对于route，也有个controllerAs的属性可以设置，下面代码来之angular doc文档：
 	
-```js
+
 	 	angular.module('ngViewExample', ['ngRoute', 'ngAnimate'],
      	 function($routeProvider, $locationProvider) {
         $routeProvider.when('/Book/:bookId', {
@@ -98,7 +96,7 @@ tags: [angularjs,javascript]
        		 $locationProvider.html5Mode(true);
    		 });
     
-```
+
 今天就到这里，谢谢。 
 
 
