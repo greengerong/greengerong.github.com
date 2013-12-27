@@ -19,14 +19,14 @@ tags: [angularjs]
                         <h3>mask</h3>
                         <p>Mask: 99-9999999</p>
                         <input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/>
-                        <pre>{{ test | json }}</pre>
+                        <pre>{% raw %}{{ test | json }}{% endraw %}</pre>
                     </div>
 
                     <div>
                         <h3>y-m-d</h3>
                         <p>Date: yyyy-MM-dd</p>
                         <input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/>
-                        <pre>{{ test1 | json }}</pre>
+                        <pre>{% raw %}{{ test1 | json }}{% endraw %}</pre>
                     </div>
 
 
@@ -35,14 +35,14 @@ tags: [angularjs]
                         <p>Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"</p>
                         <input type="text" ng-model="test3" input-mask="'Regex'"
                          mask-option="regexOption"/>
-                        <pre>{{ test3 | json }}</pre>
+                        <pre>{% raw %}{{ test3 | json }}{% endraw %}</pre>
                     </div>
 
                     <div>
                         <h3>Function</h3>
                         <p>"[1-]AAA-999" or  "[1-]999-AAA"</p>
                         <input type="text" ng-model="test4" input-mask="functionOption"/>
-                        <pre>{{ test4 | json }}</pre>
+                        <pre>{% raw %}{{ test4 | json }}{% endraw %}</pre>
                     </div>
 
                 </div>
