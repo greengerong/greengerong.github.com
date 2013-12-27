@@ -1,5 +1,5 @@
 
-rvm --default use ruby-1.9.3
+sudo rvm --default use ruby-1.9.3
 rake generate
 rake deploy
 git add .
