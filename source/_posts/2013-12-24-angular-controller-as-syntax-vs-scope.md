@@ -15,7 +15,7 @@ tags: [angularjs,javascript]
 ```
 ```html 	
  	<div ng-app="app" ng-controller="demoController">
-      	hello : \{\{title\}\} !
+      	hello : {% raw %}{{title}}{% endraw %} !
     </div>
 ```
 
@@ -26,9 +26,10 @@ tags: [angularjs,javascript]
   	.controller("demoController",[function(){
     	this.title = "angualr";
   	}])
-  	
+ ```
+```html 	
   	<div ng-app="app" ng-controller="demoController as demo">
-   		 hello : {{demo.title}} !
+   		 hello : {% raw %}{{demo.title}}{% endraw %} !
   	</div>
 ```
 
