@@ -20,7 +20,7 @@ tags: [angularjs,web组件化]
 回到正题，在angularjs中如何去做到组件化：
 
 
-![/images/asserts/blog_img/web-angular.jpg](/images/asserts/blog_img/web-angular.jpg)
+![/images/blog_img/web-angular.jpg](/images/asserts/blog_img/web-angular.jpg)
 
 
 
