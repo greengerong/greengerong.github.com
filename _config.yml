@@ -70,7 +70,7 @@ github_skip_forks: true
 
 # Twitter
 twitter_user:
-twitter_tweet_button: true
+twitter_tweet_button: false
 
 # Google +1
 google_plus_one: false
@@ -95,6 +95,9 @@ disqus_show_comment_count: true
 
 # Google Analytics
 google_analytics_tracking_id:
+
+# Baidu Analytics
+baidu_analytics_tracking: true 
 
 # Facebook Like
 facebook_like: false
