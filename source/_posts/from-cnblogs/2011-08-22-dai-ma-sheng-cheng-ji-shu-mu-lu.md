@@ -1,0 +1,58 @@
+---
+layout: post
+title: "代码生成技术-目录"
+description: "代码生成技术-目录"
+category: cnblogs
+tags: [code,cnblogs]
+---
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在这里总结的是本博客中的一些关系代码生成的技术，其中包含&nbsp;CodeDom，CodeSmith，T4，Mono.Cecil&nbsp;MSIL（静态AOP实例）注入，以及一些杂记&nbsp;。
+
+## [一：CodeDom目录](http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html)
+
+&nbsp;CodeDOM 提供了表示许多常见的源代码元素类型的类型。您可以设计一个生成源代码模型的程序，使用 CodeDOM 元素 
+构成一个对象图。可以使用受支持的编程语言的 CodeDOM 代码生成器，将该对象图呈现为源代码。CodeDOM 也可以用于将 
+源代码编译成二进制程序集。 
+
+CodeDOM 的一些一般用途包括： 
+
+1.  模板化代码生成：生成 ASP.NET、XML Web 服务客户端代理、代码向导、设计器或其他代码发出机制的代码。
+2.  动态编译：支持以一种或多种语言进行代码编译。
+
+*   [<font color="#3d81ee">CodeDom系列-开篇HelloWord</font>](http://www.cnblogs.com/whitewolf/archive/2010/06/19/1760708.html)
+*   [<font color="#3d81ee">CodeDom系列二---程序基本结构--符号三角形问题</font>](http://www.cnblogs.com/whitewolf/archive/2010/06/20/1761367.html)
+*   [<font color="#3d81ee">CodeDom系列--事件（event）定义和反射调用</font>](http://www.cnblogs.com/whitewolf/archive/2010/06/22/1762589.html)
+*   [<font color="#3d81ee">CodeDom系列四--Code生成</font>](http://www.cnblogs.com/whitewolf/archive/2010/07/05/1771138.html)
+*   [<font color="#3d81ee">CodeDom系列五--动态编译</font>](http://www.cnblogs.com/whitewolf/archive/2010/07/06/1771868.html)&nbsp;
+*   [<font color="#3d81ee">CodeDom六--实体类生成示例</font>](http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html)
+*   [<font color="#6699cc">代码生成技术--CodeDom VS T4</font>](http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html)
+
+## [二：CodeSimth：](http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeSmith是一个基于模板的代码生成器，它可以生成任何基于ASCII的编程语言代码。生成的代码可以使用属性进行定制。属性可以是任何具有设计器的.NET对象（大多数.NET内置类型已经有设计器），也可以是一个允许你从结果中有条件地添加或移除代码的简单的boolean 属性，或是一个对象，例如能够访问数据库表信息的TableSchema对象（包括在SchemaExplorer中）。CodeSmith完全可扩展，它允许用户创建定制属性类型。CodeSmith中包括多个定制属性类型的例子，例如，定制一个允许选择XML文件（使用XmlSerializer可将其反序列化到对象中）的属性类型。CodeSmith还允许用户在模板中引用和调用指定的外部程序集并且允许从外部程序集的类生成模板。
+
+*   [<font color="#3d81ee">CodeSmith模板引擎系列一</font>](http://www.cnblogs.com/whitewolf/archive/2010/07/13/1776379.html)
+*   [<font color="#3d81ee">CodeSmith模板引擎系列二--文件目录树</font>](http://www.cnblogs.com/whitewolf/archive/2010/07/14/1777088.html)
+*   [<font color="#3d81ee">通过代码生成机制实现强类型编程-CodeSimth版</font>](http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html)
+*   [<font color="#6699cc">Dbml文件提取建表TSql-CodeSmith</font>](http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836731.html)
+
+## 三：MSIL注入：&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp; NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器。
+
+*   &nbsp;[<font color="#6699cc">浅谈.NET编译时注入（C#--&gt;IL）</font>](http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html)
+*   [<font color="#6699cc">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</font>](http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html)
+*   [<font color="#6699cc">编译时MSIL注入--实践Mono Cecil(1)</font>](http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html)
+*   [<font color="#6699cc">MSBuild + MSILInect实现编译时AOP之预览</font>](http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html)
+*   [<font color="#6699cc">MSBuild + MSILInect实现编译时AOP-改变前后对比</font>](http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html)
+*   [<font color="#6699cc">PostSharp - Thread Dispatching（GUI多线程）</font>](http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html)
+
+## 四：其他杂记
+
+*   [<font color="#6699cc">代码生成技术--CodeDom VS T4</font>](http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html)
+*   [<font color="#6699cc">Razor Templating Engine</font>](http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 其实在.net平台还有很多code生成技术T4（其实现在我更倾向于T4模板，但是园内牛人们已经有很多文章了，所以没写），Razor（ASP.NET MVC3带来的一种语法很漂亮，舒服的模板引擎，我也很喜欢，只是需要4.0，我打大多数工作任在3.5上工作），Mono.Cecil（MSIL程序集静态注入），Emit（MSIL的动态注入），StringTemplate（古老的模板引擎了），以及其他第三方的模板引擎，都没有写完。在以后可能会更侧重于实际应用案例。
+
+&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序[cnblogs-blogs2markdown](https://github.com/greengerong/cnblogs-blogs2markdown "cnblogs-blogs2markdown")转换的,如质量有问题[原文首发请看这里](http://www.cnblogs.com/whitewolf/archive/2011/08/22/2149947.html "原文首发")
