@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Angularjs | My Octopress Blog]]></title>
+  <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T17:33:36+08:00</updated>
+  <updated>2013-12-27T17:39:54+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[破 狼]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
