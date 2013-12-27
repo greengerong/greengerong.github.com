@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T18:32:53+08:00</updated>
+  <updated>2013-12-27T19:25:33+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -306,7 +306,7 @@
 
 <p>回到正题，在angularjs中如何去做到组件化：</p>
 
-<p><img src="https://github.com/greengerong/greengerong.github.com/blob/master/_post_img/web-angular.jpg?raw=true" alt="https://github.com/greengerong/greengerong.github.com/blob/master/_post_img/prerender.jpg?raw=true" /></p>
+<p><img src="http://greengerong.github.io/asserts/blog_img/web-angular.jpg" alt="/asserts/blog_img/web-angular.jpg" /></p>
 ]]></content>
   </entry>
   
@@ -438,7 +438,7 @@
 
 <p>prerender架构流程图如下：</p>
 
-<p><img src="https://github.com/greengerong/greengerong.github.com/blob/master/_post_img/prerender.jpg?raw=true" alt="prerender" /></p>
+<p><img src="http://greengerong.github.io/assets/blog_img/prerender.jpg" alt="prerender" /></p>
 
 <p>prerender分为两个部分一部分为后端云服务和应用程序客户端，客户端主要拦截来自爬虫的请求在转发到后端云服务处理返回处理后并且去掉多余script/css的html在返回给爬虫。</p>
 
