@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T17:39:54+08:00</updated>
+  <updated>2013-12-27T17:44:40+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -26,14 +26,19 @@
 .controller("demoController",["$scope",function($scope){
     $scope.title = "angualr";
  }])
+</code></pre>
 
-&lt;div ng-app="app" ng-controller="demoController"&gt;
+<p><code>
+</code>html</p>
+
+<pre><code>&lt;div ng-app="app" ng-controller="demoController"&gt;
     hello :  !
 &lt;/div&gt;
 </code></pre>
 
-<p>```
-有些人觉得即使这样我们的controller还是不够POJO，以及对于coffescript爱好者不足够友好，所以在angular在1.2给我带来了一个新的语法糖这就是本文将要说的controller as的语法糖，修改上面的demo将会变成：</p>
+<p>```</p>
+
+<p>有些人觉得即使这样我们的controller还是不够POJO，以及对于coffescript爱好者不足够友好，所以在angular在1.2给我带来了一个新的语法糖这就是本文将要说的controller as的语法糖，修改上面的demo将会变成：</p>
 
 <p>```js</p>
 
@@ -43,7 +48,7 @@
 }])
 
 &lt;div ng-app="app" ng-controller="demoController as demo"&gt;
-     hello : \ !
+     hello :  !
 &lt;/div&gt;
 </code></pre>
 

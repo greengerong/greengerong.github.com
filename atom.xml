@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T17:39:54+08:00</updated>
+  <updated>2013-12-27T17:44:40+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -24,18 +24,19 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
 </pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">,[])</span>
 </span><span class='line'>      <span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s2">&quot;demoController&quot;</span><span class="p">,[</span><span class="s2">&quot;$scope&quot;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">){</span>
 </span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="s2">&quot;angualr&quot;</span><span class="p">;</span>
 </span><span class='line'>   <span class="p">}])</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">app</span><span class="o">=</span><span class="s2">&quot;app&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">controller</span><span class="o">=</span><span class="s2">&quot;demoController&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="nx">hello</span> <span class="o">:</span> <span class="p"></span> <span class="o">!</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>     <span class="nt">&lt;div</span> <span class="na">ng-app=</span><span class="s">&quot;app&quot;</span> <span class="na">ng-controller=</span><span class="s">&quot;demoController&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          hello :  !
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -55,7 +56,7 @@
 </span><span class='line'>      <span class="p">}])</span>
 </span><span class='line'>      
 </span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">app</span><span class="o">=</span><span class="s2">&quot;app&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">controller</span><span class="o">=</span><span class="s2">&quot;demoController as demo&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>           <span class="nx">hello</span> <span class="o">:</span> <span class="err">\</span><span class="p"></span> <span class="o">!</span>
+</span><span class='line'>           <span class="nx">hello</span> <span class="o">:</span> <span class="p"></span> <span class="o">!</span>
 </span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
