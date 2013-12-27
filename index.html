@@ -298,14 +298,14 @@ angular.module &hellip;">
                     &lt;h3&gt;mask&lt;/h3&gt;
                     &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
                     &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
-                    &lt;pre&gt;&lt;/pre&gt;
+                    &lt;pre&gt;{{ test | json }}&lt;/pre&gt;
                 &lt;/div&gt;
 
                 &lt;div&gt;
                     &lt;h3&gt;y-m-d&lt;/h3&gt;
                     &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
                     &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
-                    &lt;pre&gt;&lt;/pre&gt;
+                    &lt;pre&gt;{{ test1 | json }}&lt;/pre&gt;
                 &lt;/div&gt;
 
 
@@ -314,14 +314,14 @@ angular.module &hellip;">
                     &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
                     &lt;input type="text" ng-model="test3" input-mask="'Regex'"
                      mask-option="regexOption"/&gt;
-                    &lt;pre&gt;&lt;/pre&gt;
+                    &lt;pre&gt;{{ test3 | json }}&lt;/pre&gt;
                 &lt;/div&gt;
 
                 &lt;div&gt;
                     &lt;h3&gt;Function&lt;/h3&gt;
                     &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
                     &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
-                    &lt;pre&gt;&lt;/pre&gt;
+                    &lt;pre&gt;{{ test4 | json }}&lt;/pre&gt;
                 &lt;/div&gt;
 
             &lt;/div&gt;
