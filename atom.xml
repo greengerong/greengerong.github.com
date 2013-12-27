@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T17:44:40+08:00</updated>
+  <updated>2013-12-27T17:56:10+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -35,7 +35,7 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='html'><span class='line'>     <span class="nt">&lt;div</span> <span class="na">ng-app=</span><span class="s">&quot;app&quot;</span> <span class="na">ng-controller=</span><span class="s">&quot;demoController&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          hello :  !
+</span><span class='line'>          hello : \{\{title\}\} !
 </span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
