@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>读Clean Code - 数据结构和对象 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="读Clean Code - 数据结构和对象">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">读Clean Code - 数据结构和对象</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 最近在上下班挤公交的时间细阅Clean Code（代码整洁之道），再次佩服Bob大叔幽默的文笔，独到的观点和理解视角。最让我耳目一新的是Bob大叔对数据结构和对象的解释。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 总的说来数据结构指的就是数据的载体，暴露数据，而几乎没有有意义的行为，你应该在尖叫这不是贫血类？的确这和我们的贫血类很相似。最常见的应用在分布式服务，以wcf，webservice，reset之类的分布式服务中不可或缺的数据传输对象（DTO）模式，DTO（Request/Response）就是一个很典型的数据载体，只存在简单的get，set属性，并且更倾向于作为值对象存在。而对象则刚好相反作为面向对象的产物，必须封装隐藏数据，而暴露出行为接口，DDD中领域模型倾向于对象不仅在数据更多暴露行为操作自己或者关联状态。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 虽然数据结构和对象之间看是细微的差别却导致了不同的本质区别：使用数据结构的代码便于在不改动现在数据结构的前提下添加新的行为（函数），面向对象代码则便于不改动现 有函数的前提下添加新的类。换句话说就是数据结构难以添加新的的数据类型，因为需要改动所有函数，面向对象的代码则难以添加新的函数，因为需要修改所有的类。在任何一个复杂的系统都会同时存在数据结构和对象，我们需要判断的是我们需要的是需要添加的新的数据类型还是新的行为函数。</p>
+
+<p> 在则就是迪米特法则，或被译为最小知识原则，不和陌生人说话：模块不应该了解他所操作的对象的内部情形，关于对象的隐藏，更细致的理解为一个对象A的方法f，应该也只能调用对象为下列范围内：</p>
+
+<ol>
+<li>对象A的属性字段</li>
+<li>对象A持有的对象</li>
+<li>方法参数传入的对象</li>
+<li>在方法f中定义的临时对象</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 方法不应和任何调用方法返回的对象操作，换句话之和朋友说话，不和陌生人说话。比如：ctxt.getOptions().getSearchDir().getAbsolutePath()，就是迪米特法则的反例模式。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 但当前迪米特法则的前提是对象，如果是数据结构，没有什么行为，则他们自然会暴露其内部数据结构，迪米特法则也失效了。</p>
+
+<p>&nbsp;&nbsp; &nbsp; 隐藏作为面向对象主要特性中的最重要特性，封装隐藏是面向对象中最重要的特性，一个好的面向对象代码肯定是对对象的内部细节做到很好的隐藏封装，封装过后才有是多态，委派之类的。一个好的面向对象的代码一定是具有很好的隐藏封装，易于测试，不稳定因素往往集中在一处很小或者固定的位置，不稳定因素的变更不会导致更大面积的修改扩散。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 最后推荐下一本书籍，值得在空闲时间看看，不能保证看完代码就一定写出整洁的代码，做到童子军军规&#8220;每次签入的代码比签出的更整洁&#8221;，更不会像优美的散文，这需要在项目实践中不断练习发现，但对代码质量意思有着引导作用。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 总感觉自己的技术还差得很远，所以我总是约束自己抽出可用的时间看些书籍，从不同的视角，不同的领域或者一些思想的提升和沉淀。</p>
+
+<p>关于面向对象原则随笔还有：</p>
+
+<ol>
+<li>&nbsp;<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/12/2588896.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-12T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/" data-via="" data-counturl="http://greengerong.github.io/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/07/biao-xian-ceng-mo-shi-MVC/" title="Previous Post: 表现层模式-MVC">&laquo; 表现层模式-MVC</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/07/14/XUnit-pei-zhi-Resharper-kuai-jie-jian/" title="Next Post: XUnit配置Resharper快捷键">XUnit配置Resharper快捷键 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

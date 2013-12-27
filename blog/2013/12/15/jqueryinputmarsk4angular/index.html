@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Angularjs组件之input Mask - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Angularjs组件之input Mask</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。</p>
+
+<p>当然在官方的angular-ui ui-utils中有一个相应的组件叫做ui-mask，但是其mask功能是很初级脆弱的。所以我希望能得到一个更强大的mask组件。我所知的<a href="https://github.com/RobinHerbots/jquery.inputmask">jquery.inputmask</a>就是这样一个我所期望的强大的mask组件，所以我不必再去重造轮子，好的软件就是为了不停被重复利用。所以写了一个adapter，<a href="https://github.com/greengerong/green.inputmask4angular">https://github.com/greengerong/green.inputmask4angular</a>.</p>
+
+<p>其使用如下，可以去下载项目查看其中的demo page。</p>
+
+<pre><code>&lt;div class="hero-unit"&gt;
+                &lt;h1&gt;'Allo, 'Allo!&lt;/h1&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;mask&lt;/h3&gt;
+                    &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
+                    &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
+                    &lt;pre&gt;&lt;/pre&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;y-m-d&lt;/h3&gt;
+                    &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
+                    &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
+                    &lt;pre&gt;&lt;/pre&gt;
+                &lt;/div&gt;
+
+
+                &lt;div&gt;
+                    &lt;h3&gt;Regex&lt;/h3&gt;
+                    &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
+                    &lt;input type="text" ng-model="test3" input-mask="'Regex'"
+                     mask-option="regexOption"/&gt;
+                    &lt;pre&gt;&lt;/pre&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;Function&lt;/h3&gt;
+                    &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
+                    &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
+                    &lt;pre&gt;&lt;/pre&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+</code></pre>
+
+<p> controller code:</p>
+
+<pre><code>'use strict';
+
+    angular.module('green.inputmaskApp')
+        .controller('MainCtrl', ["$scope", function ($scope) {
+
+            $scope.testoption = {
+                "mask": "99-9999999",
+                "oncomplete": function () {
+                    console.log();
+                    console.log(arguments,"oncomplete!this log form controler");
+                },
+                "onKeyValidation": function () {
+                    console.log("onKeyValidation event happend! this log form controler");
+                }
+            }
+
+            //default value
+            $scope.test1 = new Date();
+
+            $scope.dateFormatOption = {
+                parser: function (viewValue) {
+                    return viewValue ? new Date(viewValue) : undefined;
+                },
+                formatter: function (modelValue) {
+                    if (!modelValue) {
+                        return "";
+                    }
+                    var date = new Date(modelValue);
+                    return (date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate()).replace(/\b(\d)\b/g, "0$1");
+                },
+                isEmpty: function (modelValue) {
+                    return !modelValue;
+                }
+            };
+
+
+            $scope.mask = { regex: ["999.999", "aa-aa-aa"]};
+
+
+            $scope.regexOption = {
+                regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"
+            };
+
+            $scope.functionOption = {
+             mask: function () { 
+                return ["[1-]AAA-999", "[1-]999-AAA"]; 
+            }};
+
+
+        }]);
+</code></pre>
+
+<p>这里值列列举了jquery.inputmask的简单实用方式，更复杂的方式请移步到jquery.inputmask查看。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/angularjs/'>angularjs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular/" data-via="" data-counturl="http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/12/15/angular-model--format/" title="Previous Post: angular ng-model类型格式转化">&laquo; angular ng-model类型格式转化</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/" title="Next Post: angular controller as syntax vs scope">angular controller as syntax vs scope &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

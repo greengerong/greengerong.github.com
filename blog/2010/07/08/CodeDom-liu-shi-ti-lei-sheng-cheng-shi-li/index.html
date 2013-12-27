@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CodeDom六--实体类生成示例 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="CodeDom六--实体类生成示例">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CodeDom六--实体类生成示例</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-07-08T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeDom这个东西个人觉得知识点不多，前几个续节写的已差不多了。在这节将演示一个CodeDom示例：</p>
+
+<p>数据库实体类的生成。这里先声明在如今的CodeSmith或者是T4模板中实现这些都很简单，并且更实用，在这</p>
+
+<p>里只是一个CodeDom示例，为了演示CodeDom。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在代码中位了简单、简化数据库数据信息的提取，引用了CodeSimth的SchemaExplorer.dll和SchemaExplorer.</p>
+
+<p>SqlSchemaProvider.dll。可以在Demo中的CodeSimth目录下找到。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 先贴上代码，需要讲解的东西没有什么：</p></blockquote>
+
+<pre><code>using System;
+using System.Text;
+using System.Windows.Forms;
+using SchemaExplorer;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+namespace CodeDomDemo
+{
+public partial class Form1 : Form
+{
+public Form1()
+{
+InitializeComponent();
+}
+private void Form1_Load(object sender, EventArgs e)
+{
+IDbSchemaProvider provider = new SqlSchemaProvider();
+string connectionString = System.Configuration.ConfigurationManager.
+?
+AppSettings["ConnectionString"].ToString();
+if (string.IsNullOrEmpty(connectionString))
+{
+MessageBox.Show(this, "Connection String is requested,in app configuration.",
+?
+"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+Application.Exit();
+}
+DatabaseSchema db = new DatabaseSchema(provider, connectionString);
+lboxTables.Items.AddRange(db.Tables.ToArray());
+}
+?
+        public CodeCompileUnit GenTableCompilerUnit(TableSchema item)
+{
+if (item == null)
+throw new ArgumentNullException("item");
+CodeTypeDeclaration tableClass = new CodeTypeDeclaration();
+tableClass.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+tableClass.Name = item.Name;
+?
+            foreach (var col in item.Columns)
+{
+CodeMemberField field = new CodeMemberField(
+?
+new CodeTypeReference(col.SystemType), "_" + col.Name);
+CodeMemberProperty property = new CodeMemberProperty();
+property.Name = col.Name;
+property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+property.Type = new CodeTypeReference(col.SystemType);
+property.SetStatements.Add(new CodeAssignStatement(
+?
+new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
+field.Name), new CodePropertySetValueReferenceExpression()));
+property.GetStatements.Add(new CodeMethodReturnStatement(
+?
+new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field.Name)));
+tableClass.Members.Add(field);
+tableClass.Members.Add(property);
+}
+CodeNamespace nspace = new CodeNamespace(item.Database.Name);
+nspace.Imports.Add(new CodeNamespaceImport("System"));
+nspace.Types.Add(tableClass);
+CodeCompileUnit unit=new CodeCompileUnit();
+unit.Namespaces.Add(nspace);
+return unit;
+}
+public string GenTanleCodeFromCompilerUnit(CodeCompileUnit unit, string language)
+{
+CodeGeneratorOptions option=new CodeGeneratorOptions();
+option.BlankLinesBetweenMembers =true;
+option.BracingStyle ="c";
+option.ElseOnClosing=true;
+option.IndentString="    ";
+StringBuilder sb=new StringBuilder();
+System.IO.StringWriter sw=new System.IO.StringWriter(sb);
+CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit(unit, sw, option);
+sw.Close();
+return sb.ToString();
+}
+?
+        private void lboxTables_SelectedIndexChanged(object sender, EventArgs e)
+{
+int index = lboxTables.SelectedIndex;
+if (index &gt; -1 &amp;&amp; index &lt; lboxTables.Items.Count)
+{
+object obj = lboxTables.Items[index];
+if (obj is TableSchema)
+{
+CodeCompileUnit unit= GenTableCompilerUnit(obj as TableSchema);
+string language="c#";
+if(!string.IsNullOrEmpty(this.toolStripComboBox1.Text))
+language=this.toolStripComboBox1.Text;
+string code = GenTanleCodeFromCompilerUnit(unit,language);
+this.rtbCode.Text = code;
+}
+}
+}
+}
+}
+</code></pre>
+
+<p>运行示图:c#图
+<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb.png" title="c#图" alt="imagec#图" /></a></p>
+
+<p> vb图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb_1.png" title="vb图" alt="imagevb图" /></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 代码比较简单界面也做得太简洁了，呵呵导出文件都没有，我觉得没有什么必要讲解的，如果有什么不懂的或者是写的不对</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 不好的，请留言，我会尽快回复。</p>
+
+<blockquote><p><a href="http://files.cnblogs.com/whitewolf/CodeDomDemo-GeneratorCode.rar">CodeDom代码下载；</a></p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-07-08T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/" data-via="" data-counturl="http://greengerong.github.io/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/" title="Previous Post: jQuery系列之目录汇总">&laquo; jQuery系列之目录汇总</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/07/14/qu-diao-VS-wan-gu-Add-in/" title="Next Post: 去掉VS顽固Add-in">去掉VS顽固Add-in &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

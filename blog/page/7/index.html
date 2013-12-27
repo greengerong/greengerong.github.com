@@ -1,0 +1,1192 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; 实现静态AOP，就需要我们在预编译时期，修改IL实现对代码逻辑的修改。Mono.Cecil就是一个很好的IL解析和注入框架，参见编译时MSIL注入&mdash;实践Mono Cecil(1)。 &nbsp; 我的思路为： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/7">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/">MSBuild + MSILInect实现编译时AOP-改变前后对比</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 实现静态AOP，就需要我们在预编译时期，修改IL实现对代码逻辑的修改。Mono.Cecil就是一个很好的IL解析和注入框架，参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a>。</p>
+
+<p>&nbsp; 我的思路为：在编译时将加有继承制MethodInterceptBaseAttribute标签的原方法，重新组装成一个方法（并加上[<a href="http://www.aisto.com/roeder/dotnet/Default.aspx?Target=code://mscorlib:2.0.0.0:b77a5c561934e089/System.Runtime.CompilerServices.CompilerGeneratedAttribute/.ctor(">CompilerGenerated</a>)]标签），在加入横切注入接口前后代码，调用此方法。</p>
+
+<p>比如代码：</p>
+
+<pre><code>[TestAOPAttribute(Order = 1)]
+
+public Class1 TestMethod1(int i, int j, Class1 c) 
+        { 
+            Console.WriteLine("ok"); 
+            return new Class1(); 
+        }
+
+public class TestAOPAttribute : Green.AOP.MethodInterceptBase 
+    { 
+
+        #region IMethodInject Members 
+
+        public override bool Executeing(Green.AOP.MethodExecutionEventArgs args) 
+        { 
+            Console.WriteLine(this.GetType() + ":" + "Executeing"); 
+            return true; 
+        } 
+
+        public override Green.AOP.ExceptionStrategy Exceptioned(Green.AOP.MethodExecutionEventArgs args) 
+        { 
+            Console.WriteLine(this.GetType() + ":" + "Exceptioned"); 
+            return Green.AOP.ExceptionStrategy.Handle; 
+        } 
+
+        public override void ExecuteSuccess(Green.AOP.MethodExecutionEventArgs args) 
+        { 
+            Console.WriteLine(this.GetType() + ":" + "ExecuteSuccess"); 
+        } 
+
+        #endregion 
+
+        #region IMethodInject Members 
+
+               #endregion 
+    }
+</code></pre>
+
+<p>将会转化（实际注入IL，这里反编译为了c#代码，更清晰）为：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313329255.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313392150.png" title="12" alt="12" /></a></p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313397449.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313416379.png" title="image" alt="image" /></a></p>
+
+<p>从这里你就会清晰的明白这里实现静态注入了机制和原理了。我们需要做的目的就是从IL出发改变原来代码逻辑，注入我们的截取代码。使用Mono.Cecil具体代码在程序包MethodILInjectTask中。</p>
+
+<p>MatchedMethodInterceptBase是应用于class上匹配该class多个methodattribute基类。rule为匹配规则。</p>
+
+<pre><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
+
+public class Class1 
+</code></pre>
+
+<p>&nbsp;&nbsp; <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313445558.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313488651.png" title="image" alt="image" /></a></p>
+
+<p>这里需要对于继承制该基类的标示class的所有满足rule的方法进行注入。</p>
+
+<p>PropertyInterceptBase：属性注入，Action属性标识get，set方法。</p>
+
+<pre><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
+   public int TestProperty 
+   { 
+       get; 
+       set; 
+   }
+</code></pre>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313514766.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313565383.png" title="image" alt="image" /></a></p>
+
+<p>属性注入找出标示property，更具action选择get，set方法注入IL逻辑。</p>
+
+<p>现在对于方法中获取attribute通过反射，性能存在一定问题。完全可以在class中注入属性，延时加载，Dictionary类级缓存来减少这方面损失，还暂时没考虑加入。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 不是很会写blog，所以有什么不明白的可留言，上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html" title="发布于2011-08-09 14:05"><font color="#3d81ee">MSBuild + MSILInect实现编译时AOP之预览</font></a>，由于时间写的没头没尾的，估计大家都看的很迷茫，迷茫该怎么写。关于IL注入Mono.Cecil可以参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a>和官方<a href="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>。还有必须对MSIL具有一定了解（相同与Emit的IL注入）</p>
+
+<p>&nbsp;&nbsp; 附带：<a href="http://files.cnblogs.com/whitewolf/ConsoleApplication1.rar" title="源码下载">源码下载</a></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/28/bian-yi-shi-MSIL-zhu-ru-shi-jian-Mono-Cecil-1/">编译时MSIL注入&#8211;实践Mono Cecil(1)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-28T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 紧接上两篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html">浅谈.NET编译时注入（C#&mdash;&gt;IL）</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>，在第一篇中我们简单研究了c#语法糖和PostSharp的MSIl注入，紧接第二篇中我们介绍了自定义MSBuild编译任务（记得有位老兄发链接用 MSBuild自动发布Silverlight xap ，我想说的我做的是自定义编译任务，不是什么发布，MSBuild本就是一个发布工具）。之所以在此前介绍编译Task是因为我讲介绍的就是利用MSBuild和MSILInject制作静态注入式AOP，想成熟的产品PostSharp，当然我也不会去重造轮子，但需要明白起原理和自动化注入时机。废话不多说，今天将请出我们的MSIL注入的好东西：Mono.Cecil.官方网站<a href="http://www.mono-project.com/Cecil" title="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>，他是一个强大的MSIL 注入工具，在我们的Reflector插件Reflexil（动态修改程序集插件，很好用，我已经尝试多次）就有他的身影出现。还有如大名鼎鼎的<a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a>，<a href="http://www.linqpad.net/">LINQPad</a>，<a href="http://www.janetdev.org/">Ja.NET</a>等等（可以参见<a href="https://github.com/jbevain/cecil/wiki/Users" title="https://github.com/jbevain/cecil/wiki/Users">https://github.com/jbevain/cecil/wiki/Users</a>）。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在本节我们需要看看这个Mono.Cecil，先来一个简单的认识。</p>
+
+<p>我来在我们的方法执行前后加入我们的输出信息：</p>
+
+<p>原来代码：</p>
+
+<pre><code> class Program 
+   { 
+       static void Main(string[] args) 
+       { 
+           Console.WriteLine("破浪Blog：http://www.cnblogs.com/whitewolf/"); 
+       } 
+   }
+</code></pre>
+
+<p>任务：</p>
+
+<p>1我将在方法执行前后添加一个Console.WriteLine(&ldquo;Method start&#8230;&rdquo;);</p>
+
+<p>2方法最后添加Console.WriteLine(&ldquo;Method finish&#8230;&#8220;）；</p>
+
+<p>具体Mono.Cecil Code：</p>
+
+<pre><code>using System; 
+  using System.Collections.Generic; 
+  using System.Linq; 
+  using System.Text; 
+  using Mono.Cecil; 
+  using Mono.Cecil.Cil; 
+
+  namespace BlogSample 
+  { 
+      class Program 
+      { 
+          static void Main(string[] args) 
+          { 
+              AssemblyDefinition assembiy = AssemblyFactory.GetAssembly(args[0]); 
+              foreach (Mono.Cecil.TypeDefinition item in assembiy.MainModule.Types) 
+              { 
+                  foreach (MethodDefinition method in item.Methods) 
+                  { 
+                      if (method.Name.Equals("Main")) 
+                      { 
+
+                          var ins = method.Body.Instructions[0]; 
+                          var worker = method.Body.CilWorker; 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method start…")); 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
+                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
+                          ins = method.Body.Instructions[method.Body.Instructions.Count - 1]; 
+
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method finish…")); 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
+                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
+                          break; 
+                      } 
+                  } 
+
+              } 
+
+              AssemblyFactory.SaveAssembly(assembiy, "IL_" + args[0]); 
+              Console.Read(); 
+          } 
+      } 
+  }
+</code></pre>
+
+<p>DOS运行结果：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128456040.jpg" title="无标题" alt="image" /></p>
+
+<p>我们在来看看反编译后的MSIL</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128509350.png" title="image" alt="image" />
+C#：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128529675.png" title="image" alt="image" />
+&nbsp;&nbsp;&nbsp; 在这最后我们可以想一下，如果我们利用Mono.Cecil可以干些什么事情，能做的当然很多，我首先想尝试的了与上一节<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>结合PostSharp一样的静态注入AOP框架。还能做什么的就要靠大家发挥大家聪明的才智。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">浅谈.NET编译时注入（C#&#8211;&gt;IL）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; .NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器，在这里就不多说了，不是本文的重点。本文主要讨论下预编译过程中我们能做的改变编译情况，改变生成的ＩＬ，从编译前后看看微软Ｃ＃３．０一些语法糖，PostSharp的静态注入等等。</p>
+
+<p>１：我们先来看看最简单的var:</p>
+
+<p>Ｃ#:</p>
+
+<pre><code>public void TestVar() { 
+    var i = 0;    Console.WriteLine(i); }
+</code></pre>
+
+<p>使用Reflector查看生成</p>
+
+<p>ＩＬ：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124334478.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/20110726212434999.jpg" title="clip_image001" alt="clip_image001" /></a></p>
+
+<p>反编译后的Ｃ＃：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124353474.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124359853.jpg" title="clip_image002" alt="clip_image002" /></a></p>
+
+<p>这里ＶＳ在编译的时候将ｖａｒ为我们转变为了ｉｎｔ类型。</p>
+
+<p>２：Action&lt;int&gt;：</p>
+
+<p>Ｃ＃：</p>
+
+<pre><code>public void TestAction() { var i = 1; Func&lt;int,int&gt; f = t =&gt; t+1; i=10; f(i); }
+</code></pre>
+
+<p>反编译后Ｃ＃：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124351772.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124364737.jpg" title="clip_image004" alt="clip_image004" /></a></p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124369164.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124379131.jpg" title="clip_image005" alt="clip_image005" /></a></p>
+
+<p>编译器为我们在这里生成了代理方法。</p>
+
+<p>总结：</p>
+
+<p>关于lambda表达式的编译规则：</p>
+
+<p>当一个lambda expression被赋值给一个delegate类型，例如<a href="http://msdn2.microsoft.com/en-us/library/018hxwa8.aspx">Action&lt;T&gt;</a>或者<a href="http://msdn2.microsoft.com/en-us/library/bb549151.aspx">Func&lt;T, TResult&gt;</a>等，这个lambda expression会被编译器直接编译为
+1) 当lambda expression没有使用闭包内的非局部引用也没有使用到this时，编译为一个私有静态方法；
+2) 当lambda expression没有使用闭包内的非局部引用，但用到了this时，编译为一个私有成员方法；
+3) 当lambda expression中引用到非局部变量，则编译为一个私有的内部类，将引用到的非局部变量提升为内部类的。</p>
+
+<p>３：PostSharp：</p>
+
+<p>PostSharp是结合了 MSBuild Task 和 MSIL Injection 技术，编译时静态注入实现 AOP 编程。在编译时候改变VS的编译行为。更详细的信息，请访问 <a href="http://www.postsharp.org/">PostSharp</a> 网站</p>
+
+<p>原ｃ＃：</p>
+
+<pre><code>    using System;
+
+  using System.Collections.Generic;
+
+  using System.Linq;
+
+  using System.Text;
+
+  namespace ConsoleApplication1
+
+  {
+
+  class Program
+
+  {
+
+  static void Main(string[] args)
+
+  {
+
+  new Program().TestPostSharp();
+
+  }
+
+  [ErrorHandler()]
+
+  public void TestPostSharp()
+
+  {
+
+  throw new Exception("I will throw a exception!");
+
+  }
+
+  }
+
+  [Serializable]
+
+  public class ErrorHandlerAttribute : PostSharp.Laos.OnMethodBoundaryAspect
+
+  {
+
+  public override void OnException(PostSharp.Laos.MethodExecutionEventArgs eventArgs)
+
+  {
+
+  //do some AOP operation!
+
+  Console.WriteLine(eventArgs.Method+":" +eventArgs.Exception.Message);
+
+  eventArgs.FlowBehavior = PostSharp.Laos.FlowBehavior.Continue;
+
+  }
+
+  }
+
+  }
+</code></pre>
+
+<p>反编译后：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124385030.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124418146.jpg" title="clip_image007" alt="clip_image007" /></a></p>
+
+<p>今天就到此为至,只是简单的了解下IL注入实例,在后面会利用<strong>MSBuild Task+Mono Cecil</strong> 和<strong>PostSharp</strong>实现一些简单的注入实例.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Silverlight获取WebHost配置信息&#8211;WebClient和XmlSerializer模拟</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-06T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; 在我们的silverlight项目中，是被打包为xap zip文件下载到客户端，所以silverlight中的app配置文件我们不能直接修改，而在其宿主web host中的web.config在服务端我们也不能直接访问。在我们的项目中遇见了这个问题所以我就有了此博客。</p>
+
+<p>&nbsp;&nbsp; 先说明解决这个问题的方案有：</p>
+
+<p>1：调用wcf，webservice，Asp.net页面等服务端数据源，异步显示在我们的UI。</p>
+
+<p>2：利用silverlight项目的宿主页面 object，传入初始化参数，在silverlight app中获取。</p>
+
+<p>上面的方案都是针对于我们的少量有限配置信息的获取。我这里做的是利用在服务端的xml配置文件来模拟配置文件（为什么不用web.config？以为存在权限信息的问题，所以我觉得尽量避免此文件信息暴露）。在silverlight的异步加载xml文档并解析xml文档。形成配置信息。</p>
+
+<p>为了全局使用，早些加载xml文档，我们需要在app中加一句：</p>
+
+<p>SLConfigManager.Current.ConfigPath = &ldquo;../SlConfig.xml&rdquo;;//配置文件的路径，相对于我们的xap文件路径。</p>
+
+<p>我们先看一下测试xml：</p>
+
+<pre><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+&lt;Configuration&gt; 
+  &lt;appSettings&gt; 
+    &lt;add key="test1" value="123"&gt;&lt;/add&gt; 
+    &lt;add key="test2" value="1"&gt;&lt;/add&gt; 
+  &lt;/appSettings&gt; 
+  &lt;Class ClassID="111"&gt; 
+    &lt;Student Age="123"&gt; 
+      &lt;Name&gt;ddddd&lt;/Name&gt;     
+    &lt;/Student&gt; 
+    &lt;Student  Age="28"&gt; 
+      &lt;Name&gt;111&lt;/Name&gt;     
+    &lt;/Student&gt; 
+  &lt;/Class&gt; 
+&lt;/Configuration&gt;
+</code></pre>
+
+<p>这是我们可以使用：</p>
+
+<pre><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
+     { 
+         MessageBox.Show(SLConfigManager.Current.GetSection&lt;Class&gt;("Class").ClassID + ""); 
+         MessageBox.Show(SLConfigManager.Current.GetAppSettings("test1").ToString()); 
+         MessageBox.Show(SLConfigManager.Current.GetAppSettings&lt;Sex&gt;("test2").ToString()); 
+     } 
+
+        public enum Sex 
+     { 
+      man,woman 
+     }
+</code></pre>
+
+<p>在这里我们模拟了AppSettings，和Section（注：这里的section，不需要预申明，在利用xml转化形成的，更利于我们的配置扩展性，使用到了XmlRoot，XmlElement等attribute），在看看我们的Class类：</p>
+
+<pre><code>using System.Xml.Serialization; 
+</code></pre>
+
+<p>  namespace SilverlightApplication2
+  {</p>
+
+<pre><code>  [XmlRoot("Student")] 
+  public class Student 
+  { 
+      [XmlElement("Name")] 
+      public string Name 
+      { get; set; } 
+
+      [XmlAttribute("Age")] 
+      public int Age 
+      { 
+          get; 
+          set; 
+      } 
+  } 
+
+  [XmlRoot("Class")] 
+  public class Class 
+  { 
+      [XmlAttribute("ClassID")] 
+      public int ClassID 
+      { 
+          get; 
+          set; 
+      } 
+
+      [XmlArray()] 
+      [XmlArrayItem("Students")] 
+      public System.Collections.Generic.List&lt;Student&gt; Students 
+      { 
+          get; 
+          set; 
+      } 
+  } 
+</code></pre>
+
+<p>  }</p>
+
+<p>最后需要说明的是：在于我们的项目中可能存在xml文件还没有加载，的情况，所以加入了时间支持和IsLoaded属性标示。</p>
+
+<p>源码：</p>
+
+<pre><code>using System; 
+using System.Net; 
+using System.Windows; 
+using System.Windows.Controls; 
+using System.Windows.Documents; 
+using System.Windows.Ink; 
+using System.Windows.Input; 
+using System.Windows.Media; 
+using System.Windows.Media.Animation; 
+using System.Windows.Shapes; 
+using System.Xml; 
+using System.Xml.Linq; 
+using System.Linq; 
+using System.Collections.Generic; 
+using Green.Utility.Utils; 
+
+namespace SilverlightApplication2 
+{ 
+    public delegate void LoadComplete(); 
+
+    public class SLConfigManager 
+    { 
+        private XDocument document = null; 
+
+        private static readonly SLConfigManager _SLConfigManager = new SLConfigManager(); 
+        private Dictionary&lt;string, object&gt; dict = new Dictionary&lt;string, object&gt;(); 
+        private Dictionary&lt;string, string&gt; appSettings = new Dictionary&lt;string, string&gt;(); 
+        private string _ConfigPath = null; 
+
+        public static SLConfigManager Current 
+        { 
+            get 
+            { 
+                return _SLConfigManager; 
+            } 
+        } 
+
+        public string ConfigPath 
+        { 
+            get { return _ConfigPath; } 
+            set 
+            { 
+                if (_ConfigPath != value) 
+                { 
+                    _ConfigPath = value; 
+                    LoadResource(); 
+                } 
+            } 
+        } 
+
+        public bool IsLoaded 
+        { 
+            get; 
+            private set; 
+        } 
+        public event LoadComplete LoadComplete; 
+
+        public void EnsureLoadResource() 
+        { 
+
+            if (document == null) 
+            { 
+                LoadResource(); 
+            } 
+        } 
+
+        protected virtual void LoadResource() 
+        { 
+            if (string.IsNullOrEmpty(ConfigPath)) 
+            { 
+                throw new Exception("ConfigPath is required!"); 
+            } 
+
+            dict.Clear(); 
+            Uri url = new Uri(Application.Current.Host.Source, ConfigPath); 
+            WebClient client = new WebClient(); 
+            client.OpenReadCompleted += new OpenReadCompletedEventHandler(client_OpenReadCompleted); 
+            client.OpenReadAsync(url, client); 
+        } 
+
+        protected virtual void client_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) 
+        { 
+            if (e.Error != null) 
+            { 
+                throw e.Error; 
+            } 
+
+            var sw = new System.IO.StreamReader(e.Result); 
+            var xml = sw.ReadToEnd(); 
+            document = XDocument.Parse(xml); 
+            sw.Close(); 
+            e.Result.Close(); 
+            sw = null; 
+
+            GetappSettings(); 
+
+            IsLoaded = true; 
+            if (LoadComplete != null) 
+            { 
+                LoadComplete(); 
+            } 
+        } 
+
+        protected virtual void GetappSettings() 
+        { 
+            if (document != null) 
+            { 
+                var appSettingsel = document.Root.Element("appSettings"); 
+                if (appSettings != null) 
+                { 
+                    appSettingsel.Elements("add").ToList().ForEach(e =&gt; 
+                    { 
+                        var key = e.Attribute("key").Value; 
+                        var value = e.Attribute("value").Value; 
+                        if (!string.IsNullOrEmpty(key)&amp;&amp;!this.appSettings.ContainsKey(key)) 
+                        { 
+                            this.appSettings.Add(key, value); 
+                        } 
+                    }); 
+                } 
+            } 
+        } 
+
+        public T GetSection&lt;T&gt;(string section) where T : class ,new() 
+        { 
+            if (document == null) 
+            { 
+                // throw new Exception("Config Document is null!");                
+            } 
+            if (!dict.ContainsKey(section)) 
+            { 
+                var el = document.Root.Descendants().SingleOrDefault(t =&gt; t.Name == section); 
+                var xml = el.ToString(); 
+                dict.Add(section, XmlSerializer&lt;T&gt;(xml)); 
+            } 
+            return dict[section] as T; 
+        } 
+
+        protected virtual T XmlSerializer&lt;T&gt;(string xml) where T : class ,new() 
+        { 
+            System.Xml.Serialization.XmlSerializer serialzer = new System.Xml.Serialization.XmlSerializer(typeof(T)); 
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xml)); 
+            var obj = serialzer.Deserialize(ms) as T; 
+            ms.Flush(); 
+            ms.Close(); 
+            ms = null; 
+            return obj; 
+        } 
+
+        public T GetAppSettings&lt;T&gt;(string key) where T : IConvertible 
+        { 
+            if (appSettings.ContainsKey(key)) 
+            { 
+                var val = this.appSettings[key]; 
+                if (string.IsNullOrEmpty(val)) 
+                    return default(T); 
+                if (typeof(T).IsEnum) 
+                { 
+                    return (T)Enum.Parse(typeof(T), val, true); 
+                } 
+                return (T)Convert.ChangeType(val, typeof(T), null); 
+            } 
+            return default(T); 
+        } 
+
+        public string GetAppSettings(string key) 
+        { 
+            return GetAppSettings&lt;string&gt;(key); 
+        } 
+    } 
+}
+</code></pre>
+
+<p>最后附：<a href="http://files.cnblogs.com/whitewolf/SilverlightApplication2.rar" title="测试程序打包下载">测试程序打包下载</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/06/SlConfig.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。</p>
+
+<p>&nbsp;</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/MixedRUntime1.jpg" alt="" /></p>
+
+<p>&nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入：</p>
+
+<p><font color="#ff0000">&nbsp;&lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
+&nbsp; &lt;/startup&gt; </font></p>
+
+<p>&nbsp;参考原文：</p>
+
+<p>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; error using .NET 4 Development Web Server</p>
+
+<p>If your application has a dependency on an assembly built in .NET 2 you will see the error below if you try to run your application when it has been built in.NET 4.</p>
+
+<p><em><strong>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; of the runtime and cannot be loaded in the 4.0 runtime without additional configuration information.</strong></em></p>
+
+<p>This can be important in VS2010 testing, as test projects must be built as .NET 4, there is no option to build with an older runtime. I suffered this problem when trying to do some development where I hosted a <a href="http://blogs.blackmarble.co.uk/blogs/rfennell/archive/2010/03/25/a-fix-to-run-typemock-isolator-inside-the-page-load-for-an-aspx-page-on-vs2010-net4.aspx">webpart that make calls into SharePoint (that was faked out with Typemock Isolator) inside a ASP.NET 4.0 test harness</a></p>
+
+<p>The answer to this problem is well documented, you need to add the <strong>useLegacyV2RuntimeActivationPolicy</strong> attribute to a .CONFIG file, but which one? It is not the <strong>web.config</strong> file you might suspect, but the <strong>C:\Program Files (x86)\Common Files\microsoft shared\DevServer\10.0\WebDev.WebServer40.exe.config</strong> file. The revised config file should read as follows (new bits in <font color="#ff0000">red</font>)</p>
+
+<blockquote><p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;utf-8&rdquo; ?&gt;
+&lt;configuration&gt;
+&nbsp;<font color="#ff0000"> &lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
+&nbsp; &lt;/startup&gt; </font></p>
+
+<p>&nbsp; &lt;runtime&gt;
+&nbsp;&nbsp;&nbsp; &lt;generatePublisherEvidence enabled=&ldquo;false&rdquo; /&gt;
+&nbsp; &lt;/runtime&gt;
+&lt;/configuration&gt;</p></blockquote>
+
+<p>Note: Don&#8217;t add the following _&lt;supportedRuntime version=&ldquo;v2.0.50727&rdquo; /&gt;&nbsp; this cause the web server to crash on start-up. _</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/05/14/2046449.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">PD设计中表名过长，自动生成的主外键名截取的问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。</p>
+
+<p>解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
+默认是 <span style="color: red">PK<em>%.U27:TABLE%</span>，<span style="color: red">U27</span>表示截取27个字符。改成PK</em>%TABLE%主键名就不会被截取了。</p>
+
+<p>其他键同理：找到相应的ConstName Value去掉U.\d:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/27/1996786.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Excel 货币中文大写汉字转化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Excel转化货币数字为中文大写：例如：</p>
+
+<p>效果图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/ExcelP.jpg" alt="" /></p>
+
+<p>代码：</p>
+
+<pre><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
+</code></pre>
+
+<p>&nbsp;这个奖可以结合ASPOSE.Cells处理我的报表导出Excel的汇总，计算问题：<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/21/Aspose_Cells_Template1.html"><font color="#6699cc">报表中的Excel操作之Aspose.Cells（Excel模板）</font></a> 唯一需要改变的就是D8这个单元汇总格是需要动态变更的，可以利用{r}。{-n}，{c}等来处理。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/26/1996192.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/12/Python-Tools-for-Visual-Studio/">Python Tools for Visual Studio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#160;&#160;&#160; 今天在CodeProject订阅中看这个开源项目，简单的看了看项目介绍，和测试。这对于喜欢CPython、IronPython的朋友们来说，该是一个喜悦，现在在ms的开源项目支持下，我们可以就在我们的vs2010IDE下编写程序了。</p>
+
+<p>下面是CodePlex上的一个效果展示：Python Tools for Visual Studio主页：<a href="http://pytools.codeplex.com/" title="http://pytools.codeplex.com/">http://pytools.codeplex.com/</a></p>
+
+<p> CPython and IronPython</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103121111565782.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103121111575060.png" title="p_intro_pic_med2" alt="p_intro_pic_med2" /></a></p>
+
+<p> 现在还是Beta版：支持智能感知、CPython 和 IronPython，NumPy &amp; SciPy for .Net、本地和远程调试、支持并行计算，很快聚会支持以当下流行的云计算、大规模，数据密集型并行编程（Dryad）。</p>
+
+<p>其他资料：
+  <li>CPython <a href="http://www.python.org">http://www.python.org</a>;</li>  <li>IronPython <a href="http://ironpython.codeplex.com">http://ironpython.codeplex.com</a>;</li>  <li>IPython <a href="http://ipython.scipy.org">http://ipython.scipy.org</a> ;</li>  <li>NumPy/SciPy&#160; <a href="http://scipy.org">http://scipy.org</a>;</li>  <li>NumPy/SciPy for .Net 将会在: <a href="http://scipy.org">http://scipy.org</a> ；</li></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/12/1982093.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/05/duan-dian/">断电</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&shy;</p>
+
+<p>与屋外的夜融合&shy;</p>
+
+<p>没了相伴的影&shy;</p>
+
+<p>去了柳绿花红,还有&shy;</p>
+
+<p>面部的表情,&shy;</p>
+
+<p>正如落魄的&shy;茫然</p>
+
+<p>死亡的静谧 &shy;</p>
+
+<p>&shy;</p>
+
+<p>我在内心默祷&shy;</p>
+
+<p>任书桌的狼籍 &shy;</p>
+
+<p>墨汁的飘洒 &shy;</p>
+
+<p>黑的延续&shy;</p>
+
+<p>尽情低落的幸福</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &mdash;破狼</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/05/1971372.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/04/html5-web-ben-di-cun-chu/">Html5-web本地存储</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>&nbsp;&nbsp; 在html5中为我们提供了一种本地缓存机制，它将取代我们的cookie，并且它是不会随浏览器发会我们的服务器端的。我们可以采用js在客户端自由的操作本地缓存。html5中缓存主要有localStorage，和sessionStorage。他们的用法一致。区别在于他们的时间限制不同。localStorage是不存在时间限制的。而sessionStorage这时基于session的数据存储，在关闭或者离开网站后，数据将会被删除。</p>
+
+<p>&nbsp; 下面我们来简单看看官方的示例操作：</p>
+
+<p><strong>javascript</strong></p>
+
+<p>localStorage.fresh = &#8220;vfresh.org&#8221;;&nbsp;&nbsp; //设置一个键值
+var a = localStorage.fresh;&nbsp;&nbsp; //获取键值</p>
+
+<p>或者使用它的API：
+<strong>javascript</strong></p>
+
+<p>//清空storage
+localStorage.clear();</p>
+
+<p>//设置一个键值
+localStorage.setItem(&#8220;fresh&#8221;,&#8220;vfresh.org&#8221;);</p>
+
+<p>//获取一个键值
+localStorage.getItem(&#8220;fresh&#8221;);&nbsp;</p>
+
+<p>//return &#8220;vfresh.org&#8221; //获取指定下标的键的名称（如同Array）
+localStorage.key(0);&nbsp;</p>
+
+<p>//return &#8220;fresh&#8221; //删除一个键值
+localStorage.removeItem(&#8220;fresh&#8221;);</p>
+
+<p>&nbsp;</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sessionStorage相同就不用在废话了，他相当于我们的过期时间Expire=0的cookie；</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1970457.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/8/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/6/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

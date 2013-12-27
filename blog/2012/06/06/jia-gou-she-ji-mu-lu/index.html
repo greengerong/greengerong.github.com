@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>架构设计目录 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="架构设计目录">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/06/06/jia-gou-she-ji-mu-lu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">架构设计目录</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-06T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 架构引用<a href="http://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84">维基百科</a>：软件体系结构是构建<a href="http://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BD%AF%E4%BB%B6">计算机软件</a>实践的基础。与建筑师设定建筑项目的设计原则和目标，作为绘图员画图的基础一样，一个<a href="http://zh.wikipedia.org/w/index.php?title=%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">软件架构师</a>或者<a href="http://zh.wikipedia.org/w/index.php?title=%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">系统架构师</a>陈述软件构架以作为满足不同客户需求的实际系统设计方案的基础。从和目的、主题、材料和结构的联系上来说，软件架构可以和建筑物的<a href="http://zh.wikipedia.org/w/index.php?title=%E6%9E%B6%E6%9E%84&amp;amp;action=edit&amp;amp;redlink=1" title="%E6%9E%B6%E6%9E%84&amp;action=edit&amp;redlink=1">架构</a>相比拟。一个软件架构师需要有广泛的软件理论知识和相应的经验来实施和管理软件产品的高级设计。软件架构师定义和设计软件的模块化，模块之间的交互，用户界面风格，对外接口方法，创新的设计特性，以及高层事物的对象操作、逻辑和流程。</p>
+
+<p>软件架构师与客户商谈概念上的事情，与经理商谈广泛的设计问题，与软件工程师商谈创新的结构特性，与程序员商谈实现技巧，外观和风格。</p>
+
+<p>软件架构是一个系统的草图。软件架构描述的对象是直接构成系统的抽象组件。各个组件之间的连接则明确和相对细致地描述组件之间的通讯。在实现阶段，这些抽象组件被细化为实际的组件，比如具体某个类或者对象。在<a href="http://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">面向对象</a>领域中，组件之间的连接通常用<a href="http://zh.wikipedia.org/wiki/%E6%8E%A5%E5%8F%A3_%28%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%29">接口</a>来实现。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 架构来源于建筑工程学，描述对软件密集型系统设计蓝图。在不同软件领域，有其不同特征，但有一部分共同基础设计原则和共性。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在这里将进行一些软件架构设计系列，此系列已经完成了架构层次设计，此系列仍在继续更新中&#8230;</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+<li>  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a></li>
+<li>   <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html">存储过程传言</a></li>
+<li> 表现层及其模式</li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/07/07/2580630.html"><font color="#6699cc">表现层模式-MVC</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/06/2537593.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-06T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2012/06/06/jia-gou-she-ji-mu-lu/" data-via="" data-counturl="http://greengerong.github.io/blog/2012/06/06/jia-gou-she-ji-mu-lu/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/" title="Previous Post: 架构设计-数据访问层简述">&laquo; 架构设计-数据访问层简述</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/" title="Next Post: PowerShell强大管道">PowerShell强大管道 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

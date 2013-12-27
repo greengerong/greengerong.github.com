@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Resharper是一款很优秀的重构工具，已经习惯了Resharper快捷键，利用Resharper做重构，TDD开发，很爽。唯一缺点就是低配置机器上速度很慢，容易拖死VS， 为此我我专门把我的本本换成6G内存， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/4">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/14/XUnit-pei-zhi-Resharper-kuai-jie-jian/">XUnit配置Resharper快捷键</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Resharper是一款很优秀的重构工具，已经习惯了Resharper快捷键，利用Resharper做重构，TDD开发，很爽。唯一缺点就是低配置机器上速度很慢，容易拖死VS，</p>
+
+<p>为此我我专门把我的本本换成6G内存，现在感觉顺畅多了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 回到正题，我在项目中运用了XUnit，但是VS和Resharper对其快捷键都还不能默认支持，所以在网上找到扩展Resharper使其支持Xunit，步骤如下：</p>
+
+<ol>
+<li>关闭所有VS。</li>
+<li>在<a href="http://xunitcontrib.codeplex.com/" title="http://xunitcontrib.codeplex.com/">http://xunitcontrib.codeplex.com/</a>下载xUnit.net Contrib</li>
+<li>把目录中的xunitcontrib.runner.resharper.Resharper版本号拷贝到C:\Program Files\JetBrains\ReSharper\Resharper版本号\bin\plugins 下（其中的plugins可能需要手动建立）。同样你也可以拷贝到&lt;RoamingAppData&gt;\JetBrains\ReSharper\Resharper版本号\vs版本号\plugins</li>
+<li>拷贝resharper.external.annotations\xunit.xml到C:\Program Files\JetBrains\ReSharper\Resharper版本号\bin\ExternalAnnotations目录下。</li>
+<li>开启VS。</li>
+<li> ReSharper &ndash;&gt; Live Templates &ndash;&gt;&ldquo;Import&rdquo; 导入xunit-ae.xml或者xunit-xe.xml。xunit-xe.xml和xunit-ae.xml对XUnit断言语句的扩展简化，xunit-xe.xml以x开头，比如xe =&gt; Assert.Equal，而xunit-ae.xml则以a开头，比如ae =&gt; Assert.Equal。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 最后大功告成。</p>
+
+<p>更多信息参见<a href="http://xunitcontrib.codeplex.com/" title="http://xunitcontrib.codeplex.com/">http://xunitcontrib.codeplex.com/</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/14/2591904.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/">读Clean Code - 数据结构和对象</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 最近在上下班挤公交的时间细阅Clean Code（代码整洁之道），再次佩服Bob大叔幽默的文笔，独到的观点和理解视角。最让我耳目一新的是Bob大叔对数据结构和对象的解释。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 总的说来数据结构指的就是数据的载体，暴露数据，而几乎没有有意义的行为，你应该在尖叫这不是贫血类？的确这和我们的贫血类很相似。最常见的应用在分布式服务，以wcf，webservice，reset之类的分布式服务中不可或缺的数据传输对象（DTO）模式，DTO（Request/Response）就是一个很典型的数据载体，只存在简单的get，set属性，并且更倾向于作为值对象存在。而对象则刚好相反作为面向对象的产物，必须封装隐藏数据，而暴露出行为接口，DDD中领域模型倾向于对象不仅在数据更多暴露行为操作自己或者关联状态。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 虽然数据结构和对象之间看是细微的差别却导致了不同的本质区别：使用数据结构的代码便于在不改动现在数据结构的前提下添加新的行为（函数），面向对象代码则便于不改动现 有函数的前提下添加新的类。换句话说就是数据结构难以添加新的的数据类型，因为需要改动所有函数，面向对象的代码则难以添加新的函数，因为需要修改所有的类。在任何一个复杂的系统都会同时存在数据结构和对象，我们需要判断的是我们需要的是需要添加的新的数据类型还是新的行为函数。</p>
+
+<p> 在则就是迪米特法则，或被译为最小知识原则，不和陌生人说话：模块不应该了解他所操作的对象的内部情形，关于对象的隐藏，更细致的理解为一个对象A的方法f，应该也只能调用对象为下列范围内：</p>
+
+<ol>
+<li>对象A的属性字段</li>
+<li>对象A持有的对象</li>
+<li>方法参数传入的对象</li>
+<li>在方法f中定义的临时对象</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 方法不应和任何调用方法返回的对象操作，换句话之和朋友说话，不和陌生人说话。比如：ctxt.getOptions().getSearchDir().getAbsolutePath()，就是迪米特法则的反例模式。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 但当前迪米特法则的前提是对象，如果是数据结构，没有什么行为，则他们自然会暴露其内部数据结构，迪米特法则也失效了。</p>
+
+<p>&nbsp;&nbsp; &nbsp; 隐藏作为面向对象主要特性中的最重要特性，封装隐藏是面向对象中最重要的特性，一个好的面向对象代码肯定是对对象的内部细节做到很好的隐藏封装，封装过后才有是多态，委派之类的。一个好的面向对象的代码一定是具有很好的隐藏封装，易于测试，不稳定因素往往集中在一处很小或者固定的位置，不稳定因素的变更不会导致更大面积的修改扩散。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 最后推荐下一本书籍，值得在空闲时间看看，不能保证看完代码就一定写出整洁的代码，做到童子军军规&#8220;每次签入的代码比签出的更整洁&#8221;，更不会像优美的散文，这需要在项目实践中不断练习发现，但对代码质量意思有着引导作用。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 总感觉自己的技术还差得很远，所以我总是约束自己抽出可用的时间看些书籍，从不同的视角，不同的领域或者一些思想的提升和沉淀。</p>
+
+<p>关于面向对象原则随笔还有：</p>
+
+<ol>
+<li>&nbsp;<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/12/2588896.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/07/biao-xian-ceng-mo-shi-MVC/">表现层模式-MVC</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-07T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面简述了从服务层到数据层参见<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/06/2537593.html">架构设计目录</a>。剩下了表现层，一个再好的中间层表现也必须有一个用户界面，提供和用户交互，将用户行为输入转化为系统操作，进入后台逻辑。在当下RAD（快速应用开发）工具的支持下，我们可以比较快速的完成UI设计，RAD追求所见即所得的快速反馈，快速应用。表现层也有一定其固定的逻辑（格式化，数据绑定，转化等等，称为UI逻辑）和界面展现。这里UI逻辑指的是所有用来处理数据显示在UI界面的逻辑和，将UI用户输入行为转化为中间层指令的逻辑，负责UI和中间层数据流和行为的转化。很多时候UI是最容易变化的以及最不易测试的逻辑（我一直相信，1：一段好的代码一定要易于测试。2：重构的前提也必须有足够的测试保证，才能让我们的重构更有节奏更自信），而很大部分UI逻辑却往往比较稳定的。这Matin Fowler提出的分离表现层模式。表现层模式主要分为3种大类：MVC，MVP，PM（微软在sl和wpf起名为MVVM），这3类模式下延伸了很多变异体mvc在web的 model2（asp.net mvc，主要特征基于web特有uri路由）。mvp的变种：Passive View（被动视图）和Supervising Controller（不清楚怎么翻译比较好），PM延伸MVVM。其目的都在于将多变的View和UI逻辑分离。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天要说的是MVC（model-view-controller：模型-视图-控制器）。在我们一开始就说结构和编程或者<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向对象原则</a>都是为了实现模块的高内聚低耦合，而高内聚低耦合行之有效的方式就是分离关注点（SOC）。为了实现表现UI和表现逻辑的分离，使得他们之间更灵活，并且自治视图(包含所有表现层代码的类)。在30年前<a href="http://zh.wikipedia.org/w/index.php?title=Trygve_Reenskaug&amp;amp;action=edit&amp;amp;redlink=1" title="Trygve_Reenskaug&amp;action=edit&amp;redlink=1">Trygve Reenskaug</a>提出的<a href="http://zh.wikipedia.org/wiki/MVC">MVC模式</a>，或者更确切的说模范。其将表现层分为3类：model：是视图展现数据，view用户交互界面，Controller：将用户输入转化为中间层操作。</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201207/201207071455125856.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201207/20120707145514741.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 模型（Model）：在MVC中模型保持着一个应用程序的状态，和相应视图中来自用户交互的状态变化。在上图中我们可以看到model会接受来之控制器的状态变化响应和视图的显示状态查询view渲染的数据来源。同时model还有通过事件机制（观察者模式）通知view状态的改变要求view渲染响应。view和模型之间存在一定的耦合，view必须了解model，这也是MVP模式出现原因之一。正在这里的模型model可以是来之分布式soap或者resetfull的dto（数据传输对象），也可以直接是我们的领域对象（do）或者数据层返回的数据集，并不严格的 要求。</p>
+
+<p>&nbsp;&nbsp; 控制器（Controller）：控制器是又view触发，响应用户界面的交互，并根据表现层逻辑改变model状态，以及中间层的交互，最终修改model，Controller不会关心视图的渲染，是通过修改model，model的事件通知机制，触发view的刷新渲染。控制器和模型的交互式一种&#8220;发出即忘&#8221;，或者分布式OneWay的调用。控制器Controller不会主动了了解view和view交互，除了唯一的视图选择外，控制器需要选择下一次显示的视图view是什么。一般控制器会请求全局应用程序路由下一个需要显示的view，在使其呈现出来。</p>
+
+<p>视图（View）：视图时表现层模式出现的原因，因为他的多样性和变化的频繁性，不易测试（太多外界环境依赖），所以理想的视图应该尽可能的哑，被动，视图只负责渲染呈现给用户交互。视图由一些列GUI组件组成，响应用户行为触发控制器逻辑，修改model状态使其保持view同步。视图并需要相应model的变化被动的接受model状态变化刷新相应给用户。</p>
+
+<p>&nbsp;&nbsp; MVC最先兴起于桌面，但没有流行起来，知道在web兴起后，其变异体Model2在Web中流行起来，.net 下的ASP.NTE MVC。Model2中，将来自客户端（浏览器）的请求，被服务端拦截器（asp.net中HttpModule）根据url格式请求方式等转发到固定的控制器，调用固定的Action，在Action中队模型状态进行修改，并选择view，view并根据控制器传来的最新model生产html，css，js前段代码，并输出到前段渲染。</p>
+
+<p>&nbsp; 在Model2中和原始MVC最大的差别在于:</p>
+
+<p>1：视图view和模型model之间没有直接依赖，model并不知道view也不需要事件通知view，view也不需知道model，view操作的都是ViewModel（asp.net mvc 中ViewData容器）。2：控制器显示传入视图数据给view，相应用户的操作不是来自view，而是出于服务端应用程序前段的拦截器，捕获url并转发到相应的控制器，已经调用相应的action方法。</p>
+
+<p>&nbsp; 在现在说的MVC往往指的就是Web中Model2模式。在Model2中view是被动的，哑的，简单。</p>
+
+<p>&nbsp;</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/%E6%9C%AA%E5%91%BD%E5%90%8D.png" alt="" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/07/2580630.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/24/cun-chu-guo-cheng-chuan-yan/">存储过程传言</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-24T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这篇随笔由于出差拖了很久，一时也没整理好该写些什么。在google搜了下&#8220;存储过程 优劣&#8221;关键字，资料并不多，出现了一篇关于来至51cto的关于存储过程的优缺点的文章，具体这里也不指出了。看见文章中对存储过程的几个辩解，个人不敢苟同，个人已经很仔细的看了文章的时间是2011年，如果在更前写年成的话，个人觉得完全能够理解。所以有了这篇，存储过程的一些传言。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：存储过程只在创造时进行编译，以后每次执行存储过程都不需再重新编译，而一般SQL 语句每执行一次就编译一次,所以使用存储过程可提高数据库执行速度。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在sql server 2000版本，这个观点没错，却是如此。但是在sql server2005文档中很清晰的写到 sql server2005的执行任何sql，关系引擎会首先查看缓存，判断是有有其执行计划。如果有，则将会重用该执行计划，以减少重新编译sql语句生成执行计划的影响。包括Oracle也是这么做的，所以在我们常见的数据库中不存在这所谓的问题。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 2：当对数据库进行复杂操作时(如对多个表进行Update,Insert,Query,Delete 时），可将此复杂操作用存储过程封装起来与数据库提供的事务处理结合一起使用。这些操作，如果用程序来完成，就变成了一条条的SQL语句，可能要多次连接数据库。而换成存储，只需要连接一次数据库就可以了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 这个问题在前面的<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a>中说过，DBA总是告诉我们减少数据库连接次数，这是完全无争议的，我表述很赞同。但是一定是存储过程的优势？或者说除了存储过程就没其他方式？在<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a>中介绍了来自Martin Fowler《P of EAA》的UOW（工作单元）模式，定义为工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。其主旨是在内存中建立一个和数据仓库，维护变化的对象，业务对象变化跟踪，在业务操作完成一次性提交到数据存储介质，提供业务事务。这模式已经在我们常见的ORM（EntityFramework，Nhibernate等）中很好的支持了，或许这么说这也是ORM框架的一个重要特征。在比如微软的DataSet也支持，批量更新。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 3:存储过程可以重复使用，可减少数据库开发人员的工作量。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在项目中我们糜烂的重复代码仅仅在于数据层？更多或许在于业务逻辑的处理，复杂的条件判断，数据操作的组合。存储过程是由开发人员开发，还是数据库开发人员？每个公司的数据库开发人员就仅仅那几个吧，我见过的公司。存储过程是否包含业务规则？如果有的话，业务的不停变化，会不会不停的修改关系模型，修改存储过程，sql的编写和调试虽然现在工具有一定的支持，但是我觉得没有开发语言这么智能方便吧，至少我还没看见。如果没有至少简单的查询语句，那和普通的sql有什么差别？减少开发量为什么不选择ORM之类的动态sql，采用完全的对象模型开发，只在少部分ORM失效的业务返璞归真。</p>
+
+<p>&nbsp;&nbsp; 4：如果把所有的数据逻辑都放在存储过程中，那么asp.net只需要负责界面的显示功能，出错的可能性最大就是在存储过程。一般情况下就是这样。升级、维护方便。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这句话更离谱。逻辑放在存储过程，便于维护，我也进入过这样的公司参与过这样的项目，由于刚开始新员工，不能全盘否定，我看见的是恼人的存储过程，恼人是sql，没看过那个开发人员喜欢sql，特别在每次项目需求变更的时候。后来慢慢接受ddd模式，把业务从sql中挣脱出来。asp.net只需要负责界面的显示功能，逻辑层次未免太简单了，我猜测这应是 事务性脚本开发模式，其优劣点在<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>中说过，只能实用于简单小型的项目。在加上可移植性差，如果你的客户需要数据库的升级，sql server到Oracle会怎么样。</p>
+
+<p>&nbsp; 5：安全性高，可设定只有某此用户才具有对指定存储过程的使用权。</p>
+
+<p>&nbsp; 安全对于项目来说不仅仅在于数据库，而应是分布于我们系统各处。安全关注点应该从表现层到数据库各层之间都应该有处理。一般比较灵活有效基于角色（域）安全和数据库安全，物理服务器安全共同使用，这和不适用存储过程，使用sql并没什么冲突。虽然你可能说存储过程可以作为数据库内部资源实施安全策越。</p>
+
+<p>6：还有些：存储过程可以防止sql注入</p>
+
+<p>&nbsp; 这个是当然的，毫无争议。因为用的是参数化方式，你不能随意拼接字符串，参数化方式能够帮助我们防止大多数的sql注入。在ado.net中为我们提供了很好的参数化支持，使用sql我们同样可以做到，再加上一切开源的安全组件的过滤。</p>
+
+<p>&nbsp; 最后存储过程并不是万恶的，他有他的应用场景，对于复杂逻辑如报表的场景，我会毫不犹豫的放弃ORM，选择它，因为orm不能满足这种复杂查询，但是准确的说我选择的是大量的T-SQL或者是P-SQL，存储过程就是一堆sql子程序的固定格式。我觉得可以完全采用ibatis.net方式的xml配置，更爽些。选择存储过程是由于复杂查询业务，我相信大家也不会为了一些复杂的统计把全表数据加载到内存吧。存储过程开发技术流行与2005前数据为中心的开发模式，在现在的模式，工具，技术下显得有些苍老，但并不是一无是处。你也可以完全采用基于存储过程的开发模式开发出很好的系统。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/09/fen-xiang-yi-duan-PowerShell-yong-hu-ren-zheng-Function/">分享一段PowerShell用户认证Function</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在最近工作中遇到对用户验证，需要根据用户名和密码验证用户是否合法。在外文网站找到的这段代码，在这里分享给大家，如果你也需要用户验证的话，那么可以直接copy使用，现在没地方用，也可以收藏备用。</p>
+
+<pre><code>Function Test-UserCredential {
+
+    [CmdletBinding()] [OutputType([System.Boolean])]
+
+    param(
+
+     [Parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]
+
+     [System.String] $Username,
+
+
+
+
+     [Parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]
+
+     [System.String] $Password,
+
+
+
+     [Parameter()]
+
+     [Switch] $Domain
+
+ )
+
+
+
+ Begin {
+
+     $assembly = [system.reflection.assembly]::LoadWithPartialName('System.DirectoryServices.AccountManagement')
+
+ }
+
+
+
+ Process {
+
+     try {
+
+         $system = Get-WmiObject -Class Win32_ComputerSystem
+
+         if ($Domain) {
+
+             if (0, 2 -contains $system.DomainRole) {
+
+                 throw 'This computer is not a member of a domain.'
+
+             } else {
+
+                 $principalContext = New-Object -TypeName System.DirectoryServices.AccountManagement.PrincipalContext 'Domain', $system.Domain
+
+             }
+
+         } else {
+
+             $principalContext = New-Object -TypeName System.DirectoryServices.AccountManagement.PrincipalContext 'Machine', $env:COMPUTERNAME
+
+         }
+
+
+
+         return $principalContext.ValidateCredentials($Username, $Password)
+
+     }
+
+     catch {
+
+         throw 'Failed to test user credentials. The error was: "{0}".' -f $_
+
+     }
+
+ }
+</code></pre>
+
+<p>}</p>
+
+<p>使用很简单方便：Test-UserCredential&nbsp; &#8220;用户名&#8221; &#8220;密码&#8221; &#8220;用户域&#8221;,第三个参数&#8220;用户域&#8221;为可选参数,返回为布尔类型。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543584.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">PowerShell强大管道</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性，我们可以利用强大的.net FCL在PowerShell中。PowerShell提供强大的管道模型，管道指的是一个命令的输出可以利用操作符（|）方便的传递到下个命令作为输入。PowerShell不同传统管道模型的是它是一门基于对象的管道流，即在命令之间传递的对象不是简单的文本。下面我们就以本地文件操作来实践PowerShell的管道常见命令：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：集合遍历ForEach-Object：可以简写为foreach，或者%代替，提供了管道传入的对集合的遍历，同时提供了操作前begin，操作process，结束end命令，其中$_提供对当前索引的指代。</p>
+
+<p>&nbsp; 示例：下面我们实践利用ForEach-Object来计算本地文件目录的文件大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531544186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153154315.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：条件选择Where-Object：可以简写为where或者？代替。提供了对管道输入集合的过滤筛选，类似于SQL中的where条件，$_提供对当前索引的指代。</p>
+
+<p>&nbsp;&nbsp; 示例：输出文件大于100KB的文件名字和大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531563054.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153159287.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp; 3：选择Select-Object：简写select，提供了对对象的选择类似于sql的select，.net的new匿名对象。同时select支持-first和-last取最前面或者最后面的几个相当于sql 中top，与下例中Sort-Object结合将很有用。</p>
+
+<p>&nbsp; 示例：选择目录下文件的文件名和大小输出：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532005959.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153202584.png" title="SNAGHTML3b707d0" alt="SNAGHTML3b707d0" /></a></p>
+
+<p>&nbsp;&nbsp; 4：排序Sort-Object：简写sort，对于集合对象参照一个或者多个属性排序，可以指定-descending为倒序。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：获取最大的前5个文件：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532038731.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532053422.png" title="SNAGHTML3bc4128" alt="SNAGHTML3bc4128" /></a></p>
+
+<p>&nbsp;&nbsp; 5：管道树Tee-Object：简写为tee，可以把管道模型传入的对象记录在文件日志或者赋值给变量保存等。提供-inputObject ，-filePath ，-variable</p>
+
+<p>&nbsp; 示例：保存文件对象时$test变量：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532061570.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532075638.png" title="SNAGHTML3c03d8f" alt="SNAGHTML3c03d8f" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 6：分组Group-Object：简写group，提供依据属性分组类似sql group by。</p>
+
+<p>&nbsp;&nbsp; 示例：按照文件类型分组并按照组内文件个数排序
+ <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532082149.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532092772.png" title="SNAGHTML3c30688" alt="SNAGHTML3c30688" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp; 7：集合统计Measure-Object：简写：measure，提供了对集合的统计，简便的方法来获取最小值、最大值及平均值属性。</p>
+
+<p>&nbsp; 示例：统计文件大小的最小值，最大值，平均值，总大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532109524.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532117920.png" title="SNAGHTML3c60aad" alt="SNAGHTML3c60aad" /></a></p>
+
+<p>&nbsp;&nbsp; 8：比较Compare-Object：简写diff，提供了对两个对象或集合的比较，其中有单侧指向器，=&gt;表达此对象出现在右边，&lt;=表示差异对象存在于左边。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：新建一个文件夹2，比较连个目录的不同：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532123592.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532124215.png" title="SNAGHTML3cb035d" alt="SNAGHTML3cb035d" /></a></p>
+
+<p>今天就到这里，PowerShell很强大，继续学习。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543247.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/">架构设计目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-06T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 架构引用<a href="http://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84">维基百科</a>：软件体系结构是构建<a href="http://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BD%AF%E4%BB%B6">计算机软件</a>实践的基础。与建筑师设定建筑项目的设计原则和目标，作为绘图员画图的基础一样，一个<a href="http://zh.wikipedia.org/w/index.php?title=%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">软件架构师</a>或者<a href="http://zh.wikipedia.org/w/index.php?title=%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">系统架构师</a>陈述软件构架以作为满足不同客户需求的实际系统设计方案的基础。从和目的、主题、材料和结构的联系上来说，软件架构可以和建筑物的<a href="http://zh.wikipedia.org/w/index.php?title=%E6%9E%B6%E6%9E%84&amp;amp;action=edit&amp;amp;redlink=1" title="%E6%9E%B6%E6%9E%84&amp;action=edit&amp;redlink=1">架构</a>相比拟。一个软件架构师需要有广泛的软件理论知识和相应的经验来实施和管理软件产品的高级设计。软件架构师定义和设计软件的模块化，模块之间的交互，用户界面风格，对外接口方法，创新的设计特性，以及高层事物的对象操作、逻辑和流程。</p>
+
+<p>软件架构师与客户商谈概念上的事情，与经理商谈广泛的设计问题，与软件工程师商谈创新的结构特性，与程序员商谈实现技巧，外观和风格。</p>
+
+<p>软件架构是一个系统的草图。软件架构描述的对象是直接构成系统的抽象组件。各个组件之间的连接则明确和相对细致地描述组件之间的通讯。在实现阶段，这些抽象组件被细化为实际的组件，比如具体某个类或者对象。在<a href="http://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">面向对象</a>领域中，组件之间的连接通常用<a href="http://zh.wikipedia.org/wiki/%E6%8E%A5%E5%8F%A3_%28%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%29">接口</a>来实现。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 架构来源于建筑工程学，描述对软件密集型系统设计蓝图。在不同软件领域，有其不同特征，但有一部分共同基础设计原则和共性。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在这里将进行一些软件架构设计系列，此系列已经完成了架构层次设计，此系列仍在继续更新中&#8230;</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+<li>  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a></li>
+<li>   <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html">存储过程传言</a></li>
+<li> 表现层及其模式</li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/07/07/2580630.html"><font color="#6699cc">表现层模式-MVC</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/06/2537593.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">架构设计-数据访问层简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">服务层</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层</a>，以及一些面<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言</a>。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质，并能对数据进行读取和写入CRUD。这就是数据访问层。你可能是利用xml等文件格式磁盘存储，常用的关系数据库存储，或者NoSql(not only sql)的内存存储或文档存储等等存储介质。而这里我只关心关系数据库存储。</p>
+
+<p>&nbsp;&nbsp; 数据层需要提供的职责有：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：CRUD服务。作为唯一可以与存储介质交互的中间层出现，负责业务对象的增加，修改，删除，加载。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：查询服务。这不同于CRUD中的R（read），read倾向于的单个对象，元组。而这里的查询针对复杂查询，比如一个国内电商的客户为四川的订单。这里会涉及仓储层。所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。</p>
+
+<p>&nbsp;&nbsp; 3：事务管理。这里所说的是业务事务，在一个应用系统中每次请求都会产生多次的多数据对象的新增，修改，删除操作。如果我们每次都依次代开数据库连接，准备数据包，操作数据库，关闭数据连接。这些将会给我们带来很多不必要的性能开销。数据库管理员经常会要求&#8220;尽量少的与数据库交互&#8221;，这也必须成为我们的开发原则。更好的操作是我们在内存中建立一个和数据仓库，维护变化的对象，在业务操作完成一次性提交到数据存储介质，提供业务事务。业务事务有个很好听的名字工作单元（UOW），在微软给我们提供的DataSet，orm框架都回必须存在业务事务。</p>
+
+<p>&nbsp;&nbsp; 4：并发处理。UOW应避免业务数据连接的多次提交打开而出现，但在内存离线操作，这就可能导致数据一致性问题。在多用户的环境，对数据并发处理需要制定一个策略。一般我们会采用乐观并发处理：用户可以任意的离线修改，在修改更新时候检查对象是否被修改，如果被修改者本次更新失败。简单的说就是防止丢失修改。防止丢失修改，我们可以采用where 加上一系列原值，或者加上修改时间戳或者版本号标记。同时还有许多其他的并发解决模式，但乐观并发锁用到更普遍。</p>
+
+<p>&nbsp;&nbsp; 5：数据上下文：整和所有职责。在数据访问层概念职责都会有一个共同的暴露给外部的接口。我们需要一个高层次的组件，来同一提供对数据存储介质的访问操作。，同一访问数据库CRUD，事务，并发服务的高层次类，叫做数据上下文（Context）。EF中的ObjectContext，NHibernate的session，linq to sql 的DataContext等等。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 数据访问层的一些概念（这里不会是全部，仅一些个人觉得重要的概念）：</p>
+
+<p>&nbsp; 1： 数据映射器：将内存中修改的对象提交至存储介质，则需要要映射逻辑来完成，数据映射器就是就是一个实现将某种类型的业务对象持久化的类（数据映射器模式定义如《P of EAA》）。</p>
+
+<p>&nbsp; 2：仓储层（Repository）：在上面提到：所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。在面向对象的世界里我们用对象进行查询，返回结果为对象集。这里的查询可能是从数据库，或者来至缓存，这取决你的策略，你仓储层的实现。</p>
+
+<p>&nbsp; 3:工作单元（UOW）：Martin Fowler《P of EAA》 定义：工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。在上面第3点业务事务讲的差不多，这里不是累述。</p>
+
+<p>&nbsp;&nbsp; 4：标示映射（Identity Map）：其作用在于：便于跟踪业务对象，调用者在一个业务事务中使用的是同一个实例，而不是每次执行产生一个新的对象。表示映射为一个散列表存储（散列具有快速定位O(1)）。类似于缓存的实现方式，保证了在同一个业务事务数据上下文引用修改同一个业务对象。但绝不同于缓存。从持续时间来说，标示映射生命周期为业务事务内。实现上等同于数据上下文期。但比起缓存来说其周期太短，根本不能对性能有多大的改善。缓存更重要的命中率，而标示映射保证同一数据上下文采用修改同一个业务对象的引用。</p>
+
+<p>&nbsp;&nbsp; 5：乐观并发锁：在上面也曾提到，其保证离线操作数据的对数据一致性的冲突解决方法。首先乐观在于允许离线操作，容忍冲突，防止数据丢失修改，可利用原读取数据值得where条件或者时间戳，版本号解决。</p>
+
+<p>&nbsp; 6：延时加载：对象并不是一次性加载完成，而是按照需求多次加载数据，到用时加载。业务对象太多关联，数据量太多余庞大，而我们每次业务事务需要操作的对象都只会是部分，不需要太多的数据对象。同事业务对象中还存在循环引用，这样不适于对象整体的一次性加载。延时加载提供了优化，意图在&#8220;尽可能的少加载，并按需加载，只加载需要的数据部分&#8221;。</p>
+
+<p>7：持久化透明对象（PI或POCO）：当对象模型不存在任何外部依赖，特别是对于数据访问层的依赖，那么这个模型就是持久化透明的，POCO。一个POCO的对象不需要继承至某个特定的类，实现特定的接口，或提供专门的构造函数。一个非持久化透明的对象这以为者存在外部的依赖，而我们更喜欢领域对象只是一个简单额c#类，可以在持久化层等独立切换。这就导致实现的时候我们无法很直接的跟踪业务对象，这就是面向方面编程（AOP）或者代理模式的大显身手。可惜AOP在.net中不是那么直接，很多ORM框架如NHibernate之类的利用代理模式Emit动态注入IL实现跟踪，添加新的行为。所以NHibernate中要求领域对象的所有字段属性方法都必须是虚方法可重写的。:</p>
+
+<p>8：CQRS（Command Query Responsibility Segregation，命令查询职责分离）：CQRS是在DDD的实践中引入CQS理论而出现的一种体系结构模式，命令和查询被分离。具体可以参 Martin Fowler的CQRS文章： <a href="http://martinfowler.com/bliki/CQRS.html" title="http://martinfowler.com/bliki/CQRS.html">http://martinfowler.com/bliki/CQRS.html</a></p>
+
+<p>&nbsp; 暂时写到这里，一下想不全，天已不早了，后续慢慢补上吧。</p>
+
+<p>同些列文章还有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>2.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a>3.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>4.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>5.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a>6.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>7.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/">软件架构设计箴言理解</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-02T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天和师弟聊天聊到他们项目开发，有些同事总是提前考虑性能优化，需求变更又是一大堆的重写，让我想起了Donald Knuth 提到的：对软件的过早地优化是万恶的根源。这里就简单的说几条重要的软件名人哲学。</p>
+
+<p>1：软件中唯一不变的就是变化。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在软件开发过程中需求是不停的变化，随着客户对系统的认识，和现有开发功能和软件的认识，也许以开始他提出的需求就是背离的。记得网上有一句笑话，师说需求变化的：</p>
+
+<blockquote><p>&nbsp; 程序员XX遭遇车祸成植物人，医生说活下来的希望只有万分之一，唤醒更为渺茫。可他的Lead和亲人没有放弃，他们根据XX工作如命的作风，每天都在他身边念：&#8220;XX，需求又改了，该干活了，你快来呀！&#8221;，奇迹终于发生了，XX醒来了，第一句话：&#8220;需求又改了</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp; 在设计和架构中，凡事无绝对，作为架构师或者项目负责人你必须永远的清晰认识到没有完美的架构和设计，没有万能的软件。只存在当前环境，需求方案，团队人员素质，物理环境，安全等综合因素下的合适方案，由于总总原因你的解决方案可能不是某一个单一因素下的最优解。站在这个位置你需要做的是找到这个综合下的最优解，权衡。不要只从表面说某个人某个团队的解决方案怎么查怎么不好，或者这就是当时综合因素的最优解，站在同样的位置环境你不一定做得更好。在架构设计和人生，在我看来很相似，总是有一堆抉择，每一次的抉择都会带来得和失，权衡得失取舍。</p>
+
+<p>2:KISS:(Keep It Simple,Stupid):</p>
+
+<p>&nbsp;&nbsp;&nbsp; 保持简单，但不过于太简单。在《UNIX下的编程哲学》中提到很多保持设计简单，我们能清晰看到这条原则。现在视觉设计，都崇尚简约设计，简单而不庸俗，而不是一大堆的豪华奢侈打造。VB编程开始的可视化设计，可见即可得，google的首页，商业风格。在我们的软件设计中也需要简洁的设计，用户需要的是可见可量化的功能的正确性，而是你运用了多牛b的技术模式，但绝不是一味的太过于简单。你想把意见简单的事情做复杂化是很容易的事情，但是把一件复杂的事情简单化却不那么容易。简单的人生就是幸福。但是这里需要说明的是简单是优秀的，但简单是有底线边界的，超过底线的简单也有变得稚幼。比如事务性脚本模式比其他3中常见模式都简单，但往往复杂的需求它不是最优解，因为他太过于简单了（如果你还不了解是事务性脚本可以参见这里<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>）。</p>
+
+<p>3：面向抽象编程。</p>
+
+<p>&nbsp;&nbsp; 在设计模式，架构模式，OO中都是一条完全的主线，作为oo第一原则存在。我不起那个软件牛人曾说过：请牢记没有接口的话就不要开始实现。这句话也许过于偏激，但是如果你接口理解为不变或者不易变的话，理解或契约（公司和你的合同）更贴切些吧（可能是一个不变的类，如果你能肯定的说出你的这个实现在以后，在项目开发维护中是不会变得，我觉得这也是接口，接口在于不变和不易变），你也许会同意这句话。对于目前的需求你肯定能够没有抽象没够接口完全写出完美的代码，但是第一条中我们说明的软件中唯一不变的就是变化，在未来的需求中你能够很好的一样的优秀吗？如果不能，那么我认为面对当前需求就该为以后提供扩展延伸。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 我个人理解23中设计模式中大多数基本都是围绕着这个Program to an interface, not an implementation（依赖接口而不是实现）第一原则为目的。当然我们也不能不说还有第二原则：组合优先于继承。以后的什么DIP（依赖倒置，IOC的原则），LSP（里氏替换），OCP（开闭原则）等等都是他们的延伸和扩展。在追溯的话这一些列都是为了软件系统&#8220;高内聚，低耦合&#8221;（可以简叙述为：功能完备(高内聚)的对象之间是靠接口(低耦合)通讯交互的），内聚是描述的功能性完备程度，耦合是表述模块间的依赖程度。这里插一句话某同事给我说依赖接口不是还有依赖嘛，我希望的是没有耦合，我的回答是：计算机二八原则说明了这一切，既然事务出现在一起了，那绝不是偶然情况，所以他们之间必定存在依赖，在软件设计中我们所能做的就是引入中间对象使其变为间接依赖，而减少他们之间的依赖，而我们希望这个中间对象是个相对稳定的，设计中一切都是一个词：间接，分层，mvc，mvp，soa，中间件等等都是体现直接依赖变为间接依赖。说这个话题的原因是引出我们&#8220;高内聚，低耦合&#8221;行之有效的方法SOC（分离关注点），这不只是OO的任然对面向过程编程行之有效，他是在20年前 SP（结构化编程）中提出来的。</p>
+
+<p>&nbsp; 如果你想对设计原则有更多的了解，可以参见这里<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a> 和 <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>。</p>
+
+<p>4：首先考虑可维护，延伸性，事后优化</p>
+
+<p>&nbsp;&nbsp; 这里也是本文的起因，正如开篇所说，Donald Knuth 提到的：对软件的过早地优化是万恶的根源。在开发的时候我们不需要进行任何性能的优化，即使你认为这里可能存在性能的瓶颈，你需要考虑的更多的是设计的扩展和延伸性，以后的继续添加新功能和维护。对于用户需话要的需求，性能优化很多时候只是作为一个更好的体验存在。只有当真正出现性能瓶颈的时候，你才需要做性能的优化。一个可延伸可扩展，层次分明，代码清晰的模块，对于你的优化也是件容易的事情，在对项目后期对于项目的总体需求明白下你也有得到更多的优化方案。在重构模式中同样也提倡时候优化。过早的优化导致你的项目会越陷越深，到最后才知道用户其实根本不需要这么高的需求，或者是用户根本不常用的功能模块。优化也需要有标准，多少时间是用户能忍受的，目前是多少时间。往往用户对性能要求的只有那个少量常用的操作，而对于功能性需求的变更却是无止境的，维护成本却是高昂的。</p>
+
+<p>&nbsp; 最后说一句，经常有人说反射性能低下，对我们必须承认反射比其他方案性能是不好，但是我们有解决方案：缓存。在则说性能低下，是以什么什么标准？用户的接受程度？反射我们可以有其替代方案Emit，Expression tree。从反射，Expression tree，Emit的选择，其使用难度在提升，开发效率在增加，性能在改善。本人一般却倾向于Expression tree，两种剧中吧。</p>
+
+<p>5：继承是为了多态而不是重用</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; OOP中可以编写一个类，然后我可以不断的继承重用去扩展新需求。这是类的重用，是全部的重用？重用这个词看上去也许更加的微妙。多态是面向对象的核心特征之一，也不记不清那里听到的：重用只是继承的附带功能。在我们的继承体系中不宜庞大如果一个拥有4,5层的继承体系，对你的理解也增加难度，而且集成体系必须是个干净的继承体系，满足LSP（里氏替换原则）：在所有用到父类的地方都可以替换为子类，还能正常准确工作。这就要求你继承更多的是修改扩展父类的行为，尽量避免状态。继承只是不要为了重用的为目的，在恰当的时机更好的办法是实现一个完全的类来替换不能满足现有需求的类。这也是oo原则第二原则吧，组合优先于继承。组合比如设计模式中的策略模式，你得到的是一个算法组合功能个数是一个笛卡尔积。但也是绝对的组合，只是优先，不是取代，软件和现实世界都是充满了矛盾的，就如开篇第一条&#8220;软件中唯一不变的就是变化&#8221;就是最大的矛盾，来自辩证唯物主义，你要做的是权衡。组合表述的是整体的替换，如策略模式模式的算法整体替换。继承是部分的少量的扩展修改行为，比如设计模式中的模版方案，在父类的流程控制下，部分步骤的修改，数据，事务的流转控制权在父类。这条在最后说一句：设计模式不是万能的，只是前人的优秀经验，是依赖于场景存在的，了解设计模式我觉得更重要的是其使用场景，在遇见同类场景的时候知道可以有这种模式作为解决方案或许更好，仅作为供你选择的解决问题方案。</p>
+
+<p>6：用户的一切输入都是万恶的</p>
+
+<p>&nbsp;&nbsp;&nbsp; 用户的输入是属于我们系统之外的，是无法控制的，是不可罗列的。对于用户来说软件只是一个黑盒子，不需要，也没必要了解具体内在实现。对于汽车销售人员不需要了解发动机螺栓是怎么上的一样，他了解宣传的是能有什么优势，能给用户带来那些方面的满足，价格？性能？速度？豪华？&#8230;.对于门户网站来说你对应的用户不仅是可信任的用户，可能还有竞争对手黑客攻击行为。如果你的系统信任于用户的输入，早晚一天总会&#8220;纸包不住火的&#8221;，用户有意无意的一次输入就可能导致你系统的功能性的全盘崩溃，你不应该限制用户的操作，你是不能命令用户该输入什么不能输入什么，比如某天某人使用用户可能降工资了或者挨批了，心情不好，你也许会潜意思的对你的系统进行挑战。</p>
+
+<p>&nbsp; 说到这里随便说一句，以前项目组有人层提过由于自动化测试服务器运行时间太长了，把部分验证等逻辑移到单元测试中保证。对于我的理解来说自动化测试近似于集成测试吧，功能性测试，应该是黑盒子。在单元测试中我们总是假设输入是正确的，某个依赖也是正确的，验证输出的正确。而集成测试重点在于这一些都是层次的组合，贯通，不存在假设的正确性，只有来自测试人员的测试用例得到预期的输出。</p>
+
+<p>&nbsp;&nbsp; 今天就写到这里吧，还有很多但是一下想不起来，后续有机会的话对于重要的也会继续补上。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 现实是矛盾的，没有完美的设计，也没有绝对的简单。生活也是如此就如：简单就是幸福，快乐就是幸福。那么简单的标准是什么？怎样才是快乐？这在于你自己的抉择，权衡。想起了某次面试和小公司面试官谈话，面试官说ORM存在性能问题，而且一直在纠结的说反对DDD，反对模式。本人先说了如果存在了性能问题有什么解决方案，首先怎么做如果不能满足再怎么做，从索引缓存到分表服务集群，再总结性的一句话：架构如人生，总是要面临得到取舍。</p>
+
+<p>&nbsp;</p>
+
+<p>博客中架构设计随笔有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/29/jia-gou-she-ji-ye-wu-luo-ji-ceng-jian-shu/">架构设计-业务逻辑层简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 业务逻辑层是专门处理软件业务需求的一层，处于数据库之上，服务层之下，完成一些列对Domain Object的CRUD，作为一组微服务提供给服务层来组织在暴露给表现层，如库存检查，用法合法性检查，订单创建。</p>
+
+<p>&nbsp;&nbsp; 业务逻辑层包含领域对象模型，领域实体，业务规则，验证规则，业务流程。1：领域对象模型为系统结构描述，包含实体功能描述，实体之间的关系。领域模型处于天生的复杂性:2：领域实体：业务层是一些操作业务对象（BO）的处理。业务对象包含数据和行为，是一个完整的业务对象。其不同于上节<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>提到的数据迁移对象（dto），对于dto存在数据的，不存在行为，dto是bo（ddd中又称do）的子集，负责与特定界面需求的扁平化实体，dto仅仅是一个数据载体，需要跨越应用程序边界，而业务对象则不会存在复制迁移，往往一个业务对象存在一个或者多个数据迁移对象。3:业务最大的逻辑就在处理一些列现实世界的规则，这也是软件中最容易变化的部分，这里通常会出现我们众多的if-else或者switch-case的地方。也这因为如果说以个人觉得在我们的项目最应该关系和分离需求的层次。4：验证规则：业务规则很大程度上也是对对象的数据验证，验证业务对象的当前数据状态。我觉得在每个业务对象上都应该存在一个对外部对象暴露的验证接口，可以考虑微软企业库的VAB 基于Attribute声明式验证或者上节<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/27/2520593.html">流畅的验证组件：FluentValidation</a>中的FluentValidation验证组件基于IOC的解耦。</p>
+
+<p>&nbsp;&nbsp; 业务层模式：在常见的业务层模式中主要分为过程是模式和面向对象模式。过程模式有是事务性脚本和表模式，而面向对象模式为活动记录模式和领域驱动模式。理论上说事务性脚本模式是最简单的开发模式，其前期投入下，但随着项目周期和复杂度上升明显，而领域模型（DDD）前期投入较大，但是理论上说是随着项目周期和复杂度呈线性增加，当然这些都是理论值。</p>
+
+<p>&nbsp; 1：事务脚本模式是业务逻辑层最简单的模式，面向过程模式。该模式以用于的操作为起点，设计业务组件，即业务逻辑直接映射到用户界面的操作。这通常是从表现层逻辑出发，表现层我需要什么业务层提供什么，直到数据层。针对没一个用户的新功能都需要新增一个从UI到关系数据库的分支流程。其使用与逻辑不是很复杂或者变化不大稳定的应用系统开发。其不需要付出与业务无关的额外代价，并且在现代VS之类的IDE帮助下能够很快的进行快速应用开发（RAD）。也由于这种优势，也是其最大的劣势，程序中充满了IF-else，switch-case之类的逻辑或者大量的static的方法，每个功能都是一个程序分支，这对代码无法重用。编码不易于维护，对复杂项目和变化需求不适应。</p>
+
+<p>&nbsp; 2：表模式：为每个数据库表定义一个表模块类，包含操作该数据的所有行为方法。作为一个容器，将数据和行为组织在一起。其对数据的粒度针对于数据表，而非数据行，因此需要以集合或者表传递数据信息。表模式基于对象但是完全又数据库驱动开发，在业务模型和数据库关系模型显著差异的情况下，应对需求，并不是那么适合。但是在.net中提供的一些列如强类型DataSet等IDE的辅助下自动生成大量的代码，也是一个不错的选择，因为部分数据库的操作趋于自动化。表模式没太过于关注业务，而是关注数据库表结构。而业务逻辑和领域问题才是软件核心。</p>
+
+<p>&nbsp; 3：活动记录模式：一个以数据库表一行Row为对象，并且对象中包含行为和数据的模式方法。其数据对象很大程度的接近数据库表结构。在活动记录模式对象中通常也包含操作对象的CRUD行为，数据验证等业务规则。对于业务不是很复杂，对象关系与关系模型映射不具有很大差异情况，活动记录模式会运用的很好。活动模式比较简单化设计，在上现行的很多如Linq to sql，ActiveRecord框架的辅助下，将针对问题领域不是太过复杂的项目十分有用。但是其模式和数据库表结构的相互依赖，导致若你修改数据库结构，你不得不同时修改对象以及相关逻辑。如果不能保证数据库关系模型和对象模式的很大程度的相似这就进入的困境。</p>
+
+<p>4：领域模型：在前面的几种模式都是项目开始站在了以数据为中心的角度，而不是业务本身的问题领域。而领域模型关注系统问题领域，首先开始为领域对象设计。与活动记录模式来说，领域模型完全站在了问题领域业务概念模型一边，与数据库，持久化完成独立，其推崇持久化透明（POCO）。其可以充分利用面向对象设计，不受持久化机制的任何约束。其实完全又业务驱动出来的。但是其最大的优势如上各个模式一样也是其最大的劣势对象模型和关系模型具有天然的阻抗，我们的领域实体早晚需要映射到持久化机制。还好的是当前有NHibearnate,EF,Fluent NHibearnate这类ORM框架辅助。在DDD中包含UOW，仓储，值类型和聚合根，领域事件，领域跟踪一类的概念，这将在以后具体说明。</p>
+
+<p>&nbsp; 模式的选择在与架构师的决定，这也是架构师具有挑战意义的职责，需要根据具体的项目需求，团队，个人等外界因素最终决定，不存在万能的模式，也不存在完美的设计。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/5/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

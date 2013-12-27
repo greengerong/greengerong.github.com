@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Wpf消息循环之消息传递 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Wpf消息循环之消息传递">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Wpf消息循环之消息传递</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 几天遇见一个问题需要检查某个wpf程序是否已经运行，如果没有运行则启动传递参数，如果已运行则需要直接传递消息。在没有运行 情况下传递参数很简单，我们只需要Process cmd窗口启动并传递参数，在程序中处理。但是如果程序已经启动有点麻烦，凭着我曾winform的经验第一时间想到的是win32 api&nbsp; SendMessage,我们的C#程序只需要DllImport就可以调用了。经过一番查找和对wpf window和DispatcherObject的Reflector，花了我大半天终于找到了System.Windows.Interop.HwndSource中有AddHock方法可以添加对win32消息机制的监听。这下就很好办了我们只需要注册MainWindow的这个时间，来监听win32消息处理我们的0x004A消息。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 控制台代码，主要应用的FindWindow 这个win32方法查找我们的窗体，SendMessage发送我们的消息，和winform没有什么差别，对于win32的使用你可以参考<a href="http://www.cnblogs.com/speeding/">毒龙的程序人生</a> 的<a href="http://www.cnblogs.com/speeding/archive/2004/10/24/56033.html">关于C#中实现两个应用程序消息通讯的问题</a>。难得查win32 Api直接copy，借来用用。</p>
+
+<p>程序：</p>
+
+<pre><code>using System; 
+using System.Collections.Generic; 
+using System.Linq; 
+using System.Text; 
+using System.Runtime.InteropServices; 
+
+namespace ConsoleApplication1 
+{ 
+    class Program 
+    { 
+        static void Main(string[] args) 
+        { 
+            string ch = ""; 
+            while (ch.ToLower() != "q") 
+            { 
+
+                if (!SendMessage("Window1", @"Hello,I am from Console Program:" + ch)) 
+                { 
+                   Console.WriteLine("no window");
+
+                }; 
+                ch = Console.ReadLine(); 
+            } 
+        } 
+
+        public static bool SendMessage(string windowName, string strMsg) 
+        { 
+            if (strMsg == null) return true; 
+            IntPtr hwnd = (IntPtr)FindWindow(null, windowName   ); 
+            if (hwnd != IntPtr.Zero) 
+            { 
+                CopyDataStruct cds; 
+                cds.dwData = IntPtr.Zero; 
+                cds.lpData = strMsg; 
+                cds.cbData = System.Text.Encoding.Default.GetBytes(strMsg).Length + 1; 
+                int fromWindowHandler = 0; 
+                SendMessage(hwnd, 0x004A, fromWindowHandler, ref  cds); 
+                return true; 
+            } 
+            return false; 
+        } 
+
+        [DllImport("User32.dll", EntryPoint = "FindWindow")] 
+        private static extern int FindWindow(string lpClassName, string lpWindowName); 
+
+        [DllImport("User32.dll", EntryPoint = "SendMessage")] 
+
+        private static extern int SendMessage 
+
+        ( 
+
+        IntPtr hWnd, 
+
+        int Msg, 
+
+        int wParam, 
+
+        ref  CopyDataStruct lParam 
+
+        ); 
+
+    } 
+
+    [StructLayout(LayoutKind.Sequential)] 
+
+    public struct CopyDataStruct 
+    { 
+
+        public IntPtr dwData; 
+
+        public int cbData; 
+
+        [MarshalAs(UnmanagedType.LPStr)] 
+
+        public string lpData; 
+
+    } 
+
+}
+</code></pre>
+
+<p>&nbsp;wpf端程序：主要需要在MainWindow中loaded事件订阅消息监听：这里需要System.Windows.Interop.HwndSource的AddHock方法注册
+程序：</p>
+
+<pre><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+         { 
+
+             if (msg == 0x004A) 
+             { 
+
+                 CopyDataStruct cds = (CopyDataStruct)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(CopyDataStruct)); 
+
+                 MessageBox.Show(cds.lpData); 
+                 this.Visibility = Visibility.Visible; 
+             } 
+
+             return hwnd; 
+
+         } 
+
+         private void Window_Loaded(object sender, RoutedEventArgs e) 
+         {           
+
+             (PresentationSource.FromVisual(this) as System.Windows.Interop.HwndSource).AddHook(new System.Windows.Interop.HwndSourceHook(WndProc)); 
+         }
+</code></pre>
+
+<p>截个图：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248312846.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248334156.jpg" title="GDVCJ_1PZO7SU((~1}41XSG" alt="GDVCJ_1PZO7SU((~1}41XSG" /></a></p>
+
+<p>很简单的东西结果被MS封装的不知哪里去，让我查了半天（其实应该是我的无知吧，不管怎么解决了就是心情舒畅了）；</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1971300.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/" data-via="" data-counturl="http://greengerong.github.io/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/02/html5-Canvas-hui-tu/" title="Previous Post: html5-Canvas绘图">&laquo; html5-Canvas绘图</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/04/html5-web-ben-di-cun-chu/" title="Next Post: html5-web本地存储">html5-web本地存储 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

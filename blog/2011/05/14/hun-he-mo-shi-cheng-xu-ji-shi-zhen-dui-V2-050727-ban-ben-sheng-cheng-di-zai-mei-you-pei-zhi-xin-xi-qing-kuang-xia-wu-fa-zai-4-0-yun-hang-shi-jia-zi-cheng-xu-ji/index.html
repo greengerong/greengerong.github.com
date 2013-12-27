@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。</p>
+
+<p>&nbsp;</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/MixedRUntime1.jpg" alt="" /></p>
+
+<p>&nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入：</p>
+
+<p><font color="#ff0000">&nbsp;&lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
+&nbsp; &lt;/startup&gt; </font></p>
+
+<p>&nbsp;参考原文：</p>
+
+<p>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; error using .NET 4 Development Web Server</p>
+
+<p>If your application has a dependency on an assembly built in .NET 2 you will see the error below if you try to run your application when it has been built in.NET 4.</p>
+
+<p><em><strong>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; of the runtime and cannot be loaded in the 4.0 runtime without additional configuration information.</strong></em></p>
+
+<p>This can be important in VS2010 testing, as test projects must be built as .NET 4, there is no option to build with an older runtime. I suffered this problem when trying to do some development where I hosted a <a href="http://blogs.blackmarble.co.uk/blogs/rfennell/archive/2010/03/25/a-fix-to-run-typemock-isolator-inside-the-page-load-for-an-aspx-page-on-vs2010-net4.aspx">webpart that make calls into SharePoint (that was faked out with Typemock Isolator) inside a ASP.NET 4.0 test harness</a></p>
+
+<p>The answer to this problem is well documented, you need to add the <strong>useLegacyV2RuntimeActivationPolicy</strong> attribute to a .CONFIG file, but which one? It is not the <strong>web.config</strong> file you might suspect, but the <strong>C:\Program Files (x86)\Common Files\microsoft shared\DevServer\10.0\WebDev.WebServer40.exe.config</strong> file. The revised config file should read as follows (new bits in <font color="#ff0000">red</font>)</p>
+
+<blockquote><p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;utf-8&rdquo; ?&gt;
+&lt;configuration&gt;
+&nbsp;<font color="#ff0000"> &lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
+&nbsp; &lt;/startup&gt; </font></p>
+
+<p>&nbsp; &lt;runtime&gt;
+&nbsp;&nbsp;&nbsp; &lt;generatePublisherEvidence enabled=&ldquo;false&rdquo; /&gt;
+&nbsp; &lt;/runtime&gt;
+&lt;/configuration&gt;</p></blockquote>
+
+<p>Note: Don&#8217;t add the following _&lt;supportedRuntime version=&ldquo;v2.0.50727&rdquo; /&gt;&nbsp; this cause the web server to crash on start-up. _</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/05/14/2046449.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/" data-via="" data-counturl="http://greengerong.github.io/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/" title="Previous Post: PD设计中表名过长，自动生成的主外键名截取的问题">&laquo; PD设计中表名过长，自动生成的主外键名截取的问题</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/" title="Next Post: Silverlight获取WebHost配置信息--WebClient和XmlSerializer模拟">Silverlight获取WebHost配置信息--WebClient和XmlSerializer模拟 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

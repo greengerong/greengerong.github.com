@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>WCF利用企业库Unity框架的IOC层次解耦 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="WCF利用企业库Unity框架的IOC层次解耦">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">WCF利用企业库Unity框架的IOC层次解耦</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-07T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 由于工作几个月来框架开发已经好久没写博客了，今天想抽点时间出来冒泡。在领域驱动开发中SOA已经成为我们开发的主流技术，在面对当前众多的UI框架选择（asp.net mvc,silverlight,wpf,winform,wp7等一些列甚至跨语言），我们能够重用和抽象的业务逻辑是不会变化的，为了屏蔽这些UI的复杂性和差异性，我们可能会采用诸如wcf soap的服务发布。再说在领域驱动开发中我们肯定会把各个逻辑分层次隔离解除耦合，这就出现了N层架构，在于我们的每一层次之间的耦合度当前流程的解决方案IOC框架，以及业务解耦AOP。这里要解决的是SOA框架WCF和IOC框架的结合。</p>
+
+<p>&nbsp;&nbsp;&nbsp; WCF框架是一个极易扩展的框架，提供了非常多的扩展点（InstanceProvider，MessageInspector，CallContextInitializer，MessageFilter，MessageFormatter，ParameterInspector等等）。在这里IOC是作为一个容器组装创建的框架，我们需要的是对服务对象的创建，所以我们选择的当然是InstanceProvider扩展点。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 多说一句废话，正如前篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a>和 <a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a>中所说，我是一个固执的人，个人希望注入支持自定义配置文件，不喜欢把配置信息全部写在一个web.config/app.config中，也不喜欢el的写在同一个外部配置文件中，倾向于每个模块在一个不同的配置文件，并在模块中在区分container容器，所以特别写了每个单独配置文件的延时加载，缓存。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面就是对InstanceProvider的扩展：</p>
+
+<pre><code>public class ELUnityInstanceProvider : IInstanceProvider 
+   { 
+       private Type contractType; 
+       private string container; 
+       private string configFile; 
+       private string name; 
+       private static object lockObj = new object(); 
+       private static Dictionary&lt;string, UnityConfigurationSection&gt; sectionDict = new Dictionary&lt;string, UnityConfigurationSection&gt;(); 
+
+       public ELUnityInstanceProvider(Type contractType, string container, string configFile, string name) 
+       { 
+           this.name = name; 
+           this.configFile = configFile; 
+           this.contractType = contractType; 
+           this.container = container; 
+       } 
+
+       #region IInstanceProvider 成员 
+
+       public object GetInstance(System.ServiceModel.InstanceContext instanceContext, System.ServiceModel.Channels.Message message) 
+       { 
+           Microsoft.Practices.Unity.Configuration.UnityConfigurationSection unitySection = GetUnityConfigurationSection(); 
+
+           if (unitySection != null) 
+           { 
+               var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(this.container) ? unitySection.Containers.Default.Name : this.container); 
+               var obj = string.IsNullOrEmpty(this.name) ? container.Resolve(this.contractType) : container.Resolve(this.contractType, this.name); 
+
+               var piabAtttr = obj.GetType().GetCustomAttributes(typeof(ELPolicyinjectionAttribute), false) as ELPolicyinjectionAttribute[]; 
+               if (piabAtttr.Length &gt; 0) 
+               { 
+                   obj = Microsoft.Practices.EnterpriseLibrary.PolicyInjection.PolicyInjection.Wrap(this.contractType, obj); 
+               } 
+               return obj; 
+           } 
+           return null; 
+       } 
+       private Microsoft.Practices.Unity.Configuration.UnityConfigurationSection GetUnityConfigurationSection() 
+       { 
+           if (!string.IsNullOrEmpty(this.configFile)) 
+           { 
+               if (!sectionDict.ContainsKey(this.configFile)) 
+               { 
+                   lock (lockObj) 
+                   { 
+                       if (!sectionDict.ContainsKey(this.configFile)) 
+                       { 
+                           Microsoft.Practices.Unity.Configuration.UnityConfigurationSection unitySection = null; 
+                           var fileMap = new System.Configuration.ExeConfigurationFileMap { ExeConfigFilename = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, this.configFile) }; 
+                           System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(fileMap, System.Configuration.ConfigurationUserLevel.None); 
+                           unitySection = configuration == null ? null : configuration.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+                           if (unitySection == null) 
+                               return null; 
+                           sectionDict.Add(this.configFile, unitySection); 
+                       } 
+                   } 
+               } 
+               return sectionDict[this.configFile]; 
+           } 
+
+           return System.Configuration.ConfigurationManager.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+       } 
+
+       public object GetInstance(System.ServiceModel.InstanceContext instanceContext) 
+       { 
+           return this.GetInstance(instanceContext, null); 
+       } 
+
+       public void ReleaseInstance(System.ServiceModel.InstanceContext instanceContext, object instance) 
+       { 
+           IDisposable disposable = instance as IDisposable; 
+           if (disposable != null) 
+           { 
+               disposable.Dispose(); 
+           } 
+           instance = null; 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 下面我们需要已Attribute方式贴在Contract上：</p>
+
+<pre><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
+   { 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       #region IContractBehavior 成员 
+
+       public void AddBindingParameters(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters) 
+       { 
+
+       } 
+
+       public void ApplyClientBehavior(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime) 
+       { 
+
+       } 
+
+       public void ApplyDispatchBehavior(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.DispatchRuntime dispatchRuntime) 
+       { 
+           dispatchRuntime.InstanceProvider = new ELUnityInstanceProvider(contractDescription.ContractType, this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public void Validate(ContractDescription contractDescription, ServiceEndpoint endpoint) 
+       { 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p> 对于wcf同时我们也该支持配置文件扩展：</p>
+
+<pre><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
+   { 
+       [ConfigurationProperty("Container", IsRequired = false, DefaultValue = "")] 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       [ConfigurationProperty("ConfigFile", IsRequired = false, DefaultValue = "")] 
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       [ConfigurationProperty("Name", IsRequired = false, DefaultValue = "")] 
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       protected override object CreateBehavior() 
+       { 
+           return new ELUnityBehavior(this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public override Type BehaviorType 
+       { 
+           get { return typeof(ELUnityBehavior); } 
+       } 
+   }
+
+public class ELUnityBehavior : IEndpointBehavior 
+   { 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       public ELUnityBehavior(string container, string configFile, string name) 
+       { 
+           this.Name = name; 
+           this.ConfigFile = configFile; 
+           this.Container = container; 
+       } 
+       #region IEndpointBehavior 成员 
+
+       public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters) 
+       { 
+
+       } 
+
+       public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime) 
+       { 
+
+       } 
+
+       public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher) 
+       { 
+           endpointDispatcher.DispatchRuntime.InstanceProvider = new ELUnityInstanceProvider(endpoint.Contract.ContractType, this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public void Validate(ServiceEndpoint endpoint) 
+       { 
+
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>目前我们已经简单实现了：看看测试：</p>
+
+<pre><code>   Contract：
+
+   [ServiceContract()] 
+   [Green.WCFExtensions.ELUnityBehavior(Container = "test", ConfigFile = "App1.config")]   
+  public interface IHelloService 
+  { 
+      [OperationContract] 
+      string Say(string name); 
+  }
+
+Service：
+
+public class HelloService1 : IHelloService 
+   { 
+       [Microsoft.Practices.Unity.Dependency("proxy")] 
+       public IHelloService Service 
+       { 
+           get; 
+           set; 
+       } 
+
+       #region IHelloService 成员 
+          public string Say(string name) 
+       { 
+                     return Service.Say(name); 
+
+       } 
+
+       #endregion 
+   } 
+
+   public class HelloServiceProxy : IHelloService 
+   { 
+       #region IHelloService 成员 
+       public string Say(string name) 
+       { 
+           return string.Format("Hello:{0}", name); 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>配置app1.config:</p>
+
+<pre><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
+&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloService1,WcfService" &gt; &lt;/register&gt;
+</code></pre>
+
+<p>IOC,AOP博客参考：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">AOP之PostSharp初见-OnExceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html">AOP之PostSharp2-OnMethodBoundaryAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html">AOP之PostSharp3-MethodInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html">AOP之PostSharp5-LocationInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html">AOP之PostSharp6-EventInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/admin/AOP%E4%B9%8BPostSharp7-%E8%A7%A3%E5%86%B3IOC%20%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5new%E9%97%AE%E9%A2%98%EF%BC%8C%E7%AE%80%E5%8C%96IOC%E5%BC%80%E5%8F%91%E5%92%8CIOC%E5%AF%B9%E8%B1%A1LazyLoad">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad </a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/category/312638.html">http://www.cnblogs.com/whitewolf/category/312638.html</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/07/2342071.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-07T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/" data-via="" data-counturl="http://greengerong.github.io/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/30/ji-lu-you-Equal-ji-chu-zhi-shi-yin-qi-di-nei-cun-xie-lou/" title="Previous Post: 记录由Equal基础知识引起的内存泄露">&laquo; 记录由Equal基础知识引起的内存泄露</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/" title="Next Post: PropertyGrid无意的发现DisplayNameAttribute及应用">PropertyGrid无意的发现DisplayNameAttribute及应用 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

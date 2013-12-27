@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>(翻译)31天Windows Phone学习-1-项目模板 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="(翻译)31天Windows Phone学习-1-项目模板">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">(翻译)31天Windows Phone学习-1-项目模板</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>的 <a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">31 Days of Windows Phone</a> 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习，所以准备拿来对Windows Phone 7的简单入门学习。并翻译出来供像我一样的菜鸟学习，我的E文并不好，所以翻译难免会有一些不对的忘大家原谅和多多指教。说道E文又想起大学时，就是因为这个E文让我少的了一大笔奖学金，哎。翻译这个系列，也顺便提高一下我的E文吧，呵呵。</p>
+
+<p>&nbsp;&nbsp; 步入正题：今天是我们Windows Phone学习的第一天，是一些关于项目模板的。</p>
+
+<p>&nbsp; 首先： 在学习Windows Phone7之前我们假设你已经对Microsoft 的Silverlight有了一定的了解，如果你还不了解，你也可以参考作者的&nbsp; 20天Silverlight这个系列&nbsp; ，讲解的都是一些Silverlight的基础级知识。</p>
+
+<p>&nbsp; 再者我们假设你已经安装了Microsoft 所有Windows Phone Tools，如果你没有安装，你可以从这里下载<a href="http://developer.windowsphone.com/">http://developer.windowsphone.com/</a>，从这里我们会获得Visual Studio 2010 for Windows Phone和 Expression Blend 4 for&nbsp; Windows Phone。如果在你的机子已经安装了官方的正式版，你仅需要更新添加一些新的模板。</p>
+
+<p>&nbsp;&nbsp; 在今天我们会预览一下Visual Studio 2010为我们的Windows Phone应用程序生成的默认模板。</p>
+
+<p><img src="http://www.jeffblankenburg.com/image.axd?picture=NewProject.png" title="NewProject" alt="NewProject" /></p>
+
+<h4><font style="font-weight: bold">Solution Explorer：</font></h4>
+
+<p>下面是vs2010默认为我们生成的解决方案，我不准备详细介绍各个文件，你可以从<a target="_blank"><a href="http://bit.ly/8XcWaO"><font color="#3d81ee">安装上所有Tools</font></a>&nbsp;</a>并自己尝试，比较简单。</p>
+
+<h4><img src="http://www.jeffblankenburg.com/image.axd?picture=SolutionExplorer.png" title="SolutionExplorer" alt="SolutionExplorer" /></h4>
+
+<h4><font style="font-weight: bold">ApplicationIcon.png:</font></h4>
+
+<p>&nbsp; 是Phone application List现实的图标，你也可以替换成你想要的图标。</p>
+
+<h4><font style="font-weight: bold">App.xaml：</font></h4>
+
+<h4>&nbsp; 有点像ASP.NET web.config 文件，保存了我们应用程序的常用数据和设置，我更喜欢防止我的style在这里，但这不是必须的。</h4>
+
+<h4><font style="font-weight: bold">App.xaml.cs：</font></h4>
+
+<p>是前一文件（App.xaml）的Code-Behind文件，和前一个文件一起定义我们应用程序的入口点，初始化应用程序级别的全局静态资源(StaticResource)和启动程序的页面。</p>
+
+<h4><font style="font-weight: bold">AssemblyInfo.cs：</font></h4>
+
+<p>定义了我们应用程序的程序集信息，入 版本，名称等。个人觉得和我们的WinForm、Asp.net程序应该差不多。</p>
+
+<h4><font style="font-weight: bold">Background.png：</font></h4>
+
+<p>是我们应用程启动时的屏幕背景，我们也可以替换为你需要的图标。</p>
+
+<h4><font style="font-weight: bold">MainPage.xaml：</font></h4>
+
+<p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
+
+<pre>&lt;Tasks&gt;</pre>
+
+
+<pre>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
+
+
+<pre> &lt;/Tasks&gt;</pre>
+
+
+<h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
+
+<p>前一个文件(MainPage.xaml)的Code-Behind文件，在这里需要我们编辑页面启动页面的Code.</p>
+
+<h4><font style="font-weight: bold">SplashScreenImage.jpg:</font></h4>
+
+<p>应用程序加载图标（即：我的应用程序启动，第一个页面还没有显示时）。我们也可以替换这个图标。在这里只是为了让我们的用户了解程序正在加载。</p>
+
+<h4><font style="font-weight: bold">WMAppManifest.xml：</font></h4>
+
+<p>用于定义我们应用程序打包的文件(manifest)。 Silverlight程序最终会打成xap包（zip格式），里面包含了程序需要用到的所有资源（例如图片，声音文件等等），和依赖 的第三方DLL等等。AppManifest.xml文件用于定义打包的结构。</p>
+
+<p>&nbsp;</p>
+
+<p>第一天学习很简单，就到这里的作者给我们提供了Code下载，其实我觉得没有必要。所以偷个懒了。</p>
+
+<p>本文E文原文：<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>关于Windows Phone的一些学习资料：</p>
+
+<p>1：首先是翻译的原文：&nbsp;<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>博客<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>2: 园友<a href="#">306Room</a>的一起学Windows Phone系列<a href="http://www.cnblogs.com/randylee/category/258713.html" title="http://www.cnblogs.com/randylee/category/258713.html">http://www.cnblogs.com/randylee/category/258713.html</a></p>
+
+<p>3：<a href="http://windowsteamblog.com/windows_phone/" title="http://windowsteamblog.com/windows_phone/">http://windowsteamblog.com/windows_phone/</a></p>
+
+<p>4：<a href="http://create.msdn.com/en-US/" title="http://create.msdn.com/en-US/">http://create.msdn.com/en-US/</a></p>
+
+<p>还有其他的我在后续看见了，也会一一不上。也希望大家给我提供一些学习资料，共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/10/1873273.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/" data-via="" data-counturl="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/27/Dbml-wen-jian-ti-qu-jian-biao-TSql-CodeSmith/" title="Previous Post: Dbml文件提取建表TSql-CodeSmith">&laquo; Dbml文件提取建表TSql-CodeSmith</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/11/11/MEF-xue-xi-bi-ji/" title="Next Post: MEF学习笔记">MEF学习笔记 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

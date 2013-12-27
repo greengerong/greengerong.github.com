@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>架构设计-数据访问层简述 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="架构设计-数据访问层简述">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">架构设计-数据访问层简述</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">服务层</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层</a>，以及一些面<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言</a>。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质，并能对数据进行读取和写入CRUD。这就是数据访问层。你可能是利用xml等文件格式磁盘存储，常用的关系数据库存储，或者NoSql(not only sql)的内存存储或文档存储等等存储介质。而这里我只关心关系数据库存储。</p>
+
+<p>&nbsp;&nbsp; 数据层需要提供的职责有：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：CRUD服务。作为唯一可以与存储介质交互的中间层出现，负责业务对象的增加，修改，删除，加载。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：查询服务。这不同于CRUD中的R（read），read倾向于的单个对象，元组。而这里的查询针对复杂查询，比如一个国内电商的客户为四川的订单。这里会涉及仓储层。所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。</p>
+
+<p>&nbsp;&nbsp; 3：事务管理。这里所说的是业务事务，在一个应用系统中每次请求都会产生多次的多数据对象的新增，修改，删除操作。如果我们每次都依次代开数据库连接，准备数据包，操作数据库，关闭数据连接。这些将会给我们带来很多不必要的性能开销。数据库管理员经常会要求&#8220;尽量少的与数据库交互&#8221;，这也必须成为我们的开发原则。更好的操作是我们在内存中建立一个和数据仓库，维护变化的对象，在业务操作完成一次性提交到数据存储介质，提供业务事务。业务事务有个很好听的名字工作单元（UOW），在微软给我们提供的DataSet，orm框架都回必须存在业务事务。</p>
+
+<p>&nbsp;&nbsp; 4：并发处理。UOW应避免业务数据连接的多次提交打开而出现，但在内存离线操作，这就可能导致数据一致性问题。在多用户的环境，对数据并发处理需要制定一个策略。一般我们会采用乐观并发处理：用户可以任意的离线修改，在修改更新时候检查对象是否被修改，如果被修改者本次更新失败。简单的说就是防止丢失修改。防止丢失修改，我们可以采用where 加上一系列原值，或者加上修改时间戳或者版本号标记。同时还有许多其他的并发解决模式，但乐观并发锁用到更普遍。</p>
+
+<p>&nbsp;&nbsp; 5：数据上下文：整和所有职责。在数据访问层概念职责都会有一个共同的暴露给外部的接口。我们需要一个高层次的组件，来同一提供对数据存储介质的访问操作。，同一访问数据库CRUD，事务，并发服务的高层次类，叫做数据上下文（Context）。EF中的ObjectContext，NHibernate的session，linq to sql 的DataContext等等。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 数据访问层的一些概念（这里不会是全部，仅一些个人觉得重要的概念）：</p>
+
+<p>&nbsp; 1： 数据映射器：将内存中修改的对象提交至存储介质，则需要要映射逻辑来完成，数据映射器就是就是一个实现将某种类型的业务对象持久化的类（数据映射器模式定义如《P of EAA》）。</p>
+
+<p>&nbsp; 2：仓储层（Repository）：在上面提到：所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。在面向对象的世界里我们用对象进行查询，返回结果为对象集。这里的查询可能是从数据库，或者来至缓存，这取决你的策略，你仓储层的实现。</p>
+
+<p>&nbsp; 3:工作单元（UOW）：Martin Fowler《P of EAA》 定义：工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。在上面第3点业务事务讲的差不多，这里不是累述。</p>
+
+<p>&nbsp;&nbsp; 4：标示映射（Identity Map）：其作用在于：便于跟踪业务对象，调用者在一个业务事务中使用的是同一个实例，而不是每次执行产生一个新的对象。表示映射为一个散列表存储（散列具有快速定位O(1)）。类似于缓存的实现方式，保证了在同一个业务事务数据上下文引用修改同一个业务对象。但绝不同于缓存。从持续时间来说，标示映射生命周期为业务事务内。实现上等同于数据上下文期。但比起缓存来说其周期太短，根本不能对性能有多大的改善。缓存更重要的命中率，而标示映射保证同一数据上下文采用修改同一个业务对象的引用。</p>
+
+<p>&nbsp;&nbsp; 5：乐观并发锁：在上面也曾提到，其保证离线操作数据的对数据一致性的冲突解决方法。首先乐观在于允许离线操作，容忍冲突，防止数据丢失修改，可利用原读取数据值得where条件或者时间戳，版本号解决。</p>
+
+<p>&nbsp; 6：延时加载：对象并不是一次性加载完成，而是按照需求多次加载数据，到用时加载。业务对象太多关联，数据量太多余庞大，而我们每次业务事务需要操作的对象都只会是部分，不需要太多的数据对象。同事业务对象中还存在循环引用，这样不适于对象整体的一次性加载。延时加载提供了优化，意图在&#8220;尽可能的少加载，并按需加载，只加载需要的数据部分&#8221;。</p>
+
+<p>7：持久化透明对象（PI或POCO）：当对象模型不存在任何外部依赖，特别是对于数据访问层的依赖，那么这个模型就是持久化透明的，POCO。一个POCO的对象不需要继承至某个特定的类，实现特定的接口，或提供专门的构造函数。一个非持久化透明的对象这以为者存在外部的依赖，而我们更喜欢领域对象只是一个简单额c#类，可以在持久化层等独立切换。这就导致实现的时候我们无法很直接的跟踪业务对象，这就是面向方面编程（AOP）或者代理模式的大显身手。可惜AOP在.net中不是那么直接，很多ORM框架如NHibernate之类的利用代理模式Emit动态注入IL实现跟踪，添加新的行为。所以NHibernate中要求领域对象的所有字段属性方法都必须是虚方法可重写的。:</p>
+
+<p>8：CQRS（Command Query Responsibility Segregation，命令查询职责分离）：CQRS是在DDD的实践中引入CQS理论而出现的一种体系结构模式，命令和查询被分离。具体可以参 Martin Fowler的CQRS文章： <a href="http://martinfowler.com/bliki/CQRS.html" title="http://martinfowler.com/bliki/CQRS.html">http://martinfowler.com/bliki/CQRS.html</a></p>
+
+<p>&nbsp; 暂时写到这里，一下想不全，天已不早了，后续慢慢补上吧。</p>
+
+<p>同些列文章还有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>2.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a>3.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>4.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>5.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a>6.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>7.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/" data-via="" data-counturl="http://greengerong.github.io/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/" title="Previous Post: 软件架构设计箴言理解">&laquo; 软件架构设计箴言理解</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/" title="Next Post: 架构设计目录">架构设计目录 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

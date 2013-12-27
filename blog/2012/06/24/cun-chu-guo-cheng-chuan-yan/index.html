@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>存储过程传言 - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="存储过程传言">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/06/24/cun-chu-guo-cheng-chuan-yan">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">存储过程传言</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-24T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这篇随笔由于出差拖了很久，一时也没整理好该写些什么。在google搜了下&#8220;存储过程 优劣&#8221;关键字，资料并不多，出现了一篇关于来至51cto的关于存储过程的优缺点的文章，具体这里也不指出了。看见文章中对存储过程的几个辩解，个人不敢苟同，个人已经很仔细的看了文章的时间是2011年，如果在更前写年成的话，个人觉得完全能够理解。所以有了这篇，存储过程的一些传言。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：存储过程只在创造时进行编译，以后每次执行存储过程都不需再重新编译，而一般SQL 语句每执行一次就编译一次,所以使用存储过程可提高数据库执行速度。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在sql server 2000版本，这个观点没错，却是如此。但是在sql server2005文档中很清晰的写到 sql server2005的执行任何sql，关系引擎会首先查看缓存，判断是有有其执行计划。如果有，则将会重用该执行计划，以减少重新编译sql语句生成执行计划的影响。包括Oracle也是这么做的，所以在我们常见的数据库中不存在这所谓的问题。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 2：当对数据库进行复杂操作时(如对多个表进行Update,Insert,Query,Delete 时），可将此复杂操作用存储过程封装起来与数据库提供的事务处理结合一起使用。这些操作，如果用程序来完成，就变成了一条条的SQL语句，可能要多次连接数据库。而换成存储，只需要连接一次数据库就可以了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 这个问题在前面的<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a>中说过，DBA总是告诉我们减少数据库连接次数，这是完全无争议的，我表述很赞同。但是一定是存储过程的优势？或者说除了存储过程就没其他方式？在<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a>中介绍了来自Martin Fowler《P of EAA》的UOW（工作单元）模式，定义为工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。其主旨是在内存中建立一个和数据仓库，维护变化的对象，业务对象变化跟踪，在业务操作完成一次性提交到数据存储介质，提供业务事务。这模式已经在我们常见的ORM（EntityFramework，Nhibernate等）中很好的支持了，或许这么说这也是ORM框架的一个重要特征。在比如微软的DataSet也支持，批量更新。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 3:存储过程可以重复使用，可减少数据库开发人员的工作量。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在项目中我们糜烂的重复代码仅仅在于数据层？更多或许在于业务逻辑的处理，复杂的条件判断，数据操作的组合。存储过程是由开发人员开发，还是数据库开发人员？每个公司的数据库开发人员就仅仅那几个吧，我见过的公司。存储过程是否包含业务规则？如果有的话，业务的不停变化，会不会不停的修改关系模型，修改存储过程，sql的编写和调试虽然现在工具有一定的支持，但是我觉得没有开发语言这么智能方便吧，至少我还没看见。如果没有至少简单的查询语句，那和普通的sql有什么差别？减少开发量为什么不选择ORM之类的动态sql，采用完全的对象模型开发，只在少部分ORM失效的业务返璞归真。</p>
+
+<p>&nbsp;&nbsp; 4：如果把所有的数据逻辑都放在存储过程中，那么asp.net只需要负责界面的显示功能，出错的可能性最大就是在存储过程。一般情况下就是这样。升级、维护方便。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这句话更离谱。逻辑放在存储过程，便于维护，我也进入过这样的公司参与过这样的项目，由于刚开始新员工，不能全盘否定，我看见的是恼人的存储过程，恼人是sql，没看过那个开发人员喜欢sql，特别在每次项目需求变更的时候。后来慢慢接受ddd模式，把业务从sql中挣脱出来。asp.net只需要负责界面的显示功能，逻辑层次未免太简单了，我猜测这应是 事务性脚本开发模式，其优劣点在<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>中说过，只能实用于简单小型的项目。在加上可移植性差，如果你的客户需要数据库的升级，sql server到Oracle会怎么样。</p>
+
+<p>&nbsp; 5：安全性高，可设定只有某此用户才具有对指定存储过程的使用权。</p>
+
+<p>&nbsp; 安全对于项目来说不仅仅在于数据库，而应是分布于我们系统各处。安全关注点应该从表现层到数据库各层之间都应该有处理。一般比较灵活有效基于角色（域）安全和数据库安全，物理服务器安全共同使用，这和不适用存储过程，使用sql并没什么冲突。虽然你可能说存储过程可以作为数据库内部资源实施安全策越。</p>
+
+<p>6：还有些：存储过程可以防止sql注入</p>
+
+<p>&nbsp; 这个是当然的，毫无争议。因为用的是参数化方式，你不能随意拼接字符串，参数化方式能够帮助我们防止大多数的sql注入。在ado.net中为我们提供了很好的参数化支持，使用sql我们同样可以做到，再加上一切开源的安全组件的过滤。</p>
+
+<p>&nbsp; 最后存储过程并不是万恶的，他有他的应用场景，对于复杂逻辑如报表的场景，我会毫不犹豫的放弃ORM，选择它，因为orm不能满足这种复杂查询，但是准确的说我选择的是大量的T-SQL或者是P-SQL，存储过程就是一堆sql子程序的固定格式。我觉得可以完全采用ibatis.net方式的xml配置，更爽些。选择存储过程是由于复杂查询业务，我相信大家也不会为了一些复杂的统计把全表数据加载到内存吧。存储过程开发技术流行与2005前数据为中心的开发模式，在现在的模式，工具，技术下显得有些苍老，但并不是一无是处。你也可以完全采用基于存储过程的开发模式开发出很好的系统。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-24T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2012/06/24/cun-chu-guo-cheng-chuan-yan/" data-via="" data-counturl="http://greengerong.github.io/blog/2012/06/24/cun-chu-guo-cheng-chuan-yan/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/09/fen-xiang-yi-duan-PowerShell-yong-hu-ren-zheng-Function/" title="Previous Post: 分享一段PowerShell用户认证Function">&laquo; 分享一段PowerShell用户认证Function</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/07/07/biao-xian-ceng-mo-shi-MVC/" title="Next Post: 表现层模式-MVC">表现层模式-MVC &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

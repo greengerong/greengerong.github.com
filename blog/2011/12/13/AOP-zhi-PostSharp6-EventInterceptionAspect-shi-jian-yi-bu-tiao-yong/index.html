@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>AOP之PostSharp6-EventInterceptionAspect(事件异步调用) - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="AOP之PostSharp6-EventInterceptionAspect(事件异步调用)">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">AOP之PostSharp6-EventInterceptionAspect(事件异步调用)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-13T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在上几章我们讨论了方法属性字段的aspect，现在我们再来看看事件机制的aspect。和字段，属性location一样，在c#中字段也可以转化为方法名为add，remove的方法处理，所以对于事件的aspect，同样类似于我们的方法。我们先看看EventInterceptionAspect的定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947164625.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947198892.png" title="image" alt="image" /></a></p>
+
+<p>aspect类包含我们对于事件aspect所必要的注册，取消，调用的注入。</p>
+
+<p>其参数定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947203069.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947226648.png" title="image" alt="image" /></a></p>
+
+<p>为我们提供了，ProceedAddHandler，ProceedInvokeHandler，ProceedRemoveHandler的事件处理代理。同样包含来自AdviceArgs的Instance对象。</p>
+
+<p>&nbsp; 对于事件aspect的例子真的不好想，在这里我们只是简单的做个事件变为异步调用的代码作为demo：</p>
+
+<pre><code> [Serializable]
+    public class AsynEventAspectAttribute : PostSharp.Aspects.EventInterceptionAspect
+    {
+
+        public override void OnInvokeHandler(PostSharp.Aspects.EventInterceptionArgs args)
+        {
+            var th = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(new Action&lt;object&gt;((obj) =&gt;
+                {
+                    System.Threading.Thread.Sleep(new Random().Next(1000));
+                    try
+                    {
+                        args.ProceedInvokeHandler();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        args.ProceedRemoveHandler();
+                    }
+                })));
+            th.Start();
+        }
+    }
+</code></pre>
+
+<p>&nbsp;测试代码：</p>
+
+<pre><code> namespace PostSharpDemo 
+{ 
+    public class TestAsyncAspect 
+    { 
+        [AsynEventAspectAttribute] 
+        public event EventHandler SomeEvent = null; 
+
+        public void OnSomeEvent() 
+        { 
+            if (SomeEvent != null) 
+            { 
+
+                SomeEvent(this, EventArgs.Empty); 
+            } 
+        } 
+    } 
+}
+
+class Program 
+    { 
+        static void Main(string[] args) 
+        {
+
+TestAsyncAspect pro = new TestAsyncAspect(); 
+          for (int i = 0; i &lt; 10; i++) 
+          { 
+              pro.SomeEvent += new EventHandler(pro_SomeEvent); 
+          } 
+          pro.OnSomeEvent(); 
+    //      pro.SomeEvent -= new EventHandler(pro_SomeEvent); 
+          Console.WriteLine("主线程完了！"); 
+          Console.Read(); 
+      } 
+
+      static void pro_SomeEvent(object sender, EventArgs e) 
+      { 
+          Console.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId); 
+      }    
+
+}
+</code></pre>
+
+<p>&nbsp;效果图如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947247402.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947264536.png" title="image" alt="image" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-13T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/" data-via="" data-counturl="http://greengerong.github.io/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/" title="Previous Post: AOP之PostSharp5-LocationInterceptionAspect">&laquo; AOP之PostSharp5-LocationInterceptionAspect</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/12/30/ji-lu-you-Equal-ji-chu-zhi-shi-yin-qi-di-nei-cun-xie-lou/" title="Next Post: 记录由Equal基础知识引起的内存泄露">记录由Equal基础知识引起的内存泄露 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

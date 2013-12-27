@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>记录maven java.lang.String Cannot Be Cast to XX Error - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="记录maven java.lang.String cannot be cast to XX error">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">记录maven java.lang.String Cannot Be Cast to XX Error</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:java;gutter:false;">-----------------------------------------------------
+
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:225)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:145)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:84)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:59)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.singleThreadedBuild(LifecycleStarter.java:183)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:161)
+         at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:319)
+         at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:156)
+         at org.jvnet.hudson.maven3.launcher.Maven3Launcher.main(Maven3Launcher.java:79)
+         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+         at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+         at java.lang.reflect.Method.invoke(Method.java:601)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launchStandard(Launcher.java:329)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:239)
+         at org.jvnet.hudson.maven3.agent.Maven3Main.launch(Maven3Main.java:146)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:127)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:74)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:118)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:48)
+         at hudson.remoting.Request$2.run(Request.java:326)
+         at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)
+         at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+         at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
+         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+         at java.lang.Thread.run(Thread.java:722)
+Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibility occured while executing [group id]:[artifact id]:[version]:start: java.lang.String cannot be cast to java.io.File
+-----------------------------------------------------
+</pre>
+</div>
+
+
+<p>&nbsp; &nbsp; &nbsp; 在花费了我大半的时间，将本地环境的maven，jdk等设为和ci一致后最后定位到maven的版本问题，其终究原因是因为maven在3.0.3才支持配置参数为泛型集合(List&lt;T&gt;,Set&lt;T&gt;&hellip;)，在3.0.2及一下本班不支持此写法。</p>
+
+<p>&nbsp; &nbsp; &nbsp;修改次error的方法有两种：</p>
+
+<ol>
+<li>将ci Server的maven更新到3.0.3以上。(但是在我们的ci server更新有些困难，还有本人认为如果写一个plugin只能工作的固定version，这和一个废物差不多，所以选择了第二种方法)。</li>
+<li>将泛型集合List&lt;T&gt;改为Array T[]。（项目中某大神写的List&lt;File&gt;我轻易的改为File[].在执行前改为Arrays.asList(XXX)）;</li>
+</ol>
+
+
+<p>&nbsp; &nbsp; &nbsp;一切搞定。在此记录希望对于遇见同类问题的人有所帮助。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/09/10/3313515.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/" data-via="" data-counturl="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/07/01/sublime-2-for-mac-link-to-command/" title="Previous Post: sublime 2 for mac link to command">&laquo; sublime 2 for mac link to command</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/" title="Next Post: angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 issue解决方案">angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 issue解决方案 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
