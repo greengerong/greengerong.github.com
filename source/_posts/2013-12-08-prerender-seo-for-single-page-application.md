@@ -27,7 +27,7 @@ tags: [开源,SEO,SRP,phantomjs]
 
 prerender架构流程图如下：
 
-{% img left /images/blog_img/prerender.jpg 'prerender' 'prerender' %}
+![/images/blog_img/prerender.jpg](/images/blog_img/prerender.jpg)
 
 prerender分为两个部分一部分为后端云服务和应用程序客户端，客户端主要拦截来自爬虫的请求在转发到后端云服务处理返回处理后并且去掉多余script/css的html在返回给爬虫。
 
