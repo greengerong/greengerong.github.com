@@ -1,8 +1,8 @@
 ---
 layout: post
 title: "ngCloak 实现 angular 初始化闪烁最佳实践"
-comments: true
-categorys:[angular,javascript] 
+category: "angularjs"
+tags:[angular,javascript] 
 ---
 angular blog
 
