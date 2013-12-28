@@ -20,7 +20,7 @@ tags: [开源,SEO,SRP,phantomjs]
 
 	www.example.com/ajax.html?_escaped_fragment_=key=value
 	
-所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原声支持对#！的解析。
+所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原生支持对#！的解析。
 
 基于这个协议和phantomjs(headless的浏览器内核)我们的SPA SEO工具 [prerender(http://prerender.io/)](http://prerender.io/)应运而生，在官方和社区的支持下，现在已经有node.js express,ruby on rails,java,asp.net,php,python主流框架和nginx之类的支持。
 
