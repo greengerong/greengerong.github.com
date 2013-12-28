@@ -9,7 +9,7 @@ tags: [angular,javascript]
 在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({% raw %}{{ express }}} {% endraw %})我们也可以改为ng-bind来实现避免。
 
 	 <div id="template1" ng-cloak>{{ 'hello' }}</div>
-     <div id="template2" ng-cloak class="ng-cloak">{% raw %} {{ {% endraw %} 'hello IE7' {% raw %} }} {% endraw %} </div>
+     <div id="template2" ng-cloak class="ng-cloak">{% raw %} {{ 'hello IE7' }} {% endraw %} </div>
      <div id="template2" ng-bing="'hello IE7'"></div>
 
 angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：
