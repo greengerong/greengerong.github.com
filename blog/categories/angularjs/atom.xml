@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T23:15:11+08:00</updated>
+  <updated>2013-12-28T14:10:36+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,46 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ngCloak 实现 Angular 初始化闪烁最佳实践]]></title>
+    <link href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/"/>
+    <updated>2013-12-27T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak</id>
+    <content type="html"><![CDATA[<p>angular blog test</p>
+
+<p> ```js</p>
+
+<ul>
+<li>@example
+   &lt;doc:example>
+     &lt;doc:source>
+        <div id="template1" ng-cloak></div>
+        <div id="template2" ng-cloak class="ng-cloak"></div>
+     &lt;/doc:source>
+     &lt;doc:scenario>
+       it(&lsquo;should remove the template directive and css class&rsquo;, function() {
+         expect(element(&lsquo;.doc-example-live #template1&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+         expect(element(&lsquo;.doc-example-live #template2&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+       });
+     &lt;/doc:scenario>
+   &lt;/doc:example>
+ *
+ */
+var ngCloakDirective = ngDirective({
+  compile: function(element, attr) {
+    attr.$set(&lsquo;ngCloak&rsquo;, undefined);
+    element.removeClass(&lsquo;ng-cloak&rsquo;);
+  }
+});</li>
+</ul>
+
+
+<p>```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Angular Controller as Syntax vs Scope]]></title>

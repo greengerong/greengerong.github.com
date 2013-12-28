@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>断电 - 破狼 Blog</title>
+  <title>ngCloak 实现 Angular 初始化闪烁最佳实践 - 破狼 Blog</title>
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="断电">
+  <meta name="description" content="angular blog test &#8220;`js @example &lt;doc:example> &lt;doc:source> hello hello IE7 &lt;/doc:source> &lt;doc:scenario> it(&lsquo;should remove the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://greengerong.github.io/blog/2011/03/05/duan-dian">
+  <link rel="canonical" href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
@@ -74,7 +74,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
   <header>
     
-      <h1 class="entry-title">断电</h1>
+      <h1 class="entry-title">ngCloak 实现 Angular 初始化闪烁最佳实践</h1>
     
     
       <p class="meta">
@@ -90,7 +90,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2011-03-05T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://greengerong.github.io">Comments</a>
@@ -100,35 +100,38 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-<div class="entry-content"><p>&shy;</p>
+<div class="entry-content"><p>angular blog test</p>
 
-<p>与屋外的夜融合&shy;</p>
+<p> &#8220;`js</p>
 
-<p>没了相伴的影&shy;</p>
+<ul>
+<li>@example
+   &lt;doc:example>
+     &lt;doc:source>
+        <div id="template1" ng-cloak>hello</div>
+        <div id="template2" ng-cloak class="ng-cloak">hello IE7</div>
+     &lt;/doc:source>
+     &lt;doc:scenario>
+       it(&lsquo;should remove the template directive and css class&rsquo;, function() {
+         expect(element(&lsquo;.doc-example-live #template1&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+         expect(element(&lsquo;.doc-example-live #template2&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+       });
+     &lt;/doc:scenario>
+   &lt;/doc:example>
+ *
+ */
+var ngCloakDirective = ngDirective({
+  compile: function(element, attr) {
+    attr.$set(&lsquo;ngCloak&rsquo;, undefined);
+    element.removeClass(&lsquo;ng-cloak&rsquo;);
+  }
+});</li>
+</ul>
 
-<p>去了柳绿花红,还有&shy;</p>
 
-<p>面部的表情,&shy;</p>
-
-<p>正如落魄的&shy;茫然</p>
-
-<p>死亡的静谧 &shy;</p>
-
-<p>&shy;</p>
-
-<p>我在内心默祷&shy;</p>
-
-<p>任书桌的狼籍 &shy;</p>
-
-<p>墨汁的飘洒 &shy;</p>
-
-<p>黑的延续&shy;</p>
-
-<p>尽情低落的幸福</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &mdash;破狼</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/05/1971372.html" title="原文首发">原文首发请看这里</a></p>
+<p>&#8220;`</p>
 </div>
 
 
@@ -151,12 +154,12 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2011-03-05T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+    <a class='category' href='/blog/categories/angularjs/'>angularjs</a>
   
 </span>
 
@@ -172,10 +175,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/03/04/html5-web-ben-di-cun-chu/" title="Previous Post: html5-web本地存储">&laquo; html5-web本地存储</a>
+        <a class="basic-alignment left" href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/" title="Previous Post: angular controller as syntax vs scope">&laquo; angular controller as syntax vs scope</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2011/03/12/Python-Tools-for-Visual-Studio/" title="Next Post: Python Tools for Visual Studio">Python Tools for Visual Studio &raquo;</a>
       
     </p>
   </footer>

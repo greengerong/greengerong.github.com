@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-27T23:15:11+08:00</updated>
+  <updated>2013-12-28T14:10:36+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,46 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ngCloak 实现 Angular 初始化闪烁最佳实践]]></title>
+    <link href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/"/>
+    <updated>2013-12-27T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak</id>
+    <content type="html"><![CDATA[<p>angular blog test</p>
+
+<p> &#8220;`js</p>
+
+<ul>
+<li>@example
+   &lt;doc:example>
+     &lt;doc:source>
+        <div id="template1" ng-cloak>hello</div>
+        <div id="template2" ng-cloak class="ng-cloak">hello IE7</div>
+     &lt;/doc:source>
+     &lt;doc:scenario>
+       it(&lsquo;should remove the template directive and css class&rsquo;, function() {
+         expect(element(&lsquo;.doc-example-live #template1&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+         expect(element(&lsquo;.doc-example-live #template2&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+       });
+     &lt;/doc:scenario>
+   &lt;/doc:example>
+ *
+ */
+var ngCloakDirective = ngDirective({
+  compile: function(element, attr) {
+    attr.$set(&lsquo;ngCloak&rsquo;, undefined);
+    element.removeClass(&lsquo;ng-cloak&rsquo;);
+  }
+});</li>
+</ul>
+
+
+<p>&#8220;`</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Angular Controller as Syntax vs Scope]]></title>
@@ -1495,37 +1535,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991200.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Node.js Connect ECONNREFUSED错误]]></title>
-    <link href="http://greengerong.github.io/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/"/>
-    <updated>2013-03-31T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu</id>
-    <content type="html"><![CDATA[<p>   最近在准备Angularjs +node.js demo的时候在我的mac开发中 遇见此错误，如下：</p>
-
-<pre><code>events.js:71
-        throw arguments[1]; // Unhandled 'error' event
-                   ^
-Error: connect ECONNREFUSED
-    at errnoException (net.js:770:11)
- at Object.afterConnect [as oncomplete] (net.js:761:19)
-</code></pre>
-
-<p>最后在stackoverflow找到解决方案，这主要由于上一次node.js server进程仍然还在运行没关闭掉，所以我们需要杀掉此进程，在mac上操作为：</p>
-
-<pre><code>ps aux | grep node
-
-twer    7668  4.3  1.0  42060 10708 pts/1    Sl+  20:36   0:00 
-node server 
-twer    7749  0.0  0.0   4384   832 pts/8    S+   20:37   0:00 
-grep --color=auto node
-</code></pre>
-
-<p>从输出可以看见进程PID7668在使用，所以我们必须杀掉这顽固分子，运行kill -9 7668. Ok，一键搞定，可以重新开启server了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991588.html" title="原文首发">原文首发请看这里</a></p>
 ]]></content>
   </entry>
   

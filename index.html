@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="今天要和大家分享的是angular从1.2版本开始带来了新语法Controller as。再次之前我们对于angular在view上的绑定都必须使用直接的scope对象，对于controller来说我们也得必须注入$scope这个service。如下： angular.module("app &hellip;">
+  <meta name="description" content="angular blog test &#8220;`js @example &lt;doc:example> &lt;doc:source> hello hello IE7 &lt;/doc:source> &lt;doc:scenario> it(&lsquo;should remove the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,76 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/27/angular-ngcloak/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>angular blog test</p>
+
+<p> &#8220;`js</p>
+
+<ul>
+<li>@example
+   &lt;doc:example>
+     &lt;doc:source>
+        <div id="template1" ng-cloak>hello</div>
+        <div id="template2" ng-cloak class="ng-cloak">hello IE7</div>
+     &lt;/doc:source>
+     &lt;doc:scenario>
+       it(&lsquo;should remove the template directive and css class&rsquo;, function() {
+         expect(element(&lsquo;.doc-example-live #template1&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+         expect(element(&lsquo;.doc-example-live #template2&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
+           not().toBeDefined();
+       });
+     &lt;/doc:scenario>
+   &lt;/doc:example>
+ *
+ */
+var ngCloakDirective = ngDirective({
+  compile: function(element, attr) {
+    attr.$set(&lsquo;ngCloak&rsquo;, undefined);
+    element.removeClass(&lsquo;ng-cloak&rsquo;);
+  }
+});</li>
+</ul>
+
+
+<p>&#8220;`</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -859,123 +929,6 @@ Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibil
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/">语言设计中的鸭子类型风格</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-30T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导，并不在乎类型的真正实体，只要他的行为有鸭子的特性，那么我们就可以把它当做一只鸭子来看到。在动态语言设计中，可以解释为无论一个对象是什么类型的，只要它具有某类型的行为（方法），则它就是这一类型的实例，而不在于它是否显示的实现或者继承。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 鸭子类型在动态语言中被广为奉行。某类接口需要一个log接口，换句话说这借口中需要调用传入对象的log，方法，在动态语言中无论你传入的是什么对象，只有具有log方法则就是合法的。而java，c#这类静态强类型语言（当前首先声明c#已经不是纯的静态强类型语言，它具有dynamic，表达式，当然这里所说的c#是去掉这类特性，或者说C#2.0吧）我们传入的对象是必须显示实现该接口的类实例，他们直接必须具有显示的继承链。</p>
-
-<p>&nbsp;&nbsp; &nbsp;&nbsp;以上所说的是两类语言设计中的对抽象的制约的区别。</p>
-
-<p>&nbsp;&nbsp;&nbsp; Javascript中鸭子型的实现：</p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #0000ff;">function</span><span style="color: #000000;"> log(logger){
-
-       logger.log(&ldquo;hello world&rdquo;)；
-
-}
-
-log({log:</span><span style="color: #0000ff;">function</span><span style="color: #000000;">(msg){
-
-       console.log(msg);
-
-}});</span></pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>代码量很少，这里只是一种简单的约定，而不是强制，使得我们的自控感增强，所以我喜欢javascript这门语言给我的自由度。但是相对于java这类静态强类型语言而言是将语法的检查推向了运行时期，延迟了发现问题的时间，不助于我们的调试。在强类型系统的语言中由于具有完备的类型信息，我们可以提高良好的IDE于开发时限制，有助于我们的大规模开发。所以这里没有对错，只是看你的选择和喜爱。如果你是一个优秀的程序员，动态语言这种检查的推迟对你并无什么问题，因为你能够有条理次序的节奏型开发。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 关于鸭子型风格这里还得必须提到go语言，也是go语言带来我对这种风格的思考。</p>
-
-<p>我们还可以显示的定义在消费者方法中，形如&nbsp;</p>
-
-<div class="cnblogs_code">
-<pre>func SomeFunction(logger <span style="color: #0000ff;">interface</span>{Log(<span style="color: #0000ff;">string</span><span style="color: #000000;">)}){
-
-    logger.Log(&ldquo;hello world, I am go lang&rdquo;).
-
-}</span></pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>实现提供者：</p>
-
-<div class="cnblogs_code">
-<pre>type S <span style="color: #0000ff;">struct</span><span style="color: #000000;"> { }
-
-func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="color: #0000ff;">string</span><span style="color: #000000;">) {
-
-    console.log(msg)
-
-}</span></pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>在类型S就是一个实现了Logger的实例。</p>
-
-<p>&nbsp;</p>
-
-<p>Go还有一种叫做空接口，能够容纳万物的东西;</p>
-
-<div class="cnblogs_code">
-<pre>func log(any <span style="color: #0000ff;">interface</span>{}) <span style="color: #0000ff;">int</span><span style="color: #000000;"> {
-
-    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> any.(I).Get()
-
- }</span></pre>
-</div>
-
-
-<p>&nbsp; &nbsp;Go语言不同于其他鸭子类型语言的是它实现了在编译时期检查，同时也不失这种自由度。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 另外TypeScript想必你也知道 ，这与google的dart一样致力于将javascript带入大规模开发的语言，不同的是TypeScript是javascript的超集，并不是重造一门新语言。他为javascript引入的接口，类型，泛型等较完备的类型系统，是的能够有更好的IDE支持，从某种程度上来说，这是对鸭子类型或者javascript编译器的检查推迟的弥补。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/06/30/3163358.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1001,8 +954,18 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </div>
 </section>
 <section>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+  </ul>
+</section>
+<section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
@@ -1030,10 +993,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">记录maven java.lang.String Cannot Be Cast to XX Error</a>
       </li>
     
   </ul>
