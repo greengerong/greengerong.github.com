@@ -108,7 +108,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 <p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }}} )我们也可以改为ng-bind来实现避免。</p>
 
 <pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
- &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ {% endraw %} 'hello IE7' {% raw %} }}  &lt;/div&gt;
+ &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
  &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
 </code></pre>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-28T21:46:11+08:00</updated>
+  <updated>2013-12-28T21:48:57+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -23,7 +23,7 @@
 <p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }}} )我们也可以改为ng-bind来实现避免。</p>
 
 <pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
- &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ {% endraw %} 'hello IE7' {% raw %} }}  &lt;/div&gt;
+ &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
  &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
 </code></pre>
 
