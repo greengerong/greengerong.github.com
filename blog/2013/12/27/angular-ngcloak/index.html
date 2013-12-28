@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="angular blog test &#8220;`js @example &lt;doc:example> &lt;doc:source> hello hello IE7 &lt;/doc:source> &lt;doc:scenario> it(&lsquo;should remove the &hellip;">
+  <meta name="description" content="angular blog test * @example &lt;doc:example&gt; &lt;doc:source&gt; &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt; &lt;div id="template2" ng- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -102,36 +102,30 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 
 <div class="entry-content"><p>angular blog test</p>
 
-<p> &#8220;`js</p>
-
-<ul>
-<li>@example
-   &lt;doc:example>
-     &lt;doc:source>
-        <div id="template1" ng-cloak>hello</div>
-        <div id="template2" ng-cloak class="ng-cloak">hello IE7</div>
-     &lt;/doc:source>
-     &lt;doc:scenario>
-       it(&lsquo;should remove the template directive and css class&rsquo;, function() {
-         expect(element(&lsquo;.doc-example-live #template1&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
-           not().toBeDefined();
-         expect(element(&lsquo;.doc-example-live #template2&rsquo;).attr(&lsquo;ng-cloak&rsquo;)).
-           not().toBeDefined();
-       });
-     &lt;/doc:scenario>
-   &lt;/doc:example>
- *
- */
-var ngCloakDirective = ngDirective({
-  compile: function(element, attr) {
-    attr.$set(&lsquo;ngCloak&rsquo;, undefined);
-    element.removeClass(&lsquo;ng-cloak&rsquo;);
-  }
-});</li>
-</ul>
-
-
-<p>&#8220;`</p>
+<pre><code>  * @example
+       &lt;doc:example&gt;
+         &lt;doc:source&gt;
+            &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
+            &lt;div id="template2" ng-cloak class="ng-cloak"&gt;hello IE7&lt;/div&gt;
+         &lt;/doc:source&gt;
+         &lt;doc:scenario&gt;
+           it('should remove the template directive and css class', function() {
+             expect(element('.doc-example-live #template1').attr('ng-cloak')).
+               not().toBeDefined();
+             expect(element('.doc-example-live #template2').attr('ng-cloak')).
+               not().toBeDefined();
+           });
+         &lt;/doc:scenario&gt;
+       &lt;/doc:example&gt;
+     *
+     */
+    var ngCloakDirective = ngDirective({
+      compile: function(element, attr) {
+        attr.$set('ngCloak', undefined);
+        element.removeClass('ng-cloak');
+      }
+    });
+</code></pre>
 </div>
 
 
