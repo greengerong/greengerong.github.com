@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译) - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译)">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/05/09/jQuery-Alert-Dialogs-Alert-Confirm-Prompt-Replacements-fan-yi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p> 前不久在官方网站是看见这个插件，所以今天趁有空就看了一下，随便给大家共享一下。也许你早已知道了，如果是这样那请跳过，不要拍砖。</p>
+
+<p> 这个Jquery插件的目的是替代JavaScript的标准函数alert()，confirm（）<samp>，和 prompt（）。这个插件有</samp></p>
+
+<p> <samp>如下这些特点：</samp></p>
+
+<p> <samp>&nbsp; 1：这个插件可以使你可以支持你自己的css制定。使你的网站看起来更专业。</samp></p>
+
+<p> &nbsp;&nbsp; 2：允许你自定义对话框的标题。</p>
+
+<p> &nbsp; 3：在ＩＥ７中，可以使你避免使用JavaScript 的prompt（）函数带来的页面重新加载。</p>
+
+<p> &nbsp;&nbsp; 4：这些方法都模拟了Windows的模式对话框。在你改变改变浏览器窗口大小时候，它能够自适应用户</p>
+
+<p> 窗口的调整。</p>
+
+<p> &nbsp;&nbsp; 5：如果你引入了<a href="http://ui.jquery.com/">jQuery UI</a> <a href="http://docs.jquery.com/UI/Draggable">Draggable plugin</a>插件，那这个插件也可以被自由拖动。</p>
+
+<p> 先在这里说插件的下载地址，以供有需之人下载:</p>
+
+<p><a href="http://labs.abeautifulsite.net/projects/js/jquery/alerts/jquery.alerts-1.1.zip" title="http://labs.abeautifulsite.net/projects/js/jquery/alerts/jquery.alerts-1.1.zip">http://labs.abeautifulsite.net/projects/js/jquery/alerts/jquery.alerts-1.1.zip</a></p>
+
+<p> ### 一：首先在&lt;head&gt;&lt;/head&gt;导入JQuery,jquery.ui.draggable</p>
+
+<p> ### 和jquery.alerts的 css、js文件。</p>
+
+<pre><code>&lt;script src="/path/to/jquery.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;script src="/path/to/jquery.ui.draggable.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;script src="/path/to/jquery.alerts.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;link href="/path/to/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" /&gt;
+</code></pre>
+
+<p>为了在iE中正确的使用alert插件，你还得在Page中加入何时DTD：</p>
+
+<pre><code>  &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+</code></pre>
+
+<p> ### 二：使用</p>
+
+<p> 我们可以用下列方式来使用这个Jquery插件。</p>
+
+<ol>
+<li>jAlert(_message, [title, callback])</li>
+<li>jConfirm(_message, [title, callback])</li>
+<li>Prompt(_message, [value, title, callback])</li>
+</ol>
+
+
+<p> 注：不同于Javascript标准函数，我们可以在message中使用HTML参数显示你的提示信息。</p>
+
+<p> ### 三：兼容性：</p>
+
+<p> alert插件要求我们必须使用JQuery1.2.6或以上的jQuery包。</p>
+
+<p> 已经被测试能够在IE6、IE7、FF2、FF3、Safari 3 、Chrome 、Opera 9浏览器上很好的运行。</p>
+
+<p> ### 四：Demo：</p>
+
+<p> 注:在Demo中么有引入dragonable插件所以不能拖拽</p>
+
+<p>Test Alert</p>
+
+<pre><code>jAlert('This is a custom alert box;&lt;br/&gt;
+    &lt;a href=\"http://www.cnblogs.com/whitewolf/\"&gt;
+    本示例来自破浪博客&lt;/a&gt;',
+    'Alert Dialog');
+</code></pre>
+
+<p>Test Confirm</p>
+
+<pre><code>   jConfirm('Can you confirm this?&lt;br/&gt;
+&lt;a href=\"http://www.cnblogs.com/whitewolf/\"&gt;
+本示例来自破浪博客&lt;/a&gt;',
+'Confirmation Dialog', function(r) {
+jAlert('Confirmed: ' + r, 'Confirmation Results');
+});
+</code></pre>
+
+<p>Test Prompt</p>
+
+<pre><code>jPrompt('Type something:&lt;br/&gt;&lt;
+a href=\"http://www.cnblogs.com/whitewolf/\"&gt;
+本示例来自破浪博客&lt;/a&gt;',
+'WhiteWolf', 'Prompt Dialog', function(r) {
+if( r ) alert('You entered ' + r);
+});
+</code></pre>
+
+<p>本博客中同类文章还有，请见：<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html"><font color="#6699cc">我jQuery系列之目录汇总</font></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/09/1731120.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/" title="Previous Post: jQuery之筛选函数">&laquo; jQuery之筛选函数</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/05/14/Ajax-za-tan/" title="Next Post: Ajax杂谈">Ajax杂谈 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

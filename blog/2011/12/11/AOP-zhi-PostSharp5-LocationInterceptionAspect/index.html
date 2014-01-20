@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>AOP之PostSharp5-LocationInterceptionAspect - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="AOP之PostSharp5-LocationInterceptionAspect">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">AOP之PostSharp5-LocationInterceptionAspect</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这节我们要讨论的是PostSharp的LocationInterceptionAspect，PostSharp官方把Property和Field成为Location。所以LocationInterceptionAspect就是为了实现Property和Field的拦截。在我们前面讨论了关于方法OnMethodBoundaryAspect的aspect，我们很容易想到，在c#中Property就是一个编译时分为Get和Set两个方法，对于property的aspect就类似于了我们的Method的aspect。而对于Field的aspect同样可以转换为对Property的aspect。</p>
+
+<p>下面我们用反编译工具来证实一下我的说法.</p>
+
+<p>代码：</p>
+
+<pre><code>    [LazyLoad("test", "test")] 
+     private string TestField;
+</code></pre>
+
+<p>编译后：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144511133.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445152198.png" title="image" alt="image" /></a></p>
+
+<p>我们在来看看LocationInterceptionAspect定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445172495.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445215649.png" title="image" alt="image" /></a></p>
+
+<p>其OnGetvalue和OnSetValue是我们主要拦截的方法，起参数LocationInterceptionArgs定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445276277.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445362807.png" title="image" alt="image" /></a></p>
+
+<p>同样给也拥有来自父类AdviceArgs的Instance对象，对于对象级Location为所在对象，静态则为null；</p>
+
+<p>LocationInterceptionAspect的使用方法和我们的OnMethodBoundaryAspect和类似，使用方式也一样，对于使用对不重要，鄙人觉得更重要的是我们的设计思想。</p>
+
+<p>我暂时能想到的很好的LocationInterceptionAspect使用场景则是LazyLoad，对于3.5表达式的出现，我们到处都可以简单这个词，在c#类库中也加入了这个类。</p>
+
+<p>这里我们只是做一个简单的演示demo，根据attribute上制定的类型的方法延时加载对象，废话不说了上code：</p>
+
+<p>  [Serializable]</p>
+
+<pre><code>   public class LazyLoadAttribute : LocationInterceptionAspect 
+   { 
+       public string MethodName 
+       { 
+           get; 
+           private set; 
+       } 
+
+       public string PrivoderFullName 
+       { 
+           get; 
+           private set; 
+       } 
+
+       public LazyLoadAttribute(string MethodName, string PrivoderFullName) 
+       { 
+           Green.Utility.Guard.ArgumentNotNullOrEmpty(MethodName, "MethodName"); 
+           Green.Utility.Guard.ArgumentNotNullOrEmpty(PrivoderFullName, "PrivoderFullName"); 
+           this.MethodName = MethodName; 
+           this.PrivoderFullName = PrivoderFullName; 
+       } 
+
+       public override void OnGetValue(LocationInterceptionArgs args) 
+       { 
+           if (args.GetCurrentValue() == null) 
+           { 
+               Console.WriteLine("Loading...."); 
+               var value = this.LoadProperty(args.Instance); 
+               if (value != null) 
+               {                    
+                   args.Value = value; 
+                   args.ProceedSetValue(); 
+               } 
+           } 
+           args.ProceedGetValue(); 
+       } 
+
+       private object LoadProperty(object p) 
+       { 
+           var type = Type.GetType(this.PrivoderFullName);//具体加载程序集需要自定义需求，这里仅为了测试简化。 
+           if (type != null) 
+           { 
+               var method = type.GetMethod(this.MethodName); 
+               if (method != null) 
+               { 
+                   object[] ps = null; 
+                   if (p != null) 
+                   { 
+                       ps = new object[] { p }; 
+                   } 
+                   object entity = null; 
+                   if (!method.IsStatic) 
+                   { 
+                       entity = System.Activator.CreateInstance(type); 
+                   } 
+                   return method.Invoke(entity, ps); 
+               } 
+           } 
+           return null; 
+       } 
+   }
+</code></pre>
+
+<p>测试code：</p>
+
+<pre><code>class Program 
+   {       
+       static void Main(string[] args) 
+       {            
+
+           /* 
+            * demo4*/ 
+
+           Student stu = new Student(); 
+           stu.ID = 10; 
+           Console.WriteLine(stu.Name); 
+           Console.WriteLine(stu.Name); 
+
+           Console.WriteLine(Student.TestStaticProperty); 
+           Console.WriteLine(Student.TestStaticProperty); 
+           Console.Read(); 
+       }
+
+public static string TextLazyLoadStaticMenthod(Student stu) 
+      { 
+          return "Student" + stu.ID; 
+      } 
+
+      public string TextLazyLoadInstacnceMenthod(Student stu) 
+      { 
+          return "Student" + stu.ID; 
+      } 
+
+      public string TextLazyLoadStaticPropertyMenthod() 
+      { 
+          return "测试"; 
+      } 
+  }
+
+public class Student 
+   { 
+      // [LazyLoad("TextLazyLoadStaticMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       [LazyLoad("TextLazyLoadInstacnceMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       public string Name 
+       { get; set; } 
+       public string Sex 
+       { get; set; } 
+
+       [LazyLoad("TextLazyLoadStaticPropertyMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       public static string TestStaticProperty 
+       { get; set; } 
+
+       public int ID 
+       { get; set; } 
+   }
+</code></pre>
+
+<div class="cnblogs_code" onclick="cnblogs_code_show('c8e815c6-3301-42ff-93ea-f8f84b47d5b3')">效果图片如下：</div>
+
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144540238.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445444222.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">dmeo</a></p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/" title="Previous Post: AOP之PostSharp4-实现类INotifyPropertyChanged植入">&laquo; AOP之PostSharp4-实现类INotifyPropertyChanged植入</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/" title="Next Post: AOP之PostSharp6-EventInterceptionAspect(事件异步调用)">AOP之PostSharp6-EventInterceptionAspect(事件异步调用) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

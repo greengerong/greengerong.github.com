@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dbml文件提取建表TSql-CodeSmith - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="Dbml文件提取建表TSql-CodeSmith">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/09/27/Dbml-wen-jian-ti-qu-jian-biao-TSql-CodeSmith">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Dbml文件提取建表TSql-CodeSmith</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在昨天一个大学师弟，他问我能不能将LinqToSql文件转化为创建表的TSql语句，他是刚开始学习.NET，所以在网上下些示例看，但苦于没有数据库。所以就有了这一篇博客，作为我的Code生成技术的CodeSimth的最后一篇示例。在下一步Code 生成技术将转到Microsoft的T4模板，Code生成技术目前完成的有<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">CodeDom</a>,<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html">CodeSmith模板</a>，高手请不要拍砖，请直接跳过。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在Linq2Sql的Dbml文件其实就是一个Xml文件，记录着数据库与生成Linq2SqlCode的数据信息，所以转化为TSql没有什么说的。我们需要提取其中的数据库信息，在转化为我们的Tsql，在这里建立了DBTable、DBColumn、DBAssociation三个实体类：</p>
+
+<pre><code>    代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;  1 using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+
+    namespace DbmlToTable 
+    { 
+        public class DBTable 
+        { 
+
+            public DBTable() 
+            { 
+                Columns = new List&lt;DBColumn&gt;(); 
+                this.Associations = new List&lt;DBAssociation&gt;(); 
+            } 
+
+            public string TableName 
+            { 
+                get; 
+                set; 
+            } 
+
+            public List&lt;DBColumn&gt; Columns 
+            { 
+                get; 
+                set; 
+            } 
+
+            public List&lt;DBAssociation&gt; Associations 
+            { 
+                get; 
+                set; 
+            } 
+
+        } 
+
+        public class DBColumn 
+        { 
+            public string Name 
+            { 
+                get; 
+                set; 
+            } 
+
+            public string DBType 
+            { 
+                get; 
+                set; 
+            } 
+
+            public bool IsPrimaryKey 
+            { 
+                get; 
+                set; 
+            } 
+
+            public bool IsDbGenerated 
+            { 
+                get; 
+                set; 
+            } 
+
+            public bool CanBeNull 
+            { 
+                get; 
+                set; 
+            } 
+        } 
+
+        public class DBAssociation 
+        { 
+            public string Name 
+            { 
+                get; 
+                set; 
+            } 
+
+            public string ThisKey 
+            { 
+                get; 
+                set; 
+            } 
+
+            public string OtherKey 
+            { 
+                get; 
+                set; 
+            } 
+
+            public bool IsForeignKey 
+            { 
+                get; 
+                set; 
+            } 
+        } 
+
+        public class DBTableHlper 
+        { 
+            public static DBTable GetAssociationTable(List&lt;DBTable&gt; collection,string assName) 
+            { 
+
+                return collection.Find(t =&gt; t.Associations.Find(a =&gt; !a.IsForeignKey &amp;&amp; a.Name == assName) != null); 
+            } 
+        } 
+    }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp; 其中DBTableHlper是由于我的Codesimth是2.0版本的，不能用lamdam表达式，所以我将它编译在程序集里面。</p>
+
+<p>&nbsp;&nbsp; 建立了一个 将我们的dbml文件xml Document转化为实体类辅助类：</p>
+
+<pre><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+    using System.Xml; 
+    using System.Xml.Linq; 
+
+    namespace DbmlToTable 
+    { 
+
+        public interface IDbTableCollectionHelper 
+        { 
+            List&lt;DBTable&gt; Transport(XElement element); 
+        } 
+
+        public class DbTableCollectionHelper : IDbTableCollectionHelper 
+        { 
+            #region IDbTableCollectionHelper 成员 
+
+            public List&lt;DBTable&gt; Transport(XElement element) 
+            { 
+                List&lt;DBTable&gt; collection = new List&lt;DBTable&gt;(); 
+                var tables = element.Elements(XName.Get("Table", "http://schemas.microsoft.com/linqtosql/dbml/2007%22)); 
+                foreach (var tab in tables) 
+                { 
+                    DBTable t = new DBTable() { TableName = tab.Attribute("Name").Value }; 
+                    var cols = tab.Element(XName.Get("Type", "http://schemas.microsoft.com/linqtosql/dbml/2007%22)).Elements(XName.Get(%22Column%22, "http://schemas.microsoft.com/linqtosql/dbml/2007%22)); 
+                    foreach (var col in cols) 
+                    { 
+                        DBColumn c = new DBColumn() 
+                        { 
+                            CanBeNull = col.Attribute("CanBeNull") != null ? col.Attribute("CanBeNull").Value.ToLower() == "true" : false, 
+                            DBType = col.Attribute("DbType") != null ? col.Attribute("DbType").Value : "", 
+                            IsDbGenerated = col.Attribute("IsDbGenerated") != null ? col.Attribute("IsDbGenerated").Value.ToLower() == "true" : false, 
+                            IsPrimaryKey = col.Attribute("IsPrimaryKey") != null ? col.Attribute("IsPrimaryKey").Value.ToLower() == "true" : false, 
+                            Name = col.Attribute("Name") != null ? col.Attribute("Name").Value : "" 
+                        }; 
+                        t.Columns.Add(c); 
+                    } 
+
+                    var ass = tab.Element(XName.Get("Type", "http://schemas.microsoft.com/linqtosql/dbml/2007%22)).Elements(XName.Get(%22Association%22, "http://schemas.microsoft.com/linqtosql/dbml/2007%22)); 
+                    foreach (var item in ass) 
+                    { 
+                        DBAssociation a = new DBAssociation() 
+                        { 
+                            Name = item.Attribute("Name") != null ? item.Attribute("Name").Value : "", 
+                            OtherKey = item.Attribute("OtherKey") != null ? item.Attribute("OtherKey").Value : "", 
+                            ThisKey = item.Attribute("ThisKey") != null ? item.Attribute("ThisKey").Value : "", 
+                            IsForeignKey = item.Attribute("IsForeignKey") != null ? item.Attribute("IsForeignKey").Value.ToLower() == "true" : false 
+                        }; 
+                        t.Associations.Add(a); 
+                    } 
+                    collection.Add(t); 
+                } 
+                return collection; 
+            } 
+
+            #endregion 
+        } 
+    }
+</code></pre>
+
+<p>&nbsp;&nbsp; 在转化为我们的实体类，我们剩下的就是编写我们的CodeSmith模板了（更多知识可以参考<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html">CodeSmith模板</a>）：</p>
+
+<pre><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
+
+    &lt;%@ Import NameSpace="System" %&gt; 
+    &lt;%@ Import NameSpace="System.Xml" %&gt; 
+    &lt;%@ Import NameSpace="System.Text" %&gt; 
+    &lt;%@ Import NameSpace="System.Collections.Generic" %&gt; 
+    &lt;%@ Assembly Name="DbmlToTable" %&gt; 
+
+    --Code By Wolf 
+    &lt;script runat="template"&gt; 
+    private List&lt;DbmlToTable.DBTable&gt; _DbTableCollection; 
+    public List&lt;DbmlToTable.DBTable&gt; DbTableCollection 
+    { 
+        get 
+        { 
+            return _DbTableCollection; 
+        } 
+        set    
+        { 
+            _DbTableCollection=value; 
+        } 
+    } 
+
+    public  string GeneratorTableSql(List&lt;DbmlToTable.DBTable&gt; collection) 
+    { 
+        StringBuilder sb = new StringBuilder(); 
+        StringBuilder sbAssocation = new StringBuilder(); 
+        foreach (DbmlToTable.DBTable item in collection) 
+        { 
+            List&lt;string&gt; cols = new List&lt;string&gt;(); 
+            foreach (DbmlToTable.DBColumn  col in item.Columns) 
+            { 
+                cols.Add(string.Format("{0} {1} {2} ", col.Name, col.DBType, col.IsPrimaryKey ? "PRIMARY KEY " : "")); 
+            } 
+            sb.AppendFormat("\r\nCREATE TABLE {0} \r\n(\r\n{1}\r\n)", item.TableName, string.Join(",\r\n", cols.ToArray())); 
+
+            foreach (DbmlToTable.DBAssociation ass in item.Associations) 
+            { 
+                if (ass.IsForeignKey) 
+                { 
+                    DbmlToTable.DBTable tab = DbmlToTable.DBTableHlper.GetAssociationTable(collection,ass.Name); 
+                    if (tab != null) 
+                    { 
+                        sbAssocation.AppendLine(); 
+                        sbAssocation.AppendFormat(@"ALTER TABLE {0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {3} ({4})", 
+                            item.TableName, "FK_" + ass.Name, ass.ThisKey, tab.TableName, ass.OtherKey); 
+                    } 
+                } 
+            } 
+        } 
+
+        return sb.ToString() + "\r\n" + sbAssocation.ToString(); 
+    } 
+    &lt;/script&gt; 
+    &lt;%= this.GeneratorTableSql(_DbTableCollection) %&gt;
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp; 在codeSimth中我们建立了一个集合属性传递实体类DBTable和一个转化TSql辅助方法.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在控制台调用编译模板以及输出：</p>
+
+<pre><code>    代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+
+    namespace DbmlToTable 
+    { 
+        class Program 
+        { 
+            static void Main(string[] args) 
+            { 
+                IDbTableCollectionHelper helper = new DbTableCollectionHelper(); 
+                List&lt;DBTable&gt; collection = helper. 
+                    Transport(System.Xml.Linq.XElement.
+
+             Load(@"xxpath\MultipleDocument.Data\MultipleDocumentDB.dbml")); 
+
+                CodeSmith.Engine.CodeTemplate template = CodeSimthTemplateHelper. 
+                    CompileTemplate(@"DBMLToTable.cst", w =&gt; Console.WriteLine(w)); 
+                if (template != null) 
+                { 
+                    CodeSimthTemplateHelper.AddPropertyParams(template, new { DbTableCollection = collection }); 
+                    string str = template.RenderToString(); 
+                    Console.WriteLine(str); 
+                    //System.IO.File.AppendAllText(@"D:\1.sql", str); 
+                } 
+                Console.Read(); 
+            }
+
+    }
+</code></pre>
+
+<p>&nbsp;&nbsp; 在CodeSimth中就是这么简单，生成相应的模板代码（个人理解CodeSmith就是把代码作为字符串输出）。</p>
+
+<p>在上面到我的CodeSmith模板编译辅助类，在上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/1834317.html">通过代码生成机制实现强类型编程-CodeSmith版</a>也有，在这里也附带上：需要引用CodeSmith.Engine.dll.</p>
+
+<pre><code>    代码 
+
+        Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
+
+        using System.Collections.Generic; 
+
+        using System.Linq; 
+
+        using System.Text; 
+
+        using CodeSmith.Engine; 
+
+        using Wolf.NameValueDictionary; 
+
+        namespace DbmlToTable 
+
+        { 
+
+        public class CodeSimthTemplateHelper 
+
+        { 
+
+             public static CodeTemplate CompileTemplate(string templateName, Action errorWriter) 
+
+             { 
+
+                   CodeTemplateCompiler compiler = new CodeTemplateCompiler(templateName); compiler.Compile(); 
+
+                  if (compiler.Errors.Count == 0) 
+
+                   { 
+
+                   return compiler.CreateInstance();
+
+                   } 
+
+               else 
+
+                 { 
+
+                   for (int i = 0; i &lt; compiler.Errors.Count; i++) 
+
+                { 
+
+                    errorWriter(compiler.Errors[i].ToString()); 
+
+                 } 
+
+                return null; 
+
+               } 
+
+        } 
+
+
+
+        public static void AddPropertyParams(CodeTemplate template,object param) 
+
+        { 
+
+              NameValueDictionary dict = new NameValueDictionary&lt;object&gt;(param);
+
+               AddPropertyParams(template, dict);
+
+        }
+
+
+
+        public static void AddPropertyParams(CodeTemplate template, NameValueDictionary&lt;object&gt; param)
+
+        {
+
+                  NameValueDictionary&lt;object&gt; dict = new NameValueDictionary&lt;object&gt;(param);
+
+                  foreach (var item in dict.Keys)
+
+                  {
+
+                        template.SetProperty(item, dict[item]);
+
+                   }
+
+        }
+
+        }
+
+        }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836731.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-27T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/27/CodeSmith-mo-ban-yin-qing-xi-lie-mu-lu/" title="Previous Post: CodeSmith模板引擎系列-目录">&laquo; CodeSmith模板引擎系列-目录</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/" title="Next Post: (翻译)31天Windows Phone学习-1-项目模板">(翻译)31天Windows Phone学习-1-项目模板 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

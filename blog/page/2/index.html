@@ -1,0 +1,1485 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。 &nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/">语言设计中的鸭子类型风格</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-30T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导，并不在乎类型的真正实体，只要他的行为有鸭子的特性，那么我们就可以把它当做一只鸭子来看到。在动态语言设计中，可以解释为无论一个对象是什么类型的，只要它具有某类型的行为（方法），则它就是这一类型的实例，而不在于它是否显示的实现或者继承。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 鸭子类型在动态语言中被广为奉行。某类接口需要一个log接口，换句话说这借口中需要调用传入对象的log，方法，在动态语言中无论你传入的是什么对象，只有具有log方法则就是合法的。而java，c#这类静态强类型语言（当前首先声明c#已经不是纯的静态强类型语言，它具有dynamic，表达式，当然这里所说的c#是去掉这类特性，或者说C#2.0吧）我们传入的对象是必须显示实现该接口的类实例，他们直接必须具有显示的继承链。</p>
+
+<p>&nbsp;&nbsp; &nbsp;&nbsp;以上所说的是两类语言设计中的对抽象的制约的区别。</p>
+
+<p>&nbsp;&nbsp;&nbsp; Javascript中鸭子型的实现：</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">function</span><span style="color: #000000;"> log(logger){
+
+       logger.log(&ldquo;hello world&rdquo;)；
+
+}
+
+log({log:</span><span style="color: #0000ff;">function</span><span style="color: #000000;">(msg){
+
+       console.log(msg);
+
+}});</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>代码量很少，这里只是一种简单的约定，而不是强制，使得我们的自控感增强，所以我喜欢javascript这门语言给我的自由度。但是相对于java这类静态强类型语言而言是将语法的检查推向了运行时期，延迟了发现问题的时间，不助于我们的调试。在强类型系统的语言中由于具有完备的类型信息，我们可以提高良好的IDE于开发时限制，有助于我们的大规模开发。所以这里没有对错，只是看你的选择和喜爱。如果你是一个优秀的程序员，动态语言这种检查的推迟对你并无什么问题，因为你能够有条理次序的节奏型开发。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 关于鸭子型风格这里还得必须提到go语言，也是go语言带来我对这种风格的思考。</p>
+
+<p>我们还可以显示的定义在消费者方法中，形如&nbsp;</p>
+
+<div class="cnblogs_code">
+<pre>func SomeFunction(logger <span style="color: #0000ff;">interface</span>{Log(<span style="color: #0000ff;">string</span><span style="color: #000000;">)}){
+
+    logger.Log(&ldquo;hello world, I am go lang&rdquo;).
+
+}</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>实现提供者：</p>
+
+<div class="cnblogs_code">
+<pre>type S <span style="color: #0000ff;">struct</span><span style="color: #000000;"> { }
+
+func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="color: #0000ff;">string</span><span style="color: #000000;">) {
+
+    console.log(msg)
+
+}</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在类型S就是一个实现了Logger的实例。</p>
+
+<p>&nbsp;</p>
+
+<p>Go还有一种叫做空接口，能够容纳万物的东西;</p>
+
+<div class="cnblogs_code">
+<pre>func log(any <span style="color: #0000ff;">interface</span>{}) <span style="color: #0000ff;">int</span><span style="color: #000000;"> {
+
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> any.(I).Get()
+
+ }</span></pre>
+</div>
+
+
+<p>&nbsp; &nbsp;Go语言不同于其他鸭子类型语言的是它实现了在编译时期检查，同时也不失这种自由度。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 另外TypeScript想必你也知道 ，这与google的dart一样致力于将javascript带入大规模开发的语言，不同的是TypeScript是javascript的超集，并不是重造一门新语言。他为javascript引入的接口，类型，泛型等较完备的类型系统，是的能够有更好的IDE支持，从某种程度上来说，这是对鸭子类型或者javascript编译器的检查推迟的弥补。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/06/30/3163358.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">隐藏在mock之后的‘快感’</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo;独立&ldquo;的过度。 在前边转载过《软件开发中没有所谓正确的方法》，当你把某一种方法论作为银弹使用的时候，早晚魔鬼会伴随在你身边。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock给我带来了感知，剥离了类与类之间的依赖，有助于我们更好的工作在当前的关注点 .但同时由于太多的对场景的假设，导致这块代码成为了信息的孤岛，甚至很多时候不得不用mock的第二特性verify，order，以至于你的测试关心的不再是代码存在的business逻辑，而倾向代码层面的设计实现，这就把你单元测试推向了&ldquo;白盒测试&ldquo;的位置，导致测试变为脆弱的测试。每当简单的重构导致内部的变化，你的测试也必须随着改变。</p>
+
+<p>&nbsp; &nbsp; &nbsp;鄙人认为作为一个好的测试而言，在一次合法的简单重构之下，是不需要修改测试的，因为你修改的只是内部实现，而不是business的改变，如果你边改测试边重构或者重构后挂到一大堆测试，这意味这你的测试不是一个稳定的测试或者你不是一次合法的重构（也许redesign，override）。</p>
+
+<p>&nbsp; &nbsp; &nbsp;在同事的项目中对mock的极端到了对简单的View Object 也采用builder模式，可是内部却全是mock given。在我看来而言View Object只是一个简单的数据载体，不存在行为逻辑，我们毫无必要去做mock，mock该是针对假设，而应该尽量避免对状态mock。在同事的项目中导致需要写一个测试之前，作为测试的准备given ，必须理解存在代码的实现，因为你需要一堆given，比如对于person对象，如果你在实现中需要得到account则：</p>
+
+<p>given(person.getAccount()).willReturn(some account);</p>
+
+<p>&nbsp; &nbsp; &nbsp;导致我需要了解实现需要什么property，如果我需要新的的property也许只是简单的把某个&ldquo;依恋情结&rdquo;放入了object，测试也需要被修改，导致重构者对自己的重构并不那么自信，这将影响重构成为日常行为，随着堆积的&rdquo;坏味道&ldquo;这将一点一点的侵蚀你的代码，项目慢慢的也许会不能的不可控。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock并不是一个坏的东西，结果的好坏在于使用的人，团队 的意识，如果是mock anywhere或者杜绝mock走向两个任意的极端都将是一个错误的抉择。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock更多的使用场景为对外界资源解依赖增强感知能力，以及对无响应的重要business的验证，后者长体现于一个没有返回子void的method，但是method比如增加用户积分，记录用户信息等的。然而对于有响应的business，我需要的不是mock而应该是assert，对于测试来说对于business来说应试是我的输入应该得到我预期的响应，而非我verify某个行为发生了，那么其结果一定就正确，当然对于实现来说这是成立的，但是从测试的价值来说这厮无意义的，这将是一个脆弱的测试，我认为一个好的测试将是&ldquo;黑盒测试&ldquo;，是一个business的描述，对一份约定，契约的阐述。</p>
+
+<p>&nbsp; &nbsp; &nbsp; 附言，如果你因为测试的速度，独立性来为自己的mock证明，那将是无意义的，不是每一个测试都必须在黄金法则内（0.1s），如果你对外部依赖，耗时依赖的分离，这我相信将不再是问题所在，测试的优化将是另一个有趣的话题，将不是本文内容之列。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/29/3107019.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">集成服务监控器-green.monitor发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常，在这里浪费了大量时间，在笔者为所在项目建立了一个第三方集成服务监控的Monitor，去实时监控项目所依赖的所有集成服务，数据库。现在开源在github <a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a>，在其sample目录下有个使用demo。</p>
+
+<h2><em>maven&nbsp;</em>dependency</h2>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>com.github.greengerong<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>green.monitor<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>1.2<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<h2>demo效果如下：</h2>
+
+<p><img src="http://images.cnitblog.com/blog/63184/201305/26183719-93e330e6d3b04c219f0ea423b973a356.png" alt="" /></p>
+
+<h1>建立自己的monitor：</h1>
+
+<p>1：首先在你spring mvc web project 的 pom文件中引 入green-monitor的dependency。(spring 3.0以上)
+2：在spring mvc的 ioc context config中启用annotation dirver，如下xml：</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">beans </span><span style="color: #ff0000;">xmlns</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans"</span><span style="color: #ff0000;">
+         xmlns:xsi</span><span style="color: #0000ff;">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #ff0000;">
+         xmlns:p</span><span style="color: #0000ff;">="http://www.springframework.org/schema/p"</span><span style="color: #ff0000;">
+         xmlns:mvc</span><span style="color: #0000ff;">="http://www.springframework.org/schema/mvc"</span><span style="color: #ff0000;">
+         xmlns:context</span><span style="color: #0000ff;">="http://www.springframework.org/schema/context"</span><span style="color: #ff0000;">
+         xmlns:util</span><span style="color: #0000ff;">="http://www.springframework.org/schema/util"</span><span style="color: #ff0000;">
+         xsi:schemaLocation</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"</span><span style="color: #0000ff;">&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">mvc:annotation-driven</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">context:component-scan </span><span style="color: #ff0000;">base-package</span><span style="color: #0000ff;">="green.monitor"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">id</span><span style="color: #0000ff;">="viewResolver"</span><span style="color: #ff0000;"> class</span><span style="color: #0000ff;">="org.springframework.web.servlet.view.InternalResourceViewResolver"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="prefix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>/WEB-INF/pages/<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="suffix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>.jsp<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">bean</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">beans</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>3:在项目resources(mian/resources)下建立monitor-config.xml。如果需要 在不同环境配置不同信息，可以在运行机器上加入key为appenv的环境变量，程序会根据不同agent加载monitor-config.[appenv].xml配置文件.或者利用mavn，gradle这类构建工具按环境输出配置信息。</p>
+
+<p>配置文件形如：</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitoring </span><span style="color: #ff0000;">version</span><span style="color: #0000ff;">="1.0"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="monitor-sample"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitor </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #0000ff;">&gt;</span>green.monitor.demo.MockMonitorRunner<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitor</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="hello service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/hello<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=success<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for hello service.should be success.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="error service 2"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=must be failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for error service.should be failed.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="Random failed Service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This monitor will be random failed!<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitoring</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>这样你就可以运行monitor了，url为host + &ldquo;/monitor&rdquo;</p>
+
+<h1>扩展</h1>
+
+<p>1：扩展runner 同时monitor为你提供了自我特定需求扩展的机会，在xml config中你应该主意到了有个monitor的配置节，这里就可以配置你自定义runner（其实现MonitorRunner接口),配置节name则作为后边item的引用name。</p>
+
+<p>系统默认加入了web-service,dababase,http-connection3个常用runner。具体使用请看demo。
+2：系统提供了service为基于spring restfull api,所以你可以在其他地方展示该monitor状况。(在下一个版本将提供jsonp的跨域处理)。</p>
+
+<p>&nbsp; &nbsp;monitor project repo:&nbsp;<a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/26/3100241.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/">CSV和集合对象基于Annotation操作封装</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-16T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件，对opencsv基于Annotation简单的封装，使得我们可以轻易的将CSV文件转化为List对像和把List对像导出为CSV文件。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 项目托管地址于github <a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于代码就不用多说了，简单看看如何使用。</p>
+
+<pre><code>package opencsv.utils;
+
+
+
+public class Person {
+
+
+
+private int id;
+
+
+
+@Csv("person name")
+
+private String name;
+
+
+
+@Ignore
+
+private int age;
+
+
+
+public Person(int id, String name, int age) {
+
+    this.id = id;
+
+    this.name = name;
+
+    this.age = age;
+
+}
+
+
+
+public Person() {
+
+
+
+}
+
+
+
+public int getId() {
+
+    return id;
+
+}
+
+
+
+public void setId(int id) {
+
+    this.id = id;
+
+}
+
+
+
+public String getName() {
+
+    return name;
+
+}
+
+
+
+public void setName(String name) {
+
+    this.name = name;
+
+}
+
+
+
+public int getAge() {
+
+    return age;
+
+}
+
+
+
+public void setAge(int age) {
+
+    this.age = age;
+
+}
+
+}
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>Mapping会自动将没有ignore的字段作为CSV的映射属性名作为CSV列头，如果针对特殊列则可以标记@CSV解决。</p>
+
+<p>1： 读取CSV:</p>
+
+<p>(1) 基于Annotation映射方式</p>
+
+<pre><code> @Test
+
+public void shouldGetPersonFromCSV() throws Exception {
+
+    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
+
+    List&lt;Person&gt; personList = personCsvMapper
+
+            .withMapping("id", "id")
+
+            .withMapping("person name", "name")
+
+            .fromCsv(reader);
+
+
+
+    assertThat(personList.size(), is(2));
+
+
+
+    final Person first = personList.get(0);
+
+    assertThat(first.getId(), is(1));
+
+    assertThat(first.getName(), is("name1"));
+
+
+
+    final Person second = personList.get(1);
+
+    assertThat(second.getId(), is(2));
+
+    assertThat(second.getName(), is("name2"));
+
+
+
+}
+</code></pre>
+
+<p>(2) 自定义映射方式&nbsp;</p>
+
+<pre><code>@Test
+
+public void shouldToCsv() throws Exception {
+
+    personCsvMapper.withMapping(new CsvColumnMapping(Person.class));
+
+    final ArrayList&lt;Person&gt; list = new ArrayList&lt;Person&gt;();
+
+    list.add(new Person(1, "name1", 20));
+
+    list.add(new Person(2, "name2", 30));
+
+    final StringWriter writer = new StringWriter();
+
+
+
+    personCsvMapper.toCsv(writer, list);
+
+
+
+    final String text = writer.toString();
+
+    assertThat(text, is("id,person name\n1,name1\n2,name2\n"));
+
+}
+</code></pre>
+
+<p>2: CSV输出</p>
+
+<pre><code>@Test
+
+public void shouldGetPersonFromCsv() throws Exception {
+
+    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
+
+    List&lt;Person&gt; personList = new CsvMapper&lt;Person&gt;(Person.class)
+
+            .withMapping(new CsvColumnMapping(Person.class))
+
+            .fromCsv(reader);
+
+
+
+    assertThat(personList.size(), is(2));
+
+
+
+    final Person first = personList.get(0);
+
+    assertThat(first.getId(), is(1));
+
+    assertThat(first.getName(), is("name1"));
+
+
+
+    final Person second = personList.get(1);
+
+    assertThat(second.getId(), is(2));
+
+    assertThat(second.getName(), is("name2"));
+
+
+
+}
+</code></pre>
+
+<p>最后在累赘下托管地址:<a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。其他的相比不用再说了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/16/3082700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/">闲谈简单设计(KISS)疑惑</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-07T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忙碌了一年了项目又到了交付了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到&rdquo;合适&rdquo;的&rdquo;完美&rdquo;的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人统一规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
+
+<p>&nbsp;&nbsp;&nbsp; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为&rdquo;简约&rdquo;，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说&ldquo;拥抱变化&rdquo;，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，减少类数量的庞大，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的&ldquo;简单设计&rdquo;，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是&rdquo;简单设计&ldquo;却没有足够的重构力度，抑或完全的优先设计，不进行不断的持续改进，逐步细化，做到&ldquo;简约而不简单&rdquo;记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/07/3063984.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">闲谈简单设计(KISS)疑惑</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#160;&#160;&#160;&#160;&#160;&#160; 忙碌了一年了项目又到了交互了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到”合适”的”完美”的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人同意规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
+
+<p>&#160;&#160;&#160; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为”简约”，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说“拥抱变化”，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
+
+<p>&#160;&#160;&#160;&#160;&#160; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
+
+<p>&#160;&#160;&#160;&#160; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的“简单设计”，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是”简单设计“却没有足够的重构力度，抑或完全的优先设计，不不断的持续改进，逐步细化，做到“简约而不简单”记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/27/3048250.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/">Angularjs Controller 间通信机制</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-16T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><span style="font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html">Angularjs开发一些经验总结</a>随笔中提到我们需要按照业务却分angular controller，避免过大无所不能的上帝controller，我们把controller分离开了，但是有时候我们需要在controller中通信，一般为比较简单的通信机制，告诉同伴controller我的某个你所关心的东西改变了，怎么办？如果你是一个javascript程序员你会很自然的想到异步回调响应式通信&mdash;事件机制(或消息机制)。对，这就是angularjs解决controller之间通信的机制，所推荐的唯一方式，简而言之这就是angular way。</span></p>
+
+<h2><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs为在scope中为我们提供了冒泡和隧道机制，$broadcast会把事件广播给所有子controller，而$emit则会将事件冒泡传递给父controller，$on则是angularjs的事件注册函数，有了这一些我们就能很快的以angularjs的方式去解决angularjs controller之间的通信，代码如下：</span></h2>
+
+<h2><span style="font-size: 16px; font-family: 楷体;">View:</span></h2>
+
+<div class="cnblogs_code">
+<pre><span style="color: #008080;">1</span> <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-app</span><span style="color: #0000ff;">="app"</span><span style="color: #ff0000;"> ng-controller</span><span style="color: #0000ff;">="parentCtr"</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #008080;">2</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr1"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">name :
+</span><span style="color: #008080;">3</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="name"</span><span style="color: #ff0000;"> type</span><span style="color: #0000ff;">="text"</span><span style="color: #ff0000;"> ng-change</span><span style="color: #0000ff;">="change(name);"</span> <span style="color: #0000ff;">/&gt;</span>
+<span style="color: #008080;">4</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #008080;">5</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr2"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">Ctr1 name:
+</span><span style="color: #008080;">6</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="ctr1Name"</span> <span style="color: #0000ff;">/&gt;</span>
+<span style="color: #008080;">7</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #008080;">8</span> <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p><span style="font-size: 16px; font-family: 楷体;">Controller:</span></p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #008080;"> 1</span> angular.module("app", []).controller("parentCtr"<span style="color: #000000;">,
+</span><span style="color: #008080;"> 2</span> <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
+</span><span style="color: #008080;"> 3</span>     $scope.$on("Ctr1NameChange"<span style="color: #000000;">,
+</span><span style="color: #008080;"> 4</span>  
+<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
+</span><span style="color: #008080;"> 6</span>         console.log("parent"<span style="color: #000000;">, msg);
+</span><span style="color: #008080;"> 7</span>         $scope.$broadcast("Ctr1NameChangeFromParrent"<span style="color: #000000;">, msg);
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    });
+</span><span style="color: #008080;"> 9</span> }).controller("childCtr1", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
+</span><span style="color: #008080;">10</span>     $scope.change = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (name) {
+</span><span style="color: #008080;">11</span>         console.log("childCtr1"<span style="color: #000000;">, name);
+</span><span style="color: #008080;">12</span>         $scope.$emit("Ctr1NameChange"<span style="color: #000000;">, name);
+</span><span style="color: #008080;">13</span> <span style="color: #000000;">    };
+</span><span style="color: #008080;">14</span> }).controller("childCtr2", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
+</span><span style="color: #008080;">15</span>     $scope.$on("Ctr1NameChangeFromParrent"<span style="color: #000000;">,
+</span><span style="color: #008080;">16</span>  
+<span style="color: #008080;">17</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
+</span><span style="color: #008080;">18</span>         console.log("childCtr2"<span style="color: #000000;">, msg);
+</span><span style="color: #008080;">19</span>         $scope.ctr1Name =<span style="color: #000000;"> msg;
+</span><span style="color: #008080;">20</span> <span style="color: #000000;">    });
+</span><span style="color: #008080;">21</span> });</pre>
+</div>
+
+
+<p><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这里childCtr1的name改变会以冒泡传递给父controller，而父controller会对事件包装在广播给所有子controller，而childCtr2则注册了change事件，并改变自己。注意父controller在广播时候一定要改变事件name。</span></p>
+
+<p><span style="font-size: 16px;">jsfiddle链接：<a href="http://jsfiddle.net/whitewolf/5JBA7/15/">http://jsfiddle.net/whitewolf/5JBA7/15/</a></span></p>
+
+<p>&nbsp;</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/whitewolf/5JBA7/15/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">利用Travis CI 让你的github项目持续构建(Node.js为例)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis CI每天运行超过4000次完整构建。对于做开源项目或者github的使用者，如果你的项目还没有加入Travis CI构建队列，那么我真的想对你说out了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面是本人的构建历史：</p>
+
+<p>&nbsp;<img src="http://images.cnitblog.com/blog/63184/201304/14093241-01c09362fb72431dabed0cb6635a0fdb.png" alt="" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; 搭建Travis CI build，需要你有个github账号和github项目：</p>
+
+<p>1：用github账号登陆<a href="http://travis-ci.org">Travis CI</a>.</p>
+
+<h5>2 :在右上角你的账户名点击进入 account，在Repositories tab页点击Sync now同步你的github项目，</h5>
+
+<p>3：选中项目将默认的off改变为on开启项目的持续集成。</p>
+
+<p>4：在你项目的根目录建立一个.travis.yml文件，内容为：</p>
+
+<p>language: node_js</p>
+
+<p>node_js:&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.4&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.6</p>
+
+<p>5: 在打开你的node.js的package.json文件，确保加入script/test节点：</p>
+
+<p>&ldquo;scripts&rdquo;: {</p>
+
+<p>&nbsp; &nbsp; &ldquo;test&rdquo;: &ldquo;XXXX&rdquo;</p>
+
+<p>&nbsp; },</p>
+
+<p>这里你可惜选择mak或者jasmine-node等node.js测试框架的测试命令。并且可以把依赖加入package的depends</p>
+
+<p>6：在你项目中运行npm test，确保正常工作。</p>
+
+<p>7： check in你的code到github，代开tracivs
+ci界面等待其同步并运行你的build构建。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; 如果你需要将你的build构建状态放在一个显眼的位置或者项目readme，你可以在首页My Repositories中找到项目并设置中复制状态图片code，形如：</p>
+
+<p><code>markdown
+  [![Build Status]([https://travis-ci.org/greengerong/
+  qing.png?branch=master)](https://travis-ci.org/greengerong/
+  qing](https://travis-ci.org/greengerong/qing.png?
+  branch=master)%5D(https://travis-ci.org/greengerong/qing))
+ </code></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;
+Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<a href="http://about.travis-ci.org/docs/">Travis Docs</a>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在上面提到的travis.yml文件中我们还可以加入build前后执行脚本，形如：</p>
+
+<p>before_script:&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_1&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_2</p>
+
+<p>after_script:&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_1&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_2</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp; &nbsp;将你的开源项目加入Travis CI队列吧，很容易让你的项目加入持续集成，持续构建队列。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/14/3019838.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/">利用Node.js为Node.js生成HttpStatusCode辅助类并发布到npm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 作为一个好的Restfull Api不仅在于service url的语义,可读性,幂等,正交，作为http状态码也很重要，一个好的Http Status Code给使用者一个很好的响应，比如200表示正常成功，201表示创建成功，409冲突，404资源不存在等等。所以在做一个基于node.js+mongodb+angularjs的demo时发现node.js express没有提供相应的辅助类，但是本人不喜欢将201,404这类毫无语言层次语义的东西到处充斥着，所以最后决定自己写一个，但是同时本人也很懒，不喜欢做重复的苦力活，怎么办？那就从我最熟悉的c#中HttpStatusCode枚举中copy出来吧，最后为了简便在mac上所以采用了利用node.js去解析msdn关于httpstatuscode的文档生成node.js的辅助类。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 代码很简单：</p>
+
+<pre><code>     var http = require('http');
+
+    var fs = require('fs');
+
+    var $ = require('jquery');
+
+    var output = "httpStatusCode/index.js";
+
+    (function(){
+
+
+
+        String.format = function() {
+
+            var s = arguments[0];
+
+            for (var i = 0; i &lt; arguments.length - 1; i++) {
+
+                var reg = new RegExp("\\{" + i + "\\}", "gm");
+
+                s = s.replace(reg, arguments[i + 1]);
+
+            }
+
+            return s;
+
+        };
+
+
+
+
+        var options = {
+
+            host:'msdn.microsoft.com',
+
+            port:80,
+
+            path:'/zh-cn/library/system.net.httpstatuscode.aspx'
+
+        };
+
+
+
+
+        http.get(options,function (response) {
+
+            var html = "";
+
+            response.on("data",function (chunk) {
+
+                html += chunk;
+
+            }).on("end", function () {
+
+                handler(html);
+
+            }).on('error', function (e) {
+
+                console.log("Got error: " + e.message);
+
+            });
+
+
+
+
+        function getHttpStatusCode(htmlString) {
+
+            var $doc = $(html);
+
+            var rows = $doc.find("table#memberList tr:gt(0)");
+
+            var status = {};
+
+            rows.each(function(i,row){
+
+                status[$(row).find("td:eq(1)").text()] = 
+
+                    parseInt($(row).find("td:eq(2)").text().match(/\d+/).toString());
+
+            });
+
+           return status;
+
+        };
+
+
+
+        function generateCode(status){
+
+           var code = "";
+
+           code += "exports.httpStatusCode = " + JSON.stringify(status) + ";";
+
+           return code;
+
+        };
+
+
+
+        function writeFile(code){
+
+            fs.writeFile(output, code, function(err) {
+
+                if(err) {
+
+                    console.log(err);
+
+                } else {
+
+                    console.log("The file was saved " + output + "!");
+
+                }
+
+            }); 
+
+        };
+
+
+
+
+        function handler(html){
+
+           var status = getHttpStatusCode(html);
+
+           var code = generateCode(status);
+
+           writeFile(code);
+
+        };
+
+
+
+
+      });
+
+    })();
+</code></pre>
+
+<p>代码寄宿在github：<a href="https://github.com/greengerong/node-httpstatuscode" title="https://github.com/greengerong/node-httpstatuscode">https://github.com/greengerong/node-httpstatuscode</a></p>
+
+<p>最终生成类为：</p>
+
+<pre><code>     exports.httpStatusCode = { 
+        "Continue": 100, 
+        "SwitchingProtocols": 101, 
+        "OK": 200, 
+        "Created": 201, 
+        "Accepted": 202, 
+        "NonAuthoritativeInformation": 203, 
+        "NoContent": 204, 
+        "ResetContent": 205, 
+        "PartialContent": 206, 
+        "MultipleChoices": 300, 
+        "Ambiguous": 300, 
+        "MovedPermanently": 301, 
+        "Moved": 301, 
+        "Found": 302, 
+        "Redirect": 302, 
+        "SeeOther": 303, 
+        "RedirectMethod": 303, 
+        "NotModified": 304, 
+        "UseProxy": 305, 
+        "Unused": 306, 
+        "TemporaryRedirect": 307, 
+        "RedirectKeepVerb": 307, 
+        "BadRequest": 400, 
+        "Unauthorized": 401, 
+        "PaymentRequired": 402, 
+        "Forbidden": 403, 
+        "NotFound": 404, 
+        "MethodNotAllowed": 405, 
+        "NotAcceptable": 406, 
+        "ProxyAuthenticationRequired": 407, 
+        "RequestTimeout": 408, 
+        "Conflict": 409, 
+        "Gone": 410, 
+        "LengthRequired": 411, 
+        "PreconditionFailed": 412, 
+        "RequestEntityTooLarge": 413, 
+        "RequestUriTooLong": 414, 
+        "UnsupportedMediaType": 415, 
+        "RequestedRangeNotSatisfiable": 416, 
+        "ExpectationFailed": 417, 
+        "UpgradeRequired": 426, 
+        "InternalServerError": 500, 
+        "NotImplemented": 501, 
+        "BadGateway": 502, 
+        "ServiceUnavailable": 503, 
+        "GatewayTimeout": 504, 
+        "HttpVersionNotSupported": 505 
+    };
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp; 最后考虑到或许还有很多像我一样懒散的人，所以共享此代码发布到了npm，只需要npm install httpstatuscode，便可以简单实用，如下是一个测试demo：</p>
+
+<pre><code>      var httpStatusCode = require("httpstatuscode").httpStatusCode;
+
+    var toBeEqual = function (actual,expected){
+
+        if(actual !== expected){
+
+         throw (actual + " not equal " + expected);
+
+        }
+
+    };
+
+    toBeEqual(httpStatusCode.OK,200);
+
+    toBeEqual(httpStatusCode.Created,201);
+
+    toBeEqual(httpStatusCode.BadRequest,400);
+
+    toBeEqual(httpStatusCode.InternalServerError,500);
+
+
+
+
+    console.log(httpStatusCode);
+
+    console.log("success");
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp; 懒人的文章总是代码多余文字，希望代码能说明一切，感谢各位能阅读此随笔。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/09/3009205.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/">edge.js架起node.js和.net互操作桥梁</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-31T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天要介绍的是edge.js这个github上刚兴起的开源项目，它可以让node.js和.net之间在in-process下互操作。.net版本在4.5及以上，因为.net4.5带来的Task，asyn，await关键字和node.js的Event模型正好匹配。如果你感兴趣的话，可以参见github<a href="https://github.com/tjanczuk/edge" title="https://github.com/tjanczuk/edge">https://github.com/tjanczuk/edge</a> 和<a href="http://tjanczuk.github.com/edge">Edge.js overview</a>.</p>
+
+<p>下面这幅图展示了edge.js在node.js和.net之间互操作的桥梁。Fun&lt;object,Task&lt;object&gt;&gt;表示输入为object类型，输出为Task&lt;object&gt;,后者对应node.js中的回调函数，前者则为.net方法输入参数。更多详情请参见github readme。</p>
+
+<p>&nbsp;&nbsp; <img src="https://f.cloud.github.com/assets/822369/234085/b305625c-8768-11e2-8de0-e03ae98e7249.PNG" alt="edge.js interop model" /></p>
+
+<p>&nbsp;&nbsp; 下面我们写个菲波基数作为demo尝鲜：完整项目寄宿在github：<a href="https://github.com/greengerong/edge-demo">edge-demo</a>。</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
+</span><span style="color: #008080;"> 2</span> 
+<span style="color: #008080;"> 3</span> <span style="color: #0000ff;">var</span> fib =<span style="color: #000000;"> edge.func({
+</span><span style="color: #008080;"> 4</span>     source: <span style="color: #0000ff;">function</span>() {<span style="color: #008000;">/*</span>
+<span style="color: #008080;"> 5</span> 
+<span style="color: #008080;"> 6</span> <span style="color: #008000;">        using System;
+</span><span style="color: #008080;"> 7</span> <span style="color: #008000;">        using System.Linq;
+</span><span style="color: #008080;"> 8</span> <span style="color: #008000;">        using System.Threading.Tasks;
+</span><span style="color: #008080;"> 9</span> 
+<span style="color: #008080;">10</span> <span style="color: #008000;">        public class Startup
+</span><span style="color: #008080;">11</span> <span style="color: #008000;">        {       
+</span><span style="color: #008080;">12</span> <span style="color: #008000;">             public async Task&lt;object&gt; Invoke(object input)
+</span><span style="color: #008080;">13</span> <span style="color: #008000;">            {
+</span><span style="color: #008080;">14</span> <span style="color: #008000;">                int v = (int)input;
+</span><span style="color: #008080;">15</span> <span style="color: #008000;">                var fib = Fix&lt;int, int&gt;(f =&gt; x =&gt; x &lt;= 1 ? 1 : f(x - 1) + f(x - 2));
+</span><span style="color: #008080;">16</span> <span style="color: #008000;">                return fib(v);
+</span><span style="color: #008080;">17</span> <span style="color: #008000;">            }
+</span><span style="color: #008080;">18</span> 
+<span style="color: #008080;">19</span> <span style="color: #008000;">            static Func&lt;T, TResult&gt; Fix&lt;T, TResult&gt;(Func&lt;Func&lt;T, TResult&gt;, Func&lt;T, TResult&gt;&gt; f)
+</span><span style="color: #008080;">20</span> <span style="color: #008000;">            {
+</span><span style="color: #008080;">21</span> <span style="color: #008000;">                return x =&gt; f(Fix(f))(x);
+</span><span style="color: #008080;">22</span> <span style="color: #008000;">            }
+</span><span style="color: #008080;">23</span> 
+<span style="color: #008080;">24</span> <span style="color: #008000;">            static Func&lt;T1, T2, TResult&gt; Fix&lt;T1, T2, TResult&gt;(Func&lt;Func&lt;T1, T2, TResult&gt;, Func&lt;T1, T2, TResult&gt;&gt; f)
+</span><span style="color: #008080;">25</span> <span style="color: #008000;">            {
+</span><span style="color: #008080;">26</span> <span style="color: #008000;">                return (x, y) =&gt; f(Fix(f))(x, y);
+</span><span style="color: #008080;">27</span> <span style="color: #008000;">            }
+</span><span style="color: #008080;">28</span> <span style="color: #008000;">        }
+</span><span style="color: #008080;">29</span> 
+<span style="color: #008080;">30</span>     <span style="color: #008000;">*/</span><span style="color: #000000;">},
+</span><span style="color: #008080;">31</span>     references: ['System.Core.dll'<span style="color: #000000;">]
+</span><span style="color: #008080;">32</span> <span style="color: #000000;">});
+</span><span style="color: #008080;">33</span> 
+<span style="color: #008080;">34</span> fib(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
+</span><span style="color: #008080;">35</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
+</span><span style="color: #008080;">36</span> <span style="color: #000000;">    console.log(result);
+</span><span style="color: #008080;">37</span> <span style="color: #000000;">});
+</span><span style="color: #008080;">38</span> 
+<span style="color: #008080;">39</span> <span style="color: #0000ff;">var</span> fibFromFile = edge.func(__dirname  + "/fib.cs"<span style="color: #000000;">);
+</span><span style="color: #008080;">40</span> fibFromFile(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
+</span><span style="color: #008080;">41</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
+</span><span style="color: #008080;">42</span> <span style="color: #000000;">    console.log(result);
+</span><span style="color: #008080;">43</span> <span style="color: #000000;">});
+</span><span style="color: #008080;">44</span> 
+<span style="color: #008080;">45</span> <span style="color: #0000ff;">var</span> fibFromDll =<span style="color: #000000;"> edge.func({
+</span><span style="color: #008080;">46</span>     assemblyFile: 'edge.demo.dll'<span style="color: #000000;">,
+</span><span style="color: #008080;">47</span>     typeName: 'edge.demo.Startup'<span style="color: #000000;">,
+</span><span style="color: #008080;">48</span>     methodName: 'Invoke'
+<span style="color: #008080;">49</span> <span style="color: #000000;">});
+</span><span style="color: #008080;">50</span> fibFromDll(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
+</span><span style="color: #008080;">51</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
+</span><span style="color: #008080;">52</span> <span style="color: #000000;">    console.log(result);
+</span><span style="color: #008080;">53</span> });</pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>效果:</p>
+
+<p><a href="http://images.cnitblog.com/blog/63184/201303/31010346-272ac9bd26634985a6884e51c25a586e.png"><img src="http://images.cnitblog.com/blog/63184/201303/31010347-37d768d0e0e0441882aa1a34909245f9.png" title="image" alt="image" /></a></p>
+
+<p>这里分为3类调用，直接源码嵌入node.js和文件外置，以后编译后的dll，多的不用说，其实很简单，如果你和一样同样喜欢js和.net的话。</p>
+
+<p>在当下node.js刚兴起，成型的框架还不够多，或者有时我们必须以c或者c++来完成node.js的本地扩展的时候，edge.js给我们提供了另一个可选的途径就是 强大的.net大家族。</p>
+
+<p>&nbsp;</p>
+
+<iframe src="http://tjanczuk.github.com/edge/#/" frameborder="0" width="100%" height="350"></iframe>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991200.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

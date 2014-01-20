@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>MEF学习笔记 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="MEF学习笔记">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/11/11/MEF-xue-xi-bi-ji">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">MEF学习笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式;</p>
+
+<p>&nbsp;&nbsp; MEF 为我们提供了一种运行时的扩展，具体应用在对象的实例化。它有目录（AssemblyCatalog）和容器（CompositionContainer）组成，他有输入输出（Exports和Imports）元数据标记，在对象实例化的时候会自动匹配这个契约。</p>
+
+<p>下面是官方的一个展示图：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled_thumb.png" title="untitled" alt="untitled" /></a></p>
+
+<p>由CompositionContainer来管理我们的多个可组合部件。</p>
+
+<p>下面我们来一个简单的示例来初步了解MEF:</p>
+
+<p>控制台程序：</p>
+
+<pre><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+    using System.ComponentModel.Composition;//添加引用 
+
+
+
+    namespace MEFTest 
+    { 
+        public interface ILog 
+        { 
+            void Write(string message); 
+        } 
+
+        [System.ComponentModel.Composition.Export(typeof(ILog))] 
+        public class ConsoleLog:ILog 
+        { 
+            public void Write(string message) 
+            { 
+                Console.WriteLine("Hello:"+message); 
+            } 
+        } 
+        class Program 
+        { 
+            [System.ComponentModel.Composition.Import(typeof(ILog))] 
+            public ILog Log; 
+            static void Main(string[] args) 
+            { 
+                Program pro = new Program(); 
+                pro.Init(); 
+                pro.Log.Write("Test"); 
+                Console.Read(); 
+            }
+
+            public void Init() 
+            { 
+                var assem = System.Reflection.Assembly.GetExecutingAssembly();//当前程序集 
+                var assemcat = new System.ComponentModel.Composition.Hosting.AssemblyCatalog(assem);//构建目录 
+                var container = new System.ComponentModel.Composition.Hosting.CompositionContainer(assemcat);//构建容器 
+                container.ComposeParts(this);//这是一个System.ComponentModel.Composition.AttributedModelServices 的扩展方法。 
+            } 
+        } 
+    }
+</code></pre>
+
+<p>输出为：</p>
+
+<p>Hello:Test</p>
+
+<p>ExportAttribute 定义如下：</p>
+
+<pre><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)] 
+    public class ExportAttribute : Attribute 
+    { 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+        public ExportAttribute(Type contractType); 
+
+        public ExportAttribute(string contractName, Type contractType);
+
+
+        public string ContractName { get; } 
+
+        public Type ContractType { get; } 
+    }
+</code></pre>
+
+<p>从他的定义我们可以知道他可以运用于我们的类、方法、属性、字段，并且可以多继承，但是不存在从父类的继承特性。</p>
+
+<p>他有三种不同的标记方式方式.在MEF中这里标记为可以导出，即注入到Import。</p>
+
+<p>ImportAttribute 定义：</p>
+
+<pre><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)] 
+        public class ImportAttribute : Attribute, IAttributedImport 
+        { 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(); 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(string contractName); 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(Type contractType); 
+
+            public ImportAttribute(string contractName, Type contractType); 
+
+            public bool AllowDefault { get; set; }
+
+            public bool AllowRecomposition { get; set; } 
+
+            public string ContractName { get; } 
+
+            public Type ContractType { get; } 
+
+            public CreationPolicy RequiredCreationPolicy { get; set; } 
+        }
+</code></pre>
+
+<p>&nbsp;同上Export,这里标记为可被Export注入的接口点。</p>
+
+<p>今天就写到这里了，希望大家多多指教，大家一起共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/11/MEF1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-11T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/" title="Previous Post: (翻译)31天Windows Phone学习-1-项目模板">&laquo; (翻译)31天Windows Phone学习-1-项目模板</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/11/12/VS-shu-chu-chuang-kou-output-view-di-xiao-ji-qiao-wen-jian-hang-hao-zi-fu-ding-wei/" title="Next Post: VS输出窗口（output view）的小技巧--文件行号字符定位">VS输出窗口（output view）的小技巧--文件行号字符定位 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

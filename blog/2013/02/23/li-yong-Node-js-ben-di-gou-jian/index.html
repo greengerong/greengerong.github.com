@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>利用Node.js本地构建 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="利用Node.js本地构建">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2013/02/23/li-yong-Node-js-ben-di-gou-jian">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">利用Node.js本地构建</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-23T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; Node.js是一个基于Google Chrome浏览器v8 javascript执行引擎的异步I/O事件驱动的运行平台。直从2009年诞生开始，已经在业界得到了很多的关注，在这里也必要多说，如果你还不清楚的，请移步到<a href="http://nodejs.org/">Node官网</a>。</p>
+
+<p>在这里我们要讲的是用Node.js来构建本地Build。构建本地Build，我们已经有很多选择，如Ant，Maven，Gradle等。为什么我们还需要Node.js？对于我们的开发中会有一些小的基本自动化构建，如文件的监控(Less编译)，javascript的压缩，不稳定集成服务代理，快速的集成反馈，文件的迁移&hellip;而对于项目来说我并不像引入太多的技术债, Node.js所使用的javascript是做web项目开发的一门必备技能，javascript作为一门比较容易入门语言，直从第一次接触Node.js，我爱不释手，由于我对Javascript基础，能够快速使用它，并不需要付出更多的学习成本，而且我感觉在服务端和客户端用同一种语言，在能一定代码重用妙不可言。而且Node.js提供了内置的web服务器，简单的文件监听，事件机制等也为做本地Build提供了很好的条件。</p>
+
+<p>1：文件监听</p>
+
+<div class="cnblogs_code" onclick="cnblogs_code_show('cbcdb5ce-a6b4-490b-b6ad-fb4a4bf03481')">
+<div id="cnblogs_code_open_cbcdb5ce-a6b4-490b-b6ad-fb4a4bf03481" class="cnblogs_code_hide">
+<pre><span style="color: #008080;">  1</span> <span style="color: #0000ff;">var</span> fs = require("fs"<span style="color: #000000;">);
+</span><span style="color: #008080;">  2</span> 
+<span style="color: #008080;">  3</span> <span style="color: #0000ff;">var</span> exec = require('child_process'<span style="color: #000000;">).exec
+</span><span style="color: #008080;">  4</span> 
+<span style="color: #008080;">  5</span> <span style="color: #0000ff;">var</span> underscore = require("underscore"<span style="color: #000000;">);
+</span><span style="color: #008080;">  6</span> 
+<span style="color: #008080;">  7</span> <span style="color: #0000ff;">var</span> configs =<span style="color: #000000;"> [
+</span><span style="color: #008080;">  8</span> 
+<span style="color: #008080;">  9</span>     {file:/.*\.less/g, command:" dotless.Compiler.exe style.less style.css"<span style="color: #000000;">}
+</span><span style="color: #008080;"> 10</span> 
+<span style="color: #008080;"> 11</span> <span style="color: #000000;">];
+</span><span style="color: #008080;"> 12</span> 
+<span style="color: #008080;"> 13</span> <span style="color: #0000ff;">var</span> source = "E:\\Project\\xxx\\style"<span style="color: #000000;">;
+</span><span style="color: #008080;"> 14</span> 
+<span style="color: #008080;"> 15</span>  
+<span style="color: #008080;"> 16</span> 
+<span style="color: #008080;"> 17</span> String.format = <span style="color: #0000ff;">function</span><span style="color: #000000;"> () {
+</span><span style="color: #008080;"> 18</span> 
+<span style="color: #008080;"> 19</span>     <span style="color: #0000ff;">var</span> s = arguments[0<span style="color: #000000;">];
+</span><span style="color: #008080;"> 20</span> 
+<span style="color: #008080;"> 21</span>     <span style="color: #0000ff;">for</span> (<span style="color: #0000ff;">var</span> i = 0; i &lt; arguments.length - 1; i++<span style="color: #000000;">) {
+</span><span style="color: #008080;"> 22</span> 
+<span style="color: #008080;"> 23</span>         <span style="color: #0000ff;">var</span> reg = <span style="color: #0000ff;">new</span> RegExp("\\{" + i + "\\}", "gm"<span style="color: #000000;">);
+</span><span style="color: #008080;"> 24</span> 
+<span style="color: #008080;"> 25</span>         s = s.replace(reg, arguments[i + 1<span style="color: #000000;">]);
+</span><span style="color: #008080;"> 26</span> 
+<span style="color: #008080;"> 27</span> <span style="color: #000000;">    }
+</span><span style="color: #008080;"> 28</span> 
+<span style="color: #008080;"> 29</span>  
+<span style="color: #008080;"> 30</span> 
+<span style="color: #008080;"> 31</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> s;
+</span><span style="color: #008080;"> 32</span> 
+<span style="color: #008080;"> 33</span> <span style="color: #000000;">};
+</span><span style="color: #008080;"> 34</span> 
+<span style="color: #008080;"> 35</span>  
+<span style="color: #008080;"> 36</span> 
+<span style="color: #008080;"> 37</span> (<span style="color: #0000ff;">function</span><span style="color: #000000;"> (fs, exec, underscore) {
+</span><span style="color: #008080;"> 38</span> 
+<span style="color: #008080;"> 39</span>     <span style="color: #0000ff;">var</span> readFiles = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (dir, done) {
+</span><span style="color: #008080;"> 40</span> 
+<span style="color: #008080;"> 41</span>         <span style="color: #0000ff;">var</span> results =<span style="color: #000000;"> [];
+</span><span style="color: #008080;"> 42</span> 
+<span style="color: #008080;"> 43</span>         fs.readdir(dir, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, list) {
+</span><span style="color: #008080;"> 44</span> 
+<span style="color: #008080;"> 45</span>             <span style="color: #0000ff;">if</span> (err) <span style="color: #0000ff;">return</span><span style="color: #000000;"> done(err);
+</span><span style="color: #008080;"> 46</span> 
+<span style="color: #008080;"> 47</span>             <span style="color: #0000ff;">var</span> pending =<span style="color: #000000;"> list.length;
+</span><span style="color: #008080;"> 48</span> 
+<span style="color: #008080;"> 49</span>             <span style="color: #0000ff;">if</span> (!pending) <span style="color: #0000ff;">return</span> done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
+</span><span style="color: #008080;"> 50</span> 
+<span style="color: #008080;"> 51</span>             list.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (file) {
+</span><span style="color: #008080;"> 52</span> 
+<span style="color: #008080;"> 53</span>                 file = dir + '/' +<span style="color: #000000;"> file;
+</span><span style="color: #008080;"> 54</span> 
+<span style="color: #008080;"> 55</span>                 fs.stat(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, stat) {
+</span><span style="color: #008080;"> 56</span> 
+<span style="color: #008080;"> 57</span>                     <span style="color: #0000ff;">if</span> (stat &amp;&amp;<span style="color: #000000;"> stat.isDirectory()) {
+</span><span style="color: #008080;"> 58</span> 
+<span style="color: #008080;"> 59</span>                         readFiles(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, res) {
+</span><span style="color: #008080;"> 60</span> 
+<span style="color: #008080;"> 61</span>                             results =<span style="color: #000000;"> results.concat(res);
+</span><span style="color: #008080;"> 62</span> 
+<span style="color: #008080;"> 63</span>                             <span style="color: #0000ff;">if</span> (!--pending) done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
+</span><span style="color: #008080;"> 64</span> 
+<span style="color: #008080;"> 65</span> <span style="color: #000000;">                        });
+</span><span style="color: #008080;"> 66</span> 
+<span style="color: #008080;"> 67</span>                     } <span style="color: #0000ff;">else</span><span style="color: #000000;"> {
+</span><span style="color: #008080;"> 68</span> 
+<span style="color: #008080;"> 69</span> <span style="color: #000000;">                        results.push(file);
+</span><span style="color: #008080;"> 70</span> 
+<span style="color: #008080;"> 71</span>                         <span style="color: #0000ff;">if</span> (!--pending) done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
+</span><span style="color: #008080;"> 72</span> 
+<span style="color: #008080;"> 73</span> <span style="color: #000000;">                    }
+</span><span style="color: #008080;"> 74</span> 
+<span style="color: #008080;"> 75</span> <span style="color: #000000;">                });
+</span><span style="color: #008080;"> 76</span> 
+<span style="color: #008080;"> 77</span> <span style="color: #000000;">            });
+</span><span style="color: #008080;"> 78</span> 
+<span style="color: #008080;"> 79</span> <span style="color: #000000;">        });
+</span><span style="color: #008080;"> 80</span> 
+<span style="color: #008080;"> 81</span> <span style="color: #000000;">    };
+</span><span style="color: #008080;"> 82</span> 
+<span style="color: #008080;"> 83</span>     <span style="color: #0000ff;">var</span> start = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (source, configs) {
+</span><span style="color: #008080;"> 84</span> 
+<span style="color: #008080;"> 85</span>         <span style="color: #0000ff;">var</span> watch = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, list) {
+</span><span style="color: #008080;"> 86</span> 
+<span style="color: #008080;"> 87</span>             configs.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (cmd) {
+</span><span style="color: #008080;"> 88</span> 
+<span style="color: #008080;"> 89</span>                 <span style="color: #0000ff;">var</span> files = underscore.filter(list, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (n) {
+</span><span style="color: #008080;"> 90</span> 
+<span style="color: #008080;"> 91</span>                     <span style="color: #0000ff;">return</span><span style="color: #000000;"> n.match(cmd.file);
+</span><span style="color: #008080;"> 92</span> 
+<span style="color: #008080;"> 93</span> <span style="color: #000000;">                });
+</span><span style="color: #008080;"> 94</span> 
+<span style="color: #008080;"> 95</span>                 files.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (file) {
+</span><span style="color: #008080;"> 96</span> 
+<span style="color: #008080;"> 97</span>                     fs.watch(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (oper, f) {
+</span><span style="color: #008080;"> 98</span> 
+<span style="color: #008080;"> 99</span>                         <span style="color: #0000ff;">var</span> changeCommand =<span style="color: #000000;"> String.format(cmd.command, f);
+</span><span style="color: #008080;">100</span> 
+<span style="color: #008080;">101</span>                         console.log(String.format("{0} changed,command '{1}' execute..."<span style="color: #000000;">, f, changeCommand));
+</span><span style="color: #008080;">102</span> 
+<span style="color: #008080;">103</span>                         exec(changeCommand, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, stdout, stderr) {
+</span><span style="color: #008080;">104</span> 
+<span style="color: #008080;">105</span>                             console.log(err ?<span style="color: #000000;"> stderr : stdout);
+</span><span style="color: #008080;">106</span> 
+<span style="color: #008080;">107</span> <span style="color: #000000;">                        });
+</span><span style="color: #008080;">108</span> 
+<span style="color: #008080;">109</span> <span style="color: #000000;">                    });
+</span><span style="color: #008080;">110</span> 
+<span style="color: #008080;">111</span> <span style="color: #000000;">                });
+</span><span style="color: #008080;">112</span> 
+<span style="color: #008080;">113</span>  
+<span style="color: #008080;">114</span> 
+<span style="color: #008080;">115</span> <span style="color: #000000;">            });
+</span><span style="color: #008080;">116</span> 
+<span style="color: #008080;">117</span> <span style="color: #000000;">        };
+</span><span style="color: #008080;">118</span> 
+<span style="color: #008080;">119</span> <span style="color: #000000;">        readFiles(source, watch);
+</span><span style="color: #008080;">120</span> 
+<span style="color: #008080;">121</span> <span style="color: #000000;">    };
+</span><span style="color: #008080;">122</span> 
+<span style="color: #008080;">123</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> {start:start};
+</span><span style="color: #008080;">124</span> 
+<span style="color: #008080;">125</span> })(fs, exec, underscore).start(source, configs);</pre>
+</div>
+</div>
+
+
+<p>在这里提供的示例是Less的编译，虽然Less本也提供了Node的编译工具和<a href="https://github.com/mynyml/watchr">watchr</a>监听工具,但是在项目中我会监听Less文件，却只有编译几个固定的Less引导文件。同样我们可以根据不同的文件执行不同的命令实现一些自动化。如：.js文件的同步到测试目录。</p>
+
+<p>2：文件的合并</p>
+
+<p>如果你用jasmine运行你的Javascript测试，你需要吧js文件的测试文件引入到runner head中，我一直很懒，喜欢一键搞定的感觉。利用node.js的模板引擎。</p>
+
+<p>&nbsp;&nbsp; 3：javascript 产品包压缩</p>
+
+<div class="cnblogs_code" onclick="cnblogs_code_show('ce19c67c-3081-44fa-8bb8-7296297268c8')">
+<div id="cnblogs_code_open_ce19c67c-3081-44fa-8bb8-7296297268c8" class="cnblogs_code_hide">
+<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> FILE_ENCODING = <span style="color: #800000;">'</span><span style="color: #800000;">utf-8</span><span style="color: #800000;">'</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 2</span> 
+<span style="color: #008080;"> 3</span> <span style="color: #000000;">function uglify(srcPath, jsMinPath) {
+</span><span style="color: #008080;"> 4</span> 
+<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">var</span> uglyfyJS = require(<span style="color: #800000;">'</span><span style="color: #800000;">uglify-js</span><span style="color: #800000;">'</span><span style="color: #000000;">),
+</span><span style="color: #008080;"> 6</span> 
+<span style="color: #008080;"> 7</span>        jsp =<span style="color: #000000;"> uglyfyJS.parser,
+</span><span style="color: #008080;"> 8</span> 
+<span style="color: #008080;"> 9</span>        pro =<span style="color: #000000;"> uglyfyJS.uglify,
+</span><span style="color: #008080;">10</span> 
+<span style="color: #008080;">11</span>        ast =<span style="color: #000000;"> jsp.parse( _fs.readFileSync(srcPath, FILE_ENCODING) );
+</span><span style="color: #008080;">12</span> 
+<span style="color: #008080;">13</span>  
+<span style="color: #008080;">14</span> 
+<span style="color: #008080;">15</span>       ast =<span style="color: #000000;"> pro.ast_mangle(ast);
+</span><span style="color: #008080;">16</span> 
+<span style="color: #008080;">17</span>       ast =<span style="color: #000000;"> pro.ast_a squeeze(ast);
+</span><span style="color: #008080;">18</span> 
+<span style="color: #008080;">19</span> <span style="color: #000000;">      _fs.writeFileSync(jsMinPath, pro.gen_code(ast), FILE_ENCODING);
+</span><span style="color: #008080;">20</span> 
+<span style="color: #008080;">21</span>     console.log(<span style="color: #800000;">'</span> <span style="color: #800000;">'</span>+ jsMinPath +<span style="color: #800000;">'</span><span style="color: #800000;">完成.</span><span style="color: #800000;">'</span><span style="color: #000000;">);
+</span><span style="color: #008080;">22</span> 
+<span style="color: #008080;">23</span> <span style="color: #000000;">}
+</span><span style="color: #008080;">24</span> 
+<span style="color: #008080;">25</span> uglify(js/test.js<span style="color: #800000;">'</span><span style="color: #800000;">, js/test.min.js</span><span style="color: #800000;">'</span>);</pre>
+</div>
+</div>
+
+
+<p>我们可以尽力发挥自己的想象，如本地Build自动运行，快速集成快速反馈；代理服务器，处理不稳定服务的集成，带来稳定的开发，比如testacluar就是根据node.js能够很容易的构建web服务器，从jstd转过来的javascript test和coverage插件。。。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/02/23/2923862.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-23T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/" title="Previous Post: 开源：Angularjs示例--Sonar中项目使用语言分布图(CoffeeScript版)">&laquo; 开源：Angularjs示例--Sonar中项目使用语言分布图(CoffeeScript版)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/27/nodejs-shang-HTML-fen-xi-li-qi-node-jquery/" title="Next Post: nodejs上HTML分析利器node-jquery">nodejs上HTML分析利器node-jquery &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

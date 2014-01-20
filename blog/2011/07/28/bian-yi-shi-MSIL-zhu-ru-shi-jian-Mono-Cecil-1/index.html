@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>编译时MSIL注入--实践Mono Cecil(1) - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="编译时MSIL注入--实践Mono Cecil(1)">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2011/07/28/bian-yi-shi-MSIL-zhu-ru-shi-jian-Mono-Cecil-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">编译时MSIL注入--实践Mono Cecil(1)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-28T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp; 紧接上两篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html">浅谈.NET编译时注入（C#&mdash;&gt;IL）</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>，在第一篇中我们简单研究了c#语法糖和PostSharp的MSIl注入，紧接第二篇中我们介绍了自定义MSBuild编译任务（记得有位老兄发链接用 MSBuild自动发布Silverlight xap ，我想说的我做的是自定义编译任务，不是什么发布，MSBuild本就是一个发布工具）。之所以在此前介绍编译Task是因为我讲介绍的就是利用MSBuild和MSILInject制作静态注入式AOP，想成熟的产品PostSharp，当然我也不会去重造轮子，但需要明白起原理和自动化注入时机。废话不多说，今天将请出我们的MSIL注入的好东西：Mono.Cecil.官方网站<a href="http://www.mono-project.com/Cecil" title="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>，他是一个强大的MSIL 注入工具，在我们的Reflector插件Reflexil（动态修改程序集插件，很好用，我已经尝试多次）就有他的身影出现。还有如大名鼎鼎的<a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a>，<a href="http://www.linqpad.net/">LINQPad</a>，<a href="http://www.janetdev.org/">Ja.NET</a>等等（可以参见<a href="https://github.com/jbevain/cecil/wiki/Users" title="https://github.com/jbevain/cecil/wiki/Users">https://github.com/jbevain/cecil/wiki/Users</a>）。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在本节我们需要看看这个Mono.Cecil，先来一个简单的认识。</p>
+
+<p>我来在我们的方法执行前后加入我们的输出信息：</p>
+
+<p>原来代码：</p>
+
+<pre><code> class Program 
+   { 
+       static void Main(string[] args) 
+       { 
+           Console.WriteLine("破浪Blog：http://www.cnblogs.com/whitewolf/"); 
+       } 
+   }
+</code></pre>
+
+<p>任务：</p>
+
+<p>1我将在方法执行前后添加一个Console.WriteLine(&ldquo;Method start&#8230;&rdquo;);</p>
+
+<p>2方法最后添加Console.WriteLine(&ldquo;Method finish&#8230;&#8220;）；</p>
+
+<p>具体Mono.Cecil Code：</p>
+
+<pre><code>using System; 
+  using System.Collections.Generic; 
+  using System.Linq; 
+  using System.Text; 
+  using Mono.Cecil; 
+  using Mono.Cecil.Cil; 
+
+  namespace BlogSample 
+  { 
+      class Program 
+      { 
+          static void Main(string[] args) 
+          { 
+              AssemblyDefinition assembiy = AssemblyFactory.GetAssembly(args[0]); 
+              foreach (Mono.Cecil.TypeDefinition item in assembiy.MainModule.Types) 
+              { 
+                  foreach (MethodDefinition method in item.Methods) 
+                  { 
+                      if (method.Name.Equals("Main")) 
+                      { 
+
+                          var ins = method.Body.Instructions[0]; 
+                          var worker = method.Body.CilWorker; 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method start…")); 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
+                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
+                          ins = method.Body.Instructions[method.Body.Instructions.Count - 1]; 
+
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method finish…")); 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
+                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
+                          break; 
+                      } 
+                  } 
+
+              } 
+
+              AssemblyFactory.SaveAssembly(assembiy, "IL_" + args[0]); 
+              Console.Read(); 
+          } 
+      } 
+  }
+</code></pre>
+
+<p>DOS运行结果：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128456040.jpg" title="无标题" alt="image" /></p>
+
+<p>我们在来看看反编译后的MSIL</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128509350.png" title="image" alt="image" />
+C#：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128529675.png" title="image" alt="image" />
+&nbsp;&nbsp;&nbsp; 在这最后我们可以想一下，如果我们利用Mono.Cecil可以干些什么事情，能做的当然很多，我首先想尝试的了与上一节<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>结合PostSharp一样的静态注入AOP框架。还能做什么的就要靠大家发挥大家聪明的才智。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-28T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/" title="Previous Post: 浅谈.NET编译时注入（C#--&gt;IL）">&laquo; 浅谈.NET编译时注入（C#--&gt;IL）</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/" title="Next Post: MSBuild + MSILInect实现编译时AOP-改变前后对比">MSBuild + MSILInect实现编译时AOP-改变前后对比 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

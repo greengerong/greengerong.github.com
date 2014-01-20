@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dynamic Linq 的Like扩展 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="Dynamic Linq 的Like扩展">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/08/03/Dynamic-Linq-di-Like-kuo-zhan">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Dynamic Linq 的Like扩展</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-03T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在上几节Linq动态组合查询时，在肖坤的<a href="http://www.cnblogs.com/killuakun/archive/2008/08/03/1259389.html">Linq动态查询与模糊查询（带源码示例）</a>时看到了微软的《<a href="http://www.cnblogs.com/cnblogsfans/archive/2008/04/01/1132918.html">Linq to SQL Dynamic 动态查询</a>》，但是楼主说&#8220;可惜Dynamic.cs也是不能使用like的，恨啊！&#8221;。于是我下载了Dynamic .cs仔细研究了下源码，一步一步的调试，本想在微软的类库里添加如like的支持，但是调试了半天，还是无从下手。但是发现了DLinq支持对方法的调用，支持 DataContext.Orders.Where(&ldquo;ShipCity.Contains(@0) &rdquo;,&ldquo;test&rdquo;);于是想了下我能否用正则表达式匹配Like表达式，转化为string.Contains（）。就尝试Code。说句其实微软已经支持了，只是我们有一些还是习惯于Like &#8216;str&#8217;形式吧了。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 赶快进入主题-Code:</p>
+
+<pre><code> /// &lt;summary&gt;
+      /// 操作like帮助类，自己增加的；
+      /// &lt;/summary&gt;
+      public class DynamicQueryableLikeHelper
+      {
+          public static string CheckLikeSattement(string predicate, ref  object[] values)
+          {
+              MatchCollection matches = Regex.Matches(predicate.ToLower(),
+  @"(?&lt;item&gt;(\s*like\s*((?&lt;param1&gt;(@[\d+]))|(?&lt;param2&gt;(((\')?\w+\'?))))))\s*((and)|(or)?)");
+              string s = predicate;
+              if (matches != null)
+              {
+                  int offset = 0;
+                  foreach (Match item in matches)
+                  {
+                      Group gitem = item.Groups["item"];
+                      if (!string.IsNullOrEmpty(item.Groups["param1"].Value))
+                      {
+                          Group g = item.Groups["param1"];
+                          string insertstr = ".Contains(" + g.Value + ")";
+                          s = DynamicQueryableLikeHelper.ChangePredicate(s, insertstr, gitem, ref offset);
+
+                      }
+                      else if (!string.IsNullOrEmpty(item.Groups["param2"].Value))
+                      {
+                          Group g = item.Groups["param2"];
+                          string insertstr = ".Contains(@" + values.Length + ")";
+                          s = DynamicQueryableLikeHelper.ChangePredicate(s, insertstr, gitem, ref offset);
+                          ArrayList list = new ArrayList(values);
+                          list.Add(g.Value.Replace("\'", ""));
+                          values = list.ToArray();//like对字符串操作所以没有考虑其他类型
+
+                      }
+
+                  }
+              }
+              return s;
+          }
+
+          public static string ChangePredicate(string s, string insertstr, Group gitem, ref int offset)
+          {
+              string strremove = s.Remove(gitem.Index + offset, gitem.Length);
+              s = strremove.Insert(gitem.Index + offset, insertstr);
+              offset += insertstr.Length - gitem.Length;
+              return s;
+          }
+      }
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上面代码就是正则表达式的运用，很简单。其中唯一花费了我很多时间就是我在正则表达式匹配时和修改后的string的index不一致，本想用个假单方法实现，最后还是么有办法，就只有加入了一个offset偏移量，每次删除插入的差值的和。这里就把like &#8216;value&#8217; 转化为 property.Contains（value）；其实和like还是有差别的Contains其实只等于 &#8216;%value%&#8217;。但是这里提供了一个方案，同理我们可以实现为&#8216;%value&#8217; 为EndWith，&#8216;vakue%&#8217;为StartWith。由于在我们的应用中一般常用的为Contains所以暂时还么有扩展其他两个，等有时间再做（实现也简单就是判断有么有%和他的位置选择我们所转化的函数名）。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 为了在Dlinq里扩展我在where方法里面加入了传入条件字符串的转化。并加入了参数ignoreLike，默认为False。我怕的扩展有某些问题暂时还么有测试出来了，还有就是不想改变原类库。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在我的扩展中支持ShipCity like @1 、ShipCity like &lsquo;don&#8217;、ShipCity like @0 两种形式，原来类库里面只支持第三种形式。我的前两者形式都是当做字符串处理的，因为我们的like操作一般都是对字符串操作，如果要支持其他类型可以转化类型，我以前写了一个类型属性转化的类，可以实现，但是我想这个问题么有必要。</p>
+
+<p>在类库里面该的方法有（已经注释了，还是贴出来看看调用）:</p>
+
+<p>&nbsp;</p>
+
+<pre><code>   public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate, params object[] values)
+      {
+          return (IQueryable&lt;T&gt;)Where((IQueryable)source, predicate, false, values);
+          //TODO:添加False
+      }
+
+      public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate,
+              bool ignoreLike, params object[] values)
+      //TOD:增加的方法，ignoreLike
+      {
+          return (IQueryable&lt;T&gt;)Where((IQueryable)source, predicate, ignoreLike, values);
+      }
+
+      public static IQueryable Where(this IQueryable source, string predicate, params object[] values)
+      //TOD:增加的方法，ignoreLike,下面方法的忽略ignoreLike写法；
+      {
+          return Where(source, predicate, false, values);
+      }
+      public static IQueryable Where(this IQueryable source, string predicate,
+                       bool ignoreLike, params object[] values)
+      //TODO:改变参数ignoreLike
+      {
+          if (source == null) throw new ArgumentNullException("source");
+          if (predicate == null) throw new ArgumentNullException("predicate");
+          if (!ignoreLike)
+          {
+              predicate = DynamicQueryableLikeHelper.CheckLikeSattement(predicate, ref values);
+              //TODO:增加语句；
+          }
+          LambdaExpression lambda = DynamicExpression.ParseLambda(source.ElementType,
+                      typeof(bool), predicate, values);
+          return source.Provider.CreateQuery(
+              Expression.Call(
+                  typeof(Queryable), "Where",
+                  new Type[] { source.ElementType },
+                  source.Expression, Expression.Quote(lambda)));
+      }
+</code></pre>
+
+<p>&nbsp;&nbsp; 只是TODO处就是我改变的。下面该测试测试下（数据库Northwind的orders表）。</p>
+
+<p>&nbsp;</p>
+
+<pre><code>IQueryable&lt;Orders&gt; q = DataContext.Orders
+ .Where("ShipCity like @1 and ShipCity like @0 or ShipCity  like 'don' and ShipCity like 'don'
+        and ShipCity like 'don'  or EmployeeID1 =1", "test  ", "test").OrderBy("ShipCity");
+          //IQueryable&lt;Orders&gt; q =  DataContext.Orders.Where("ShipCity.Contains(@0) ","test");
+            Console.WriteLine(DataContext.GetCommand(q).CommandText);
+</code></pre>
+
+<p>  为了测试多个我邮箱投个懒就把ShipCity like &lsquo;don&rsquo; 赋值了多次。
+输出sql为：&nbsp;</p>
+
+<pre><code>  SELECT [t0].[OrderID], [t0].[CustomerID], [t0].[EmployeeID] AS [EmployeeID1], [t 0].[OrderDate], [t0].[RequiredDate], [t0].[ShippedDate], [t0].[ShipVia], [t0].[F reight], [t0].[ShipName], [t0].[ShipAddress], [t0].[ShipCity], [t0].[ShipRegion] , [t0].[ShipPostalCode], [t0].[ShipCountry] FROM [dbo].[Orders] AS [t0] WHERE (([t0].[ShipCity] LIKE @p0) AND ([t0].[ShipCity] LIKE @p1)) OR (([t0].[Shi pCity] LIKE @p2) AND ([t0].[ShipCity] LIKE @p3) AND ([t0].[ShipCity] LIKE @p4)) OR ([t0].[EmployeeID] = @p5) ORDER BY [t0].[ShipCity]&amp;nbsp;
+</code></pre>
+
+<p>如果在类库中有和你的字符串等冲突就可以用ignoreLike为真，避免我的扩展。</p>
+
+<p>最后希望大家一起帮我测试下，如果有什么问题请留言和Email：<a href="&amp;#109;&amp;#97;&amp;#105;&amp;#108;&amp;#116;&amp;#111;&amp;#58;&amp;#103;&amp;#114;&amp;#122;&amp;#120;&amp;#50;&amp;#50;&amp;#49;&amp;#48;&amp;#64;&amp;#49;&amp;#54;&amp;#51;&amp;#46;&amp;#99;&amp;#111;&amp;#109;">破狼Email</a>指出，我好改变。</p>
+
+<p>附带：扩展后的<a href="http://files.cnblogs.com/whitewolf/%E6%88%91%E6%89%A9%E5%B1%95%E6%94%AF%E6%8C%81LIke%E7%9A%84DLinq.rar">Dynamic.cs</a>下载</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/08/03/1790954.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-03T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/07/14/qu-diao-VS-wan-gu-Add-in/" title="Previous Post: 去掉VS顽固Add-in">&laquo; 去掉VS顽固Add-in</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/" title="Next Post: Windows服务中Timer组件">Windows服务中Timer组件 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
