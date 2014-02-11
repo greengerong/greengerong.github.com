@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-11T23:19:07+08:00</updated>
+  <updated>2014-02-11T23:21:47+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -62,11 +62,12 @@
 
 <p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
 
+<p>html 代码</p>
+
 <pre><code>    &lt;!DOCTYPE html&gt;
     &lt;html id="ng-app" ng-app="app"&gt;
     &lt;head&gt;
     &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
-
       &lt;meta charset="utf-8"&gt;
       &lt;title&gt;JS Bin&lt;/title&gt;
     &lt;/head&gt;
@@ -81,9 +82,11 @@
        &lt;/div&gt;
     &lt;/body&gt;
     &lt;/html&gt;             
+</code></pre>
 
+<p>js 代码</p>
 
-angular.module("app",[])
+<pre><code>angular.module("app",[])
 .controller("demo",[function(){
   var vm = this;
 
