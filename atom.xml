@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-11T23:21:47+08:00</updated>
+  <updated>2014-02-11T23:42:36+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Angular ngClick 阻止冒泡和默认行为]]></title>
+    <title type="html"><![CDATA[Angular ngClick阻止冒泡,默认行为]]></title>
     <link href="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/"/>
     <updated>2014-02-11T22:27:29+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation</id>
@@ -101,7 +101,7 @@
 }]);
 </code></pre>
 
-<p>可以在jsbin](<a href="http://jsbin.com/delow/3/watch?html,js,output">http://jsbin.com/delow/3/watch?html,js,output</a>)查看效果。</p>
+<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
 
 <p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
 
