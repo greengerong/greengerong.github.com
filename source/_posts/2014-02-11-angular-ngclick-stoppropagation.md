@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "angular ngClick 阻止冒泡和默认行为"
+title: "angular ngClick阻止冒泡,默认行为"
 date: 2014-02-11 22:27:29 +0800
 comments: true
 category: "angularjs"
@@ -81,7 +81,7 @@ js 代码
       return vm;
     }]);
 
-可以在jsbin](http://jsbin.com/delow/3/watch?html,js,output)查看效果。
+可以在[jsbin](http://jsbin.com/delow/3/watch?html,js,output)查看效果。
 
 首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。
 
