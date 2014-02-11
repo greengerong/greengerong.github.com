@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在最近的公司框架开发中，利用了网上某大牛的反射缓存库作为辅助。在测试的时候发现出现了巨大的内存泄露，在频繁的操作后，内存不断的产生巨大的开销，10多分钟就占有了5,6m的内存。解决问题的时，公司不能上网，没有内存分析工具， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 由于工作几个月来框架开发已经好久没写博客了，今天想抽点时间出来冒泡。在领域驱动开发中SOA已经成为我们开发的主流技术，在面对当前众多的UI框架选择（asp.net mvc,silverlight,wpf,winform,wp7等一些列甚至跨语言）， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,7 +64,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
-  <li><a href="/atom.xml">RSS</a></li>
 </ul>
 
 </nav>
@@ -72,6 +71,337 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/">WCF利用企业库Unity框架的IOC层次解耦</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-07T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 由于工作几个月来框架开发已经好久没写博客了，今天想抽点时间出来冒泡。在领域驱动开发中SOA已经成为我们开发的主流技术，在面对当前众多的UI框架选择（asp.net mvc,silverlight,wpf,winform,wp7等一些列甚至跨语言），我们能够重用和抽象的业务逻辑是不会变化的，为了屏蔽这些UI的复杂性和差异性，我们可能会采用诸如wcf soap的服务发布。再说在领域驱动开发中我们肯定会把各个逻辑分层次隔离解除耦合，这就出现了N层架构，在于我们的每一层次之间的耦合度当前流程的解决方案IOC框架，以及业务解耦AOP。这里要解决的是SOA框架WCF和IOC框架的结合。</p>
+
+<p>&nbsp;&nbsp;&nbsp; WCF框架是一个极易扩展的框架，提供了非常多的扩展点（InstanceProvider，MessageInspector，CallContextInitializer，MessageFilter，MessageFormatter，ParameterInspector等等）。在这里IOC是作为一个容器组装创建的框架，我们需要的是对服务对象的创建，所以我们选择的当然是InstanceProvider扩展点。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 多说一句废话，正如前篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a>和 <a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a>中所说，我是一个固执的人，个人希望注入支持自定义配置文件，不喜欢把配置信息全部写在一个web.config/app.config中，也不喜欢el的写在同一个外部配置文件中，倾向于每个模块在一个不同的配置文件，并在模块中在区分container容器，所以特别写了每个单独配置文件的延时加载，缓存。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面就是对InstanceProvider的扩展：</p>
+
+<pre><code>public class ELUnityInstanceProvider : IInstanceProvider 
+   { 
+       private Type contractType; 
+       private string container; 
+       private string configFile; 
+       private string name; 
+       private static object lockObj = new object(); 
+       private static Dictionary&lt;string, UnityConfigurationSection&gt; sectionDict = new Dictionary&lt;string, UnityConfigurationSection&gt;(); 
+
+       public ELUnityInstanceProvider(Type contractType, string container, string configFile, string name) 
+       { 
+           this.name = name; 
+           this.configFile = configFile; 
+           this.contractType = contractType; 
+           this.container = container; 
+       } 
+
+       #region IInstanceProvider 成员 
+
+       public object GetInstance(System.ServiceModel.InstanceContext instanceContext, System.ServiceModel.Channels.Message message) 
+       { 
+           Microsoft.Practices.Unity.Configuration.UnityConfigurationSection unitySection = GetUnityConfigurationSection(); 
+
+           if (unitySection != null) 
+           { 
+               var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(this.container) ? unitySection.Containers.Default.Name : this.container); 
+               var obj = string.IsNullOrEmpty(this.name) ? container.Resolve(this.contractType) : container.Resolve(this.contractType, this.name); 
+
+               var piabAtttr = obj.GetType().GetCustomAttributes(typeof(ELPolicyinjectionAttribute), false) as ELPolicyinjectionAttribute[]; 
+               if (piabAtttr.Length &gt; 0) 
+               { 
+                   obj = Microsoft.Practices.EnterpriseLibrary.PolicyInjection.PolicyInjection.Wrap(this.contractType, obj); 
+               } 
+               return obj; 
+           } 
+           return null; 
+       } 
+       private Microsoft.Practices.Unity.Configuration.UnityConfigurationSection GetUnityConfigurationSection() 
+       { 
+           if (!string.IsNullOrEmpty(this.configFile)) 
+           { 
+               if (!sectionDict.ContainsKey(this.configFile)) 
+               { 
+                   lock (lockObj) 
+                   { 
+                       if (!sectionDict.ContainsKey(this.configFile)) 
+                       { 
+                           Microsoft.Practices.Unity.Configuration.UnityConfigurationSection unitySection = null; 
+                           var fileMap = new System.Configuration.ExeConfigurationFileMap { ExeConfigFilename = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, this.configFile) }; 
+                           System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(fileMap, System.Configuration.ConfigurationUserLevel.None); 
+                           unitySection = configuration == null ? null : configuration.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+                           if (unitySection == null) 
+                               return null; 
+                           sectionDict.Add(this.configFile, unitySection); 
+                       } 
+                   } 
+               } 
+               return sectionDict[this.configFile]; 
+           } 
+
+           return System.Configuration.ConfigurationManager.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+       } 
+
+       public object GetInstance(System.ServiceModel.InstanceContext instanceContext) 
+       { 
+           return this.GetInstance(instanceContext, null); 
+       } 
+
+       public void ReleaseInstance(System.ServiceModel.InstanceContext instanceContext, object instance) 
+       { 
+           IDisposable disposable = instance as IDisposable; 
+           if (disposable != null) 
+           { 
+               disposable.Dispose(); 
+           } 
+           instance = null; 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 下面我们需要已Attribute方式贴在Contract上：</p>
+
+<pre><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
+   { 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       #region IContractBehavior 成员 
+
+       public void AddBindingParameters(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters) 
+       { 
+
+       } 
+
+       public void ApplyClientBehavior(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime) 
+       { 
+
+       } 
+
+       public void ApplyDispatchBehavior(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.DispatchRuntime dispatchRuntime) 
+       { 
+           dispatchRuntime.InstanceProvider = new ELUnityInstanceProvider(contractDescription.ContractType, this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public void Validate(ContractDescription contractDescription, ServiceEndpoint endpoint) 
+       { 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p> 对于wcf同时我们也该支持配置文件扩展：</p>
+
+<pre><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
+   { 
+       [ConfigurationProperty("Container", IsRequired = false, DefaultValue = "")] 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       [ConfigurationProperty("ConfigFile", IsRequired = false, DefaultValue = "")] 
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       [ConfigurationProperty("Name", IsRequired = false, DefaultValue = "")] 
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       protected override object CreateBehavior() 
+       { 
+           return new ELUnityBehavior(this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public override Type BehaviorType 
+       { 
+           get { return typeof(ELUnityBehavior); } 
+       } 
+   }
+
+public class ELUnityBehavior : IEndpointBehavior 
+   { 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       public ELUnityBehavior(string container, string configFile, string name) 
+       { 
+           this.Name = name; 
+           this.ConfigFile = configFile; 
+           this.Container = container; 
+       } 
+       #region IEndpointBehavior 成员 
+
+       public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters) 
+       { 
+
+       } 
+
+       public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime) 
+       { 
+
+       } 
+
+       public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher) 
+       { 
+           endpointDispatcher.DispatchRuntime.InstanceProvider = new ELUnityInstanceProvider(endpoint.Contract.ContractType, this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public void Validate(ServiceEndpoint endpoint) 
+       { 
+
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>目前我们已经简单实现了：看看测试：</p>
+
+<pre><code>   Contract：
+
+   [ServiceContract()] 
+   [Green.WCFExtensions.ELUnityBehavior(Container = "test", ConfigFile = "App1.config")]   
+  public interface IHelloService 
+  { 
+      [OperationContract] 
+      string Say(string name); 
+  }
+
+Service：
+
+public class HelloService1 : IHelloService 
+   { 
+       [Microsoft.Practices.Unity.Dependency("proxy")] 
+       public IHelloService Service 
+       { 
+           get; 
+           set; 
+       } 
+
+       #region IHelloService 成员 
+          public string Say(string name) 
+       { 
+                     return Service.Say(name); 
+
+       } 
+
+       #endregion 
+   } 
+
+   public class HelloServiceProxy : IHelloService 
+   { 
+       #region IHelloService 成员 
+       public string Say(string name) 
+       { 
+           return string.Format("Hello:{0}", name); 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>配置app1.config:</p>
+
+<pre><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
+&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloService1,WcfService" &gt; &lt;/register&gt;
+</code></pre>
+
+<p>IOC,AOP博客参考：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">AOP之PostSharp初见-OnExceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html">AOP之PostSharp2-OnMethodBoundaryAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html">AOP之PostSharp3-MethodInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html">AOP之PostSharp5-LocationInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html">AOP之PostSharp6-EventInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/admin/AOP%E4%B9%8BPostSharp7-%E8%A7%A3%E5%86%B3IOC%20%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5new%E9%97%AE%E9%A2%98%EF%BC%8C%E7%AE%80%E5%8C%96IOC%E5%BC%80%E5%8F%91%E5%92%8CIOC%E5%AF%B9%E8%B1%A1LazyLoad">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad </a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/category/312638.html">http://www.cnblogs.com/whitewolf/category/312638.html</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/07/2342071.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1649,106 +1979,6 @@ public class TestCallHandlerAttribute : HandlerAttribute
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/08/22/dai-ma-sheng-cheng-ji-shu-mu-lu/">代码生成技术-目录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-22T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/08/22/dai-ma-sheng-cheng-ji-shu-mu-lu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/08/22/dai-ma-sheng-cheng-ji-shu-mu-lu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在这里总结的是本博客中的一些关系代码生成的技术，其中包含&nbsp;CodeDom，CodeSmith，T4，Mono.Cecil&nbsp;MSIL（静态AOP实例）注入，以及一些杂记&nbsp;。</p>
-
-<h2><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">一：CodeDom目录</a></h2>
-
-<p>&nbsp;CodeDOM 提供了表示许多常见的源代码元素类型的类型。您可以设计一个生成源代码模型的程序，使用 CodeDOM 元素
-构成一个对象图。可以使用受支持的编程语言的 CodeDOM 代码生成器，将该对象图呈现为源代码。CodeDOM 也可以用于将
-源代码编译成二进制程序集。</p>
-
-<p>CodeDOM 的一些一般用途包括：</p>
-
-<ol>
-<li>模板化代码生成：生成 ASP.NET、XML Web 服务客户端代理、代码向导、设计器或其他代码发出机制的代码。</li>
-<li><p>动态编译：支持以一种或多种语言进行代码编译。</p></li>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/19/1760708.html"><font color="#3d81ee">CodeDom系列-开篇HelloWord</font></a></p></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/20/1761367.html"><font color="#3d81ee">CodeDom系列二&mdash;-程序基本结构&mdash;符号三角形问题</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/22/1762589.html"><font color="#3d81ee">CodeDom系列&mdash;事件（event）定义和反射调用</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/05/1771138.html"><font color="#3d81ee">CodeDom系列四&mdash;Code生成</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/06/1771868.html"><font color="#3d81ee">CodeDom系列五&mdash;动态编译</font></a>&nbsp;</li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html"><font color="#3d81ee">CodeDom六&mdash;实体类生成示例</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html"><font color="#6699cc">代码生成技术&mdash;CodeDom VS T4</font></a></li>
-</ol>
-
-
-<h2><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html">二：CodeSimth：</a></h2>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeSmith是一个基于模板的代码生成器，它可以生成任何基于ASCII的编程语言代码。生成的代码可以使用属性进行定制。属性可以是任何具有设计器的.NET对象（大多数.NET内置类型已经有设计器），也可以是一个允许你从结果中有条件地添加或移除代码的简单的boolean 属性，或是一个对象，例如能够访问数据库表信息的TableSchema对象（包括在SchemaExplorer中）。CodeSmith完全可扩展，它允许用户创建定制属性类型。CodeSmith中包括多个定制属性类型的例子，例如，定制一个允许选择XML文件（使用XmlSerializer可将其反序列化到对象中）的属性类型。CodeSmith还允许用户在模板中引用和调用指定的外部程序集并且允许从外部程序集的类生成模板。</p>
-
-<ul>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/13/1776379.html"><font color="#3d81ee">CodeSmith模板引擎系列一</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/14/1777088.html"><font color="#3d81ee">CodeSmith模板引擎系列二&mdash;文件目录树</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html"><font color="#3d81ee">通过代码生成机制实现强类型编程-CodeSimth版</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836731.html"><font color="#6699cc">Dbml文件提取建表TSql-CodeSmith</font></a></li>
-</ul>
-
-
-<h2>三：MSIL注入：&nbsp;</h2>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器。</p>
-
-<ul>
-<li>&nbsp;<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html"><font color="#6699cc">浅谈.NET编译时注入（C#&mdash;&gt;IL）</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html"><font color="#6699cc">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html"><font color="#6699cc">编译时MSIL注入&mdash;实践Mono Cecil(1)</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html"><font color="#6699cc">MSBuild + MSILInect实现编译时AOP之预览</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html"><font color="#6699cc">MSBuild + MSILInect实现编译时AOP-改变前后对比</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html"><font color="#6699cc">PostSharp &ndash; Thread Dispatching（GUI多线程）</font></a></li>
-</ul>
-
-
-<h2>四：其他杂记</h2>
-
-<ul>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html"><font color="#6699cc">代码生成技术&mdash;CodeDom VS T4</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html"><font color="#6699cc">Razor Templating Engine</font></a></li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 其实在.net平台还有很多code生成技术T4（其实现在我更倾向于T4模板，但是园内牛人们已经有很多文章了，所以没写），Razor（ASP.NET MVC3带来的一种语法很漂亮，舒服的模板引擎，我也很喜欢，只是需要4.0，我打大多数工作任在3.5上工作），Mono.Cecil（MSIL程序集静态注入），Emit（MSIL的动态注入），StringTemplate（古老的模板引擎了），以及其他第三方的模板引擎，都没有写完。在以后可能会更侧重于实际应用案例。</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/22/2149947.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1787,6 +2017,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick 阻止冒泡和默认行为</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
@@ -1812,10 +2046,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
       </li>
     
   </ul>

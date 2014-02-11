@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-01-12T20:35:44+08:00</updated>
+  <updated>2014-02-11T23:19:07+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,99 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Angular ngClick 阻止冒泡和默认行为]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/"/>
+    <updated>2014-02-11T22:27:29+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation</id>
+    <content type="html"><![CDATA[<p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
+
+<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
+
+<p>如ngClick在官方文档是这么描述的：</p>
+
+<pre><code>Expression to evaluate upon click. (Event object is available as $event)
+</code></pre>
+
+<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
+
+<pre><code>    var ngEventDirectives = {};
+    forEach(
+      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+      function(name) {
+        var directiveName = directiveNormalize('ng-' + name);
+        ngEventDirectives[directiveName] = ['$parse', function($parse) {
+          return {
+            compile: function($element, attr) {
+              var fn = $parse(attr[directiveName]);
+              return function(scope, element, attr) {
+                element.on(lowercase(name), function(event) {
+                  scope.$apply(function() {
+                    fn(scope, {$event:event});
+                  });
+                });
+              };
+            }
+          };
+        }];
+      }
+    );
+</code></pre>
+
+<p>在上边代码我们可以得到两个信息：</p>
+
+<ol>
+<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
+<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
+</ol>
+
+
+<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
+
+<pre><code>    &lt;!DOCTYPE html&gt;
+    &lt;html id="ng-app" ng-app="app"&gt;
+    &lt;head&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
+
+      &lt;meta charset="utf-8"&gt;
+      &lt;title&gt;JS Bin&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body ng-controller="demo as d"&gt;
+       &lt;div ng-click="d.click('parent',$event)"&gt;
+         given some text for click
+         &lt;hr&gt;
+         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
+         &lt;hr&gt;
+         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
+
+       &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;             
+
+
+angular.module("app",[])
+.controller("demo",[function(){
+  var vm = this;
+
+  vm.click = function(name,$event){
+    console.log(name +" -----called");
+    if(vm.stopPropagation){
+      $event.stopPropagation();
+    }
+  };
+
+  return vm;
+}]);
+</code></pre>
+
+<p>可以在jsbin](<a href="http://jsbin.com/delow/3/watch?html,js,output">http://jsbin.com/delow/3/watch?html,js,output</a>)查看效果。</p>
+
+<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
+
+<p>希望大家已经明白了，不要再问这类问题了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ngCloak 实现 Angular 初始化闪烁最佳实践]]></title>
@@ -1447,95 +1540,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 <p>&nbsp;&nbsp;&nbsp; 懒人的文章总是代码多余文字，希望代码能说明一切，感谢各位能阅读此随笔。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/09/3009205.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[edge.js架起node.js和.net互操作桥梁]]></title>
-    <link href="http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/"/>
-    <updated>2013-03-31T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang</id>
-    <content type="html"><![CDATA[<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天要介绍的是edge.js这个github上刚兴起的开源项目，它可以让node.js和.net之间在in-process下互操作。.net版本在4.5及以上，因为.net4.5带来的Task，asyn，await关键字和node.js的Event模型正好匹配。如果你感兴趣的话，可以参见github<a href="https://github.com/tjanczuk/edge" title="https://github.com/tjanczuk/edge">https://github.com/tjanczuk/edge</a> 和<a href="http://tjanczuk.github.com/edge">Edge.js overview</a>.</p>
-
-<p>下面这幅图展示了edge.js在node.js和.net之间互操作的桥梁。Fun&lt;object,Task&lt;object&gt;&gt;表示输入为object类型，输出为Task&lt;object&gt;,后者对应node.js中的回调函数，前者则为.net方法输入参数。更多详情请参见github readme。</p>
-
-<p>&nbsp;&nbsp; <img src="https://f.cloud.github.com/assets/822369/234085/b305625c-8768-11e2-8de0-e03ae98e7249.PNG" alt="edge.js interop model" /></p>
-
-<p>&nbsp;&nbsp; 下面我们写个菲波基数作为demo尝鲜：完整项目寄宿在github：<a href="https://github.com/greengerong/edge-demo">edge-demo</a>。</p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span> <span style="color: #0000ff;">var</span> fib =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;"> 4</span>     source: <span style="color: #0000ff;">function</span>() {<span style="color: #008000;">/*</span>
-<span style="color: #008080;"> 5</span> 
-<span style="color: #008080;"> 6</span> <span style="color: #008000;">        using System;
-</span><span style="color: #008080;"> 7</span> <span style="color: #008000;">        using System.Linq;
-</span><span style="color: #008080;"> 8</span> <span style="color: #008000;">        using System.Threading.Tasks;
-</span><span style="color: #008080;"> 9</span> 
-<span style="color: #008080;">10</span> <span style="color: #008000;">        public class Startup
-</span><span style="color: #008080;">11</span> <span style="color: #008000;">        {       
-</span><span style="color: #008080;">12</span> <span style="color: #008000;">             public async Task&lt;object&gt; Invoke(object input)
-</span><span style="color: #008080;">13</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">14</span> <span style="color: #008000;">                int v = (int)input;
-</span><span style="color: #008080;">15</span> <span style="color: #008000;">                var fib = Fix&lt;int, int&gt;(f =&gt; x =&gt; x &lt;= 1 ? 1 : f(x - 1) + f(x - 2));
-</span><span style="color: #008080;">16</span> <span style="color: #008000;">                return fib(v);
-</span><span style="color: #008080;">17</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span> <span style="color: #008000;">            static Func&lt;T, TResult&gt; Fix&lt;T, TResult&gt;(Func&lt;Func&lt;T, TResult&gt;, Func&lt;T, TResult&gt;&gt; f)
-</span><span style="color: #008080;">20</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">21</span> <span style="color: #008000;">                return x =&gt; f(Fix(f))(x);
-</span><span style="color: #008080;">22</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">23</span> 
-<span style="color: #008080;">24</span> <span style="color: #008000;">            static Func&lt;T1, T2, TResult&gt; Fix&lt;T1, T2, TResult&gt;(Func&lt;Func&lt;T1, T2, TResult&gt;, Func&lt;T1, T2, TResult&gt;&gt; f)
-</span><span style="color: #008080;">25</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">26</span> <span style="color: #008000;">                return (x, y) =&gt; f(Fix(f))(x, y);
-</span><span style="color: #008080;">27</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">28</span> <span style="color: #008000;">        }
-</span><span style="color: #008080;">29</span> 
-<span style="color: #008080;">30</span>     <span style="color: #008000;">*/</span><span style="color: #000000;">},
-</span><span style="color: #008080;">31</span>     references: ['System.Core.dll'<span style="color: #000000;">]
-</span><span style="color: #008080;">32</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">33</span> 
-<span style="color: #008080;">34</span> fib(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">35</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">36</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">37</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">38</span> 
-<span style="color: #008080;">39</span> <span style="color: #0000ff;">var</span> fibFromFile = edge.func(__dirname  + "/fib.cs"<span style="color: #000000;">);
-</span><span style="color: #008080;">40</span> fibFromFile(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">41</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">42</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">43</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">44</span> 
-<span style="color: #008080;">45</span> <span style="color: #0000ff;">var</span> fibFromDll =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;">46</span>     assemblyFile: 'edge.demo.dll'<span style="color: #000000;">,
-</span><span style="color: #008080;">47</span>     typeName: 'edge.demo.Startup'<span style="color: #000000;">,
-</span><span style="color: #008080;">48</span>     methodName: 'Invoke'
-<span style="color: #008080;">49</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">50</span> fibFromDll(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">51</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">52</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">53</span> });</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>效果:</p>
-
-<p><a href="http://images.cnitblog.com/blog/63184/201303/31010346-272ac9bd26634985a6884e51c25a586e.png"><img src="http://images.cnitblog.com/blog/63184/201303/31010347-37d768d0e0e0441882aa1a34909245f9.png" title="image" alt="image" /></a></p>
-
-<p>这里分为3类调用，直接源码嵌入node.js和文件外置，以后编译后的dll，多的不用说，其实很简单，如果你和一样同样喜欢js和.net的话。</p>
-
-<p>在当下node.js刚兴起，成型的框架还不够多，或者有时我们必须以c或者c++来完成node.js的本地扩展的时候，edge.js给我们提供了另一个可选的途径就是 强大的.net大家族。</p>
-
-<p>&nbsp;</p>
-
-<iframe src="http://tjanczuk.github.com/edge/#/" frameborder="0" width="100%" height="350"></iframe>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991200.html" title="原文首发">原文首发请看这里</a></p>
 ]]></content>
   </entry>
   
