@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-28T21:48:57+08:00</updated>
+  <updated>2014-01-12T20:35:44+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,7 +20,7 @@
     <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak</id>
     <content type="html"><![CDATA[<p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
 
-<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }}} )我们也可以改为ng-bind来实现避免。</p>
+<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
 
 <pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
  &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
@@ -420,7 +420,7 @@
 <pre><code>www.example.com/ajax.html?_escaped_fragment_=key=value
 </code></pre>
 
-<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原声支持对#！的解析。</p>
+<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原生支持对#！的解析。</p>
 
 <p>基于这个协议和phantomjs(headless的浏览器内核)我们的SPA SEO工具 <a href="http://prerender.io/">prerender(http://prerender.io/)</a>应运而生，在官方和社区的支持下，现在已经有node.js express,ruby on rails,java,asp.net,php,python主流框架和nginx之类的支持。</p>
 
