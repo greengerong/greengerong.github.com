@@ -9,8 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。 在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,45 +71,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/13/dynamic-form-with-angular/">Angular实现动态表单</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-13T00:35:02+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/13/dynamic-form-with-angular/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/13/dynamic-form-with-angular/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -961,6 +921,96 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">记录maven java.lang.String Cannot Be Cast to XX Error</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:java;gutter:false;">-----------------------------------------------------
+
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:225)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:145)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:84)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:59)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.singleThreadedBuild(LifecycleStarter.java:183)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:161)
+         at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:319)
+         at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:156)
+         at org.jvnet.hudson.maven3.launcher.Maven3Launcher.main(Maven3Launcher.java:79)
+         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+         at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+         at java.lang.reflect.Method.invoke(Method.java:601)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launchStandard(Launcher.java:329)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:239)
+         at org.jvnet.hudson.maven3.agent.Maven3Main.launch(Maven3Main.java:146)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:127)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:74)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:118)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:48)
+         at hudson.remoting.Request$2.run(Request.java:326)
+         at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)
+         at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+         at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
+         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+         at java.lang.Thread.run(Thread.java:722)
+Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibility occured while executing [group id]:[artifact id]:[version]:start: java.lang.String cannot be cast to java.io.File
+-----------------------------------------------------
+</pre>
+</div>
+
+
+<p>&nbsp; &nbsp; &nbsp; 在花费了我大半的时间，将本地环境的maven，jdk等设为和ci一致后最后定位到maven的版本问题，其终究原因是因为maven在3.0.3才支持配置参数为泛型集合(List&lt;T&gt;,Set&lt;T&gt;&hellip;)，在3.0.2及一下本班不支持此写法。</p>
+
+<p>&nbsp; &nbsp; &nbsp;修改次error的方法有两种：</p>
+
+<ol>
+<li>将ci Server的maven更新到3.0.3以上。(但是在我们的ci server更新有些困难，还有本人认为如果写一个plugin只能工作的固定version，这和一个废物差不多，所以选择了第二种方法)。</li>
+<li>将泛型集合List&lt;T&gt;改为Array T[]。（项目中某大神写的List&lt;File&gt;我轻易的改为File[].在执行前改为Arrays.asList(XXX)）;</li>
+</ol>
+
+
+<p>&nbsp; &nbsp; &nbsp;一切搞定。在此记录希望对于遇见同类问题的人有所帮助。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/09/10/3313515.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -997,10 +1047,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/02/13/dynamic-form-with-angular/">Angular实现动态表单</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
       </li>
     
@@ -1026,6 +1072,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
       </li>
     
   </ul>
