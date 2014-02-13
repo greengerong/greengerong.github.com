@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-13T14:14:28+08:00</updated>
+  <updated>2014-02-13T14:19:56+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,15 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Angular实现动态表单]]></title>
-    <link href="http://greengerong.github.io/blog/2014/02/13/dynamic-form-with-angular/"/>
-    <updated>2014-02-13T00:35:02+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/02/13/dynamic-form-with-angular</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Angular ngClick阻止冒泡,默认行为]]></title>
@@ -123,12 +114,12 @@
     <link href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/"/>
     <updated>2013-12-27T00:00:00+08:00</updated>
     <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak</id>
-    <content type="html"><![CDATA[<p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
+    <content type="html"><![CDATA[<p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式({% raw %} {{ express }} {% endraw %} ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
 
-<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
+<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({% raw %}{{ express }} {% endraw %})我们也可以改为ng-bind来实现避免。</p>
 
-<pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
- &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
+<pre><code> &lt;div id="template1" ng-cloak&gt;{{ 'hello' }}&lt;/div&gt;
+ &lt;div id="template2" ng-cloak class="ng-cloak"&gt;{% raw %} {{ 'hello IE7' }} {% endraw %} &lt;/div&gt;
  &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
 </code></pre>
 
@@ -172,7 +163,7 @@
  }])
 
 &lt;div ng-app="app" ng-controller="demoController"&gt;
-    hello : {{title}} !
+    hello : {% raw %}{{title}}{% endraw %} !
 &lt;/div&gt;
 </code></pre>
 
@@ -184,7 +175,7 @@
 }])
 
 &lt;div ng-app="app" ng-controller="demoController as demo"&gt;
-     hello : {{demo.title}} !
+     hello : {% raw %}{{demo.title}}{% endraw %} !
 &lt;/div&gt;
 </code></pre>
 
@@ -274,14 +265,14 @@
                     &lt;h3&gt;mask&lt;/h3&gt;
                     &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
                     &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
-                    &lt;pre&gt;{{ test | json }}&lt;/pre&gt;
+                    &lt;pre&gt;{% raw %}{{ test | json }}{% endraw %}&lt;/pre&gt;
                 &lt;/div&gt;
 
                 &lt;div&gt;
                     &lt;h3&gt;y-m-d&lt;/h3&gt;
                     &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
                     &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
-                    &lt;pre&gt;{{ test1 | json }}&lt;/pre&gt;
+                    &lt;pre&gt;{% raw %}{{ test1 | json }}{% endraw %}&lt;/pre&gt;
                 &lt;/div&gt;
 
 
@@ -290,14 +281,14 @@
                     &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
                     &lt;input type="text" ng-model="test3" input-mask="'Regex'"
                      mask-option="regexOption"/&gt;
-                    &lt;pre&gt;{{ test3 | json }}&lt;/pre&gt;
+                    &lt;pre&gt;{% raw %}{{ test3 | json }}{% endraw %}&lt;/pre&gt;
                 &lt;/div&gt;
 
                 &lt;div&gt;
                     &lt;h3&gt;Function&lt;/h3&gt;
                     &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
                     &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
-                    &lt;pre&gt;{{ test4 | json }}&lt;/pre&gt;
+                    &lt;pre&gt;{% raw %}{{ test4 | json }}{% endraw %}&lt;/pre&gt;
                 &lt;/div&gt;
 
             &lt;/div&gt;
@@ -358,6 +349,29 @@
 </code></pre>
 
 <p>这里值列列举了jquery.inputmask的简单实用方式，更复杂的方式请移步到jquery.inputmask查看。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Web组件化-angularjs实践]]></title>
+    <link href="http://greengerong.github.io/blog/2013/12/11/angularjs-web-component/"/>
+    <updated>2013-12-11T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/12/11/angularjs-web-component</id>
+    <content type="html"><![CDATA[<p>在过去的web标准经历了一个飞速的发展，随着时间的推移，用户对web的体验也越来越重视，从最初的简单静态页面到以ajax标志的web2.0，在这个时代我们所面临的问题是用户的体验和可恶的浏览器的兼容(IE成为了我们所唾弃的产物，IE6的葬礼之类的形式足以表明这点)，所以有了Prototype，Mootools，jQuery这类浏览器兼容和util的库，特别jQuery的出现以其独特的兼容性，一致性和优雅的选择器和链式风格影响了整个业界的发展,作为这个时代的产物jQuery是个很出色的库，正的如它所说，做到了"write less，do more",成为这个时代的标志。然而随着互联网的突增，我们的JavaScript代码量也暴增，是的我们再度陷入到JavaScript的维护管理的困境。JavaScript本来是一门作为浏览器上的脚本语言出身，并不适合于大规模开发。所以在我们所能看见的MDV框架的出现，这个时候前段的JavaScript代码已得到我们越来越注重，MDV框架提出了我们也需要向对待后端系统(spring,web api)一样对前段逻辑进行统一管理，分层(表现逻辑，viewmodel，视图)。所以Backbone，AngularJS，Ember，Spine之类的数据绑定框架横空出世，力求给我们带来代码的模块管理，数据、视图的分离，他们以他们不同的方式解决共同的问题：</p>
+
+<p>1.如何更好地模块化开发</p>
+
+<p>2.业务数据如何组织</p>
+
+<p>3.界面和业务数据，业务逻辑的分离</p>
+
+<p>与此同时其实用户体验的要求html5，ECMAScript也在快速的推进。在这里我想说的是 Web组件化的也在蓬勃的发展起来，以Google额polymer为代表的框架，库也在悄无声息的到来，虽然这需要等到浏览器的大统一，但是我们相信在不久的将来将会到来。在这里我所激动和希望是组件的共享，假设我们能够一个想java maven repo，cdn之类的共有或者私有repo，在你需要的地方只需要import那将是多么美好的事情，这也许是意淫，但也未必不可。</p>
+
+<p>有希望总是好的，在过去一年我所尝试的就是基于angular这优秀的框架directive dsl和maven build去实现我所期望的组件化共享愿景。在基于node的<a href="http://component.io/">component</a>前端管理框架稍有相似之处。</p>
+
+<p>回到正题，在angularjs中如何去做到组件化：</p>
+
+<p><img src="/images/blog_img/web-angular.jpg" alt="/images/blog_img/web-angular.jpg" /></p>
 ]]></content>
   </entry>
   
