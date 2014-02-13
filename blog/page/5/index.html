@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 今天和师弟聊天聊到他们项目开发，有些同事总是提前考虑性能优化，需求变更又是一大堆的重写，让我想起了Donald Knuth 提到的：对软件的过早地优化是万恶的根源。这里就简单的说几条重要的软件名人哲学。 1：软件中唯一不变的就是变化。 &nbsp &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下服务层，SOA面向服务架构，架构设计-业务逻辑层，以及一些面面向设计原则理解和软件架构设计箴言。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,86 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">架构设计-数据访问层简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">服务层</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层</a>，以及一些面<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言</a>。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质，并能对数据进行读取和写入CRUD。这就是数据访问层。你可能是利用xml等文件格式磁盘存储，常用的关系数据库存储，或者NoSql(not only sql)的内存存储或文档存储等等存储介质。而这里我只关心关系数据库存储。</p>
+
+<p>&nbsp;&nbsp; 数据层需要提供的职责有：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：CRUD服务。作为唯一可以与存储介质交互的中间层出现，负责业务对象的增加，修改，删除，加载。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：查询服务。这不同于CRUD中的R（read），read倾向于的单个对象，元组。而这里的查询针对复杂查询，比如一个国内电商的客户为四川的订单。这里会涉及仓储层。所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。</p>
+
+<p>&nbsp;&nbsp; 3：事务管理。这里所说的是业务事务，在一个应用系统中每次请求都会产生多次的多数据对象的新增，修改，删除操作。如果我们每次都依次代开数据库连接，准备数据包，操作数据库，关闭数据连接。这些将会给我们带来很多不必要的性能开销。数据库管理员经常会要求&#8220;尽量少的与数据库交互&#8221;，这也必须成为我们的开发原则。更好的操作是我们在内存中建立一个和数据仓库，维护变化的对象，在业务操作完成一次性提交到数据存储介质，提供业务事务。业务事务有个很好听的名字工作单元（UOW），在微软给我们提供的DataSet，orm框架都回必须存在业务事务。</p>
+
+<p>&nbsp;&nbsp; 4：并发处理。UOW应避免业务数据连接的多次提交打开而出现，但在内存离线操作，这就可能导致数据一致性问题。在多用户的环境，对数据并发处理需要制定一个策略。一般我们会采用乐观并发处理：用户可以任意的离线修改，在修改更新时候检查对象是否被修改，如果被修改者本次更新失败。简单的说就是防止丢失修改。防止丢失修改，我们可以采用where 加上一系列原值，或者加上修改时间戳或者版本号标记。同时还有许多其他的并发解决模式，但乐观并发锁用到更普遍。</p>
+
+<p>&nbsp;&nbsp; 5：数据上下文：整和所有职责。在数据访问层概念职责都会有一个共同的暴露给外部的接口。我们需要一个高层次的组件，来同一提供对数据存储介质的访问操作。，同一访问数据库CRUD，事务，并发服务的高层次类，叫做数据上下文（Context）。EF中的ObjectContext，NHibernate的session，linq to sql 的DataContext等等。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 数据访问层的一些概念（这里不会是全部，仅一些个人觉得重要的概念）：</p>
+
+<p>&nbsp; 1： 数据映射器：将内存中修改的对象提交至存储介质，则需要要映射逻辑来完成，数据映射器就是就是一个实现将某种类型的业务对象持久化的类（数据映射器模式定义如《P of EAA》）。</p>
+
+<p>&nbsp; 2：仓储层（Repository）：在上面提到：所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。在面向对象的世界里我们用对象进行查询，返回结果为对象集。这里的查询可能是从数据库，或者来至缓存，这取决你的策略，你仓储层的实现。</p>
+
+<p>&nbsp; 3:工作单元（UOW）：Martin Fowler《P of EAA》 定义：工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。在上面第3点业务事务讲的差不多，这里不是累述。</p>
+
+<p>&nbsp;&nbsp; 4：标示映射（Identity Map）：其作用在于：便于跟踪业务对象，调用者在一个业务事务中使用的是同一个实例，而不是每次执行产生一个新的对象。表示映射为一个散列表存储（散列具有快速定位O(1)）。类似于缓存的实现方式，保证了在同一个业务事务数据上下文引用修改同一个业务对象。但绝不同于缓存。从持续时间来说，标示映射生命周期为业务事务内。实现上等同于数据上下文期。但比起缓存来说其周期太短，根本不能对性能有多大的改善。缓存更重要的命中率，而标示映射保证同一数据上下文采用修改同一个业务对象的引用。</p>
+
+<p>&nbsp;&nbsp; 5：乐观并发锁：在上面也曾提到，其保证离线操作数据的对数据一致性的冲突解决方法。首先乐观在于允许离线操作，容忍冲突，防止数据丢失修改，可利用原读取数据值得where条件或者时间戳，版本号解决。</p>
+
+<p>&nbsp; 6：延时加载：对象并不是一次性加载完成，而是按照需求多次加载数据，到用时加载。业务对象太多关联，数据量太多余庞大，而我们每次业务事务需要操作的对象都只会是部分，不需要太多的数据对象。同事业务对象中还存在循环引用，这样不适于对象整体的一次性加载。延时加载提供了优化，意图在&#8220;尽可能的少加载，并按需加载，只加载需要的数据部分&#8221;。</p>
+
+<p>7：持久化透明对象（PI或POCO）：当对象模型不存在任何外部依赖，特别是对于数据访问层的依赖，那么这个模型就是持久化透明的，POCO。一个POCO的对象不需要继承至某个特定的类，实现特定的接口，或提供专门的构造函数。一个非持久化透明的对象这以为者存在外部的依赖，而我们更喜欢领域对象只是一个简单额c#类，可以在持久化层等独立切换。这就导致实现的时候我们无法很直接的跟踪业务对象，这就是面向方面编程（AOP）或者代理模式的大显身手。可惜AOP在.net中不是那么直接，很多ORM框架如NHibernate之类的利用代理模式Emit动态注入IL实现跟踪，添加新的行为。所以NHibernate中要求领域对象的所有字段属性方法都必须是虚方法可重写的。:</p>
+
+<p>8：CQRS（Command Query Responsibility Segregation，命令查询职责分离）：CQRS是在DDD的实践中引入CQS理论而出现的一种体系结构模式，命令和查询被分离。具体可以参 Martin Fowler的CQRS文章： <a href="http://martinfowler.com/bliki/CQRS.html" title="http://martinfowler.com/bliki/CQRS.html">http://martinfowler.com/bliki/CQRS.html</a></p>
+
+<p>&nbsp; 暂时写到这里，一下想不全，天已不早了，后续慢慢补上吧。</p>
+
+<p>同些列文章还有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>2.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a>3.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>4.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>5.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a>6.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>7.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2030,149 +2110,6 @@ public class AddressDto
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/">PropertyGrid无意的发现DisplayNameAttribute及应用</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-11T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 说到这个winform属性控件<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)，要从以前参与项目架构研发，做报表引擎开始，当时我们的目的是想做一个比较简单的报表引擎没有RDLC等报表复杂，是为了让我们的可以操作，用户可以凭借表单拖拽设置样式完成报表模板设置，与我们开发人员代码实现的数据流结合，产生基于apose.cells的excel报表。把我们多而烦的报表业务交给用户完成，用户利用报表设计完成的模板保存为xml保存至服务器，工以后使用。当时做到表单控件属性设计无疑我们采用了<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)控件，<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)支持很多的控件设计时交互，很强大，但是对于控件的属性汉化却存在问题，当时也没仔细查阅msdn，直接让控件属性为中文字段设计完成，对用户提示。最后项目基本完成，能够应对简单报表，稍微减少了些开发工作量吧。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在时隔今天做基本控件的封装的时候突然看见了System.ComponentModel.DisplayNameAttribute这个标签，见名就考虑是做什么的，查询msdn才知道他就可以完成对<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx )的现实名称修改（<a href="http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute(v=VS.80">http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute(v=VS.80).aspx?TPSecNotice</a>.aspx?TPSecNotice &ldquo;<a href="http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute">http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute</a>(v=VS.80).aspx?TPSecNotice&rdquo;)）。于是便尝试了一下。</p>
-
-<p>代码：</p>
-
-<pre><code>        using System; 
-    using System.Collections.Generic; 
-    using System.Linq; 
-    using System.Text; 
-
-    namespace WindowsFormsApplication1 
-    { 
-        class TestControl : System.Windows.Forms.TextBox, Green.SmartUIControls.ISmartUIControl 
-        { 
-            [System.ComponentModel.Browsable(true)] 
-            [System.ComponentModel.DefaultValue(null)] 
-            [System.ComponentModel.Description("数据绑定匹配属性")] 
-            [System.ComponentModel.Category("Green.SmartUIControl")] 
-            [System.ComponentModel.DisplayName(ControlResource.Data)] 
-            public string Data 
-            { get; set; } 
-
-            #region ISmartUIControl 成员 
-            private Green.SmartUIControls.IDataBindSetting _DataBindSetting; 
-            [System.ComponentModel.Browsable(false)] 
-            public Green.SmartUIControls.IDataBindSetting DataBindSetting 
-            { 
-                get 
-                { 
-                    if (_DataBindSetting == null &amp;&amp; !this.DesignMode) 
-                    { 
-                        _DataBindSetting = new Green.SmartUIControls.DefaultDataBindSetting(this); 
-                    } 
-                    return _DataBindSetting; 
-                } 
-                set 
-                { 
-                    if (value != null) 
-                    { 
-                        _DataBindSetting = value; 
-                    } 
-                } 
-            } 
-            [System.ComponentModel.Browsable(true)] 
-            [System.ComponentModel.DefaultValue(null)] 
-            [System.ComponentModel.Description("数据绑定匹配属性")] 
-            [System.ComponentModel.Category("Green.SmartUIControl")] 
-            [System.ComponentModel.DisplayName(ControlResource.DataBindProperty)] 
-            public string DataBindProperty 
-            { 
-                get; 
-                set; 
-            } 
-
-            [System.ComponentModel.Browsable(true)] 
-            [System.ComponentModel.DefaultValue(null)] 
-            [System.ComponentModel.Description("Dock")] 
-            [System.ComponentModel.Category("Green.SmartUIControl")] 
-            [System.ComponentModel.DisplayName(ControlResource.Dock)] 
-            public override System.Windows.Forms.DockStyle Dock 
-            { 
-                get 
-                { 
-                    return base.Dock; 
-                } 
-                set 
-                { 
-                    base.Dock = value; 
-                } 
-            } 
-            #endregion 
-        } 
-
-        public class ControlResource 
-        { 
-    #if Debug 
-            public const string Dock = "Dock"; 
-            public const string DataBindProperty = "DataBindProperty"; 
-            public const string Data = "Data"; 
-    #else 
-
-            public const string Dock = "停靠"; 
-            public const string DataBindProperty = "数据绑定匹配属性"; 
-            public const string Data = "数据"; 
-    #endif 
-        } 
-    }
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 最后需要特别说明的是对于Attribute我们只能传入常量。在我们的很多开发员使用控件等时候我们也许都习惯了英文对于中文不适应了，但是我们可以利用vs的条件编译绕过，编译出不同的dll包，开发版和用户使用版本。如上面的对于调试和发布版的显示设置。这个ControlResource我们可以开发一个简单的工具对其xml保存并生成我们需要的代码维护。</p>
-
-<p>看图：</p>
-
-<p>设置Dock=Top：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126194804.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126241645.png" title="QQ截图未命名2" alt="QQ截图未命名2" /></a></p>
-
-<p>设置Dock=Bottom：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126254842.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126261909.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
-
-<p>&nbsp;&nbsp;&nbsp; 同时我也考虑到在我们的工作流自定义表单设计和代码生成工具等中我们也可以运用，表单设计的控件字段属性设置，保存为xml或者二级制，xaml存储之类。简单说一句对于silverlight，wpf 的对于我觉得保存为xaml是最简单的，我们可以直接保存xaml，并简单转换加入父容器中。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/11/2347096.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -2211,6 +2148,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/13/dynamic-form-with-angular/">Angular实现动态表单</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
       </li>
     
@@ -2236,10 +2177,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
       </li>
     
   </ul>
