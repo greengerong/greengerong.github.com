@@ -22,7 +22,7 @@ subscribe_email:
 email: grzx2210@163.com
 
 # share to weibo weixin...
-share: true
+sharing: true
 
 # ----------------------- #
 #    Jekyll & Plugins     #
