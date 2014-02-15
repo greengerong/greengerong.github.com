@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>架构设计中服务层的简单理解 - 破狼 Blog</title>
+  <title>为Angularjs ngOptions加上index解决方案 - 破狼 Blog</title>
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="架构设计中服务层的简单理解">
+  <meta name="description" content="今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index. 其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://greengerong.github.io/blog/2012/05/21/jia-gou-she-ji-zhong-fu-wu-ceng-di-jian-dan-li-jie">
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/02/15/index-for-ng-options">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
@@ -74,7 +74,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
   <header>
     
-      <h1 class="entry-title">架构设计中服务层的简单理解</h1>
+      <h1 class="entry-title">为Angularjs ngOptions加上index解决方案</h1>
     
     
       <p class="meta">
@@ -90,7 +90,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2012-05-21T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2014-02-15T21:43:06+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2014</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://greengerong.github.io">Comments</a>
@@ -100,33 +100,75 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-<div class="entry-content"><p>&nbsp;&nbsp; 在ddd设计中我们经常会提到服务层，服务层是什么？职责是什么？有什么好处？。</p>
+<div class="entry-content"><p>今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.</p>
 
-<p>&nbsp;&nbsp; 先看简单的层次图（注：这里并没有考虑其他多余的领域逻辑数据层存储，或者UOW这些细节）</p>
+<p>其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。</p>
 
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205212307194805.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205212307202688.png" title="image" alt="image" /></a></p>
+<p>把这个问题换成角度来看,我们所需要的就是js数组的下标，所以我们如果我们能够在对象上加入下标，使用表达式作为option的label就能解决了。</p>
 
-<p>&nbsp;&nbsp; 我的理解是服务层是处于我的应用程序业务层和表现层之间的应用程序边界,边界可能是很薄的一层类设计或者是分布式服务网络跃点。它是一个与技术无关的名词。由表现层直接调用，契约，执行命令（修改状态（CUD））或者是查询返回dto（数据迁移对象）（cms，命令-查询分离）。他对业务逻辑层接口很清楚，组织业务逻辑 微服务形成宏服务，适配表现层。</p>
+<p>但是第一印象让我想起的是js数组本来就是一个key/value的对象，只是key为数组下标而已，所以有了如下之设计：</p>
 
-<p>&nbsp;&nbsp; 这里谈到宏服务和微服务，宏服务有一些列粗粒度的服务组成。用户的一次操作usecase，比如电子商务下单，CreateOrder就是一个宏服务，而不是下单中的细粒度的商品库存检查，订单合法性等。而与之对应的微服务（有时也叫应用程序服务），则表现为问题领域逻辑细节，就如上面的库存检查和合法性检查这些细粒度的服务。宏服务是由一个或者多个微服务组成，有时我们的usecase逻辑很简单服务层仅由单一微服务组成，变现为很简单的几句微服务调用。</p>
+<p>html:</p>
 
-<p>&nbsp; 服务层的职责：</p>
+<pre><code>  &lt;pre&gt;&lt;/pre&gt;
 
-<p>&nbsp; 1：在面软件开发不管是结构化编程（sp）还是面向对象编程（oop）我们一直都强调高内聚低耦合，分离关注点（soc）。服务层处于应用程序和业务层之间，应用边界，使得两次直接解耦，利用第三个对象破坏两对象直接的依赖，并转化适配领域对象（do）和试图对象（vo）的差异。</p>
+  &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
+</code></pre>
 
-<p>&nbsp; 2：服务层隐藏了业务逻辑层的细节，其内部需要组织业务微服务，提供更宏观，面向表现层的服务逻辑，利用契约接口暴露，包装。系统所有的交互都是从表现层进入。</p>
+<p>  js:</p>
 
-<p>&nbsp; 目前流行SOA架构，提供了一种分布式服务架构，以服务为关注点，提高服务和业务逻辑的重用，但是这里说的服务并不是特定的技术wcf或者webservice，服务同时候可能是一次规定契约的一些列粗粒度组织的类组成。但是利用SOA或者MTS建立服务会让我们的服务得到跟多的附加优势，例如安全，事物，日志，扩展性的提升。</p>
+<pre><code>$scope.getDesc1 = function(key, value) {
+    return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
+};
+</code></pre>
 
-<p>&nbsp; 服务层带来的优势：如上所述服务层为表现层提供的同一的接口契约和入口。让我们的业务层可以关注与实现问题领域逻辑，问题领域实际需求。组织微服务避免太多的细粒度服务的调用充斥在我们的项目表现层和问题领域中，过多的交互。如果采用soa等服务领域可以让我们的应用程序轻易的跨过应用程序边界和网络跃点。但是需要付出一点的性能代价。</p>
+<p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
 
-<p>&nbsp;&nbsp; 数据迁移对象（dto）就是携带数据穿过应用程序边界的对象，减少数据的交互次数，常常我们将其作为值对象，只是一组简单的get，set属性组成，不存在行为操作，仅仅为数据的载体。在领域设计中dto是一个很重要的模式，不是我们所有的领域对象都能轻松的到达表现层，仅仅表现层和领域层部署在同一物理位置。如果需要穿过网络跃点或者进程边界，因为领域对象使我们的业务的核心存在很多的自然世界的关系，依赖，甚至可能存在循环依赖比如电商用户和订单，用户用户一组订单的集合，而每个订单都指向一个特定的用户，我们就必须破换掉这种循环依赖，才可能使其可序列化，穿过跃点。其次我们的领域对象往往都是一堆领域富对象，存在大量数据，很多时候我们的场景并不需要全部的数据信息。有了dto的存在就能很好的解决这些问题，是的我们的项目变得simple（keep it simple，Stupid。 KISS原则）。</p>
+<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+  &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
+  &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
+  &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
+  &lt;option value="11" &gt;12-&amp;gt;jw_jobcomment&lt;/option&gt;
+  &lt;option value="12" &gt;13-&amp;gt;jw_companyInfo&lt;/option&gt;
+  ....
+&lt;/select&gt;
+</code></pre>
 
-<p>&nbsp;&nbsp; 但是与此同时dto存在会为我们带来一些额外的复杂度，我们必须有一层do到dto的映射适配层。</p>
+<p>所以这样是无法解决的。还好博主还有一招，ngOptions支持Angularjs的filter，所以我们可以对数据源对象上加上一个order字段标示下标作为序号。并且你可以在一个2年前的Angular的issue中看到Angular已经fix issue，option会对数组进行按下标顺序生成。</p>
 
-<p>&nbsp;&nbsp; 理论上完美的设计我们需要为每一个应用定义一个dto，但是在一个复杂的系统中我们可能存在很多的领域对象，加入500个do，每个do一般都会存在多个dto，这将一个增加一个庞大的集合和mapping逻辑，对于维护也存在不小的挑战。在软件领域存在一句话就是bug的数量随着代码量增加，代码量增加需要测试点也随着增加。除非我们必须跨越应用程序网络跃点边界，我觉得否则我们也可以存在一些简单do的直接使用。根据世界项目，情形由我们的架构师决定。</p>
+<p>html:</p>
 
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html" title="原文首发">原文首发请看这里</a></p>
+<pre><code>&lt;pre&gt;&lt;/pre&gt;
+
+&lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
+</code></pre>
+
+<p>js:</p>
+
+<pre><code>    var app = angular.module('plunker', []);
+
+    app.controller('MainCtrl', function($scope) {
+      $scope.t = [{
+        "field": "jw_companyTalent"
+      }, {
+        "field": "jw_reportgroup"
+      }];
+      $scope.getDesc = function(l) {
+        return l.order + "-&gt;" + l.field;
+      };
+    }).filter("index", [
+      function() {
+        return function(array) {
+          return (array || []).map(function(item, index) {
+            item.order = index + 1;
+            return item;
+          });
+        };
+      }
+    ]);
+</code></pre>
+
+<p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
 </div>
 
 
@@ -149,14 +191,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2012-05-21T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2014-02-15T21:43:06+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2014</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
-  
-</span>
 
 
     </p>
@@ -185,10 +221,8 @@ var jiathis_config = {data_track_clickback:'true'};
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/05/12/zhuan-zai-yi-xie-ruan-jian-she-ji-di-yuan-ze/" title="Previous Post: (转载)一些软件设计的原则">&laquo; (转载)一些软件设计的原则</a>
+        <a class="basic-alignment left" href="/blog/2014/02/11/angular-ngclick-stoppropagation/" title="Previous Post: angular ngClick阻止冒泡,默认行为">&laquo; angular ngClick阻止冒泡,默认行为</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/" title="Next Post: SOA面向服务架构简述">SOA面向服务架构简述 &raquo;</a>
       
     </p>
   </footer>
@@ -327,7 +361,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       var disqus_shortname = 'greengerong';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/';
+        var disqus_url = 'http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
