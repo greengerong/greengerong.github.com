@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Angularjs chinese guide public"
+title: "Angularjs中文版本开发指南发布"
 date: 2014-02-16 02:02:17 +0800
 comments: true
 category: "angularjs"
