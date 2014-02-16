@@ -3,7 +3,8 @@ layout: post
 title: 为Angularjs ngOptions加上index解决方案
 date: 2014-02-15 21:43:06 +0800
 comments: true
-categories: 
+category: "angularjs"
+tags: [angular,javascript]
 ---
 今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.
 
