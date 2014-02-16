@@ -10,7 +10,7 @@ tags: [angular,javascript]
 ![http://angularjs.org/img/AngularJS-large.png](http://angularjs.org/img/AngularJS-large.png)
 
 
-从本人开始在写关于Angularjs的文章看是，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步[angularjs移除不必要的$watch](http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html).
+从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步[angularjs移除不必要的$watch](http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html).
 
 也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。
 
