@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-16T15:51:13+08:00</updated>
+  <updated>2014-02-16T15:53:42+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,7 +20,7 @@
     <id>http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public</id>
     <content type="html"><![CDATA[<p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
 
-<p>从本人开始在写关于Angularjs的文章看是，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
+<p>从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
 
 <p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
 
