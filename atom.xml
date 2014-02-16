@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-16T15:53:42+08:00</updated>
+  <updated>2014-02-17T01:19:30+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -28,7 +28,8 @@
 
 <p>地址为：</p>
 
-<p><a href="http://angular.duapp.com/guide">http://angular.duapp.com/guide</a></p>
+<pre><code>[http://angular.duapp.com/guide](http://angular.duapp.com/guide)
+</code></pre>
 
 <p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
 
