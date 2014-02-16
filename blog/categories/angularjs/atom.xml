@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-15T22:23:39+08:00</updated>
+  <updated>2014-02-16T15:40:43+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Angularjs Chinese Guide Public]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public/"/>
+    <updated>2014-02-16T02:02:17+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public</id>
+    <content type="html"><![CDATA[<p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
+
+<p>从本人开始在写关于Angularjs的文章看是，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
+
+<p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
+
+<p>在经过一段时间的协调和大家付出工作之外的业务时间，如果Angularjs的中文本学习指南终于上线出炉</p>
+
+<p>地址为：</p>
+
+<p><a href="http://angular.duapp.com/guide">http://angular.duapp.com/guide</a></p>
+
+<p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些"译者注"之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很哈的Angularjs学习资料供大家学习。</p>
+
+<p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
+
+<p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[为Angularjs ngOptions加上index解决方案]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/"/>
+    <updated>2014-02-15T21:43:06+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/15/index-for-ng-options</id>
+    <content type="html"><![CDATA[<p>今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.</p>
+
+<p>其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。</p>
+
+<p>把这个问题换成角度来看,我们所需要的就是js数组的下标，所以我们如果我们能够在对象上加入下标，使用表达式作为option的label就能解决了。</p>
+
+<p>但是第一印象让我想起的是js数组本来就是一个key/value的对象，只是key为数组下标而已，所以有了如下之设计：</p>
+
+<p>html:</p>
+
+<pre><code>  &lt;pre&gt;&lt;/pre&gt;
+
+  &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
+</code></pre>
+
+<p>  js:</p>
+
+<pre><code>$scope.getDesc1 = function(key, value) {
+    return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
+};
+</code></pre>
+
+<p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
+
+<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+  &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
+  &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
+  &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
+  &lt;option value="11" &gt;12-&amp;gt;jw_jobcomment&lt;/option&gt;
+  &lt;option value="12" &gt;13-&amp;gt;jw_companyInfo&lt;/option&gt;
+  ....
+&lt;/select&gt;
+</code></pre>
+
+<p>所以这样是无法解决的。还好博主还有一招，ngOptions支持Angularjs的filter，所以我们可以对数据源对象上加上一个order字段标示下标作为序号。并且你可以在一个2年前的Angular的issue中看到Angular已经fix issue，option会对数组进行按下标顺序生成。</p>
+
+<p>html:</p>
+
+<pre><code>&lt;pre&gt;&lt;/pre&gt;
+
+&lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
+</code></pre>
+
+<p>js:</p>
+
+<pre><code>    var app = angular.module('plunker', []);
+
+    app.controller('MainCtrl', function($scope) {
+      $scope.t = [{
+        "field": "jw_companyTalent"
+      }, {
+        "field": "jw_reportgroup"
+      }];
+      $scope.getDesc = function(l) {
+        return l.order + "-&gt;" + l.field;
+      };
+    }).filter("index", [
+      function() {
+        return function(array) {
+          return (array || []).map(function(item, index) {
+            item.order = index + 1;
+            return item;
+          });
+        };
+      }
+    ]);
+</code></pre>
+
+<p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Angular ngClick阻止冒泡,默认行为]]></title>
@@ -244,134 +346,6 @@
 </code></pre>
 
 <p>今天就到这里，谢谢。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angularjs组件之input Mask]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular/"/>
-    <updated>2013-12-15T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular</id>
-    <content type="html"><![CDATA[<p>今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。</p>
-
-<p>当然在官方的angular-ui ui-utils中有一个相应的组件叫做ui-mask，但是其mask功能是很初级脆弱的。所以我希望能得到一个更强大的mask组件。我所知的<a href="https://github.com/RobinHerbots/jquery.inputmask">jquery.inputmask</a>就是这样一个我所期望的强大的mask组件，所以我不必再去重造轮子，好的软件就是为了不停被重复利用。所以写了一个adapter，<a href="https://github.com/greengerong/green.inputmask4angular">https://github.com/greengerong/green.inputmask4angular</a>.</p>
-
-<p>其使用如下，可以去下载项目查看其中的demo page。</p>
-
-<pre><code>&lt;div class="hero-unit"&gt;
-                &lt;h1&gt;'Allo, 'Allo!&lt;/h1&gt;
-
-                &lt;div&gt;
-                    &lt;h3&gt;mask&lt;/h3&gt;
-                    &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
-                    &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
-                    &lt;pre&gt;{{ test | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-                &lt;div&gt;
-                    &lt;h3&gt;y-m-d&lt;/h3&gt;
-                    &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
-                    &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
-                    &lt;pre&gt;{{ test1 | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-
-                &lt;div&gt;
-                    &lt;h3&gt;Regex&lt;/h3&gt;
-                    &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
-                    &lt;input type="text" ng-model="test3" input-mask="'Regex'"
-                     mask-option="regexOption"/&gt;
-                    &lt;pre&gt;{{ test3 | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-                &lt;div&gt;
-                    &lt;h3&gt;Function&lt;/h3&gt;
-                    &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
-                    &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
-                    &lt;pre&gt;{{ test4 | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-            &lt;/div&gt;
-</code></pre>
-
-<p> controller code:</p>
-
-<pre><code>'use strict';
-
-    angular.module('green.inputmaskApp')
-        .controller('MainCtrl', ["$scope", function ($scope) {
-
-            $scope.testoption = {
-                "mask": "99-9999999",
-                "oncomplete": function () {
-                    console.log();
-                    console.log(arguments,"oncomplete!this log form controler");
-                },
-                "onKeyValidation": function () {
-                    console.log("onKeyValidation event happend! this log form controler");
-                }
-            }
-
-            //default value
-            $scope.test1 = new Date();
-
-            $scope.dateFormatOption = {
-                parser: function (viewValue) {
-                    return viewValue ? new Date(viewValue) : undefined;
-                },
-                formatter: function (modelValue) {
-                    if (!modelValue) {
-                        return "";
-                    }
-                    var date = new Date(modelValue);
-                    return (date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate()).replace(/\b(\d)\b/g, "0$1");
-                },
-                isEmpty: function (modelValue) {
-                    return !modelValue;
-                }
-            };
-
-
-            $scope.mask = { regex: ["999.999", "aa-aa-aa"]};
-
-
-            $scope.regexOption = {
-                regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"
-            };
-
-            $scope.functionOption = {
-             mask: function () { 
-                return ["[1-]AAA-999", "[1-]999-AAA"]; 
-            }};
-
-
-        }]);
-</code></pre>
-
-<p>这里值列列举了jquery.inputmask的简单实用方式，更复杂的方式请移步到jquery.inputmask查看。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Web组件化-angularjs实践]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/11/angularjs-web-component/"/>
-    <updated>2013-12-11T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/11/angularjs-web-component</id>
-    <content type="html"><![CDATA[<p>在过去的web标准经历了一个飞速的发展，随着时间的推移，用户对web的体验也越来越重视，从最初的简单静态页面到以ajax标志的web2.0，在这个时代我们所面临的问题是用户的体验和可恶的浏览器的兼容(IE成为了我们所唾弃的产物，IE6的葬礼之类的形式足以表明这点)，所以有了Prototype，Mootools，jQuery这类浏览器兼容和util的库，特别jQuery的出现以其独特的兼容性，一致性和优雅的选择器和链式风格影响了整个业界的发展,作为这个时代的产物jQuery是个很出色的库，正的如它所说，做到了"write less，do more",成为这个时代的标志。然而随着互联网的突增，我们的JavaScript代码量也暴增，是的我们再度陷入到JavaScript的维护管理的困境。JavaScript本来是一门作为浏览器上的脚本语言出身，并不适合于大规模开发。所以在我们所能看见的MDV框架的出现，这个时候前段的JavaScript代码已得到我们越来越注重，MDV框架提出了我们也需要向对待后端系统(spring,web api)一样对前段逻辑进行统一管理，分层(表现逻辑，viewmodel，视图)。所以Backbone，AngularJS，Ember，Spine之类的数据绑定框架横空出世，力求给我们带来代码的模块管理，数据、视图的分离，他们以他们不同的方式解决共同的问题：</p>
-
-<p>1.如何更好地模块化开发</p>
-
-<p>2.业务数据如何组织</p>
-
-<p>3.界面和业务数据，业务逻辑的分离</p>
-
-<p>与此同时其实用户体验的要求html5，ECMAScript也在快速的推进。在这里我想说的是 Web组件化的也在蓬勃的发展起来，以Google额polymer为代表的框架，库也在悄无声息的到来，虽然这需要等到浏览器的大统一，但是我们相信在不久的将来将会到来。在这里我所激动和希望是组件的共享，假设我们能够一个想java maven repo，cdn之类的共有或者私有repo，在你需要的地方只需要import那将是多么美好的事情，这也许是意淫，但也未必不可。</p>
-
-<p>有希望总是好的，在过去一年我所尝试的就是基于angular这优秀的框架directive dsl和maven build去实现我所期望的组件化共享愿景。在基于node的<a href="http://component.io/">component</a>前端管理框架稍有相似之处。</p>
-
-<p>回到正题，在angularjs中如何去做到组件化：</p>
-
-<p><img src="/images/blog_img/web-angular.jpg" alt="/images/blog_img/web-angular.jpg" /></p>
 ]]></content>
   </entry>
   
