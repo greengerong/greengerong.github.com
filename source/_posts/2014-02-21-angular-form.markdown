@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "angular form."
+title: "angular form.$addControl"
 date: 2014-02-21 17:24:37 +0800
 comments: true
 category: "angularjs"
