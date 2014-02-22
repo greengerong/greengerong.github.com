@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="网站策划从业者要求的知识面较广阔，必须具备市场和销售意识，具备人体工程学的意识，具备较强的沟通能力和文字表达能力，熟悉商业情报收集和信息分析的方法，熟悉网站规划，掌握基本的建站方法，了解网站硬件环境配置，熟悉网络广告投放和搜索引擎优化等方法。一起来看，几个必须知道的定律。 1. 250定律 &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,831 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/">利用Attribute简化Unity框架IOC注入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合，减少我们的后期维护成本。IOC框架一般基于容器，在容器中存储着各个抽象和具体实现的依赖关系，当我们需要发出请求的时候，IOC框架会在当前容器中找到我们所需要的具体实现返回给我们，当然这里还有DI注入（属性，方法，构造），在我们的使用者（客户端）不需要了解具体实现，如何初始化，如何流转等具体，只需明白我们的契约接口暴露给我们的服务，IOC框架是解决抽象和具体直接的创建问题。其他资料可以参见<strong><a href="http://martinfowler.com/articles/injection.html">Inversion of Control Containers and the Dependency Injection pattern</a>。</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 当然Unity框架中为我们提供了RegisterInstance，RegisterType方法我们可以在代码中注册到容器，比如NLayerApp中就在<code>IoCFactory中注册一大堆抽象-具体关联。但是在我们的实际实践中一般会选择另一种方式xml配置配置，因为这样我们会得到更大的灵活性，需求变化只要抽象接口不变，我们也只需要在xml配置文件中修改一行配置加入我们的具体实现，加入我们的程序集，就可以适应需求变化，这更满足oo设计&amp;#8220;开闭原则&amp;#8221;。</code></p>
+
+<p><code>&amp;nbsp;&amp;nbsp; 在这里个人实践利用抽象（接口）定义Attribute制定具体ConfigFile（配置文件），Container（容器），Name（名称）解决IOC植入，减少我们多次去读取配置文件。Unity为我们提供了在Web.config,App.config中配置注入信息，或者注册外部配置，但是很多时候我们更希望，在我们的 不同模块下，应用不同的IOC配置信息，这些可以减少维护的关联少些，清晰，同时文件夹的出现便于我们的配置信息的管理。</code></p>
+
+<p><code>Attribute实现：UnityInjectionAttribute</code></p>
+
+<pre><code>[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)] 
+
+   public class UnityInjectionAttribute : Attribute 
+
+   { 
+
+
+
+       public UnityInjectionAttribute(string Container) 
+
+       { 
+
+           this.Container = Container;            
+
+       } 
+
+
+
+       public string Container 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string ConfigFile 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string Name 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public Microsoft.Practices.Unity.Configuration.UnityConfigurationSection GetUnityConfigurationSection() 
+
+       { 
+
+           if (!string.IsNullOrEmpty(this.ConfigFile)) 
+
+           { 
+
+               var fileMap = new System.Configuration.ExeConfigurationFileMap { ExeConfigFilename = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, this.ConfigFile) }; 
+
+               System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(fileMap, System.Configuration.ConfigurationUserLevel.None); 
+
+               return configuration == null ? null : configuration.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+           } 
+
+           return System.Configuration.ConfigurationManager.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+       } 
+
+   }
+</code></pre>
+
+<p>&nbsp; 在这里我们GetUnityConfigurationSection根据ConfigFile获取UnityConfigurationSection ，ConfigFile为空则当前应用配置文件，不空则为路径。在这里我们为了性能，减少过多的IOC操作，读取配置文件，我们可以更具具体需要加入对配置文件UnityConfigurationSection的缓存（ConfigFile作为key，UnityConfigurationSection为value ）。</p>
+
+<p>&nbsp;&nbsp; 同时提供操作辅助方法：ELUnityUtility</p>
+
+<pre><code> public static class ELUnityUtility 
+
+   { 
+
+       public static T Resolve&lt;T&gt;() where T : class 
+
+       { 
+
+           return Resolve(typeof(T)) as T; 
+
+       } 
+
+
+
+       public static object Resolve(this Type type) 
+
+       { 
+
+           var attrs = type.GetCustomAttributes(typeof(Utils.UnityInjectionAttribute), true) as Utils.UnityInjectionAttribute[]; 
+
+           if (attrs != null &amp;&amp; attrs.Length &gt; 0) 
+
+           { 
+
+               var attr = attrs[0]; 
+
+               var unitySection = attr.GetUnityConfigurationSection(); 
+
+               if (unitySection != null) 
+
+               { 
+
+                   var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(attr.Container) ? unitySection.Containers.Default.Name : attr.Container); 
+
+                   var obj = string.IsNullOrEmpty(attr.Name) ? container.Resolve(type) : container.Resolve(type, attr.Name); 
+
+                   if (obj != null) 
+
+                   { 
+
+                       var piabAtttr = obj.GetType().GetCustomAttributes(typeof(ELPolicyinjectionAttribute), false) as ELPolicyinjectionAttribute[]; 
+
+                       if (piabAtttr.Length &gt; 0) 
+
+                       { 
+
+                           obj = Microsoft.Practices.EnterpriseLibrary.PolicyInjection.PolicyInjection.Wrap(type, obj); 
+
+                       } 
+
+                       return obj; 
+
+                   } 
+
+               } 
+
+           } 
+
+           return null; 
+
+       } 
+
+
+
+       public static IEnumerable&lt;T&gt; ResolveAll&lt;T&gt;() where T : class 
+
+       { 
+
+           return ResolveAll(typeof(T)) as IEnumerable&lt;T&gt;; 
+
+       } 
+
+
+
+       public static object ResolveAll(this Type type) 
+
+       { 
+
+           var attrs = type.GetCustomAttributes(typeof(Utils.UnityInjectionAttribute), true) as Utils.UnityInjectionAttribute[]; 
+
+           if (attrs != null &amp;&amp; attrs.Length &gt; 0) 
+
+           { 
+
+               var attr = attrs[0]; 
+
+               var unitySection = attr.GetUnityConfigurationSection(); 
+
+               if (unitySection != null) 
+
+               { 
+
+                   var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(attr.Container) ? unitySection.Containers.Default.Name : attr.Container); 
+
+                   return container.ResolveAll(type); 
+
+               } 
+
+           } 
+
+           return null; 
+
+       } 
+
+
+
+   }
+</code></pre>
+
+<p><font face="Courier New">这里我们就可以很简便的获取IOC翻转。注：这里还有根据具体实现是否具体ELPolicyinjectionAttribute来决定是否进行PIAB的AOP操作，当然我们也可以在Unity配置文件中引入节点扩展</font></p>
+
+<p>Microsoft.Practices.Unity.InterceptionExtension.Configuration.InterceptionConfigurationExtension,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Microsoft.Practices.Unity.Interception.Configuration</p>
+
+<p><font face="Courier New">（PIAB利用的是透明代理速度较慢所以一般很少使用，当然你也可以实现具体的PIAB AOP方式比如注入MSIL，但我们已经有了很多注入MSIL的AOP框架了，我不准备去造轮子），ELPolicyinjectionAttribute：</font></p>
+
+<pre><code> [AttributeUsage(AttributeTargets.Class)] 
+
+   public class ELPolicyinjectionAttribute : Attribute 
+
+   { 
+
+       public string Name 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+   }
+</code></pre>
+
+<p>这样：我们的客户端 就可以很简单的使用了：</p>
+
+<pre><code> class Program 
+
+   { 
+
+       static void Main(string[] args) 
+
+       { 
+
+
+
+           ELUnityUtility.Resolve&lt;IClass2&gt;().Show(); 
+
+           (typeof(IClass2).Resolve() as IClass2).Show(); 
+
+           Console.Read(); 
+
+       } 
+
+   } 
+
+
+
+   public interface IClass1 
+
+   { 
+
+       void Show(); 
+
+   } 
+
+
+
+   [Green.Utils.ELPolicyinjection] 
+
+   public class Class1 : IClass1 
+
+   { 
+
+
+
+       #region IClass1 成员 
+
+       [TestCallHandler] 
+
+       public void Show() 
+
+       { 
+
+           Console.WriteLine(this.GetType()); 
+
+       } 
+
+
+
+       #endregion 
+
+   } 
+
+
+
+   [Green.Utils.UnityInjection("First", Name = "class2", ConfigFile = "App1.config")] 
+
+   public interface IClass2 
+
+   { 
+
+       void Show(); 
+
+   } 
+
+
+
+    public class Class2 : ConsoleApplication1.IClass2 
+
+   { 
+
+       [Microsoft.Practices.Unity.Dependency("class1")] 
+
+       public IClass1 Class1 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+            public void Show() 
+
+       { 
+
+           Console.WriteLine(this.GetType()); 
+
+           Class1.Show(); 
+
+       } 
+
+   }
+</code></pre>
+
+<p>App1.Config配置：</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+
+&lt;configuration&gt; 
+
+  &lt;configSections&gt; 
+
+    &lt;section name="unity" 
+
+             type="Microsoft.Practices.Unity.Configuration.UnityConfigurationSection, 
+
+             Microsoft.Practices.Unity.Configuration"/&gt; 
+
+  &lt;/configSections&gt; 
+
+  &lt;unity xmlns="http://schemas.microsoft.com/practices/2010/unity%22&gt; 
+
+    &lt;container name="First"&gt; 
+
+      &lt;register type="ConsoleApplication1.IClass1,ConsoleApplication1" mapTo="ConsoleApplication1.Class1,ConsoleApplication1" name="class1" /&gt; 
+
+      &lt;register type="ConsoleApplication1.IClass2,ConsoleApplication1" mapTo="ConsoleApplication1.Class2,ConsoleApplication1" name="class2"  /&gt; 
+
+    &lt;/container&gt; 
+
+  &lt;/unity&gt; 
+
+&lt;/configuration&gt;
+</code></pre>
+
+<p>下边是一个完整的带PIAB的例子：</p>
+
+<p> using System;</p>
+
+<p>using System.Collections.Generic;</p>
+
+<p>using System.Linq;</p>
+
+<p>using System.Text;</p>
+
+<p>using Green.Utils;</p>
+
+<p>using Microsoft.Practices.Unity.InterceptionExtension;</p>
+
+<p>using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;</p>
+
+<p>namespace ConsoleApplication1</p>
+
+<p>{</p>
+
+<pre><code>class Program 
+
+{ 
+
+    static void Main(string[] args) 
+
+    { 
+
+
+
+        ELUnityUtility.Resolve&lt;IClass2&gt;().Show(); 
+
+        (typeof(IClass2).Resolve() as IClass2).Show(); 
+
+        Console.Read(); 
+
+    } 
+
+} 
+
+
+
+public interface IClass1 
+
+{ 
+
+    void Show(); 
+
+} 
+
+
+
+[Green.Utils.ELPolicyinjection] 
+
+public class Class1 : IClass1 
+
+{ 
+
+
+
+    #region IClass1 成员 
+
+    [TestCallHandler] 
+
+    public void Show() 
+
+    { 
+
+        Console.WriteLine(this.GetType()); 
+
+    } 
+
+
+
+    #endregion 
+
+} 
+
+
+
+[Green.Utils.UnityInjection("First", Name = "class2", ConfigFile = "App1.config")] 
+
+public interface IClass2 
+
+{ 
+
+    void Show(); 
+
+} 
+
+
+
+[Green.Utils.ELPolicyinjection] 
+
+public class Class2 : ConsoleApplication1.IClass2 
+
+{ 
+
+    [Microsoft.Practices.Unity.Dependency("class1")] 
+
+    public IClass1 Class1 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    [TestCallHandler] 
+
+    public void Show() 
+
+    { 
+
+        Console.WriteLine(this.GetType()); 
+
+        Class1.Show(); 
+
+    } 
+
+} 
+
+
+
+[Microsoft.Practices.EnterpriseLibrary.Common.Configuration.ConfigurationElementType(typeof(CustomCallHandlerData))] 
+
+public class TestCallHandler : ICallHandler 
+
+{ 
+
+    #region ICallHandler 成员 
+
+
+
+    public IMethodReturn Invoke(IMethodInvocation input, GetNextHandlerDelegate getNext) 
+
+    { 
+
+        if (input == null) throw new ArgumentNullException("input"); 
+
+        if (getNext == null) throw new ArgumentNullException("getNext"); 
+
+        Console.WriteLine("begin...."); 
+
+        var result = getNext()(input, getNext); 
+
+        Console.WriteLine("end...."); 
+
+        return result; 
+
+    } 
+
+
+
+    public int Order 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    #endregion 
+
+} 
+
+
+
+[AttributeUsage(AttributeTargets.Method)] 
+
+public class TestCallHandlerAttribute : HandlerAttribute 
+
+{ 
+
+    public override ICallHandler CreateHandler(Microsoft.Practices.Unity.IUnityContainer container) 
+
+    { 
+
+        return new TestCallHandler(); 
+
+    } 
+
+} 
+
+}
+</code></pre>
+
+<p>欢迎大家指正，批评，交流是的大家都功能进步。<a href="http://files.cnblogs.com/whitewolf/UnityInjectionAttribute.rar">代码下载</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/">StringTemplate遇见jQuery的冲突</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; &nbsp;最近在做一个流程引擎，现着手于自定义模板的处理。设计在模板中所有的数据都将与字段对应，采用xml结构序列化作为流程持久化机制。字段对于用户的输入则为字段，字段涉及到用户的输入，必定是控件。由于有以前项目word模板转化为在线展示输入经验（这里不仅仅是将word转化为html，还需要提取word书签作为关键字段，关键字段作为用户的输入，根据用户配置转化为文本框，下拉框，数字，货币框，时间等等可扩展控件）。我在本次的模板设计中不再考虑服务器控件，因为服务器控件将生成一大堆难以控制的html标记。所以彻底疯狂了一把，采用完全html+jQuery实现（验证用的也是jQuery validator）。关于流程的设计将会在后续慢慢总结。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天只是记录一下在控件用户设置界面字段修改界面需要还原用户的上次记录，因为我的全是html+jQuery，所以在框架设计中提供了两种方案：1：根据page对象注册页面初始化脚本，回填控件值。2：利用StringTemplate生成带有回填值的html输出。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 就是第二种方案的使用，出现了StringTemplate对于jQuery$的错误解析：解决方案总结如下：</p>
+
+<ol>
+<li>从jQuery触发，可以利用jQuery()代替$()。</li>
+<li>StringTemplate这可以使jQuery的$转义：\$.</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp; 内容很少，废话很多，网见谅。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/09/21/2184488.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/23/html5-xi-lie-mu-lu/">Html5系列目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-23T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/08/23/html5-xi-lie-mu-lu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/08/23/html5-xi-lie-mu-lu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; html5作为下一代web标准，年前轩起了html5热潮。对于html5我只是本着了解看看。关于html5和RIA（silverlight，flash，JavaFx等）我不想说什么，也没有什么可说的，存在就有其存在的理由。孰优孰劣，留给事实、时间来证明的。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在html5中出现了一些新特性：</p>
+
+<ul>
+<li>canvas 元素</li>
+<li>视频 video 和 声频audio 元素 ；</li>
+<li>对本地离线存储（localStorage，sessionStorage）的支持 ；</li>
+<li>新增特殊内容元素：article、footer、header、nav、section ；</li>
+<li>新增表单控件： calendar、date、time、email、url、search 。</li>
+<li>其他新特性&nbsp;</li>
+</ul>
+
+
+<p>&nbsp;&nbsp;本博客中几个月前写的关于Html5博客有：</p>
+
+<h2>一：html5基础</h2>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/02/28/1967456.html">html5声频audio和视频video</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1968512.html">html5-Canvas绘图</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1969398.html">html5之Canvas坐标变换应用-时钟实例</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1970457.html">html5-web本地存储</a></li>
+</ol>
+
+
+<h2>二：html5应用</h2>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1969398.html">html5之Canvas坐标变换应用-时钟实例</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/15/2107520.html">Google Chrome 語音辨識</a></li>
+</ol>
+
+
+<p>　　关于html5我仍然时不时的会有些持续，将会更新目录。在这里对于html5表单，特殊内容元素这些，以及一些个别特性，如文件拖拽，还未曾提到。今天只是整理博客加了个目录便于查找，管理。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/23/2150145.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/22/dai-ma-sheng-cheng-ji-shu-mu-lu/">代码生成技术-目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-22T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/08/22/dai-ma-sheng-cheng-ji-shu-mu-lu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/08/22/dai-ma-sheng-cheng-ji-shu-mu-lu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在这里总结的是本博客中的一些关系代码生成的技术，其中包含&nbsp;CodeDom，CodeSmith，T4，Mono.Cecil&nbsp;MSIL（静态AOP实例）注入，以及一些杂记&nbsp;。</p>
+
+<h2><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">一：CodeDom目录</a></h2>
+
+<p>&nbsp;CodeDOM 提供了表示许多常见的源代码元素类型的类型。您可以设计一个生成源代码模型的程序，使用 CodeDOM 元素
+构成一个对象图。可以使用受支持的编程语言的 CodeDOM 代码生成器，将该对象图呈现为源代码。CodeDOM 也可以用于将
+源代码编译成二进制程序集。</p>
+
+<p>CodeDOM 的一些一般用途包括：</p>
+
+<ol>
+<li>模板化代码生成：生成 ASP.NET、XML Web 服务客户端代理、代码向导、设计器或其他代码发出机制的代码。</li>
+<li><p>动态编译：支持以一种或多种语言进行代码编译。</p></li>
+<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/19/1760708.html"><font color="#3d81ee">CodeDom系列-开篇HelloWord</font></a></p></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/20/1761367.html"><font color="#3d81ee">CodeDom系列二&mdash;-程序基本结构&mdash;符号三角形问题</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/22/1762589.html"><font color="#3d81ee">CodeDom系列&mdash;事件（event）定义和反射调用</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/05/1771138.html"><font color="#3d81ee">CodeDom系列四&mdash;Code生成</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/06/1771868.html"><font color="#3d81ee">CodeDom系列五&mdash;动态编译</font></a>&nbsp;</li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html"><font color="#3d81ee">CodeDom六&mdash;实体类生成示例</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html"><font color="#6699cc">代码生成技术&mdash;CodeDom VS T4</font></a></li>
+</ol>
+
+
+<h2><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html">二：CodeSimth：</a></h2>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeSmith是一个基于模板的代码生成器，它可以生成任何基于ASCII的编程语言代码。生成的代码可以使用属性进行定制。属性可以是任何具有设计器的.NET对象（大多数.NET内置类型已经有设计器），也可以是一个允许你从结果中有条件地添加或移除代码的简单的boolean 属性，或是一个对象，例如能够访问数据库表信息的TableSchema对象（包括在SchemaExplorer中）。CodeSmith完全可扩展，它允许用户创建定制属性类型。CodeSmith中包括多个定制属性类型的例子，例如，定制一个允许选择XML文件（使用XmlSerializer可将其反序列化到对象中）的属性类型。CodeSmith还允许用户在模板中引用和调用指定的外部程序集并且允许从外部程序集的类生成模板。</p>
+
+<ul>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/13/1776379.html"><font color="#3d81ee">CodeSmith模板引擎系列一</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/14/1777088.html"><font color="#3d81ee">CodeSmith模板引擎系列二&mdash;文件目录树</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html"><font color="#3d81ee">通过代码生成机制实现强类型编程-CodeSimth版</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836731.html"><font color="#6699cc">Dbml文件提取建表TSql-CodeSmith</font></a></li>
+</ul>
+
+
+<h2>三：MSIL注入：&nbsp;</h2>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器。</p>
+
+<ul>
+<li>&nbsp;<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html"><font color="#6699cc">浅谈.NET编译时注入（C#&mdash;&gt;IL）</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html"><font color="#6699cc">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html"><font color="#6699cc">编译时MSIL注入&mdash;实践Mono Cecil(1)</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html"><font color="#6699cc">MSBuild + MSILInect实现编译时AOP之预览</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html"><font color="#6699cc">MSBuild + MSILInect实现编译时AOP-改变前后对比</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html"><font color="#6699cc">PostSharp &ndash; Thread Dispatching（GUI多线程）</font></a></li>
+</ul>
+
+
+<h2>四：其他杂记</h2>
+
+<ul>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html"><font color="#6699cc">代码生成技术&mdash;CodeDom VS T4</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html"><font color="#6699cc">Razor Templating Engine</font></a></li>
+</ul>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 其实在.net平台还有很多code生成技术T4（其实现在我更倾向于T4模板，但是园内牛人们已经有很多文章了，所以没写），Razor（ASP.NET MVC3带来的一种语法很漂亮，舒服的模板引擎，我也很喜欢，只是需要4.0，我打大多数工作任在3.5上工作），Mono.Cecil（MSIL程序集静态注入），Emit（MSIL的动态注入），StringTemplate（古老的模板引擎了），以及其他第三方的模板引擎，都没有写完。在以后可能会更侧重于实际应用案例。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/22/2149947.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -966,223 +1791,6 @@ namespace SilverlightApplication2
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">PD设计中表名过长，自动生成的主外键名截取的问题</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。</p>
-
-<p>解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
-默认是 <span style="color: red">PK<em>%.U27:TABLE%</span>，<span style="color: red">U27</span>表示截取27个字符。改成PK</em>%TABLE%主键名就不会被截取了。</p>
-
-<p>其他键同理：找到相应的ConstName Value去掉U.\d:</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/27/1996786.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Excel 货币中文大写汉字转化</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Excel转化货币数字为中文大写：例如：</p>
-
-<p>效果图：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/ExcelP.jpg" alt="" /></p>
-
-<p>代码：</p>
-
-<pre><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
-</code></pre>
-
-<p>&nbsp;这个奖可以结合ASPOSE.Cells处理我的报表导出Excel的汇总，计算问题：<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/21/Aspose_Cells_Template1.html"><font color="#6699cc">报表中的Excel操作之Aspose.Cells（Excel模板）</font></a> 唯一需要改变的就是D8这个单元汇总格是需要动态变更的，可以利用{r}。{-n}，{c}等来处理。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/26/1996192.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/12/Python-Tools-for-Visual-Studio/">Python Tools for Visual Studio</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-12T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/03/12/Python-Tools-for-Visual-Studio/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/12/Python-Tools-for-Visual-Studio/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&#160;&#160;&#160; 今天在CodeProject订阅中看这个开源项目，简单的看了看项目介绍，和测试。这对于喜欢CPython、IronPython的朋友们来说，该是一个喜悦，现在在ms的开源项目支持下，我们可以就在我们的vs2010IDE下编写程序了。</p>
-
-<p>下面是CodePlex上的一个效果展示：Python Tools for Visual Studio主页：<a href="http://pytools.codeplex.com/" title="http://pytools.codeplex.com/">http://pytools.codeplex.com/</a></p>
-
-<p> CPython and IronPython</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103121111565782.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103121111575060.png" title="p_intro_pic_med2" alt="p_intro_pic_med2" /></a></p>
-
-<p> 现在还是Beta版：支持智能感知、CPython 和 IronPython，NumPy &amp; SciPy for .Net、本地和远程调试、支持并行计算，很快聚会支持以当下流行的云计算、大规模，数据密集型并行编程（Dryad）。</p>
-
-<p>其他资料：
-  <li>CPython <a href="http://www.python.org">http://www.python.org</a>;</li>  <li>IronPython <a href="http://ironpython.codeplex.com">http://ironpython.codeplex.com</a>;</li>  <li>IPython <a href="http://ipython.scipy.org">http://ipython.scipy.org</a> ;</li>  <li>NumPy/SciPy&#160; <a href="http://scipy.org">http://scipy.org</a>;</li>  <li>NumPy/SciPy for .Net 将会在: <a href="http://scipy.org">http://scipy.org</a> ；</li></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/12/1982093.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/05/duan-dian/">断电</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-05T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/03/05/duan-dian/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/05/duan-dian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&shy;</p>
-
-<p>与屋外的夜融合&shy;</p>
-
-<p>没了相伴的影&shy;</p>
-
-<p>去了柳绿花红,还有&shy;</p>
-
-<p>面部的表情,&shy;</p>
-
-<p>正如落魄的&shy;茫然</p>
-
-<p>死亡的静谧 &shy;</p>
-
-<p>&shy;</p>
-
-<p>我在内心默祷&shy;</p>
-
-<p>任书桌的狼籍 &shy;</p>
-
-<p>墨汁的飘洒 &shy;</p>
-
-<p>黑的延续&shy;</p>
-
-<p>尽情低落的幸福</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &mdash;破狼</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/05/1971372.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -1221,6 +1829,22 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
@@ -1234,22 +1858,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
       </li>
     
   </ul>
@@ -1294,7 +1902,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - 破 狼 -
+  Copyright &copy; 2014 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

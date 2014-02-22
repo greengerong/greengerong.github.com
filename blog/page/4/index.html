@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 现在的软件系统开发难度主要在于其复杂度和规模，客户需求也不再像Winston Royce瀑布模型期望那样在系统编码前完成所有的设计满足用户软件需求。在这个信息爆炸技术日新月异的时代，需求总是在不停的变化， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 关于SonarLanguage是什么东东，这里就不在描述了，如果你对它感兴趣的话，请移步到上篇随笔开源：Angularjs示例&mdash;Sonar中项目使用语言分布图。这里是最近学习CoffeeScript的练习版。 & &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,614 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/">开源：Angularjs示例&#8211;Sonar中项目使用语言分布图(CoffeeScript版)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 关于<strong><a href="https://github.com/greengerong/SonarLanguage">SonarLanguage</a></strong>是什么东东，这里就不在描述了，如果你对它感兴趣的话，请移步到上篇随笔<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/02/2798001.html">开源：Angularjs示例&mdash;Sonar中项目使用语言分布图</a>。这里是最近学习CoffeeScript的练习版。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://coffeescript.org/">CoffeeScript</a>是一门简洁的，构架于JavaScript之上的预处理器语言，可以静态编译成JavaScript，语法主要受ruby和python影响，目前已经为众多rails和node项目采用。CoffeeScript不是JavaScript的超集，也不是完全替代品。CoffeeScript有点在于：</p>
+
+<ol>
+<li>更少，更紧凑，和更清晰的代码</li>
+<li>通过规避和改变对JavaScript中不良部分的使用，只留下精华，让代码减少出错率，更容易维护</li>
+<li>在很多常用模式的实现上采用了JavaScript中的最佳实践</li>
+<li>CoffeeScript生成的JavaScript代码都可以完全通过<a href="http://www.javascriptlint.com/">JSLint</a>的检测</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 多的也不想说那么多了，这里主要是个简介，CoffeeScript的练笔示例。</p>
+
+<p>代码如下：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;collapse:true;;gutter:true;">app = angular.module('app', [])
+
+    .value("$host", "http://nemo.sonarsource.org")
+
+    .factory("$requestUrl", ($host) -&gt; "#{$host}/api/resources")
+
+    .factory("$dynamicColor", ($host) -&gt;
+
+        [r,g,b] = [10,10,0]
+
+        {
+
+          getColor: -&gt;
+
+               [r,g,b] = [(r+100), (g+400), (b + 200)]
+
+               "##{(r + 256 * g + 65536 * b).toString 16 }"
+
+          ,
+
+          reset: -&gt; 
+
+               [r,g,b] = [10,10,0] 
+
+        };
+
+    ).directive('chartData', -&gt; 
+
+            drawChart = (elementId, data) -&gt; 
+
+               chart = new AmCharts.AmPieChart() 
+
+               chart.dataProvider = data
+
+               chart.titleField = "name"
+
+               chart.valueField = "percentage"
+
+               chart.colorField = "color"
+
+               chart.labelsEnabled = false
+
+               chart.pullOutRadius = 0
+
+               chart.depth3D = 20
+
+               chart.angle = 45
+
+               legend = new AmCharts.AmLegend()
+
+               legend.makerType = "square"
+
+               legend.align = "center"
+
+               chart.addLegend legend
+
+               chart.write elementId
+
+               chart;
+
+            (scope, element, attr) -&gt; 
+
+                  scope.already.push( -&gt; 
+
+                     data = scope.$eval(attr.chartData);
+
+                     drawChart(element[0].id, data); 
+
+                  ) if element[0].id 
+
+    )
+
+report = ($scope, $window, $http, $requestUrl, $dynamicColor) -&gt;
+
+    $scope.already = []
+
+    $window.angularJsonpCallBack = (data) -&gt;
+
+         @data = data
+
+         getObjectByKey = (msr , key) -&gt;
+
+            m for m in msr when m.key == key 
+
+         $scope.gridSource = $scope.projects = data
+
+         ready = (queues) -&gt; angular.forEach(queues, (q) -&gt; q() ) 
+
+         ready $scope.already 
+
+    $scope.getLanguageChartData = -&gt; 
+
+         data = _.groupBy $scope.projects , (project) -&gt; project.lang 
+
+         $dynamicColor.reset()
+
+         chartData = _.map(data, (array, key) -&gt; 
+
+                      "name":key
+
+                      "percentage":array.length,
+
+                      "color":$dynamicColor.getColor())
+
+         _.sortBy(chartData, (num) -&gt; num.percentage )
+
+    $scope.search = -&gt;
+
+        source = []
+
+        if not this.searchName
+
+            source = @projects
+
+        else 
+
+            source = _.filter @projects, (p) -&gt; 
+
+                       p.name.toLowerCase().indexOf $scope.searchName.toLowerCase() != -1 
+
+        source = _.sortBy(source, (p) -&gt; p[$scope.sortCondition.key].toLowerCase()) if @sortCondition and @sortCondition.key
+
+        source.reverse() if @sortCondition.sort and not @sortCondition.sort[$scope.sortCondition.key] 
+
+        @gridSource = source
+
+    $scope.sort = (name) -&gt;
+
+        @sortCondition ?= {}
+
+        @sortCondition.sort ?= {}
+
+        @sortCondition.key = name
+
+        @sortCondition.sort[name] = not @sortCondition.sort[name]
+
+        @search();
+
+    $scope.init = -&gt;
+
+        $http.jsonp "#{$requestUrl}?callback=angularJsonpCallBack"
+
+app.controller "report", report
+</pre>
+</div>
+
+
+<p>最终编译的JavaScript为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;collapse:true;;gutter:true;">var app, report;
+
+app = angular.module('app', []).value("$host", "http://nemo.sonarsource.org").factory("$requestUrl", function($host) {
+  return "" + $host + "/api/resources";
+}).factory("$dynamicColor", function($host) {
+  var b, g, r, _ref;
+  _ref = [10, 10, 0], r = _ref[0], g = _ref[1], b = _ref[2];
+  return {
+    getColor: function() {
+      var _ref1;
+      _ref1 = [r + 100, g + 400, b + 200], r = _ref1[0], g = _ref1[1], b = _ref1[2];
+      return "#" + ((r + 256 * g + 65536 * b).toString(16));
+    },
+    reset: function() {
+      var _ref1;
+      return _ref1 = [10, 10, 0], r = _ref1[0], g = _ref1[1], b = _ref1[2], _ref1;
+    }
+  };
+}).directive('chartData', function() {
+  var drawChart;
+  drawChart = function(elementId, data) {
+    var chart, legend;
+    chart = new AmCharts.AmPieChart();
+    chart.dataProvider = data;
+    chart.titleField = "name";
+    chart.valueField = "percentage";
+    chart.colorField = "color";
+    chart.labelsEnabled = false;
+    chart.pullOutRadius = 0;
+    chart.depth3D = 20;
+    chart.angle = 45;
+    legend = new AmCharts.AmLegend();
+    legend.makerType = "square";
+    legend.align = "center";
+    chart.addLegend(legend);
+    chart.write(elementId);
+    return chart;
+  };
+  return function(scope, element, attr) {
+    if (element[0].id) {
+      return scope.already.push(function() {
+        var data;
+        data = scope.$eval(attr.chartData);
+        return drawChart(element[0].id, data);
+      });
+    }
+  };
+});
+
+report = function($scope, $window, $http, $requestUrl, $dynamicColor) {
+  $scope.already = [];
+  $window.angularJsonpCallBack = function(data) {
+    var getObjectByKey, ready;
+    this.data = data;
+    getObjectByKey = function(msr, key) {
+      var m, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = msr.length; _i &lt; _len; _i++) {
+        m = msr[_i];
+        if (m.key === key) {
+          _results.push(m);
+        }
+      }
+      return _results;
+    };
+    $scope.gridSource = $scope.projects = data;
+    ready = function(queues) {
+      return angular.forEach(queues, function(q) {
+        return q();
+      });
+    };
+    return ready($scope.already);
+  };
+  $scope.getLanguageChartData = function() {
+    var chartData, data;
+    data = _.groupBy($scope.projects, function(project) {
+      return project.lang;
+    });
+    $dynamicColor.reset();
+    chartData = _.map(data, function(array, key) {
+      return {
+        "name": key,
+        "percentage": array.length,
+        "color": $dynamicColor.getColor()
+      };
+    });
+    return _.sortBy(chartData, function(num) {
+      return num.percentage;
+    });
+  };
+  $scope.search = function() {
+    var source;
+    source = [];
+    if (!this.searchName) {
+      source = this.projects;
+    } else {
+      source = _.filter(this.projects, function(p) {
+        return p.name.toLowerCase().indexOf($scope.searchName.toLowerCase() !== -1);
+      });
+    }
+    if (this.sortCondition &amp;&amp; this.sortCondition.key) {
+      source = _.sortBy(source, function(p) {
+        return p[$scope.sortCondition.key].toLowerCase();
+      });
+    }
+    if (this.sortCondition.sort &amp;&amp; !this.sortCondition.sort[$scope.sortCondition.key]) {
+      source.reverse();
+    }
+    return this.gridSource = source;
+  };
+  $scope.sort = function(name) {
+    var _base, _ref, _ref1;
+    if ((_ref = this.sortCondition) == null) {
+      this.sortCondition = {};
+    }
+    if ((_ref1 = (_base = this.sortCondition).sort) == null) {
+      _base.sort = {};
+    }
+    this.sortCondition.key = name;
+    this.sortCondition.sort[name] = !this.sortCondition.sort[name];
+    return this.search();
+  };
+  return $scope.init = function() {
+    return $http.jsonp("" + $requestUrl + "?callback=angularJsonpCallBack");
+  };
+};
+
+app.controller("report", report);
+</pre>
+</div>
+
+
+<blockquote><p>就这么多了，关于CoffeeScript请参考</p>
+
+<ol>
+<li><a href="http://coffeescript.org/">CoffeeScript</a></li>
+<li><a href="http://ruby-china.org/topics/4789">CoffeeScript详解</a></li>
+<li><a href="http://amix.dk/blog/post/19612">CoffeeScript: The beautiful way to write JavaScript</a></li>
+<li><a href="http://developer.51cto.com/art/201109/292065.htm">当jQuery遭遇CoffeeScript&mdash;&mdash;妙不可言</a>></li>
+</ol>
+
+
+<p>本人也会在随后的随笔中继续更新CoffeeScript，请持续关注。</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/20/2827141.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/">Javascript覆盖率(jstd)报表解析Maven插件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-16T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 最近项目中希望加入javascript覆盖率统计，由于项目的单元测试用的google的jstd（<a href="http://code.google.com/p/js-test-driver/wiki/CodeCoverage">javascript test driver</a>），jstd生成&lt;config filename&gt;-coverage.dat LCOV 格式，这是一种linux上格式，在window上网上搜寻了很久没找到可用的maven组件。最后狠下心来自己写一个。代码已经放在<a href="https://github.com/greengerong/JsTestDriverCoverageReport/tree/zip-resource/sample/green.jstdcoveragereport.test/build">github</a>上，并且maven插件也成功<a href="https://oss.sonatype.org/index.html#nexus-search;quick~com.github.greengerong">release到官网</a>。</p>
+
+<p>coverage 文件格式：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 项目主要采用java将coverage文件解析成java object在利用json序列化输出到固定位置的javascript文件。在利用angularjs显示文件覆盖率报表，利用bootstrap样式展示。</p>
+
+<p>如果你对代码感兴趣，可以参考<a href="https://github.com/greengerong/JsTestDriverCoverageReport/tree/zip-resource/sample/green.jstdcoveragereport.test/build">github</a>源码，实例也在项目sample下。</p>
+
+<p>使用基本配置：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:html;gutter:false;">            &lt;plugin&gt;
+
+                &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
+
+                &lt;artifactId&gt;JSCoverageReport&lt;/artifactId&gt;
+
+                &lt;version&gt;1.0&lt;/version&gt;
+
+                &lt;configuration&gt;
+
+                    &lt;outputDirectory&gt;${basedir}/build/&lt;/outputDirectory&gt;
+
+                    &lt;coverageFile&gt;${basedir}/build/jstd-coverage.dat&lt;/coverageFile&gt;
+
+                    &lt;limit&gt;60&lt;/limit&gt;
+
+                &lt;/configuration&gt;
+
+                &lt;executions&gt;
+
+                    &lt;execution&gt;
+
+                        &lt;phase&gt;test&lt;/phase&gt;
+
+                        &lt;goals&gt;
+
+                            &lt;goal&gt;test&lt;/goal&gt;
+
+                        &lt;/goals&gt;
+
+                    &lt;/execution&gt;
+
+                &lt;/executions&gt;
+
+            &lt;/plugin&gt;
+</pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>效果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201174217.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201189101.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>文件执行明细：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201198380.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201202774.png" title="image" alt="image" /></a></p>
+
+<blockquote><p>代码行之间的样式有点过于大，还没来得及修改样式，敬请原谅。
+有什么问题请及时在github上提出，希望多多交流。同时也可以作为一个angularjs和bootstrap的例子学习<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201204136.gif" title="LY6DR3ISJE0)6K)L)]~VIZK">![LY6DR3ISJE0)6K)L)]~VIZK</a>](<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201205249.gif">http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201205249.gif</a>)</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/16/2820949.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/31/angularjs-guo-lv-qi-filter/">Angularjs 过滤器filter</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-31T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/10/31/angularjs-guo-lv-qi-filter/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/10/31/angularjs-guo-lv-qi-filter/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面介绍angularjs已经很多了，中途由于工作和一切生活琐事，暂停了很久。今天在这里将继续angularjs讲解，这节我们来看看angularjs的过滤去filter。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们开发中经常需要在页面显示给用户的信息需要一定处理格式化，才能显示给用户。比如时间本地化，或者yyyy-MM-dd HH:mm:ss格式，数字精度格式化，本地化，人名格式化等等。在angularjs中为我们提供了叫filter的指令，让我们能够很轻易就能做到着一些列的功能，angularjs内部为我们提供了number等很多内置的filter。并且我们能够很轻易的自定义自己的领域filter。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如下实例：</p>
+
+<p>html:</p>
+
+<pre><code>&lt;div ng-app="app" ng-controller="test"&gt;
+num:&lt;input ng-model="num" /&gt;
+    &lt;br/&gt;
+
+&lt;br/&gt;
+
+&lt;br/&gt;
+first name:&lt;input ng-model="person.first"/&gt;
+&lt;br/&gt;
+last name:&lt;input ng-model="person.last"/&gt;
+&lt;br/&gt;
+name: 
+  &lt;br/&gt;
+name: 
+    &lt;br/&gt;
+name: 
+&lt;/div&gt;
+</code></pre>
+
+<p>js:</p>
+
+<pre><code>function test($scope) {
+
+}
+
+angular.module("app", []).controller("test", test).
+
+filter("fullname", function() {
+
+    var filterfun = function(person, sep) {
+
+         sep = sep || " ";
+
+        person = person || {};
+
+        person.first = person.first || "";
+
+        person.last = person.last || "";
+
+        return person.first + sep + person.last;
+
+ };
+
+    return filterfun;
+
+});
+</code></pre>
+
+<p>jsfiddle效果：<a href="http://jsfiddle.net/whitewolf/uCPPK/9/">http://jsfiddle.net/whitewolf/uCPPK/9/</a></p>
+
+<iframe height="300" src="http://jsfiddle.net/whitewolf/uCPPK/12/embedded/" frameborder="0" width="100%" stye="border:none;overflow:none;"></iframe>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在实例中首先演示了angularjs自带的number的filter使用。再同样为我们样式了如何去创建一个angularjs的filter。其实现很简单.angularjs使得扩展一切变得自然</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 最后说明：angularjs filters支持链式写法，如何powershell或者其他操作系统外壳语言一样的管道式模型，形如 value | filter1 | filter2。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/10/31/2748920.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/09/05/AngularJS-Slider-zhi-ling-directive-kuo-zhan/">AngularJS Slider指令(directive)扩展</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/09/05/AngularJS-Slider-zhi-ling-directive-kuo-zhan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/09/05/AngularJS-Slider-zhi-ling-directive-kuo-zhan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 继上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2012/09/02/2667365.html">基于jQuery UI Autocomplete的AngularJS 指令（directive）扩展</a>，在这里发布一个AngularJS的Slider扩展。如果你还不了解AngularJS话的情参见<a href="http://www.cnblogs.com/whitewolf/archive/2012/08/12/2635586.html">AngularJs &ndash; Javascript MVC 框架</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/08/13/2637262.html">Angular-Bootstrap和Compiler</a>以及<a href="http://angularjs.org/#!/">Google-AngularJS官方文档</a>.</p>
+
+<p>&nbsp;&nbsp;&nbsp; 下面直接看代码演示吧,借助我们强大的jsfiddle:链接地址<a href="http://jsfiddle.net/whitewolf/vNfsm/20/embedded">http://jsfiddle.net/whitewolf/vNfsm/20/embedded</a></p>
+
+<iframe height="800" src="http://jsfiddle.net/whitewolf/vNfsm/20/embedded/" frameborder="0" width="100%" stye="border:none;overflow:none;"></iframe>
+
+
+<p>&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这里借助于jsfiddle可能加载速度有点慢，请耐心等待。同时有什么问题请多多交流，功能进步</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/09/05/2672666.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -569,339 +1177,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">PowerShell强大管道</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性，我们可以利用强大的.net FCL在PowerShell中。PowerShell提供强大的管道模型，管道指的是一个命令的输出可以利用操作符（|）方便的传递到下个命令作为输入。PowerShell不同传统管道模型的是它是一门基于对象的管道流，即在命令之间传递的对象不是简单的文本。下面我们就以本地文件操作来实践PowerShell的管道常见命令：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 1：集合遍历ForEach-Object：可以简写为foreach，或者%代替，提供了管道传入的对集合的遍历，同时提供了操作前begin，操作process，结束end命令，其中$_提供对当前索引的指代。</p>
-
-<p>&nbsp; 示例：下面我们实践利用ForEach-Object来计算本地文件目录的文件大小：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531544186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153154315.png" title="image" alt="image" /></a></p>
-
-<p>&nbsp;&nbsp;&nbsp; 2：条件选择Where-Object：可以简写为where或者？代替。提供了对管道输入集合的过滤筛选，类似于SQL中的where条件，$_提供对当前索引的指代。</p>
-
-<p>&nbsp;&nbsp; 示例：输出文件大于100KB的文件名字和大小：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531563054.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153159287.png" title="image" alt="image" /></a></p>
-
-<p>&nbsp;&nbsp; 3：选择Select-Object：简写select，提供了对对象的选择类似于sql的select，.net的new匿名对象。同时select支持-first和-last取最前面或者最后面的几个相当于sql 中top，与下例中Sort-Object结合将很有用。</p>
-
-<p>&nbsp; 示例：选择目录下文件的文件名和大小输出：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532005959.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153202584.png" title="SNAGHTML3b707d0" alt="SNAGHTML3b707d0" /></a></p>
-
-<p>&nbsp;&nbsp; 4：排序Sort-Object：简写sort，对于集合对象参照一个或者多个属性排序，可以指定-descending为倒序。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：获取最大的前5个文件：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532038731.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532053422.png" title="SNAGHTML3bc4128" alt="SNAGHTML3bc4128" /></a></p>
-
-<p>&nbsp;&nbsp; 5：管道树Tee-Object：简写为tee，可以把管道模型传入的对象记录在文件日志或者赋值给变量保存等。提供-inputObject ，-filePath ，-variable</p>
-
-<p>&nbsp; 示例：保存文件对象时$test变量：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532061570.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532075638.png" title="SNAGHTML3c03d8f" alt="SNAGHTML3c03d8f" /></a></p>
-
-<p>&nbsp;&nbsp;&nbsp; 6：分组Group-Object：简写group，提供依据属性分组类似sql group by。</p>
-
-<p>&nbsp;&nbsp; 示例：按照文件类型分组并按照组内文件个数排序
- <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532082149.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532092772.png" title="SNAGHTML3c30688" alt="SNAGHTML3c30688" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; 7：集合统计Measure-Object：简写：measure，提供了对集合的统计，简便的方法来获取最小值、最大值及平均值属性。</p>
-
-<p>&nbsp; 示例：统计文件大小的最小值，最大值，平均值，总大小：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532109524.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532117920.png" title="SNAGHTML3c60aad" alt="SNAGHTML3c60aad" /></a></p>
-
-<p>&nbsp;&nbsp; 8：比较Compare-Object：简写diff，提供了对两个对象或集合的比较，其中有单侧指向器，=&gt;表达此对象出现在右边，&lt;=表示差异对象存在于左边。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：新建一个文件夹2，比较连个目录的不同：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532123592.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532124215.png" title="SNAGHTML3cb035d" alt="SNAGHTML3cb035d" /></a></p>
-
-<p>今天就到这里，PowerShell很强大，继续学习。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543247.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/">架构设计目录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-06T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/06/jia-gou-she-ji-mu-lu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 架构引用<a href="http://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84">维基百科</a>：软件体系结构是构建<a href="http://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BD%AF%E4%BB%B6">计算机软件</a>实践的基础。与建筑师设定建筑项目的设计原则和目标，作为绘图员画图的基础一样，一个<a href="http://zh.wikipedia.org/w/index.php?title=%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">软件架构师</a>或者<a href="http://zh.wikipedia.org/w/index.php?title=%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">系统架构师</a>陈述软件构架以作为满足不同客户需求的实际系统设计方案的基础。从和目的、主题、材料和结构的联系上来说，软件架构可以和建筑物的<a href="http://zh.wikipedia.org/w/index.php?title=%E6%9E%B6%E6%9E%84&amp;amp;action=edit&amp;amp;redlink=1" title="%E6%9E%B6%E6%9E%84&amp;action=edit&amp;redlink=1">架构</a>相比拟。一个软件架构师需要有广泛的软件理论知识和相应的经验来实施和管理软件产品的高级设计。软件架构师定义和设计软件的模块化，模块之间的交互，用户界面风格，对外接口方法，创新的设计特性，以及高层事物的对象操作、逻辑和流程。</p>
-
-<p>软件架构师与客户商谈概念上的事情，与经理商谈广泛的设计问题，与软件工程师商谈创新的结构特性，与程序员商谈实现技巧，外观和风格。</p>
-
-<p>软件架构是一个系统的草图。软件架构描述的对象是直接构成系统的抽象组件。各个组件之间的连接则明确和相对细致地描述组件之间的通讯。在实现阶段，这些抽象组件被细化为实际的组件，比如具体某个类或者对象。在<a href="http://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">面向对象</a>领域中，组件之间的连接通常用<a href="http://zh.wikipedia.org/wiki/%E6%8E%A5%E5%8F%A3_%28%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%29">接口</a>来实现。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 架构来源于建筑工程学，描述对软件密集型系统设计蓝图。在不同软件领域，有其不同特征，但有一部分共同基础设计原则和共性。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 在这里将进行一些软件架构设计系列，此系列已经完成了架构层次设计，此系列仍在继续更新中&#8230;</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
-<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
-<li>  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a></li>
-<li>   <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html">存储过程传言</a></li>
-<li> 表现层及其模式</li>
-<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/07/07/2580630.html"><font color="#6699cc">表现层模式-MVC</font></a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/06/2537593.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">架构设计-数据访问层简述</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">服务层</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层</a>，以及一些面<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言</a>。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质，并能对数据进行读取和写入CRUD。这就是数据访问层。你可能是利用xml等文件格式磁盘存储，常用的关系数据库存储，或者NoSql(not only sql)的内存存储或文档存储等等存储介质。而这里我只关心关系数据库存储。</p>
-
-<p>&nbsp;&nbsp; 数据层需要提供的职责有：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 1：CRUD服务。作为唯一可以与存储介质交互的中间层出现，负责业务对象的增加，修改，删除，加载。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 2：查询服务。这不同于CRUD中的R（read），read倾向于的单个对象，元组。而这里的查询针对复杂查询，比如一个国内电商的客户为四川的订单。这里会涉及仓储层。所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。</p>
-
-<p>&nbsp;&nbsp; 3：事务管理。这里所说的是业务事务，在一个应用系统中每次请求都会产生多次的多数据对象的新增，修改，删除操作。如果我们每次都依次代开数据库连接，准备数据包，操作数据库，关闭数据连接。这些将会给我们带来很多不必要的性能开销。数据库管理员经常会要求&#8220;尽量少的与数据库交互&#8221;，这也必须成为我们的开发原则。更好的操作是我们在内存中建立一个和数据仓库，维护变化的对象，在业务操作完成一次性提交到数据存储介质，提供业务事务。业务事务有个很好听的名字工作单元（UOW），在微软给我们提供的DataSet，orm框架都回必须存在业务事务。</p>
-
-<p>&nbsp;&nbsp; 4：并发处理。UOW应避免业务数据连接的多次提交打开而出现，但在内存离线操作，这就可能导致数据一致性问题。在多用户的环境，对数据并发处理需要制定一个策略。一般我们会采用乐观并发处理：用户可以任意的离线修改，在修改更新时候检查对象是否被修改，如果被修改者本次更新失败。简单的说就是防止丢失修改。防止丢失修改，我们可以采用where 加上一系列原值，或者加上修改时间戳或者版本号标记。同时还有许多其他的并发解决模式，但乐观并发锁用到更普遍。</p>
-
-<p>&nbsp;&nbsp; 5：数据上下文：整和所有职责。在数据访问层概念职责都会有一个共同的暴露给外部的接口。我们需要一个高层次的组件，来同一提供对数据存储介质的访问操作。，同一访问数据库CRUD，事务，并发服务的高层次类，叫做数据上下文（Context）。EF中的ObjectContext，NHibernate的session，linq to sql 的DataContext等等。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 数据访问层的一些概念（这里不会是全部，仅一些个人觉得重要的概念）：</p>
-
-<p>&nbsp; 1： 数据映射器：将内存中修改的对象提交至存储介质，则需要要映射逻辑来完成，数据映射器就是就是一个实现将某种类型的业务对象持久化的类（数据映射器模式定义如《P of EAA》）。</p>
-
-<p>&nbsp; 2：仓储层（Repository）：在上面提到：所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。在面向对象的世界里我们用对象进行查询，返回结果为对象集。这里的查询可能是从数据库，或者来至缓存，这取决你的策略，你仓储层的实现。</p>
-
-<p>&nbsp; 3:工作单元（UOW）：Martin Fowler《P of EAA》 定义：工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。在上面第3点业务事务讲的差不多，这里不是累述。</p>
-
-<p>&nbsp;&nbsp; 4：标示映射（Identity Map）：其作用在于：便于跟踪业务对象，调用者在一个业务事务中使用的是同一个实例，而不是每次执行产生一个新的对象。表示映射为一个散列表存储（散列具有快速定位O(1)）。类似于缓存的实现方式，保证了在同一个业务事务数据上下文引用修改同一个业务对象。但绝不同于缓存。从持续时间来说，标示映射生命周期为业务事务内。实现上等同于数据上下文期。但比起缓存来说其周期太短，根本不能对性能有多大的改善。缓存更重要的命中率，而标示映射保证同一数据上下文采用修改同一个业务对象的引用。</p>
-
-<p>&nbsp;&nbsp; 5：乐观并发锁：在上面也曾提到，其保证离线操作数据的对数据一致性的冲突解决方法。首先乐观在于允许离线操作，容忍冲突，防止数据丢失修改，可利用原读取数据值得where条件或者时间戳，版本号解决。</p>
-
-<p>&nbsp; 6：延时加载：对象并不是一次性加载完成，而是按照需求多次加载数据，到用时加载。业务对象太多关联，数据量太多余庞大，而我们每次业务事务需要操作的对象都只会是部分，不需要太多的数据对象。同事业务对象中还存在循环引用，这样不适于对象整体的一次性加载。延时加载提供了优化，意图在&#8220;尽可能的少加载，并按需加载，只加载需要的数据部分&#8221;。</p>
-
-<p>7：持久化透明对象（PI或POCO）：当对象模型不存在任何外部依赖，特别是对于数据访问层的依赖，那么这个模型就是持久化透明的，POCO。一个POCO的对象不需要继承至某个特定的类，实现特定的接口，或提供专门的构造函数。一个非持久化透明的对象这以为者存在外部的依赖，而我们更喜欢领域对象只是一个简单额c#类，可以在持久化层等独立切换。这就导致实现的时候我们无法很直接的跟踪业务对象，这就是面向方面编程（AOP）或者代理模式的大显身手。可惜AOP在.net中不是那么直接，很多ORM框架如NHibernate之类的利用代理模式Emit动态注入IL实现跟踪，添加新的行为。所以NHibernate中要求领域对象的所有字段属性方法都必须是虚方法可重写的。:</p>
-
-<p>8：CQRS（Command Query Responsibility Segregation，命令查询职责分离）：CQRS是在DDD的实践中引入CQS理论而出现的一种体系结构模式，命令和查询被分离。具体可以参 Martin Fowler的CQRS文章： <a href="http://martinfowler.com/bliki/CQRS.html" title="http://martinfowler.com/bliki/CQRS.html">http://martinfowler.com/bliki/CQRS.html</a></p>
-
-<p>&nbsp; 暂时写到这里，一下想不全，天已不早了，后续慢慢补上吧。</p>
-
-<p>同些列文章还有：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>2.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a>3.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>4.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>5.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a>6.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>7.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/">软件架构设计箴言理解</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-02T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天和师弟聊天聊到他们项目开发，有些同事总是提前考虑性能优化，需求变更又是一大堆的重写，让我想起了Donald Knuth 提到的：对软件的过早地优化是万恶的根源。这里就简单的说几条重要的软件名人哲学。</p>
-
-<p>1：软件中唯一不变的就是变化。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在软件开发过程中需求是不停的变化，随着客户对系统的认识，和现有开发功能和软件的认识，也许以开始他提出的需求就是背离的。记得网上有一句笑话，师说需求变化的：</p>
-
-<blockquote><p>&nbsp; 程序员XX遭遇车祸成植物人，医生说活下来的希望只有万分之一，唤醒更为渺茫。可他的Lead和亲人没有放弃，他们根据XX工作如命的作风，每天都在他身边念：&#8220;XX，需求又改了，该干活了，你快来呀！&#8221;，奇迹终于发生了，XX醒来了，第一句话：&#8220;需求又改了</p></blockquote>
-
-<p>&nbsp;&nbsp;&nbsp; 在设计和架构中，凡事无绝对，作为架构师或者项目负责人你必须永远的清晰认识到没有完美的架构和设计，没有万能的软件。只存在当前环境，需求方案，团队人员素质，物理环境，安全等综合因素下的合适方案，由于总总原因你的解决方案可能不是某一个单一因素下的最优解。站在这个位置你需要做的是找到这个综合下的最优解，权衡。不要只从表面说某个人某个团队的解决方案怎么查怎么不好，或者这就是当时综合因素的最优解，站在同样的位置环境你不一定做得更好。在架构设计和人生，在我看来很相似，总是有一堆抉择，每一次的抉择都会带来得和失，权衡得失取舍。</p>
-
-<p>2:KISS:(Keep It Simple,Stupid):</p>
-
-<p>&nbsp;&nbsp;&nbsp; 保持简单，但不过于太简单。在《UNIX下的编程哲学》中提到很多保持设计简单，我们能清晰看到这条原则。现在视觉设计，都崇尚简约设计，简单而不庸俗，而不是一大堆的豪华奢侈打造。VB编程开始的可视化设计，可见即可得，google的首页，商业风格。在我们的软件设计中也需要简洁的设计，用户需要的是可见可量化的功能的正确性，而是你运用了多牛b的技术模式，但绝不是一味的太过于简单。你想把意见简单的事情做复杂化是很容易的事情，但是把一件复杂的事情简单化却不那么容易。简单的人生就是幸福。但是这里需要说明的是简单是优秀的，但简单是有底线边界的，超过底线的简单也有变得稚幼。比如事务性脚本模式比其他3中常见模式都简单，但往往复杂的需求它不是最优解，因为他太过于简单了（如果你还不了解是事务性脚本可以参见这里<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>）。</p>
-
-<p>3：面向抽象编程。</p>
-
-<p>&nbsp;&nbsp; 在设计模式，架构模式，OO中都是一条完全的主线，作为oo第一原则存在。我不起那个软件牛人曾说过：请牢记没有接口的话就不要开始实现。这句话也许过于偏激，但是如果你接口理解为不变或者不易变的话，理解或契约（公司和你的合同）更贴切些吧（可能是一个不变的类，如果你能肯定的说出你的这个实现在以后，在项目开发维护中是不会变得，我觉得这也是接口，接口在于不变和不易变），你也许会同意这句话。对于目前的需求你肯定能够没有抽象没够接口完全写出完美的代码，但是第一条中我们说明的软件中唯一不变的就是变化，在未来的需求中你能够很好的一样的优秀吗？如果不能，那么我认为面对当前需求就该为以后提供扩展延伸。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 我个人理解23中设计模式中大多数基本都是围绕着这个Program to an interface, not an implementation（依赖接口而不是实现）第一原则为目的。当然我们也不能不说还有第二原则：组合优先于继承。以后的什么DIP（依赖倒置，IOC的原则），LSP（里氏替换），OCP（开闭原则）等等都是他们的延伸和扩展。在追溯的话这一些列都是为了软件系统&#8220;高内聚，低耦合&#8221;（可以简叙述为：功能完备(高内聚)的对象之间是靠接口(低耦合)通讯交互的），内聚是描述的功能性完备程度，耦合是表述模块间的依赖程度。这里插一句话某同事给我说依赖接口不是还有依赖嘛，我希望的是没有耦合，我的回答是：计算机二八原则说明了这一切，既然事务出现在一起了，那绝不是偶然情况，所以他们之间必定存在依赖，在软件设计中我们所能做的就是引入中间对象使其变为间接依赖，而减少他们之间的依赖，而我们希望这个中间对象是个相对稳定的，设计中一切都是一个词：间接，分层，mvc，mvp，soa，中间件等等都是体现直接依赖变为间接依赖。说这个话题的原因是引出我们&#8220;高内聚，低耦合&#8221;行之有效的方法SOC（分离关注点），这不只是OO的任然对面向过程编程行之有效，他是在20年前 SP（结构化编程）中提出来的。</p>
-
-<p>&nbsp; 如果你想对设计原则有更多的了解，可以参见这里<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a> 和 <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>。</p>
-
-<p>4：首先考虑可维护，延伸性，事后优化</p>
-
-<p>&nbsp;&nbsp; 这里也是本文的起因，正如开篇所说，Donald Knuth 提到的：对软件的过早地优化是万恶的根源。在开发的时候我们不需要进行任何性能的优化，即使你认为这里可能存在性能的瓶颈，你需要考虑的更多的是设计的扩展和延伸性，以后的继续添加新功能和维护。对于用户需话要的需求，性能优化很多时候只是作为一个更好的体验存在。只有当真正出现性能瓶颈的时候，你才需要做性能的优化。一个可延伸可扩展，层次分明，代码清晰的模块，对于你的优化也是件容易的事情，在对项目后期对于项目的总体需求明白下你也有得到更多的优化方案。在重构模式中同样也提倡时候优化。过早的优化导致你的项目会越陷越深，到最后才知道用户其实根本不需要这么高的需求，或者是用户根本不常用的功能模块。优化也需要有标准，多少时间是用户能忍受的，目前是多少时间。往往用户对性能要求的只有那个少量常用的操作，而对于功能性需求的变更却是无止境的，维护成本却是高昂的。</p>
-
-<p>&nbsp; 最后说一句，经常有人说反射性能低下，对我们必须承认反射比其他方案性能是不好，但是我们有解决方案：缓存。在则说性能低下，是以什么什么标准？用户的接受程度？反射我们可以有其替代方案Emit，Expression tree。从反射，Expression tree，Emit的选择，其使用难度在提升，开发效率在增加，性能在改善。本人一般却倾向于Expression tree，两种剧中吧。</p>
-
-<p>5：继承是为了多态而不是重用</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; OOP中可以编写一个类，然后我可以不断的继承重用去扩展新需求。这是类的重用，是全部的重用？重用这个词看上去也许更加的微妙。多态是面向对象的核心特征之一，也不记不清那里听到的：重用只是继承的附带功能。在我们的继承体系中不宜庞大如果一个拥有4,5层的继承体系，对你的理解也增加难度，而且集成体系必须是个干净的继承体系，满足LSP（里氏替换原则）：在所有用到父类的地方都可以替换为子类，还能正常准确工作。这就要求你继承更多的是修改扩展父类的行为，尽量避免状态。继承只是不要为了重用的为目的，在恰当的时机更好的办法是实现一个完全的类来替换不能满足现有需求的类。这也是oo原则第二原则吧，组合优先于继承。组合比如设计模式中的策略模式，你得到的是一个算法组合功能个数是一个笛卡尔积。但也是绝对的组合，只是优先，不是取代，软件和现实世界都是充满了矛盾的，就如开篇第一条&#8220;软件中唯一不变的就是变化&#8221;就是最大的矛盾，来自辩证唯物主义，你要做的是权衡。组合表述的是整体的替换，如策略模式模式的算法整体替换。继承是部分的少量的扩展修改行为，比如设计模式中的模版方案，在父类的流程控制下，部分步骤的修改，数据，事务的流转控制权在父类。这条在最后说一句：设计模式不是万能的，只是前人的优秀经验，是依赖于场景存在的，了解设计模式我觉得更重要的是其使用场景，在遇见同类场景的时候知道可以有这种模式作为解决方案或许更好，仅作为供你选择的解决问题方案。</p>
-
-<p>6：用户的一切输入都是万恶的</p>
-
-<p>&nbsp;&nbsp;&nbsp; 用户的输入是属于我们系统之外的，是无法控制的，是不可罗列的。对于用户来说软件只是一个黑盒子，不需要，也没必要了解具体内在实现。对于汽车销售人员不需要了解发动机螺栓是怎么上的一样，他了解宣传的是能有什么优势，能给用户带来那些方面的满足，价格？性能？速度？豪华？&#8230;.对于门户网站来说你对应的用户不仅是可信任的用户，可能还有竞争对手黑客攻击行为。如果你的系统信任于用户的输入，早晚一天总会&#8220;纸包不住火的&#8221;，用户有意无意的一次输入就可能导致你系统的功能性的全盘崩溃，你不应该限制用户的操作，你是不能命令用户该输入什么不能输入什么，比如某天某人使用用户可能降工资了或者挨批了，心情不好，你也许会潜意思的对你的系统进行挑战。</p>
-
-<p>&nbsp; 说到这里随便说一句，以前项目组有人层提过由于自动化测试服务器运行时间太长了，把部分验证等逻辑移到单元测试中保证。对于我的理解来说自动化测试近似于集成测试吧，功能性测试，应该是黑盒子。在单元测试中我们总是假设输入是正确的，某个依赖也是正确的，验证输出的正确。而集成测试重点在于这一些都是层次的组合，贯通，不存在假设的正确性，只有来自测试人员的测试用例得到预期的输出。</p>
-
-<p>&nbsp;&nbsp; 今天就写到这里吧，还有很多但是一下想不起来，后续有机会的话对于重要的也会继续补上。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 现实是矛盾的，没有完美的设计，也没有绝对的简单。生活也是如此就如：简单就是幸福，快乐就是幸福。那么简单的标准是什么？怎样才是快乐？这在于你自己的抉择，权衡。想起了某次面试和小公司面试官谈话，面试官说ORM存在性能问题，而且一直在纠结的说反对DDD，反对模式。本人先说了如果存在了性能问题有什么解决方案，首先怎么做如果不能满足再怎么做，从索引缓存到分表服务集群，再总结性的一句话：架构如人生，总是要面临得到取舍。</p>
-
-<p>&nbsp;</p>
-
-<p>博客中架构设计随笔有：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -940,6 +1215,22 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
@@ -953,22 +1244,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
       </li>
     
   </ul>
@@ -1013,7 +1288,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - 破 狼 -
+  Copyright &copy; 2014 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

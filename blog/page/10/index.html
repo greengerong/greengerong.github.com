@@ -9,8 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;卸掉VS Add-in的方法可以参考： Deactivate and Remove an Add-in
-How to get rid of a Visual Studio add-in 其中有两个比较简单易行的方法。 1）使用devenv命令 devenv.exe / &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 前阵写了Linq的单表生成相对Sql执行的批量删除，总觉得删除条件太局限了，并且又不能屏蔽linq的级联条件，这很容易误导一些人。所以想了应该还是要支持才好。呵呵。 &nbsp;&nbsp;&nbsp;&nbsp; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +71,445 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/">Linq多表查询条件批量删除</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 前阵写了Linq的单表生成相对Sql执行的批量删除，总觉得删除条件太局限了，并且又不能屏蔽linq的级联条件，这很容易误导一些人。所以想了应该还是要支持才好。呵呵。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 其实思路和上次一样，就是生成Sql，用Linq自身条件组合sql应用，没有什么好说的。组合sql用 EXISTS关键字，组合一个子查询。</p>
+
+<pre><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>直接上Code：</p>
+
+<pre><code>/// EXISTS
+/// &amp;lt;/summary&amp;gt;
+/// &amp;lt;typeparam name="T"&amp;gt;&amp;lt;/typeparam&amp;gt;
+/// &amp;lt;param name="source"&amp;gt;&amp;lt;/param&amp;gt;
+/// &amp;lt;param name="query"&amp;gt;&amp;lt;/param&amp;gt;
+/// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
+public static int Delete&amp;lt;T&amp;gt;(this System.Data.Linq.Table&amp;lt;T&amp;gt; source, Expression&amp;lt;Func&amp;lt;T, bool&amp;gt;&amp;gt; query)
+where T : class
+{
+if (source == null)
+throw new ArgumentException("source");
+if (query == null)
+throw new ArgumentException("query");
+//query = t =&amp;gt; true;
+//为空DELETE  FROM [dbo].[test] 全删除；个人觉得为空全删除，很不人道，所以还是抛异常
+System.Data.Linq.DataContext db = source.Context;
+DbCommand cmd= db.GetCommand(source.Where(query));
+string queryStr = cmd.CommandText;
+string sql = "DELETE FROM " + source.Context.Mapping.GetTable(typeof(T)).TableName + " WHERE   EXISTS(" + queryStr+")";
+List&amp;lt;object&amp;gt; dbparams = new List&amp;lt;object&amp;gt;();
+foreach (SqlParameter item in cmd.Parameters)
+{
+SqlParameter p = new SqlParameter(item.ParameterName, item.SqlDbType, item.Size);
+p.Value = item.Value;
+dbparams.Add(item.Value);
+}
+cmd = null;
+return db.ExecuteCommand(sql, dbparams.ToArray());
+}
+</code></pre>
+
+<p>&nbsp; 调用方式就很简单了，一个Lamdam表达式，就搞定。比如</p>
+
+<pre><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
+</code></pre>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_thumb.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 例子没有从重写Linq或者扩展Linq表达式出发，因为从这里出发我能力估计还差一筹，呵呵还是我觉得没有必要，这样的实现是否更简单，实现的功能更多些，为何不重用人家MS的东西呢，个人观点而已</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/15/1826624.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/10/c-OleDb-cao-zuo-Access-shi-jian-lei-xing-cao-zuo-fu-diu-shi-huo-zhe-ti-shi-cuo-wu-biao-zhun-biao-da-shi-zhong-shu-ju-lei-xing-bu-pi-pei/">C# OleDb操作Access时间类型：操作符丢失，或者提示错误“标准表达式中数据类型不匹配</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/09/10/c-OleDb-cao-zuo-Access-shi-jian-lei-xing-cao-zuo-fu-diu-shi-huo-zhe-ti-shi-cuo-wu-biao-zhun-biao-da-shi-zhong-shu-ju-lei-xing-bu-pi-pei/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/10/c-OleDb-cao-zuo-Access-shi-jian-lei-xing-cao-zuo-fu-diu-shi-huo-zhe-ti-shi-cuo-wu-biao-zhun-biao-da-shi-zhong-shu-ju-lei-xing-bu-pi-pei/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在c# OleDb操作Access时间类型的时候报错：操作符丢失，或者提示错误&#8220;标准表达式中数据类型不匹配&#8221;。</p>
+
+<p>解决方案：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; ASP.NET在操作日期型数据的时候,向ACCESS中的&#8221;时间/日期&#8221;字段中插入数据需要两边加#，而SQL SERVER不用。 这可能是C#中的日期类型无法直接转换成Access中的日期类型OleDbType.DBDate所致，因此上面代码向ACCESS中的&#8221;时间/日期&#8221;字段中插入DateTime.Now时出现错误信息&#8220;标准表达式中数据类型不匹配。&#8221;</p>
+
+<p>如代码：</p>
+
+<pre><code>String Sql = "update  ly set re_message='" + TextBox1.Text +    "',re_date=#" + DateTime.Now + "# where ID=" + page_id;
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/10/1823524.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/">Windows服务中Timer组件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-25T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>制作Windows服务时候的Timer控件并不是在工具箱上直接拖拽过来的Timer，那是System.Windows.Forms命名空间下的组件，而我们这里使用的Timer应该是System.Timers.Timer.</p>
+
+<p>&nbsp; 解决方法有：</p>
+
+<p>打开&#8221;工具箱&#8221;&mdash;-右键&mdash;&ndash;&ldquo;选择项&rdquo;&mdash;-找到Timer控件,看好了,这个Timer控件的是system.Timer下的.可不是System.Windows.Form.然后添加.<img src="http://images.cnblogs.com/cnblogs_com/wxukie/timer.jpg" alt="" /></p>
+
+<p>&nbsp;</p>
+
+<p>我选择的是直接用code书写初始化代码。因为添加项速度真的太慢了，呵呵。</p>
+
+<p>MSDN上关于Timer如下：</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Timer</strong> 组件是基于服务器的计时器，它使您能够指定在应用程序中引发 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.elapsed(v=VS.80"><font color="#1364c4">Elapsed</font></a>.aspx) 事件的周期性间隔。然后可以操控此事件以提供定期处理。例如，假设您有一台关键性服务器，必须每周 7 天、每天 24 小时都保持运行。可以创建一个使用 <strong>Timer</strong> 的服务，以定期检查服务器并确保系统开启并在运行。如果系统不响应，则该服务可以尝试重新启动服务器或通知管理员。</p>
+
+<p>基于服务器的 <strong>Timer</strong> 是为在多线程环境中用于辅助线程而设计的。服务器计时器可以在线程间移动来处理引发的 <strong>Elapsed</strong> 事件，这样就可以比 Windows 计时器更精确地按时引发事件。有关基于服务器的计时器的更多信息，请参见&#8220;<a href="http://msdn.microsoft.com/zh-cn/library/tb9yt5e6(v=VS.80"><font color="#1364c4">基于服务器的计时器介绍</font></a>.aspx)&#8221;。</p>
+
+<p>基于 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.interval(v=VS.80"><font color="#1364c4">Interval</font></a>.aspx) 属性的值，<strong>Timer</strong> 组件引发 <strong>Elapsed</strong> 事件。可以处理该事件以执行所需的处理。例如，假设您有一个联机销售应用程序，它不断向数据库发送销售订单。编译发货指令的服务分批处理订单，而不是分别处理每个订单。可以使用 <strong>Timer</strong> 每 30 分钟启动一次批处理。</p>
+
+<p>注意:</p>
+
+<p>当 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.autoreset(v=VS.80"><font color="#1364c4">AutoReset</font></a>.aspx) 设置为 <strong>false</strong> 时，<strong>Timer</strong> 只在第一个 <strong>Interval</strong> 过后引发一次 <strong>Elapsed</strong> 事件。若要保持以 <strong>Interval</strong> 时间间隔引发 <strong>Elapsed</strong> 事件，请将 <strong>AutoReset</strong> 设置为 <strong>true</strong>。
+</td></tr></tbody></table></div></p>
+
+<p><strong>Elapsed</strong> 事件在 <a href="http://msdn.microsoft.com/zh-cn/library/system.threading.threadpool(v=VS.80"><font color="#1364c4">ThreadPool</font></a>.aspx) 线程上引发。如果 <strong>Elapsed</strong> 事件的处理时间比 <strong>Interval</strong> 长，在另一个 <strong>ThreadPool</strong> 线程上将会再次引发���事件。因此，事件处理程序应当是可重入的。</p>
+
+<p>注意:</p>
+
+<p>在一个线程调用 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.stop(v=VS.80"><font color="#1364c4">Stop</font></a>.aspx) 方法或将 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.enabled(v=VS.80"><font color="#1364c4">Enabled</font></a>.aspx) 属性设置为 <strong>false</strong> 的同时，可在另一个线程上运行事件处理方法。这可能导致在计时器停止之后引发 <strong>Elapsed</strong> 事件。<strong>Stop</strong> 方法的示例代码演示了一种避免此争用条件的方法。
+</td></tr></tbody></table></div></p>
+
+<p>如果和用户界面元素（如窗体或控件）一起使用 <strong>Timer</strong>，请将包含有 <strong>Timer</strong> 的窗体或控件赋值给 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.synchronizingobject(v=VS.80"><font color="#1364c4">SynchronizingObject</font></a>.aspx) 属性，以便将此事件封送到用户界面线程中。</p>
+
+<p><strong>Timer</strong> 在运行时是不可见的。</p>
+
+<p><span class="LW_CollapsibleArea_Title">示例</span></p>
+
+<div class="LW_CollapsibleArea_HrDiv">
+
+* * *
+
+</div>
+
+
+<p><a name="codeExampleToggle" xmlns="http://www.w3.org/1999/xhtml"></a></p>
+
+<p>下面的示例创建一个 <strong>Timer</strong>，它每隔五秒钟在控制台上显示一次&#8220;Hello World!&#8221;。</p>
+
+<p>&nbsp;</p>
+
+<pre><code>using System;
+using System.Timers;
+
+public class Timer1
+{
+    public static void Main()
+    {
+     // Normally, the timer is declared at the class level, so
+     // that it doesn't go out of scope when the method ends.
+    // In this example, the timer is needed only while Main 
+    // is executing. However, KeepAlive must be used at the
+    // end of Main, to prevent the JIT compiler from allowing 
+    // aggressive garbage collection to occur before Main 
+    // ends.
+    System.Timers.Timer aTimer = new System.Timers.Timer();
+
+    // Hook up the Elapsed event for the timer.
+    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+
+    // Set the Interval to 2 seconds (2000 milliseconds).
+    aTimer.Interval = 2000;
+    aTimer.Enabled = true;
+
+    Console.WriteLine("Press the Enter key to exit the program.");
+    Console.ReadLine();
+
+    // Keep the timer alive until the end of Main.
+    GC.KeepAlive(aTimer);
+}
+
+// Specify what you want to happen when the Elapsed event is 
+// raised.
+private static void OnTimedEvent(object source, ElapsedEventArgs e)
+{
+    Console.WriteLine("Hello World!");
+}
+</code></pre>
+
+<p>}
+&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/08/25/1808002.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/08/03/Dynamic-Linq-di-Like-kuo-zhan/">Dynamic Linq 的Like扩展</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-03T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/08/03/Dynamic-Linq-di-Like-kuo-zhan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/08/03/Dynamic-Linq-di-Like-kuo-zhan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在上几节Linq动态组合查询时，在肖坤的<a href="http://www.cnblogs.com/killuakun/archive/2008/08/03/1259389.html">Linq动态查询与模糊查询（带源码示例）</a>时看到了微软的《<a href="http://www.cnblogs.com/cnblogsfans/archive/2008/04/01/1132918.html">Linq to SQL Dynamic 动态查询</a>》，但是楼主说&#8220;可惜Dynamic.cs也是不能使用like的，恨啊！&#8221;。于是我下载了Dynamic .cs仔细研究了下源码，一步一步的调试，本想在微软的类库里添加如like的支持，但是调试了半天，还是无从下手。但是发现了DLinq支持对方法的调用，支持 DataContext.Orders.Where(&ldquo;ShipCity.Contains(@0) &rdquo;,&ldquo;test&rdquo;);于是想了下我能否用正则表达式匹配Like表达式，转化为string.Contains（）。就尝试Code。说句其实微软已经支持了，只是我们有一些还是习惯于Like &#8216;str&#8217;形式吧了。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 赶快进入主题-Code:</p>
+
+<pre><code> /// &lt;summary&gt;
+      /// 操作like帮助类，自己增加的；
+      /// &lt;/summary&gt;
+      public class DynamicQueryableLikeHelper
+      {
+          public static string CheckLikeSattement(string predicate, ref  object[] values)
+          {
+              MatchCollection matches = Regex.Matches(predicate.ToLower(),
+  @"(?&lt;item&gt;(\s*like\s*((?&lt;param1&gt;(@[\d+]))|(?&lt;param2&gt;(((\')?\w+\'?))))))\s*((and)|(or)?)");
+              string s = predicate;
+              if (matches != null)
+              {
+                  int offset = 0;
+                  foreach (Match item in matches)
+                  {
+                      Group gitem = item.Groups["item"];
+                      if (!string.IsNullOrEmpty(item.Groups["param1"].Value))
+                      {
+                          Group g = item.Groups["param1"];
+                          string insertstr = ".Contains(" + g.Value + ")";
+                          s = DynamicQueryableLikeHelper.ChangePredicate(s, insertstr, gitem, ref offset);
+
+                      }
+                      else if (!string.IsNullOrEmpty(item.Groups["param2"].Value))
+                      {
+                          Group g = item.Groups["param2"];
+                          string insertstr = ".Contains(@" + values.Length + ")";
+                          s = DynamicQueryableLikeHelper.ChangePredicate(s, insertstr, gitem, ref offset);
+                          ArrayList list = new ArrayList(values);
+                          list.Add(g.Value.Replace("\'", ""));
+                          values = list.ToArray();//like对字符串操作所以没有考虑其他类型
+
+                      }
+
+                  }
+              }
+              return s;
+          }
+
+          public static string ChangePredicate(string s, string insertstr, Group gitem, ref int offset)
+          {
+              string strremove = s.Remove(gitem.Index + offset, gitem.Length);
+              s = strremove.Insert(gitem.Index + offset, insertstr);
+              offset += insertstr.Length - gitem.Length;
+              return s;
+          }
+      }
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上面代码就是正则表达式的运用，很简单。其中唯一花费了我很多时间就是我在正则表达式匹配时和修改后的string的index不一致，本想用个假单方法实现，最后还是么有办法，就只有加入了一个offset偏移量，每次删除插入的差值的和。这里就把like &#8216;value&#8217; 转化为 property.Contains（value）；其实和like还是有差别的Contains其实只等于 &#8216;%value%&#8217;。但是这里提供了一个方案，同理我们可以实现为&#8216;%value&#8217; 为EndWith，&#8216;vakue%&#8217;为StartWith。由于在我们的应用中一般常用的为Contains所以暂时还么有扩展其他两个，等有时间再做（实现也简单就是判断有么有%和他的位置选择我们所转化的函数名）。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 为了在Dlinq里扩展我在where方法里面加入了传入条件字符串的转化。并加入了参数ignoreLike，默认为False。我怕的扩展有某些问题暂时还么有测试出来了，还有就是不想改变原类库。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在我的扩展中支持ShipCity like @1 、ShipCity like &lsquo;don&#8217;、ShipCity like @0 两种形式，原来类库里面只支持第三种形式。我的前两者形式都是当做字符串处理的，因为我们的like操作一般都是对字符串操作，如果要支持其他类型可以转化类型，我以前写了一个类型属性转化的类，可以实现，但是我想这个问题么有必要。</p>
+
+<p>在类库里面该的方法有（已经注释了，还是贴出来看看调用）:</p>
+
+<p>&nbsp;</p>
+
+<pre><code>   public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate, params object[] values)
+      {
+          return (IQueryable&lt;T&gt;)Where((IQueryable)source, predicate, false, values);
+          //TODO:添加False
+      }
+
+      public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate,
+              bool ignoreLike, params object[] values)
+      //TOD:增加的方法，ignoreLike
+      {
+          return (IQueryable&lt;T&gt;)Where((IQueryable)source, predicate, ignoreLike, values);
+      }
+
+      public static IQueryable Where(this IQueryable source, string predicate, params object[] values)
+      //TOD:增加的方法，ignoreLike,下面方法的忽略ignoreLike写法；
+      {
+          return Where(source, predicate, false, values);
+      }
+      public static IQueryable Where(this IQueryable source, string predicate,
+                       bool ignoreLike, params object[] values)
+      //TODO:改变参数ignoreLike
+      {
+          if (source == null) throw new ArgumentNullException("source");
+          if (predicate == null) throw new ArgumentNullException("predicate");
+          if (!ignoreLike)
+          {
+              predicate = DynamicQueryableLikeHelper.CheckLikeSattement(predicate, ref values);
+              //TODO:增加语句；
+          }
+          LambdaExpression lambda = DynamicExpression.ParseLambda(source.ElementType,
+                      typeof(bool), predicate, values);
+          return source.Provider.CreateQuery(
+              Expression.Call(
+                  typeof(Queryable), "Where",
+                  new Type[] { source.ElementType },
+                  source.Expression, Expression.Quote(lambda)));
+      }
+</code></pre>
+
+<p>&nbsp;&nbsp; 只是TODO处就是我改变的。下面该测试测试下（数据库Northwind的orders表）。</p>
+
+<p>&nbsp;</p>
+
+<pre><code>IQueryable&lt;Orders&gt; q = DataContext.Orders
+ .Where("ShipCity like @1 and ShipCity like @0 or ShipCity  like 'don' and ShipCity like 'don'
+        and ShipCity like 'don'  or EmployeeID1 =1", "test  ", "test").OrderBy("ShipCity");
+          //IQueryable&lt;Orders&gt; q =  DataContext.Orders.Where("ShipCity.Contains(@0) ","test");
+            Console.WriteLine(DataContext.GetCommand(q).CommandText);
+</code></pre>
+
+<p>  为了测试多个我邮箱投个懒就把ShipCity like &lsquo;don&rsquo; 赋值了多次。
+输出sql为：&nbsp;</p>
+
+<pre><code>  SELECT [t0].[OrderID], [t0].[CustomerID], [t0].[EmployeeID] AS [EmployeeID1], [t 0].[OrderDate], [t0].[RequiredDate], [t0].[ShippedDate], [t0].[ShipVia], [t0].[F reight], [t0].[ShipName], [t0].[ShipAddress], [t0].[ShipCity], [t0].[ShipRegion] , [t0].[ShipPostalCode], [t0].[ShipCountry] FROM [dbo].[Orders] AS [t0] WHERE (([t0].[ShipCity] LIKE @p0) AND ([t0].[ShipCity] LIKE @p1)) OR (([t0].[Shi pCity] LIKE @p2) AND ([t0].[ShipCity] LIKE @p3) AND ([t0].[ShipCity] LIKE @p4)) OR ([t0].[EmployeeID] = @p5) ORDER BY [t0].[ShipCity]&amp;nbsp;
+</code></pre>
+
+<p>如果在类库中有和你的字符串等冲突就可以用ignoreLike为真，避免我的扩展。</p>
+
+<p>最后希望大家一起帮我测试下，如果有什么问题请留言和Email：<a href="&amp;#109;&amp;#97;&amp;#105;&amp;#108;&amp;#116;&amp;#111;&amp;#58;&amp;#103;&amp;#114;&amp;#122;&amp;#120;&amp;#50;&amp;#50;&amp;#49;&amp;#48;&amp;#64;&amp;#49;&amp;#54;&amp;#51;&amp;#46;&amp;#99;&amp;#111;&amp;#109;">破狼Email</a>指出，我好改变。</p>
+
+<p>附带：扩展后的<a href="http://files.cnblogs.com/whitewolf/%E6%88%91%E6%89%A9%E5%B1%95%E6%94%AF%E6%8C%81LIke%E7%9A%84DLinq.rar">Dynamic.cs</a>下载</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/08/03/1790954.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1133,336 +1571,6 @@ if( r ) alert('You entered ' + r);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/04/27/shi-pin-xiang-zuo-ni-di-Code/">[视频]想做你的Code</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/04/27/shi-pin-xiang-zuo-ni-di-Code/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/04/27/shi-pin-xiang-zuo-ni-di-Code/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><object data="http://player.ku6.com/refer/G2sSaYkUs3M-y81h/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="align" value="middle"         />
-<param name="src" value="http://player.ku6.com/refer/G2sSaYkUs3M-y81h/v.swf"         />
-<param name="allowfullscreen" value="true"         />
-<param name="quality" value="high"         /></object>
-
-
-<p>写code是他的快乐</p>
-
-<p>看他写code成了我的快乐</p>
-
-<p>喜欢他的认真</p>
-
-<p>却不想他总给自己找压力</p>
-
-<p>&hellip;&hellip;</p>
-
-<p>如果可能</p>
-
-<p>我来做你的下一行code，好不好？</p>
-
-<p><strong>更痛快地Coding，给爱更多好心情</strong></p>
-
-<p>   <div style="width:500px;"></p>
-
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-zui-zhong-ji-rang-ai-bian-yi-tong-guo/">Visual Studio 2010网剧最终季：《让爱编译通过》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-zui-zhong-ji-rang-ai-bian-yi-tong-guo/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/04/27/Visual-Studio-2010-wang-ju-zui-zhong-ji-rang-ai-bian-yi-tong-guo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;</p>
-
-<p>第五集：让爱编译通过</p>
-
-<p>妈妈说你什么都好，就不该是个程序员&hellip;</p>
-
-<p>这份爱能否编译通过？</p>
-
-<p>&nbsp;</p>
-
-<div style="text-align: center">
-<object data="http://player.ku6.com/refer/0sTIFJ4jxsmyFAyk/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="data" value="http://player.ku6.com/refer/0sTIFJ4jxsmyFAyk/v.swf"     />
-<param name="align" value="middle"     />
-<param name="src" value="http://player.ku6.com/refer/0sTIFJ4jxsmyFAyk/v.swf"     />
-<param name="allowfullscreen" value="true"     />
-<param name="quality" value="high"     /></object></div>
-
-
-<p>   <div style="width:500px;"></p>
-
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/">Visual Studio 2010网剧第四集：《为爱Debug》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>当爱有了bug&hellip;</p>
-
-<object data="http://player.ku6.com/refer/ginh8iOmOqJ0bm52/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="data" value="http://player.ku6.com/refer/ginh8iOmOqJ0bm52/v.swf"   />
-<param name="align" value="middle"   />
-<param name="src" value="http://player.ku6.com/refer/ginh8iOmOqJ0bm52/v.swf"   />
-<param name="allowfullscreen" value="true"   />
-<param name="quality" value="high"   /></object>
-
-
-<p>   <div style="width:500px;"></p>
-
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-san-ji-xing-fu-ye-xu-yao-min-jie/">Visual Studio 2010网剧第三集《幸福也需要敏捷》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-san-ji-xing-fu-ye-xu-yao-min-jie/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-san-ji-xing-fu-ye-xu-yao-min-jie/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><object data="http://player.youku.com/player.php/sid/XMTY2NzYyMTAw/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="data" value="http://player.youku.com/player.php/sid/XMTY2NzYyMTAw/v.swf"     />
-<param name="src" value="http://player.youku.com/player.php/sid/XMTY2NzYyMTAw/v.swf"     />
-</object>
-
-
-<p>   <div style="width:500px;"></p>
-
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -1501,6 +1609,22 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
@@ -1514,22 +1638,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
       </li>
     
   </ul>
@@ -1574,7 +1682,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - 破 狼 -
+  Copyright &copy; 2014 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

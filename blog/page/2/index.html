@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。 &nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导， &hellip;">
+  <meta name="description" content="随着web2.0的兴起，ajax的时代已经成为了事实，更如今Knockout,backbone, angular,ember前端MDV(model driver view)框架强势而来，Single Page Application已经为大家所熟悉了。如今常见的SPA程序， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,296 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-08T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/08/prerender-seo-for-single-page-application/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>随着web2.0的兴起，ajax的时代已经成为了事实，更如今Knockout,backbone, angular,ember前端MDV(model driver view)框架强势而来，Single Page Application已经为大家所熟悉了。如今常见的SPA程序，restfull和前端MDV之类的框架能够实实在在的减少我们的代码开发量，让我更多的注意力关注在真正的业务逻辑上。在众多前端MDV框架从博客中可以看出来笔者还是钟爱于angular，然而服务端平台的选择的话：在.net平台笔者会首选webapi+oData,jvm平台spring restfull。</p>
+
+<p>但是相应带来的是搜索引擎优化(SEO)是个难题，因为爬虫不会去执行JavaScript。现在很幸运的是在Google推出angular之后，也给出了一些解决方案：<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">Google&rsquo;s ajax crawling protocol</a>.此协议现在已被Google和bing所实现。</p>
+
+<p>在协议中规定，搜索引擎会把带有#!someurl的链接转换为<em>escaped_fragment</em>=someurl访问解析，例如：</p>
+
+<pre><code>www.example.com/ajax.html#!key=value
+</code></pre>
+
+<p>将会变为</p>
+
+<pre><code>www.example.com/ajax.html?_escaped_fragment_=key=value
+</code></pre>
+
+<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原生支持对#！的解析。</p>
+
+<p>基于这个协议和phantomjs(headless的浏览器内核)我们的SPA SEO工具 <a href="http://prerender.io/">prerender(http://prerender.io/)</a>应运而生，在官方和社区的支持下，现在已经有node.js express,ruby on rails,java,asp.net,php,python主流框架和nginx之类的支持。</p>
+
+<p>prerender架构流程图如下：</p>
+
+<p><img src="/images/blog_img/prerender.jpg" alt="/images/blog_img/prerender.jpg" /></p>
+
+<p>prerender分为两个部分一部分为后端云服务和应用程序客户端，客户端主要拦截来自爬虫的请求在转发到后端云服务处理返回处理后并且去掉多余script/css的html在返回给爬虫。</p>
+
+<p>后端云服务（nodejs项目），利用phantomjs这个无ui headless的浏览器内核加载页面地址，并等到页面解析后获取document html，并处理去掉无用的部分返回到前段客户端程序。</p>
+
+<p>而前段程序则为不同语言框架而实现的不同拦截器，如java的filter，asp.net mvc的HttpModule，主要任务为拦截请求并转发给后端云服务处理。其拦截规则为：</p>
+
+<ol>
+<li>检查url中是否带有<em>escaped_fragment</em>或者请求user-agent是已知或者配置的爬虫user-agent</li>
+<li>确认拦截的不是js,css之类的资源文件</li>
+<li>在确认url是在白名单中（可选如果配置的白名单的话）</li>
+<li>确认不应该在黑名单中(可选如果配置了黑名单的话)</li>
+</ol>
+
+
+<p>注：最好值配置黑名单或者白名单中的一种方式。</p>
+
+<p>有了prerender，因为SEO而放弃SPA不再是理由了，关于prerender的任何issue大家可以及时提出，让它更加完善。具体关于如何使用和测试请转向主页和各个client程序页面，<a href="http://prerender.io/">http://prerender.io/</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-08T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近遇见angularjs 在IE上当使用ng-options作为select的选项数据源，并且被套在ng-switch（ng-transclude）之类的，当angular上得ng-options数据源model改变后，在IE上并不渲染。</p>
+
+<p>在一阵的测试和阅读相关文档后最后确认为：因为ng-switch（ng-transclude）是为了使其scope为原来的父scope，在父scope上生成了DOM后才克隆(cloneNode)到指定的指令位置。然而IE在对于select克隆的节点，不会主动去触发重绘，所以才有了上面的issue。</p>
+
+<p>问题确定了，那我们所需要做的就是手动的去触发让IE对Select重绘，尝试了很多办法后最终确认有效的是：首先在options上用原生js去添加一个option，在马上移除掉这个option，所以解决方案如下：</p>
+
+<pre><code>angular.module('ie.select', [])
+.directive('ieSelectFix', [
+    function () {
+        return {
+            restrict: 'A',
+            require: 'select',
+            link: function (scope, element, attributes) {
+                var isIE = document.attachEvent;
+                if (!isIE) return;
+
+                var control = element[0];
+                scope.$watch(attributes.ieSelectFix, function () {
+                    //it should be use javascript way, not jquery way.
+                    var option = document.createElement("option");
+                    control.add(option, null);
+                    control.remove(control.options.length - 1);
+                });
+            }
+        }
+    }
+]);
+</code></pre>
+
+<p>使用方式如下：</p>
+
+<pre><code>&lt;select ie-select-fix="options" ng-model="demos" class="form-control"
+        ng-options="currOption.value as currOption.text for currOption in options"&gt;
+    &lt;option value="" default&gt;Select&lt;/option&gt;
+&lt;/select&gt;
+</code></pre>
+
+<p>我也在我的github专门创建了一个针对angularjs在IE上issue的项目，收录了这个指令，在后续也会加入我所遇见的angularjs关于ie的issue，也希望大家帮助完善这个项目，让我们的angularjs程序在IE工作的更美好，让我们这些辛苦的程序猿也少一点加班时间，多一点陪家人，泡咖啡的时间。哈哈。</p>
+
+<p>github项目地址：<a href="https://github.com/greengerong/angular-ie-enhancer">https://github.com/greengerong/angular-ie-enhancer</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">记录maven java.lang.String Cannot Be Cast to XX Error</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:java;gutter:false;">-----------------------------------------------------
+
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:225)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:145)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:84)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:59)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.singleThreadedBuild(LifecycleStarter.java:183)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:161)
+         at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:319)
+         at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:156)
+         at org.jvnet.hudson.maven3.launcher.Maven3Launcher.main(Maven3Launcher.java:79)
+         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+         at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+         at java.lang.reflect.Method.invoke(Method.java:601)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launchStandard(Launcher.java:329)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:239)
+         at org.jvnet.hudson.maven3.agent.Maven3Main.launch(Maven3Main.java:146)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:127)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:74)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:118)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:48)
+         at hudson.remoting.Request$2.run(Request.java:326)
+         at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)
+         at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+         at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
+         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+         at java.lang.Thread.run(Thread.java:722)
+Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibility occured while executing [group id]:[artifact id]:[version]:start: java.lang.String cannot be cast to java.io.File
+-----------------------------------------------------
+</pre>
+</div>
+
+
+<p>&nbsp; &nbsp; &nbsp; 在花费了我大半的时间，将本地环境的maven，jdk等设为和ci一致后最后定位到maven的版本问题，其终究原因是因为maven在3.0.3才支持配置参数为泛型集合(List&lt;T&gt;,Set&lt;T&gt;&hellip;)，在3.0.2及一下本班不支持此写法。</p>
+
+<p>&nbsp; &nbsp; &nbsp;修改次error的方法有两种：</p>
+
+<ol>
+<li>将ci Server的maven更新到3.0.3以上。(但是在我们的ci server更新有些困难，还有本人认为如果写一个plugin只能工作的固定version，这和一个废物差不多，所以选择了第二种方法)。</li>
+<li>将泛型集合List&lt;T&gt;改为Array T[]。（项目中某大神写的List&lt;File&gt;我轻易的改为File[].在执行前改为Arrays.asList(XXX)）;</li>
+</ol>
+
+
+<p>&nbsp; &nbsp; &nbsp;一切搞定。在此记录希望对于遇见同类问题的人有所帮助。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/09/10/3313515.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/01/sublime-2-for-mac-link-to-command/">Sublime 2 for Mac Link to Command</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/07/01/sublime-2-for-mac-link-to-command/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/07/01/sublime-2-for-mac-link-to-command/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><span>Sublime command for mac :</span></p>
+
+<p><span>execute those command:</span></p>
+
+<p><span>sudo ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime</span></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/07/01/3165484.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -748,598 +1038,6 @@ public void shouldGetPersonFromCsv() throws Exception {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/">Angularjs Controller 间通信机制</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-16T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><span style="font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html">Angularjs开发一些经验总结</a>随笔中提到我们需要按照业务却分angular controller，避免过大无所不能的上帝controller，我们把controller分离开了，但是有时候我们需要在controller中通信，一般为比较简单的通信机制，告诉同伴controller我的某个你所关心的东西改变了，怎么办？如果你是一个javascript程序员你会很自然的想到异步回调响应式通信&mdash;事件机制(或消息机制)。对，这就是angularjs解决controller之间通信的机制，所推荐的唯一方式，简而言之这就是angular way。</span></p>
-
-<h2><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs为在scope中为我们提供了冒泡和隧道机制，$broadcast会把事件广播给所有子controller，而$emit则会将事件冒泡传递给父controller，$on则是angularjs的事件注册函数，有了这一些我们就能很快的以angularjs的方式去解决angularjs controller之间的通信，代码如下：</span></h2>
-
-<h2><span style="font-size: 16px; font-family: 楷体;">View:</span></h2>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;">1</span> <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-app</span><span style="color: #0000ff;">="app"</span><span style="color: #ff0000;"> ng-controller</span><span style="color: #0000ff;">="parentCtr"</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #008080;">2</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr1"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">name :
-</span><span style="color: #008080;">3</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="name"</span><span style="color: #ff0000;"> type</span><span style="color: #0000ff;">="text"</span><span style="color: #ff0000;"> ng-change</span><span style="color: #0000ff;">="change(name);"</span> <span style="color: #0000ff;">/&gt;</span>
-<span style="color: #008080;">4</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #008080;">5</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr2"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">Ctr1 name:
-</span><span style="color: #008080;">6</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="ctr1Name"</span> <span style="color: #0000ff;">/&gt;</span>
-<span style="color: #008080;">7</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #008080;">8</span> <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span></pre>
-</div>
-
-
-<p><span style="font-size: 16px; font-family: 楷体;">Controller:</span></p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> angular.module("app", []).controller("parentCtr"<span style="color: #000000;">,
-</span><span style="color: #008080;"> 2</span> <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
-</span><span style="color: #008080;"> 3</span>     $scope.$on("Ctr1NameChange"<span style="color: #000000;">,
-</span><span style="color: #008080;"> 4</span>  
-<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
-</span><span style="color: #008080;"> 6</span>         console.log("parent"<span style="color: #000000;">, msg);
-</span><span style="color: #008080;"> 7</span>         $scope.$broadcast("Ctr1NameChangeFromParrent"<span style="color: #000000;">, msg);
-</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    });
-</span><span style="color: #008080;"> 9</span> }).controller("childCtr1", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
-</span><span style="color: #008080;">10</span>     $scope.change = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (name) {
-</span><span style="color: #008080;">11</span>         console.log("childCtr1"<span style="color: #000000;">, name);
-</span><span style="color: #008080;">12</span>         $scope.$emit("Ctr1NameChange"<span style="color: #000000;">, name);
-</span><span style="color: #008080;">13</span> <span style="color: #000000;">    };
-</span><span style="color: #008080;">14</span> }).controller("childCtr2", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
-</span><span style="color: #008080;">15</span>     $scope.$on("Ctr1NameChangeFromParrent"<span style="color: #000000;">,
-</span><span style="color: #008080;">16</span>  
-<span style="color: #008080;">17</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
-</span><span style="color: #008080;">18</span>         console.log("childCtr2"<span style="color: #000000;">, msg);
-</span><span style="color: #008080;">19</span>         $scope.ctr1Name =<span style="color: #000000;"> msg;
-</span><span style="color: #008080;">20</span> <span style="color: #000000;">    });
-</span><span style="color: #008080;">21</span> });</pre>
-</div>
-
-
-<p><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这里childCtr1的name改变会以冒泡传递给父controller，而父controller会对事件包装在广播给所有子controller，而childCtr2则注册了change事件，并改变自己。注意父controller在广播时候一定要改变事件name。</span></p>
-
-<p><span style="font-size: 16px;">jsfiddle链接：<a href="http://jsfiddle.net/whitewolf/5JBA7/15/">http://jsfiddle.net/whitewolf/5JBA7/15/</a></span></p>
-
-<p>&nbsp;</p>
-
-<iframe width="100%" height="300" src="http://jsfiddle.net/whitewolf/5JBA7/15/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">利用Travis CI 让你的github项目持续构建(Node.js为例)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis CI每天运行超过4000次完整构建。对于做开源项目或者github的使用者，如果你的项目还没有加入Travis CI构建队列，那么我真的想对你说out了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面是本人的构建历史：</p>
-
-<p>&nbsp;<img src="http://images.cnitblog.com/blog/63184/201304/14093241-01c09362fb72431dabed0cb6635a0fdb.png" alt="" /></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp; 搭建Travis CI build，需要你有个github账号和github项目：</p>
-
-<p>1：用github账号登陆<a href="http://travis-ci.org">Travis CI</a>.</p>
-
-<h5>2 :在右上角你的账户名点击进入 account，在Repositories tab页点击Sync now同步你的github项目，</h5>
-
-<p>3：选中项目将默认的off改变为on开启项目的持续集成。</p>
-
-<p>4：在你项目的根目录建立一个.travis.yml文件，内容为：</p>
-
-<p>language: node_js</p>
-
-<p>node_js:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.4&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.6</p>
-
-<p>5: 在打开你的node.js的package.json文件，确保加入script/test节点：</p>
-
-<p>&ldquo;scripts&rdquo;: {</p>
-
-<p>&nbsp; &nbsp; &ldquo;test&rdquo;: &ldquo;XXXX&rdquo;</p>
-
-<p>&nbsp; },</p>
-
-<p>这里你可惜选择mak或者jasmine-node等node.js测试框架的测试命令。并且可以把依赖加入package的depends</p>
-
-<p>6：在你项目中运行npm test，确保正常工作。</p>
-
-<p>7： check in你的code到github，代开tracivs
-ci界面等待其同步并运行你的build构建。</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp; 如果你需要将你的build构建状态放在一个显眼的位置或者项目readme，你可以在首页My Repositories中找到项目并设置中复制状态图片code，形如：</p>
-
-<p><code>markdown
-  [![Build Status]([https://travis-ci.org/greengerong/
-  qing.png?branch=master)](https://travis-ci.org/greengerong/
-  qing](https://travis-ci.org/greengerong/qing.png?
-  branch=master)%5D(https://travis-ci.org/greengerong/qing))
- </code></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;
-Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<a href="http://about.travis-ci.org/docs/">Travis Docs</a>.</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在上面提到的travis.yml文件中我们还可以加入build前后执行脚本，形如：</p>
-
-<p>before_script:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_1&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_2</p>
-
-<p>after_script:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_1&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_2</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; &nbsp;将你的开源项目加入Travis CI队列吧，很容易让你的项目加入持续集成，持续构建队列。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/14/3019838.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/">利用Node.js为Node.js生成HttpStatusCode辅助类并发布到npm</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 作为一个好的Restfull Api不仅在于service url的语义,可读性,幂等,正交，作为http状态码也很重要，一个好的Http Status Code给使用者一个很好的响应，比如200表示正常成功，201表示创建成功，409冲突，404资源不存在等等。所以在做一个基于node.js+mongodb+angularjs的demo时发现node.js express没有提供相应的辅助类，但是本人不喜欢将201,404这类毫无语言层次语义的东西到处充斥着，所以最后决定自己写一个，但是同时本人也很懒，不喜欢做重复的苦力活，怎么办？那就从我最熟悉的c#中HttpStatusCode枚举中copy出来吧，最后为了简便在mac上所以采用了利用node.js去解析msdn关于httpstatuscode的文档生成node.js的辅助类。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 代码很简单：</p>
-
-<pre><code>     var http = require('http');
-
-    var fs = require('fs');
-
-    var $ = require('jquery');
-
-    var output = "httpStatusCode/index.js";
-
-    (function(){
-
-
-
-        String.format = function() {
-
-            var s = arguments[0];
-
-            for (var i = 0; i &lt; arguments.length - 1; i++) {
-
-                var reg = new RegExp("\\{" + i + "\\}", "gm");
-
-                s = s.replace(reg, arguments[i + 1]);
-
-            }
-
-            return s;
-
-        };
-
-
-
-
-        var options = {
-
-            host:'msdn.microsoft.com',
-
-            port:80,
-
-            path:'/zh-cn/library/system.net.httpstatuscode.aspx'
-
-        };
-
-
-
-
-        http.get(options,function (response) {
-
-            var html = "";
-
-            response.on("data",function (chunk) {
-
-                html += chunk;
-
-            }).on("end", function () {
-
-                handler(html);
-
-            }).on('error', function (e) {
-
-                console.log("Got error: " + e.message);
-
-            });
-
-
-
-
-        function getHttpStatusCode(htmlString) {
-
-            var $doc = $(html);
-
-            var rows = $doc.find("table#memberList tr:gt(0)");
-
-            var status = {};
-
-            rows.each(function(i,row){
-
-                status[$(row).find("td:eq(1)").text()] = 
-
-                    parseInt($(row).find("td:eq(2)").text().match(/\d+/).toString());
-
-            });
-
-           return status;
-
-        };
-
-
-
-        function generateCode(status){
-
-           var code = "";
-
-           code += "exports.httpStatusCode = " + JSON.stringify(status) + ";";
-
-           return code;
-
-        };
-
-
-
-        function writeFile(code){
-
-            fs.writeFile(output, code, function(err) {
-
-                if(err) {
-
-                    console.log(err);
-
-                } else {
-
-                    console.log("The file was saved " + output + "!");
-
-                }
-
-            }); 
-
-        };
-
-
-
-
-        function handler(html){
-
-           var status = getHttpStatusCode(html);
-
-           var code = generateCode(status);
-
-           writeFile(code);
-
-        };
-
-
-
-
-      });
-
-    })();
-</code></pre>
-
-<p>代码寄宿在github：<a href="https://github.com/greengerong/node-httpstatuscode" title="https://github.com/greengerong/node-httpstatuscode">https://github.com/greengerong/node-httpstatuscode</a></p>
-
-<p>最终生成类为：</p>
-
-<pre><code>     exports.httpStatusCode = { 
-        "Continue": 100, 
-        "SwitchingProtocols": 101, 
-        "OK": 200, 
-        "Created": 201, 
-        "Accepted": 202, 
-        "NonAuthoritativeInformation": 203, 
-        "NoContent": 204, 
-        "ResetContent": 205, 
-        "PartialContent": 206, 
-        "MultipleChoices": 300, 
-        "Ambiguous": 300, 
-        "MovedPermanently": 301, 
-        "Moved": 301, 
-        "Found": 302, 
-        "Redirect": 302, 
-        "SeeOther": 303, 
-        "RedirectMethod": 303, 
-        "NotModified": 304, 
-        "UseProxy": 305, 
-        "Unused": 306, 
-        "TemporaryRedirect": 307, 
-        "RedirectKeepVerb": 307, 
-        "BadRequest": 400, 
-        "Unauthorized": 401, 
-        "PaymentRequired": 402, 
-        "Forbidden": 403, 
-        "NotFound": 404, 
-        "MethodNotAllowed": 405, 
-        "NotAcceptable": 406, 
-        "ProxyAuthenticationRequired": 407, 
-        "RequestTimeout": 408, 
-        "Conflict": 409, 
-        "Gone": 410, 
-        "LengthRequired": 411, 
-        "PreconditionFailed": 412, 
-        "RequestEntityTooLarge": 413, 
-        "RequestUriTooLong": 414, 
-        "UnsupportedMediaType": 415, 
-        "RequestedRangeNotSatisfiable": 416, 
-        "ExpectationFailed": 417, 
-        "UpgradeRequired": 426, 
-        "InternalServerError": 500, 
-        "NotImplemented": 501, 
-        "BadGateway": 502, 
-        "ServiceUnavailable": 503, 
-        "GatewayTimeout": 504, 
-        "HttpVersionNotSupported": 505 
-    };
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 最后考虑到或许还有很多像我一样懒散的人，所以共享此代码发布到了npm，只需要npm install httpstatuscode，便可以简单实用，如下是一个测试demo：</p>
-
-<pre><code>      var httpStatusCode = require("httpstatuscode").httpStatusCode;
-
-    var toBeEqual = function (actual,expected){
-
-        if(actual !== expected){
-
-         throw (actual + " not equal " + expected);
-
-        }
-
-    };
-
-    toBeEqual(httpStatusCode.OK,200);
-
-    toBeEqual(httpStatusCode.Created,201);
-
-    toBeEqual(httpStatusCode.BadRequest,400);
-
-    toBeEqual(httpStatusCode.InternalServerError,500);
-
-
-
-
-    console.log(httpStatusCode);
-
-    console.log("success");
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 懒人的文章总是代码多余文字，希望代码能说明一切，感谢各位能阅读此随笔。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/09/3009205.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/">edge.js架起node.js和.net互操作桥梁</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-31T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天要介绍的是edge.js这个github上刚兴起的开源项目，它可以让node.js和.net之间在in-process下互操作。.net版本在4.5及以上，因为.net4.5带来的Task，asyn，await关键字和node.js的Event模型正好匹配。如果你感兴趣的话，可以参见github<a href="https://github.com/tjanczuk/edge" title="https://github.com/tjanczuk/edge">https://github.com/tjanczuk/edge</a> 和<a href="http://tjanczuk.github.com/edge">Edge.js overview</a>.</p>
-
-<p>下面这幅图展示了edge.js在node.js和.net之间互操作的桥梁。Fun&lt;object,Task&lt;object&gt;&gt;表示输入为object类型，输出为Task&lt;object&gt;,后者对应node.js中的回调函数，前者则为.net方法输入参数。更多详情请参见github readme。</p>
-
-<p>&nbsp;&nbsp; <img src="https://f.cloud.github.com/assets/822369/234085/b305625c-8768-11e2-8de0-e03ae98e7249.PNG" alt="edge.js interop model" /></p>
-
-<p>&nbsp;&nbsp; 下面我们写个菲波基数作为demo尝鲜：完整项目寄宿在github：<a href="https://github.com/greengerong/edge-demo">edge-demo</a>。</p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span> <span style="color: #0000ff;">var</span> fib =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;"> 4</span>     source: <span style="color: #0000ff;">function</span>() {<span style="color: #008000;">/*</span>
-<span style="color: #008080;"> 5</span> 
-<span style="color: #008080;"> 6</span> <span style="color: #008000;">        using System;
-</span><span style="color: #008080;"> 7</span> <span style="color: #008000;">        using System.Linq;
-</span><span style="color: #008080;"> 8</span> <span style="color: #008000;">        using System.Threading.Tasks;
-</span><span style="color: #008080;"> 9</span> 
-<span style="color: #008080;">10</span> <span style="color: #008000;">        public class Startup
-</span><span style="color: #008080;">11</span> <span style="color: #008000;">        {       
-</span><span style="color: #008080;">12</span> <span style="color: #008000;">             public async Task&lt;object&gt; Invoke(object input)
-</span><span style="color: #008080;">13</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">14</span> <span style="color: #008000;">                int v = (int)input;
-</span><span style="color: #008080;">15</span> <span style="color: #008000;">                var fib = Fix&lt;int, int&gt;(f =&gt; x =&gt; x &lt;= 1 ? 1 : f(x - 1) + f(x - 2));
-</span><span style="color: #008080;">16</span> <span style="color: #008000;">                return fib(v);
-</span><span style="color: #008080;">17</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span> <span style="color: #008000;">            static Func&lt;T, TResult&gt; Fix&lt;T, TResult&gt;(Func&lt;Func&lt;T, TResult&gt;, Func&lt;T, TResult&gt;&gt; f)
-</span><span style="color: #008080;">20</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">21</span> <span style="color: #008000;">                return x =&gt; f(Fix(f))(x);
-</span><span style="color: #008080;">22</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">23</span> 
-<span style="color: #008080;">24</span> <span style="color: #008000;">            static Func&lt;T1, T2, TResult&gt; Fix&lt;T1, T2, TResult&gt;(Func&lt;Func&lt;T1, T2, TResult&gt;, Func&lt;T1, T2, TResult&gt;&gt; f)
-</span><span style="color: #008080;">25</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">26</span> <span style="color: #008000;">                return (x, y) =&gt; f(Fix(f))(x, y);
-</span><span style="color: #008080;">27</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">28</span> <span style="color: #008000;">        }
-</span><span style="color: #008080;">29</span> 
-<span style="color: #008080;">30</span>     <span style="color: #008000;">*/</span><span style="color: #000000;">},
-</span><span style="color: #008080;">31</span>     references: ['System.Core.dll'<span style="color: #000000;">]
-</span><span style="color: #008080;">32</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">33</span> 
-<span style="color: #008080;">34</span> fib(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">35</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">36</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">37</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">38</span> 
-<span style="color: #008080;">39</span> <span style="color: #0000ff;">var</span> fibFromFile = edge.func(__dirname  + "/fib.cs"<span style="color: #000000;">);
-</span><span style="color: #008080;">40</span> fibFromFile(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">41</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">42</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">43</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">44</span> 
-<span style="color: #008080;">45</span> <span style="color: #0000ff;">var</span> fibFromDll =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;">46</span>     assemblyFile: 'edge.demo.dll'<span style="color: #000000;">,
-</span><span style="color: #008080;">47</span>     typeName: 'edge.demo.Startup'<span style="color: #000000;">,
-</span><span style="color: #008080;">48</span>     methodName: 'Invoke'
-<span style="color: #008080;">49</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">50</span> fibFromDll(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">51</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">52</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">53</span> });</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>效果:</p>
-
-<p><a href="http://images.cnitblog.com/blog/63184/201303/31010346-272ac9bd26634985a6884e51c25a586e.png"><img src="http://images.cnitblog.com/blog/63184/201303/31010347-37d768d0e0e0441882aa1a34909245f9.png" title="image" alt="image" /></a></p>
-
-<p>这里分为3类调用，直接源码嵌入node.js和文件外置，以后编译后的dll，多的不用说，其实很简单，如果你和一样同样喜欢js和.net的话。</p>
-
-<p>在当下node.js刚兴起，成型的框架还不够多，或者有时我们必须以c或者c++来完成node.js的本地扩展的时候，edge.js给我们提供了另一个可选的途径就是 强大的.net大家族。</p>
-
-<p>&nbsp;</p>
-
-<iframe src="http://tjanczuk.github.com/edge/#/" frameborder="0" width="100%" height="350"></iframe>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991200.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1378,6 +1076,22 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
@@ -1391,22 +1105,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a>
       </li>
     
   </ul>
@@ -1451,7 +1149,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - 破 狼 -
+  Copyright &copy; 2014 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

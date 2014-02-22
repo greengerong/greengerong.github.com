@@ -4,14 +4,336 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2013-12-28T21:48:57+08:00</updated>
+  <updated>2014-02-22T09:14:21+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
-    
+    <email><![CDATA[grzx2210@163.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[细说angular Form addControl方法]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/"/>
+    <updated>2014-02-21T17:24:37+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/21/angular-form-addControl</id>
+    <content type="html"><![CDATA[<p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
+
+<p>下面且让我们先来从angular源码中看起如下：</p>
+
+<p>首先是ngModel：</p>
+
+<pre><code>    var ngModelDirective = function() {
+      return {
+        require: ['ngModel', '^?form'],
+        controller: NgModelController,
+        link: function(scope, element, attr, ctrls) {
+          // notify others, especially parent forms
+
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
+
+          formCtrl.$addControl(modelCtrl);
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        }
+      };
+    };
+</code></pre>
+
+<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
+
+<p>在看看ngModel controller初始化代码：</p>
+
+<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+        function($scope, $exceptionHandler, $attr, $element, $parse) {
+     ....
+      this.$pristine = true;
+      this.$dirty = false;
+      this.$valid = true;
+      this.$invalid = false;
+      this.$name = $attr.name;
+</code></pre>
+
+<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
+
+<p>而FormController的addControl代码则是：</p>
+
+<pre><code>    /**
+     * @ngdoc function
+     * @name ng.directive:form.FormController#$addControl
+     * @methodOf ng.directive:form.FormController
+     *
+     * @description
+     * Register a control with the form.
+     *
+     * Input elements using ngModelController do this automatically when they are linked.
+     */
+    form.$addControl = function(control) {
+      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
+      // and not added to the scope.  Now we throw an error.
+      assertNotHasOwnProperty(control.$name, 'input');
+      controls.push(control);
+
+      if (control.$name) {
+        form[control.$name] = control;
+      }
+    };
+</code></pre>
+
+<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
+
+<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
+
+<h3>手动注册form controller</h3>
+
+<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
+
+<p>如下：</p>
+
+<pre><code>    .directive("dyName", [
+
+        function() {
+          return {
+            require: "ngModel",
+            link: function(scope, elm, iAttrs, ngModelCtr) {
+              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
+              var formController = elm.controller('form') || {
+                $addControl: angular.noop
+              };
+              formController.$addControl(ngModelCtr);
+
+              scope.$on('$destroy', function() {
+                formController.$removeControl(ngModelCtr);
+              });
+
+            }
+          };
+        }
+      ])
+</code></pre>
+
+<p>使用方式：</p>
+
+<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+      &lt;div class="control-group"&gt;
+        &lt;label class="control-label"&gt; : &lt;/label&gt;
+        &lt;div class="controls"&gt;
+          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
+
+<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
+
+<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Angularjs中文版本开发指南发布]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public/"/>
+    <updated>2014-02-16T02:02:17+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public</id>
+    <content type="html"><![CDATA[<p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
+
+<p>从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
+
+<p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
+
+<p>在经过一段时间的协调和大家付出工作之外的业余时间，如今Angularjs的中文本学习指南终于上线出炉</p>
+
+<p>地址为：</p>
+
+<pre><code>[http://angular.duapp.com/guide](http://angular.duapp.com/guide)
+</code></pre>
+
+<p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
+
+<p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
+
+<p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[为Angularjs ngOptions加上index解决方案]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/"/>
+    <updated>2014-02-15T21:43:06+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/15/index-for-ng-options</id>
+    <content type="html"><![CDATA[<p>今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.</p>
+
+<p>其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。</p>
+
+<p>把这个问题换成角度来看,我们所需要的就是js数组的下标，所以我们如果我们能够在对象上加入下标，使用表达式作为option的label就能解决了。</p>
+
+<p>但是第一印象让我想起的是js数组本来就是一个key/value的对象，只是key为数组下标而已，所以有了如下之设计：</p>
+
+<p>html:</p>
+
+<pre><code>  &lt;pre&gt;&lt;/pre&gt;
+
+  &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
+</code></pre>
+
+<p>  js:</p>
+
+<pre><code>$scope.getDesc1 = function(key, value) {
+    return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
+};
+</code></pre>
+
+<p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
+
+<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+  &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
+  &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
+  &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
+  &lt;option value="11" &gt;12-&amp;gt;jw_jobcomment&lt;/option&gt;
+  &lt;option value="12" &gt;13-&amp;gt;jw_companyInfo&lt;/option&gt;
+  ....
+&lt;/select&gt;
+</code></pre>
+
+<p>所以这样是无法解决的。还好博主还有一招，ngOptions支持Angularjs的filter，所以我们可以对数据源对象上加上一个order字段标示下标作为序号。并且你可以在一个2年前的Angular的issue中看到Angular已经fix issue，option会对数组进行按下标顺序生成。</p>
+
+<p>html:</p>
+
+<pre><code>&lt;pre&gt;&lt;/pre&gt;
+
+&lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
+</code></pre>
+
+<p>js:</p>
+
+<pre><code>    var app = angular.module('plunker', []);
+
+    app.controller('MainCtrl', function($scope) {
+      $scope.t = [{
+        "field": "jw_companyTalent"
+      }, {
+        "field": "jw_reportgroup"
+      }];
+      $scope.getDesc = function(l) {
+        return l.order + "-&gt;" + l.field;
+      };
+    }).filter("index", [
+      function() {
+        return function(array) {
+          return (array || []).map(function(item, index) {
+            item.order = index + 1;
+            return item;
+          });
+        };
+      }
+    ]);
+</code></pre>
+
+<p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Angular ngClick阻止冒泡,默认行为]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/"/>
+    <updated>2014-02-11T22:27:29+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation</id>
+    <content type="html"><![CDATA[<p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
+
+<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
+
+<p>如ngClick在官方文档是这么描述的：</p>
+
+<pre><code>Expression to evaluate upon click. (Event object is available as $event)
+</code></pre>
+
+<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
+
+<pre><code>    var ngEventDirectives = {};
+    forEach(
+      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+      function(name) {
+        var directiveName = directiveNormalize('ng-' + name);
+        ngEventDirectives[directiveName] = ['$parse', function($parse) {
+          return {
+            compile: function($element, attr) {
+              var fn = $parse(attr[directiveName]);
+              return function(scope, element, attr) {
+                element.on(lowercase(name), function(event) {
+                  scope.$apply(function() {
+                    fn(scope, {$event:event});
+                  });
+                });
+              };
+            }
+          };
+        }];
+      }
+    );
+</code></pre>
+
+<p>在上边代码我们可以得到两个信息：</p>
+
+<ol>
+<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
+<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
+</ol>
+
+
+<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
+
+<p>html 代码</p>
+
+<pre><code>    &lt;!DOCTYPE html&gt;
+    &lt;html id="ng-app" ng-app="app"&gt;
+    &lt;head&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
+      &lt;meta charset="utf-8"&gt;
+      &lt;title&gt;JS Bin&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body ng-controller="demo as d"&gt;
+       &lt;div ng-click="d.click('parent',$event)"&gt;
+         given some text for click
+         &lt;hr&gt;
+         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
+         &lt;hr&gt;
+         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
+
+       &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;             
+</code></pre>
+
+<p>js 代码</p>
+
+<pre><code>angular.module("app",[])
+.controller("demo",[function(){
+  var vm = this;
+
+  vm.click = function(name,$event){
+    console.log(name +" -----called");
+    if(vm.stopPropagation){
+      $event.stopPropagation();
+    }
+  };
+
+  return vm;
+}]);
+</code></pre>
+
+<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
+
+<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
+
+<p>希望大家已经明白了，不要再问这类问题了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ngCloak 实现 Angular 初始化闪烁最佳实践]]></title>
@@ -20,7 +342,7 @@
     <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak</id>
     <content type="html"><![CDATA[<p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
 
-<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }}} )我们也可以改为ng-bind来实现避免。</p>
+<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
 
 <pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
  &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
@@ -420,7 +742,7 @@
 <pre><code>www.example.com/ajax.html?_escaped_fragment_=key=value
 </code></pre>
 
-<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原声支持对#！的解析。</p>
+<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原生支持对#！的解析。</p>
 
 <p>基于这个协议和phantomjs(headless的浏览器内核)我们的SPA SEO工具 <a href="http://prerender.io/">prerender(http://prerender.io/)</a>应运而生，在官方和社区的支持下，现在已经有node.js express,ruby on rails,java,asp.net,php,python主流框架和nginx之类的支持。</p>
 
@@ -1064,478 +1386,6 @@ public void shouldGetPersonFromCsv() throws Exception {
 <p>&#160;&#160;&#160;&#160; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的“简单设计”，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是”简单设计“却没有足够的重构力度，抑或完全的优先设计，不不断的持续改进，逐步细化，做到“简约而不简单”记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/27/3048250.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angularjs Controller 间通信机制]]></title>
-    <link href="http://greengerong.github.io/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/"/>
-    <updated>2013-04-16T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi</id>
-    <content type="html"><![CDATA[<p><span style="font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html">Angularjs开发一些经验总结</a>随笔中提到我们需要按照业务却分angular controller，避免过大无所不能的上帝controller，我们把controller分离开了，但是有时候我们需要在controller中通信，一般为比较简单的通信机制，告诉同伴controller我的某个你所关心的东西改变了，怎么办？如果你是一个javascript程序员你会很自然的想到异步回调响应式通信&mdash;事件机制(或消息机制)。对，这就是angularjs解决controller之间通信的机制，所推荐的唯一方式，简而言之这就是angular way。</span></p>
-
-<h2><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs为在scope中为我们提供了冒泡和隧道机制，$broadcast会把事件广播给所有子controller，而$emit则会将事件冒泡传递给父controller，$on则是angularjs的事件注册函数，有了这一些我们就能很快的以angularjs的方式去解决angularjs controller之间的通信，代码如下：</span></h2>
-
-<h2><span style="font-size: 16px; font-family: 楷体;">View:</span></h2>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;">1</span> <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-app</span><span style="color: #0000ff;">="app"</span><span style="color: #ff0000;"> ng-controller</span><span style="color: #0000ff;">="parentCtr"</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #008080;">2</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr1"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">name :
-</span><span style="color: #008080;">3</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="name"</span><span style="color: #ff0000;"> type</span><span style="color: #0000ff;">="text"</span><span style="color: #ff0000;"> ng-change</span><span style="color: #0000ff;">="change(name);"</span> <span style="color: #0000ff;">/&gt;</span>
-<span style="color: #008080;">4</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #008080;">5</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr2"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">Ctr1 name:
-</span><span style="color: #008080;">6</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="ctr1Name"</span> <span style="color: #0000ff;">/&gt;</span>
-<span style="color: #008080;">7</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #008080;">8</span> <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span></pre>
-</div>
-
-
-<p><span style="font-size: 16px; font-family: 楷体;">Controller:</span></p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> angular.module("app", []).controller("parentCtr"<span style="color: #000000;">,
-</span><span style="color: #008080;"> 2</span> <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
-</span><span style="color: #008080;"> 3</span>     $scope.$on("Ctr1NameChange"<span style="color: #000000;">,
-</span><span style="color: #008080;"> 4</span>  
-<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
-</span><span style="color: #008080;"> 6</span>         console.log("parent"<span style="color: #000000;">, msg);
-</span><span style="color: #008080;"> 7</span>         $scope.$broadcast("Ctr1NameChangeFromParrent"<span style="color: #000000;">, msg);
-</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    });
-</span><span style="color: #008080;"> 9</span> }).controller("childCtr1", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
-</span><span style="color: #008080;">10</span>     $scope.change = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (name) {
-</span><span style="color: #008080;">11</span>         console.log("childCtr1"<span style="color: #000000;">, name);
-</span><span style="color: #008080;">12</span>         $scope.$emit("Ctr1NameChange"<span style="color: #000000;">, name);
-</span><span style="color: #008080;">13</span> <span style="color: #000000;">    };
-</span><span style="color: #008080;">14</span> }).controller("childCtr2", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
-</span><span style="color: #008080;">15</span>     $scope.$on("Ctr1NameChangeFromParrent"<span style="color: #000000;">,
-</span><span style="color: #008080;">16</span>  
-<span style="color: #008080;">17</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
-</span><span style="color: #008080;">18</span>         console.log("childCtr2"<span style="color: #000000;">, msg);
-</span><span style="color: #008080;">19</span>         $scope.ctr1Name =<span style="color: #000000;"> msg;
-</span><span style="color: #008080;">20</span> <span style="color: #000000;">    });
-</span><span style="color: #008080;">21</span> });</pre>
-</div>
-
-
-<p><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这里childCtr1的name改变会以冒泡传递给父controller，而父controller会对事件包装在广播给所有子controller，而childCtr2则注册了change事件，并改变自己。注意父controller在广播时候一定要改变事件name。</span></p>
-
-<p><span style="font-size: 16px;">jsfiddle链接：<a href="http://jsfiddle.net/whitewolf/5JBA7/15/">http://jsfiddle.net/whitewolf/5JBA7/15/</a></span></p>
-
-<p>&nbsp;</p>
-
-<iframe width="100%" height="300" src="http://jsfiddle.net/whitewolf/5JBA7/15/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[利用Travis CI 让你的github项目持续构建(Node.js为例)]]></title>
-    <link href="http://greengerong.github.io/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/"/>
-    <updated>2013-04-14T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li</id>
-    <content type="html"><![CDATA[<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis CI每天运行超过4000次完整构建。对于做开源项目或者github的使用者，如果你的项目还没有加入Travis CI构建队列，那么我真的想对你说out了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面是本人的构建历史：</p>
-
-<p>&nbsp;<img src="http://images.cnitblog.com/blog/63184/201304/14093241-01c09362fb72431dabed0cb6635a0fdb.png" alt="" /></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp; 搭建Travis CI build，需要你有个github账号和github项目：</p>
-
-<p>1：用github账号登陆<a href="http://travis-ci.org">Travis CI</a>.</p>
-
-<h5>2 :在右上角你的账户名点击进入 account，在Repositories tab页点击Sync now同步你的github项目，</h5>
-
-<p>3：选中项目将默认的off改变为on开启项目的持续集成。</p>
-
-<p>4：在你项目的根目录建立一个.travis.yml文件，内容为：</p>
-
-<p>language: node_js</p>
-
-<p>node_js:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.4&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.6</p>
-
-<p>5: 在打开你的node.js的package.json文件，确保加入script/test节点：</p>
-
-<p>&ldquo;scripts&rdquo;: {</p>
-
-<p>&nbsp; &nbsp; &ldquo;test&rdquo;: &ldquo;XXXX&rdquo;</p>
-
-<p>&nbsp; },</p>
-
-<p>这里你可惜选择mak或者jasmine-node等node.js测试框架的测试命令。并且可以把依赖加入package的depends</p>
-
-<p>6：在你项目中运行npm test，确保正常工作。</p>
-
-<p>7： check in你的code到github，代开tracivs
-ci界面等待其同步并运行你的build构建。</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp; 如果你需要将你的build构建状态放在一个显眼的位置或者项目readme，你可以在首页My Repositories中找到项目并设置中复制状态图片code，形如：</p>
-
-<p><code>markdown
-  [![Build Status]([https://travis-ci.org/greengerong/
-  qing.png?branch=master)](https://travis-ci.org/greengerong/
-  qing](https://travis-ci.org/greengerong/qing.png?
-  branch=master)%5D(https://travis-ci.org/greengerong/qing))
- </code></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;
-Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<a href="http://about.travis-ci.org/docs/">Travis Docs</a>.</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在上面提到的travis.yml文件中我们还可以加入build前后执行脚本，形如：</p>
-
-<p>before_script:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_1&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_2</p>
-
-<p>after_script:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_1&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_2</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; &nbsp;将你的开源项目加入Travis CI队列吧，很容易让你的项目加入持续集成，持续构建队列。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/14/3019838.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[利用Node.js为Node.js生成HttpStatusCode辅助类并发布到npm]]></title>
-    <link href="http://greengerong.github.io/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/"/>
-    <updated>2013-04-09T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm</id>
-    <content type="html"><![CDATA[<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 作为一个好的Restfull Api不仅在于service url的语义,可读性,幂等,正交，作为http状态码也很重要，一个好的Http Status Code给使用者一个很好的响应，比如200表示正常成功，201表示创建成功，409冲突，404资源不存在等等。所以在做一个基于node.js+mongodb+angularjs的demo时发现node.js express没有提供相应的辅助类，但是本人不喜欢将201,404这类毫无语言层次语义的东西到处充斥着，所以最后决定自己写一个，但是同时本人也很懒，不喜欢做重复的苦力活，怎么办？那就从我最熟悉的c#中HttpStatusCode枚举中copy出来吧，最后为了简便在mac上所以采用了利用node.js去解析msdn关于httpstatuscode的文档生成node.js的辅助类。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 代码很简单：</p>
-
-<pre><code>     var http = require('http');
-
-    var fs = require('fs');
-
-    var $ = require('jquery');
-
-    var output = "httpStatusCode/index.js";
-
-    (function(){
-
-
-
-        String.format = function() {
-
-            var s = arguments[0];
-
-            for (var i = 0; i &lt; arguments.length - 1; i++) {
-
-                var reg = new RegExp("\\{" + i + "\\}", "gm");
-
-                s = s.replace(reg, arguments[i + 1]);
-
-            }
-
-            return s;
-
-        };
-
-
-
-
-        var options = {
-
-            host:'msdn.microsoft.com',
-
-            port:80,
-
-            path:'/zh-cn/library/system.net.httpstatuscode.aspx'
-
-        };
-
-
-
-
-        http.get(options,function (response) {
-
-            var html = "";
-
-            response.on("data",function (chunk) {
-
-                html += chunk;
-
-            }).on("end", function () {
-
-                handler(html);
-
-            }).on('error', function (e) {
-
-                console.log("Got error: " + e.message);
-
-            });
-
-
-
-
-        function getHttpStatusCode(htmlString) {
-
-            var $doc = $(html);
-
-            var rows = $doc.find("table#memberList tr:gt(0)");
-
-            var status = {};
-
-            rows.each(function(i,row){
-
-                status[$(row).find("td:eq(1)").text()] = 
-
-                    parseInt($(row).find("td:eq(2)").text().match(/\d+/).toString());
-
-            });
-
-           return status;
-
-        };
-
-
-
-        function generateCode(status){
-
-           var code = "";
-
-           code += "exports.httpStatusCode = " + JSON.stringify(status) + ";";
-
-           return code;
-
-        };
-
-
-
-        function writeFile(code){
-
-            fs.writeFile(output, code, function(err) {
-
-                if(err) {
-
-                    console.log(err);
-
-                } else {
-
-                    console.log("The file was saved " + output + "!");
-
-                }
-
-            }); 
-
-        };
-
-
-
-
-        function handler(html){
-
-           var status = getHttpStatusCode(html);
-
-           var code = generateCode(status);
-
-           writeFile(code);
-
-        };
-
-
-
-
-      });
-
-    })();
-</code></pre>
-
-<p>代码寄宿在github：<a href="https://github.com/greengerong/node-httpstatuscode" title="https://github.com/greengerong/node-httpstatuscode">https://github.com/greengerong/node-httpstatuscode</a></p>
-
-<p>最终生成类为：</p>
-
-<pre><code>     exports.httpStatusCode = { 
-        "Continue": 100, 
-        "SwitchingProtocols": 101, 
-        "OK": 200, 
-        "Created": 201, 
-        "Accepted": 202, 
-        "NonAuthoritativeInformation": 203, 
-        "NoContent": 204, 
-        "ResetContent": 205, 
-        "PartialContent": 206, 
-        "MultipleChoices": 300, 
-        "Ambiguous": 300, 
-        "MovedPermanently": 301, 
-        "Moved": 301, 
-        "Found": 302, 
-        "Redirect": 302, 
-        "SeeOther": 303, 
-        "RedirectMethod": 303, 
-        "NotModified": 304, 
-        "UseProxy": 305, 
-        "Unused": 306, 
-        "TemporaryRedirect": 307, 
-        "RedirectKeepVerb": 307, 
-        "BadRequest": 400, 
-        "Unauthorized": 401, 
-        "PaymentRequired": 402, 
-        "Forbidden": 403, 
-        "NotFound": 404, 
-        "MethodNotAllowed": 405, 
-        "NotAcceptable": 406, 
-        "ProxyAuthenticationRequired": 407, 
-        "RequestTimeout": 408, 
-        "Conflict": 409, 
-        "Gone": 410, 
-        "LengthRequired": 411, 
-        "PreconditionFailed": 412, 
-        "RequestEntityTooLarge": 413, 
-        "RequestUriTooLong": 414, 
-        "UnsupportedMediaType": 415, 
-        "RequestedRangeNotSatisfiable": 416, 
-        "ExpectationFailed": 417, 
-        "UpgradeRequired": 426, 
-        "InternalServerError": 500, 
-        "NotImplemented": 501, 
-        "BadGateway": 502, 
-        "ServiceUnavailable": 503, 
-        "GatewayTimeout": 504, 
-        "HttpVersionNotSupported": 505 
-    };
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 最后考虑到或许还有很多像我一样懒散的人，所以共享此代码发布到了npm，只需要npm install httpstatuscode，便可以简单实用，如下是一个测试demo：</p>
-
-<pre><code>      var httpStatusCode = require("httpstatuscode").httpStatusCode;
-
-    var toBeEqual = function (actual,expected){
-
-        if(actual !== expected){
-
-         throw (actual + " not equal " + expected);
-
-        }
-
-    };
-
-    toBeEqual(httpStatusCode.OK,200);
-
-    toBeEqual(httpStatusCode.Created,201);
-
-    toBeEqual(httpStatusCode.BadRequest,400);
-
-    toBeEqual(httpStatusCode.InternalServerError,500);
-
-
-
-
-    console.log(httpStatusCode);
-
-    console.log("success");
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 懒人的文章总是代码多余文字，希望代码能说明一切，感谢各位能阅读此随笔。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/09/3009205.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[edge.js架起node.js和.net互操作桥梁]]></title>
-    <link href="http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/"/>
-    <updated>2013-03-31T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang</id>
-    <content type="html"><![CDATA[<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天要介绍的是edge.js这个github上刚兴起的开源项目，它可以让node.js和.net之间在in-process下互操作。.net版本在4.5及以上，因为.net4.5带来的Task，asyn，await关键字和node.js的Event模型正好匹配。如果你感兴趣的话，可以参见github<a href="https://github.com/tjanczuk/edge" title="https://github.com/tjanczuk/edge">https://github.com/tjanczuk/edge</a> 和<a href="http://tjanczuk.github.com/edge">Edge.js overview</a>.</p>
-
-<p>下面这幅图展示了edge.js在node.js和.net之间互操作的桥梁。Fun&lt;object,Task&lt;object&gt;&gt;表示输入为object类型，输出为Task&lt;object&gt;,后者对应node.js中的回调函数，前者则为.net方法输入参数。更多详情请参见github readme。</p>
-
-<p>&nbsp;&nbsp; <img src="https://f.cloud.github.com/assets/822369/234085/b305625c-8768-11e2-8de0-e03ae98e7249.PNG" alt="edge.js interop model" /></p>
-
-<p>&nbsp;&nbsp; 下面我们写个菲波基数作为demo尝鲜：完整项目寄宿在github：<a href="https://github.com/greengerong/edge-demo">edge-demo</a>。</p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span> <span style="color: #0000ff;">var</span> fib =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;"> 4</span>     source: <span style="color: #0000ff;">function</span>() {<span style="color: #008000;">/*</span>
-<span style="color: #008080;"> 5</span> 
-<span style="color: #008080;"> 6</span> <span style="color: #008000;">        using System;
-</span><span style="color: #008080;"> 7</span> <span style="color: #008000;">        using System.Linq;
-</span><span style="color: #008080;"> 8</span> <span style="color: #008000;">        using System.Threading.Tasks;
-</span><span style="color: #008080;"> 9</span> 
-<span style="color: #008080;">10</span> <span style="color: #008000;">        public class Startup
-</span><span style="color: #008080;">11</span> <span style="color: #008000;">        {       
-</span><span style="color: #008080;">12</span> <span style="color: #008000;">             public async Task&lt;object&gt; Invoke(object input)
-</span><span style="color: #008080;">13</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">14</span> <span style="color: #008000;">                int v = (int)input;
-</span><span style="color: #008080;">15</span> <span style="color: #008000;">                var fib = Fix&lt;int, int&gt;(f =&gt; x =&gt; x &lt;= 1 ? 1 : f(x - 1) + f(x - 2));
-</span><span style="color: #008080;">16</span> <span style="color: #008000;">                return fib(v);
-</span><span style="color: #008080;">17</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span> <span style="color: #008000;">            static Func&lt;T, TResult&gt; Fix&lt;T, TResult&gt;(Func&lt;Func&lt;T, TResult&gt;, Func&lt;T, TResult&gt;&gt; f)
-</span><span style="color: #008080;">20</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">21</span> <span style="color: #008000;">                return x =&gt; f(Fix(f))(x);
-</span><span style="color: #008080;">22</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">23</span> 
-<span style="color: #008080;">24</span> <span style="color: #008000;">            static Func&lt;T1, T2, TResult&gt; Fix&lt;T1, T2, TResult&gt;(Func&lt;Func&lt;T1, T2, TResult&gt;, Func&lt;T1, T2, TResult&gt;&gt; f)
-</span><span style="color: #008080;">25</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">26</span> <span style="color: #008000;">                return (x, y) =&gt; f(Fix(f))(x, y);
-</span><span style="color: #008080;">27</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">28</span> <span style="color: #008000;">        }
-</span><span style="color: #008080;">29</span> 
-<span style="color: #008080;">30</span>     <span style="color: #008000;">*/</span><span style="color: #000000;">},
-</span><span style="color: #008080;">31</span>     references: ['System.Core.dll'<span style="color: #000000;">]
-</span><span style="color: #008080;">32</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">33</span> 
-<span style="color: #008080;">34</span> fib(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">35</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">36</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">37</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">38</span> 
-<span style="color: #008080;">39</span> <span style="color: #0000ff;">var</span> fibFromFile = edge.func(__dirname  + "/fib.cs"<span style="color: #000000;">);
-</span><span style="color: #008080;">40</span> fibFromFile(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">41</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">42</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">43</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">44</span> 
-<span style="color: #008080;">45</span> <span style="color: #0000ff;">var</span> fibFromDll =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;">46</span>     assemblyFile: 'edge.demo.dll'<span style="color: #000000;">,
-</span><span style="color: #008080;">47</span>     typeName: 'edge.demo.Startup'<span style="color: #000000;">,
-</span><span style="color: #008080;">48</span>     methodName: 'Invoke'
-<span style="color: #008080;">49</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">50</span> fibFromDll(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">51</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">52</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">53</span> });</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>效果:</p>
-
-<p><a href="http://images.cnitblog.com/blog/63184/201303/31010346-272ac9bd26634985a6884e51c25a586e.png"><img src="http://images.cnitblog.com/blog/63184/201303/31010347-37d768d0e0e0441882aa1a34909245f9.png" title="image" alt="image" /></a></p>
-
-<p>这里分为3类调用，直接源码嵌入node.js和文件外置，以后编译后的dll，多的不用说，其实很简单，如果你和一样同样喜欢js和.net的话。</p>
-
-<p>在当下node.js刚兴起，成型的框架还不够多，或者有时我们必须以c或者c++来完成node.js的本地扩展的时候，edge.js给我们提供了另一个可选的途径就是 强大的.net大家族。</p>
-
-<p>&nbsp;</p>
-
-<iframe src="http://tjanczuk.github.com/edge/#/" frameborder="0" width="100%" height="350"></iframe>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991200.html" title="原文首发">原文首发请看这里</a></p>
 ]]></content>
   </entry>
   
