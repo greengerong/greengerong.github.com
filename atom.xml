@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-22T09:08:25+08:00</updated>
+  <updated>2014-02-22T09:11:00+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,10 +14,10 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Angular form.$addControl]]></title>
-    <link href="http://greengerong.github.io/blog/2014/02/21/angular-form/"/>
+    <title type="html"><![CDATA[细说angular Form addControl方法]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/"/>
     <updated>2014-02-21T17:24:37+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/02/21/angular-form</id>
+    <id>http://greengerong.github.io/blog/2014/02/21/angular-form-addControl</id>
     <content type="html"><![CDATA[<p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
 
 <p>下面且让我们先来从angular源码中看起如下：</p>
