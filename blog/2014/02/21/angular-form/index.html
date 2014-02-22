@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Visual Studio 2010网剧第三集《幸福也需要敏捷》 - 破狼 Blog</title>
+  <title>Angular Form. - 破狼 Blog</title>
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="Visual Studio 2010网剧第三集《幸福也需要敏捷》">
+  <meta name="description" content="在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://greengerong.github.io/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-san-ji-xing-fu-ye-xu-yao-min-jie">
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/02/21/angular-form">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
@@ -74,7 +74,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
   <header>
     
-      <h1 class="entry-title">Visual Studio 2010网剧第三集《幸福也需要敏捷》</h1>
+      <h1 class="entry-title">Angular Form.</h1>
     
     
       <p class="meta">
@@ -90,7 +90,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://greengerong.github.io">Comments</a>
@@ -100,42 +100,121 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-<div class="entry-content"><object data="http://player.youku.com/player.php/sid/XMTY2NzYyMTAw/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="data" value="http://player.youku.com/player.php/sid/XMTY2NzYyMTAw/v.swf"     />
-<param name="src" value="http://player.youku.com/player.php/sid/XMTY2NzYyMTAw/v.swf"     />
-</object>
+<div class="entry-content"><p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
 
+<p>下面且让我们先来从angular源码中看起如下：</p>
 
-<p>   <div style="width:500px;"></p>
+<p>首先是ngModel：</p>
 
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
+<pre><code>    var ngModelDirective = function() {
+      return {
+        require: ['ngModel', '^?form'],
+        controller: NgModelController,
+        link: function(scope, element, attr, ctrls) {
+          // notify others, especially parent forms
 
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
 
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html" title="原文首发">原文首发请看这里</a></p>
+          formCtrl.$addControl(modelCtrl);
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        }
+      };
+    };
+</code></pre>
+
+<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
+
+<p>在看看ngModel controller初始化代码：</p>
+
+<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+        function($scope, $exceptionHandler, $attr, $element, $parse) {
+     ....
+      this.$pristine = true;
+      this.$dirty = false;
+      this.$valid = true;
+      this.$invalid = false;
+      this.$name = $attr.name;
+</code></pre>
+
+<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
+
+<p>而FormController的addControl代码则是：</p>
+
+<pre><code>    /**
+     * @ngdoc function
+     * @name ng.directive:form.FormController#$addControl
+     * @methodOf ng.directive:form.FormController
+     *
+     * @description
+     * Register a control with the form.
+     *
+     * Input elements using ngModelController do this automatically when they are linked.
+     */
+    form.$addControl = function(control) {
+      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
+      // and not added to the scope.  Now we throw an error.
+      assertNotHasOwnProperty(control.$name, 'input');
+      controls.push(control);
+
+      if (control.$name) {
+        form[control.$name] = control;
+      }
+    };
+</code></pre>
+
+<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
+
+<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
+
+<h3>手动注册form controller</h3>
+
+<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
+
+<p>如下：</p>
+
+<pre><code>    .directive("dyName", [
+
+        function() {
+          return {
+            require: "ngModel",
+            link: function(scope, elm, iAttrs, ngModelCtr) {
+              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
+              var formController = elm.controller('form') || {
+                $addControl: angular.noop
+              };
+              formController.$addControl(ngModelCtr);
+
+              scope.$on('$destroy', function() {
+                formController.$removeControl(ngModelCtr);
+              });
+
+            }
+          };
+        }
+      ])
+</code></pre>
+
+<p>使用方式：</p>
+
+<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+      &lt;div class="control-group"&gt;
+        &lt;label class="control-label"&gt; : &lt;/label&gt;
+        &lt;div class="controls"&gt;
+          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
+
+<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
+
+<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
 </div>
 
 
@@ -158,12 +237,12 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/life/'>life</a>
+    <a class='category' href='/blog/categories/angularjs/'>angularjs</a>
   
 </span>
 
@@ -194,10 +273,8 @@ var jiathis_config = {data_track_clickback:'true'};
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-er-ji-rang-ai-yan-chang/" title="Previous Post: Visual Studio 2010网剧第二集《让爱延长》">&laquo; Visual Studio 2010网剧第二集《让爱延长》</a>
+        <a class="basic-alignment left" href="/blog/2014/02/16/angularjs-chinese-guide-public/" title="Previous Post: Angularjs中文版本开发指南发布">&laquo; Angularjs中文版本开发指南发布</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/" title="Next Post: Visual Studio 2010网剧第四集：《为爱Debug》">Visual Studio 2010网剧第四集：《为爱Debug》 &raquo;</a>
       
     </p>
   </footer>
@@ -336,7 +413,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       var disqus_shortname = 'greengerong';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2014/02/21/angular-form/';
+        var disqus_url = 'http://greengerong.github.io/blog/2014/02/21/angular-form/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
