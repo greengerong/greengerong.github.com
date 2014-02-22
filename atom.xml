@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-22T09:05:53+08:00</updated>
+  <updated>2014-02-22T09:08:25+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Angular Form.]]></title>
+    <title type="html"><![CDATA[Angular form.$addControl]]></title>
     <link href="http://greengerong.github.io/blog/2014/02/21/angular-form/"/>
     <updated>2014-02-21T17:24:37+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/02/21/angular-form</id>
