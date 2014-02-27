@@ -9,30 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="angular blog 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24 * @example &lt;doc:example&gt; &lt;doc:source&gt; &lt;div id=&quot; &hellip;">
+  <meta name="description" content="在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }} ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -123,58 +100,39 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-<div class="entry-content"><p>angular blog</p>
+<div class="entry-content"><p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>   <span class="o">*</span> <span class="err">@</span><span class="nx">example</span>
-</span><span class='line'>       <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">example</span><span class="o">&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">source</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template1&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template2&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;ng-cloak&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:source&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">scenario</span><span class="o">&gt;</span>
-</span><span class='line'>           <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should remove the template directive and css class&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template1&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
-</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template2&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
-</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>           <span class="p">});</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:scenario&gt;</span>
-</span><span class='line'>       <span class="o">&lt;</span><span class="err">/doc:example&gt;</span>
-</span><span class='line'>     <span class="o">*</span>
-</span><span class='line'>     <span class="o">*</span><span class="err">/</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">ngCloakDirective</span> <span class="o">=</span> <span class="nx">ngDirective</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">compile</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">attr</span><span class="p">.</span><span class="nx">$set</span><span class="p">(</span><span class="s1">&#39;ngCloak&#39;</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">element</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
+<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
 
+<pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
+ &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
+ &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
+</code></pre>
+
+<p>angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：</p>
+
+<pre><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
+&lt;/style&gt;
+</code></pre>
+
+<p>从上面我们可以看见angular将带有ng-clock的的元素设置为display:none，隐藏掉，在等到angular解析到带有ng-clock的节点时候，会把attribute和class同时remove掉，这样就可以实现防止节点的闪烁。</p>
+
+<pre><code>var ngCloakDirective = ngDirective({
+      compile: function(element, attr) {
+        attr.$set('ngCloak', undefined);
+        element.removeClass('ng-cloak');
+      }
+});
+</code></pre>
+
+<p>在angular-bootstrap.js中会看见这样的代码去增加前面所说的css：</p>
+
+<pre><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
+</code></pre>
+
+<p>好像闪烁的问题好像已经能够被我解决了，恩是否是这样的，理论也改如此，但是现实是残酷的，我们的感性认识经常会被现实一记重重的耳光，我们才能很更深入全面的思考，如果浏览器的速度比angular在head中加入css的速度还快呢？我在给公司的一个项目组解决这个闪烁的问题的时候就遇见了这个问题。怎么办呢？那我们只能使出我们必杀技，自己把css加入我们的css文件引入heade，启动加载，ok这样就可以完美解决了。(如果你也遇见了加了ng-cloak还不起作用的话，那么试试直接引入css文件吧)</p>
+
+<p>到这里关于ng-cloak的原理和解决方案已经完成，欢迎继续关注angular的后续经验篇分享。</p>
 </div>
 
 
@@ -236,7 +194,7 @@ var jiathis_config = {data_track_clickback:'true'};
         <a class="basic-alignment left" href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/" title="Previous Post: angular controller as syntax vs scope">&laquo; angular controller as syntax vs scope</a>
       
       
-        <a class="basic-alignment right" href="/blog/2013/12/27/angular-ngcloak/" title="Next Post: ngCloak 实现 angular 初始化闪烁最佳实践">ngCloak 实现 angular 初始化闪烁最佳实践 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2014/02/11/angular-ngclick-stoppropagation/" title="Next Post: angular ngClick阻止冒泡,默认行为">angular ngClick阻止冒泡,默认行为 &raquo;</a>
       
     </p>
   </footer>
@@ -298,10 +256,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2014/02/21/angular-form/">Angular form.$addControl</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
       </li>
     
@@ -318,7 +272,11 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
       </li>
     
   </ul>

@@ -603,10 +603,6 @@
         <lastmod>2014-02-13T14:34:31+08:00</lastmod>
     </url>
     <url>
-        <loc>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/</loc>
-        <lastmod>2014-02-28T00:42:05+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/</loc>
         <lastmod>2014-02-13T14:34:31+08:00</lastmod>
     </url>
@@ -619,10 +615,6 @@
         <lastmod>2014-02-17T01:19:16+08:00</lastmod>
     </url>
     <url>
-        <loc>http://greengerong.github.io/blog/2014/02/21/angular-form/</loc>
-        <lastmod>2014-02-24T22:15:53+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/</loc>
         <lastmod>2014-02-22T09:10:54+08:00</lastmod>
     </url>
@@ -632,11 +624,11 @@
     </url>
     <url>
         <loc>http://greengerong.github.io/blog/archives/</loc>
-        <lastmod>2014-02-28T00:42:05+08:00</lastmod>
+        <lastmod>2014-02-28T00:40:17+08:00</lastmod>
     </url>
     <url>
         <loc>http://greengerong.github.io/</loc>
-        <lastmod>2014-02-28T00:42:05+08:00</lastmod>
+        <lastmod>2014-02-28T00:40:17+08:00</lastmod>
     </url>
     <url>
         <loc>http://greengerong.github.io/robots.txt</loc>

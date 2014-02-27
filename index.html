@@ -279,159 +279,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/02/21/angular-form/">Angular form.$addControl</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/21/angular-form/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/21/angular-form/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
-
-<p>下面且让我们先来从angular源码中看起如下：</p>
-
-<p>首先是ngModel：</p>
-
-<pre><code>    var ngModelDirective = function() {
-      return {
-        require: ['ngModel', '^?form'],
-        controller: NgModelController,
-        link: function(scope, element, attr, ctrls) {
-          // notify others, especially parent forms
-
-          var modelCtrl = ctrls[0],
-              formCtrl = ctrls[1] || nullFormCtrl;
-
-          formCtrl.$addControl(modelCtrl);
-
-          scope.$on('$destroy', function() {
-            formCtrl.$removeControl(modelCtrl);
-          });
-        }
-      };
-    };
-</code></pre>
-
-<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
-
-<p>在看看ngModel controller初始化代码：</p>
-
-<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-        function($scope, $exceptionHandler, $attr, $element, $parse) {
-     ....
-      this.$pristine = true;
-      this.$dirty = false;
-      this.$valid = true;
-      this.$invalid = false;
-      this.$name = $attr.name;
-</code></pre>
-
-<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
-
-<p>而FormController的addControl代码则是：</p>
-
-<pre><code>    /**
-     * @ngdoc function
-     * @name ng.directive:form.FormController#$addControl
-     * @methodOf ng.directive:form.FormController
-     *
-     * @description
-     * Register a control with the form.
-     *
-     * Input elements using ngModelController do this automatically when they are linked.
-     */
-    form.$addControl = function(control) {
-      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
-      // and not added to the scope.  Now we throw an error.
-      assertNotHasOwnProperty(control.$name, 'input');
-      controls.push(control);
-
-      if (control.$name) {
-        form[control.$name] = control;
-      }
-    };
-</code></pre>
-
-<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
-
-<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
-
-<h3>手动注册form controller</h3>
-
-<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
-
-<p>如下：</p>
-
-<pre><code>    .directive("dyName", [
-
-        function() {
-          return {
-            require: "ngModel",
-            link: function(scope, elm, iAttrs, ngModelCtr) {
-              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
-              var formController = elm.controller('form') || {
-                $addControl: angular.noop
-              };
-              formController.$addControl(ngModelCtr);
-
-              scope.$on('$destroy', function() {
-                formController.$removeControl(ngModelCtr);
-              });
-
-            }
-          };
-        }
-      ])
-</code></pre>
-
-<p>使用方式：</p>
-
-<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
-      &lt;div class="control-group"&gt;
-        &lt;label class="control-label"&gt; : &lt;/label&gt;
-        &lt;div class="controls"&gt;
-          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-</code></pre>
-
-<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
-
-<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
-
-<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a></h1>
     
     
@@ -709,96 +556,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 <p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
 
 <p>希望大家已经明白了，不要再问这类问题了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/12/27/angular-ngcloak/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>angular blog</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>   <span class="o">*</span> <span class="err">@</span><span class="nx">example</span>
-</span><span class='line'>       <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">example</span><span class="o">&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">source</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template1&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template2&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;ng-cloak&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:source&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">scenario</span><span class="o">&gt;</span>
-</span><span class='line'>           <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should remove the template directive and css class&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template1&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
-</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template2&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
-</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>           <span class="p">});</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:scenario&gt;</span>
-</span><span class='line'>       <span class="o">&lt;</span><span class="err">/doc:example&gt;</span>
-</span><span class='line'>     <span class="o">*</span>
-</span><span class='line'>     <span class="o">*</span><span class="err">/</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">ngCloakDirective</span> <span class="o">=</span> <span class="nx">ngDirective</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">compile</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">attr</span><span class="p">.</span><span class="nx">$set</span><span class="p">(</span><span class="s1">&#39;ngCloak&#39;</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">element</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
 </div>
   
   
@@ -1139,6 +896,108 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/15/angular-model--format/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/15/angular-model--format/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在angular开发中我们经常会遇见输入框中的string的值，却想在scope上的model表现为整型、浮点、货币，或者在radio的value是一个true,false的Boolean类型，一组check box的vlue组成一个Array的数组类型，因为我们的后台程序的model设计接口如此。你是否还在后台应用程序或者ajax提交前做mapper，还在重复着着伪angular的做法？</p>
+
+<p>在本人github创建了一个开源项目<a href="https://github.com/greengerong/ngmodel-format">https://github.com/greengerong/ngmodel-format</a>,为了让我们能够轻易的对付这些琐事，你可以在demo下得html或者middle way的测试中看见其使用方法，同时如果不满足你的需求，你仍然可以很简单的扩展你需要的功能：你需要的只是在你的module的run阶段注入modelFormatConfig的constant service 加入所需的key值，加上自己的formatter，parser，isEmpty方法，如果你仍然想继续深入的对用户的输入进行一些控制的话，也可以加入keyDown时间去stopPropagation，preventDefault一些key值。</p>
+
+<p>下面我们看看其相应的使用方式：</p>
+
+<p>请移步到<a href="http://jsbin.com/uJUrANa/1/watch?html,js,output">http://jsbin.com/uJUrANa/1/watch?html,js,output</a>，由于嵌入iframe对样式存在影响，所以暂不嵌入</p>
+
+<p>注意由于在jsbin拒绝引入github text/plain的文件 所以这里是直接把源码贴进去了的，如果使用的话最好是使用github上的，这里的代码是不会更新的。</p>
+
+<p>在jsbin demo上你能够很清楚的看见使用方式。那么我就不用在废话多说了，哈哈。有问题可以提交github issue。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/11/angularjs-web-component/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/11/angularjs-web-component/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在过去的web标准经历了一个飞速的发展，随着时间的推移，用户对web的体验也越来越重视，从最初的简单静态页面到以ajax标志的web2.0，在这个时代我们所面临的问题是用户的体验和可恶的浏览器的兼容(IE成为了我们所唾弃的产物，IE6的葬礼之类的形式足以表明这点)，所以有了Prototype，Mootools，jQuery这类浏览器兼容和util的库，特别jQuery的出现以其独特的兼容性，一致性和优雅的选择器和链式风格影响了整个业界的发展,作为这个时代的产物jQuery是个很出色的库，正的如它所说，做到了&#8221;write less，do more&#8221;,成为这个时代的标志。然而随着互联网的突增，我们的JavaScript代码量也暴增，是的我们再度陷入到JavaScript的维护管理的困境。JavaScript本来是一门作为浏览器上的脚本语言出身，并不适合于大规模开发。所以在我们所能看见的MDV框架的出现，这个时候前段的JavaScript代码已得到我们越来越注重，MDV框架提出了我们也需要向对待后端系统(spring,web api)一样对前段逻辑进行统一管理，分层(表现逻辑，viewmodel，视图)。所以Backbone，AngularJS，Ember，Spine之类的数据绑定框架横空出世，力求给我们带来代码的模块管理，数据、视图的分离，他们以他们不同的方式解决共同的问题：</p>
+
+<p>1.如何更好地模块化开发</p>
+
+<p>2.业务数据如何组织</p>
+
+<p>3.界面和业务数据，业务逻辑的分离</p>
+
+<p>与此同时其实用户体验的要求html5，ECMAScript也在快速的推进。在这里我想说的是 Web组件化的也在蓬勃的发展起来，以Google额polymer为代表的框架，库也在悄无声息的到来，虽然这需要等到浏览器的大统一，但是我们相信在不久的将来将会到来。在这里我所激动和希望是组件的共享，假设我们能够一个想java maven repo，cdn之类的共有或者私有repo，在你需要的地方只需要import那将是多么美好的事情，这也许是意淫，但也未必不可。</p>
+
+<p>有希望总是好的，在过去一年我所尝试的就是基于angular这优秀的框架directive dsl和maven build去实现我所期望的组件化共享愿景。在基于node的<a href="http://component.io/">component</a>前端管理框架稍有相似之处。</p>
+
+<p>回到正题，在angularjs中如何去做到组件化：</p>
+
+<p><img src="/images/blog_img/web-angular.jpg" alt="/images/blog_img/web-angular.jpg" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1183,10 +1042,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2014/02/21/angular-form/">Angular form.$addControl</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
       </li>
     
@@ -1203,7 +1058,11 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
       </li>
     
   </ul>
