@@ -9,8 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。 解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
-默认是 PK%.U27:TABLE%，U27表示截取27个字符。改成PK% &hellip;">
+  <meta name="description" content="&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。 &nbsp; &nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入： &nbsp;&lt;startup &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +71,84 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。</p>
+
+<p>&nbsp;</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/MixedRUntime1.jpg" alt="" /></p>
+
+<p>&nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入：</p>
+
+<p><font color="#ff0000">&nbsp;&lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
+&nbsp; &lt;/startup&gt; </font></p>
+
+<p>&nbsp;参考原文：</p>
+
+<p>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; error using .NET 4 Development Web Server</p>
+
+<p>If your application has a dependency on an assembly built in .NET 2 you will see the error below if you try to run your application when it has been built in.NET 4.</p>
+
+<p><em><strong>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; of the runtime and cannot be loaded in the 4.0 runtime without additional configuration information.</strong></em></p>
+
+<p>This can be important in VS2010 testing, as test projects must be built as .NET 4, there is no option to build with an older runtime. I suffered this problem when trying to do some development where I hosted a <a href="http://blogs.blackmarble.co.uk/blogs/rfennell/archive/2010/03/25/a-fix-to-run-typemock-isolator-inside-the-page-load-for-an-aspx-page-on-vs2010-net4.aspx">webpart that make calls into SharePoint (that was faked out with Typemock Isolator) inside a ASP.NET 4.0 test harness</a></p>
+
+<p>The answer to this problem is well documented, you need to add the <strong>useLegacyV2RuntimeActivationPolicy</strong> attribute to a .CONFIG file, but which one? It is not the <strong>web.config</strong> file you might suspect, but the <strong>C:\Program Files (x86)\Common Files\microsoft shared\DevServer\10.0\WebDev.WebServer40.exe.config</strong> file. The revised config file should read as follows (new bits in <font color="#ff0000">red</font>)</p>
+
+<blockquote><p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;utf-8&rdquo; ?&gt;
+&lt;configuration&gt;
+&nbsp;<font color="#ff0000"> &lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
+&nbsp; &lt;/startup&gt; </font></p>
+
+<p>&nbsp; &lt;runtime&gt;
+&nbsp;&nbsp;&nbsp; &lt;generatePublisherEvidence enabled=&ldquo;false&rdquo; /&gt;
+&nbsp; &lt;/runtime&gt;
+&lt;/configuration&gt;</p></blockquote>
+
+<p>Note: Don&#8217;t add the following _&lt;supportedRuntime version=&ldquo;v2.0.50727&rdquo; /&gt;&nbsp; this cause the web server to crash on start-up. _</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/05/14/2046449.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -843,177 +920,6 @@ http://www.CodeHighlighter.com/
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/">代码生成技术&#8211;CodeDom vs T4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-12-23T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在微软的自家代码生成方案中我们有两种选择方式:CodeDom 和Text Template Transformation Toolkit（T4）模板。同样我们可以利用简单的String或者StringBuilder来拼接字符串，但是那对于简单的还可以，但是对于复杂的问题就<img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201012/201012231245237287.png" alt="悲伤" />。其实在ASP.NET MVC 3.0中有多处了一个更简洁语法的模板-Razor，我们同样可以运用于我们自己的代码生成中，我随便有一篇简单的介绍<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html">Razor Templating Engine</a>，在以后有机会了会写Razor Demo。今天的主题不在这里，所以不多说了。</p>
-
-<h3>一：简介：</h3>
-
-<p>CodeDom：这 个类库出现在我们的.NET Framework 2.0，并且被深深的用于我们的ASP.NET项目中。CodeDom关注于一个语言独立性，以至于我们可以利用我们熟悉的语言（c#，vb等）构建一个CodeDom Model Tree,就可以生成我们在.NET平台所支持的语言代码。对于我们的ASP.NET要求语言的独立。</p>
-
-<p>T4：T4模板作为VS2008的一部分出现，他以&lt;# #&gt; 、&lt;#= #&gt;接近于ASP.NET的语言在模板中插入一段段的动态代码块，可以像asp或者ASP.NET一样简单的更让人贴切，相对于CodeDom就更简洁，但是没有了语言层次的抽象，不具有语言独立性，我们必须为同一个功能的模板在不同的语言上写不同的模板，但是在开发中往往c#模板就足够了，以及更简单化所以得到了更多人的青睐。</p>
-
-<p>二：Code Demo：</p>
-
-<p>下面我们将用CodeDom和t4分别生成一个简单的Code，根据时间输出不同的问候，如下：</p>
-
-<p>1：CodeDom Code:</p>
-
-<pre><code>using System; 
-using System.Text; 
-using System.CodeDom; 
-using System.IO;
-
-namespace RazorDemo 
-{ 
-    public class CodedomDemo 
-    { 
-        public CodeCompileUnit CrateCodeCompileUnit() 
-        { 
-            var testClass = new CodeTypeDeclaration("Test"); 
-            var testMeth = new CodeMemberMethod() 
-            { 
-                Attributes = MemberAttributes.Public| MemberAttributes.Final, 
-                Name = "SayHello", 
-            }; 
-            var param = new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "name"); 
-            testMeth.Parameters.Add(param); 
-            testClass.Members.Add(testMeth);
-
-            var nowExpression = new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(DateTime)), "Now"), "Hour"); 
-            var assmon = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("早上好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name") ); 
-            var asslunch = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("中午好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name")); 
-            var assAfternoon = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("下午好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name")); 
-            var codecondition = new CodeConditionStatement(new CodeBinaryOperatorExpression( 
-                nowExpression, CodeBinaryOperatorType.LessThanOrEqual, new CodePrimitiveExpression(10)), 
-                new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine", assmon)) },           //true:if(DateTime.Now&lt;=10) 
-                //else 
-                new CodeStatement[] 
-                { 
-                   new CodeConditionStatement(new CodeBinaryOperatorExpression(nowExpression, CodeBinaryOperatorType.LessThanOrEqual,new CodePrimitiveExpression(14) ),  // else if(DateTime.Now&lt;=14) 
-                     new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine",asslunch))},    //true 
-                     new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine",assAfternoon))}) //fasle 
-                } 
-               );
-
-            testMeth.Statements.AddRange(new CodeStatement[] {             
-            codecondition 
-            });
-
-            var ns = new CodeNamespace("Wolf"); 
-            ns.Imports.Add(new CodeNamespaceImport("System")); 
-            ns.Types.Add(testClass); 
-            var util = new CodeCompileUnit(); 
-            util.Namespaces.Add(ns); 
-            return util; 
-        }
-
-        public string Genertor(string language) 
-        { 
-            StringBuilder sb = new StringBuilder(); 
-            StringWriter sw = new StringWriter(sb); 
-            System.CodeDom.Compiler.CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit( 
-                this.CrateCodeCompileUnit(), sw, new System.CodeDom.Compiler.CodeGeneratorOptions() 
-                { 
-                    ElseOnClosing = true, 
-                    IndentString = "    " 
-                }); 
-            sw.Close(); 
-            return sb.ToString();
-
-        } 
-    } 
-}
-</code></pre>
-
-<p>2:T4 Code：</p>
-
-<pre><code>&lt;#@ template language="C#" #&gt;
-
-using System; 
-namespace WolfT4 {   
-    public class Test {
-
-        public void SayHello(string name) { 
-            &lt;# if(System.DateTime.Now.Hour&lt;=10){#&gt; 
-            System.Console.WriteLine(("早上好:" + name)); 
-            &lt;#} else if(System.DateTime.Now.Hour&lt;=14){#&gt; 
-            System.Console.WriteLine(("中午好:" + name)); 
-            &lt;#} else{ #&gt; 
-            System.Console.WriteLine(("下午好:" + name)); 
-            &lt;#}#&gt;            
-        } 
-    } 
-}
-</code></pre>
-
-<p>&nbsp;三：总结：</p>
-
-<p>CodeDom的优势：</p>
-
-<p>1：具有语言层次抽象，独立性：是一个单语言开发，多语言生成的方式。</p>
-
-<p>2：<strong>Framework </strong>的支持：作为我们的.NET Framework 一部分出现的，位于System.CodeDom命名空间下。不需要想T4 模板一样引用Microsoft.VisualStudio.TextTemplating.dll</p>
-
-<p>T4优势：</p>
-
-<p>1：更加贴切：采用的是类似于ASP、ASP.NET的语言块，是的我们的开发更贴切，采用模板方式更加简洁，快速。</p>
-
-<p>2：可维护性：由于是基于文件，不像codedom编译成为dll方式，我们可以随时修改Template文件、重构。</p>
-
-<p>&nbsp;</p>
-
-<p>其实我觉得只要是不要求语言独立性，多语言生成的话，就采用T4或者Razor等模板。</p>
-
-<p>代码生成技术（目前完成，还在继续，好久没写了&hellip;）：</p>
-
-<p>1：<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html"><font color="#6699cc">CodeDom系列目录</font></a></p>
-
-<p>2：<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html"><font color="#6699cc">CodeSmith模板引擎系列-目录</font></a></p>
-
-<p>3：<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html"><font color="#6699cc">Razor Templating Engine</font></a></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -1052,6 +958,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
       </li>
     
@@ -1077,10 +987,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
       </li>
     
   </ul>

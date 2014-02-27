@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="写code是他的快乐 看他写code成了我的快乐 喜欢他的认真 却不想他总给自己找压力 &hellip;&hellip; 如果可能 我来做你的下一行code，好不好？ 更痛快地Coding，给爱更多好心情 Visual Studio 2010网剧第二集:《想做你的Cod》 ** Visual &hellip;">
+  <meta name="description" content="&nbsp; jQuery的筛选函数提供了串联、查找和过滤函数，为我们的jQuery对象操作带来了很多的方便，今天我们就来温习下jQuery带来的这些筛选函数。 1：串联函数： （1）：andSelf() return：jQuery； explain： 加入先前所选的加入当前元素中 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,572 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/">jQuery之筛选函数</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; jQuery的筛选函数提供了串联、查找和过滤函数，为我们的jQuery对象操作带来了很多的方便，今天我们就来温习下jQuery带来的这些筛选函数。</p>
+
+<hr />
+
+<h2>1：串联函数：</h2>
+
+<hr />
+
+<p>（1）：andSelf()</p>
+
+<p>return：jQuery；</p>
+
+<p>explain：</p>
+
+<p>加入先前所选的加入当前元素中</p>
+
+<p>对于筛选或查找后的元素，要加入先前所选元素时将会很有用。</p>
+
+<p>test：</p>
+
+<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example：</p>
+
+<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).andSelf().addClass(&#8220;class1&#8221;);</p>
+
+<p>result：</p>
+
+<p>&lt;div&gt;&lt;p class=&#8221;class1&#8221;&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<hr />
+
+<p>(2):end()</p>
+
+<p>return :jQuery;</p>
+
+<p>explain:</p>
+
+<p>回到最近的一个&#8221;破坏性&#8221;操作之前。即，将匹配的元素列表变为前一次的状态。</p>
+
+<p>如果之前没有破坏性操作，则返回一个空集。所谓的&#8221;破坏性&#8221;就是指任何改变所匹配的jQuery元素的操作。这包括在 Traversing 中任何返回一个jQuery对象的函数&mdash;&lsquo;add&rsquo;, &lsquo;andSelf&rsquo;, &lsquo;children&rsquo;, &lsquo;filter&rsquo;, &lsquo;find&rsquo;, &lsquo;map&rsquo;, &lsquo;next&rsquo;, &lsquo;nextAll&rsquo;, &lsquo;not&rsquo;, &lsquo;parent&rsquo;, &lsquo;parents&rsquo;, &lsquo;prev&rsquo;, &lsquo;prevAll&rsquo;, &lsquo;siblings&rsquo; and &lsquo;slice&rsquo;&mdash;再加上 Manipulation 中的 &lsquo;clone&#8217;。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).end();</p>
+
+<p>//$(&#8220;div&#8221;).find(&#8220;p&#8221;)：&lt;p&gt;test&lt;/p&gt;</p>
+
+<p>result:&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<hr />
+
+<h2>2:查找函数:</h2>
+
+<hr />
+
+<p>(1):add(exp);</p>
+
+<p>return :jQuery;</p>
+
+<p>explain:</p>
+
+<p>把与表达式匹配的元素添加到jQuery对象中。这个函数可以用于连接分别与两个表达式匹配的元素结果集。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;test1&lt;/p&gt;&lt;a&gt;test2&lt;/a&gt;</p>
+
+<p>example：</p>
+
+<p>$(&#8220;p&#8221;).add(&#8220;a&#8221;);</p>
+
+<p>result:</p>
+
+<p>[&lt;p&gt;test1&lt;/p&gt;,&lt;a&gt;test2&lt;/a&gt;]//数组</p>
+
+<hr />
+
+<p>(2):children([expr]);</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素的所有子元素的元素集合。</p>
+
+<p>可以通过可选的表达式来过滤所匹配的子元素。注意：parents()将查找所有祖辈元素，而children()之考虑子元素而不考虑所有后代元素。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).children();</p>
+
+<p>result:&lt;span&gt;Hello Again&lt;/span&gt;</p>
+
+<hr />
+
+<p>(3):find(expr)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>搜索所有与指定表达式匹配的元素。这个函数是找出正在处理的元素的后代元素的好方法。</p>
+
+<p>所有搜索都依靠jQuery表达式来完成。这个表达式可以使用CSS1-3的选择器语法来写。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;, how are you?&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).find(&ldquo;span&rdquo;);</p>
+
+<p>result:&lt;span&gt;Hello&lt;/span&gt;</p>
+
+<hr />
+
+<p>(4):next([expr])</p>
+
+<p>return :jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素紧邻的后面同辈元素的元素集合。</p>
+
+<p>这个函数只返回后面那个紧邻的同辈元素，而不是后面所有的同辈元素（可以使用nextAll）。可以用一个可选的表达式进行筛选。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;a&gt;h1&lt;/a&gt;&lt;/p&gt;;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;span&#8221;).next();</p>
+
+<p>result:&lt;a&gt;h1&lt;/a&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(5):nextAll([expr])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:查找当前元素之后所有的同辈元素。</p>
+
+<p>test:&lt;div&gt;h1&lt;/div&gt;&lt;div&gt;h2&lt;/div&gt;&lt;div&gt;h3&lt;/div&gt;;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div:first&#8221;).nextAll();</p>
+
+<p>result:&lt;div&gt;h2&lt;div&gt;,&lt;div&gt;h3&lt;/div&gt;;:</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(6):offsetParent()</p>
+
+<p>&nbsp;</p>
+
+<p>return :jQuery</p>
+
+<p>explain:</p>
+
+<p>返回第一个匹配元素用于定位的父节点。</p>
+
+<p>这返回父元素中第一个其position设为relative或者absolute的元素。此方法仅对可见元素有效。</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(7):parent([expr])</p>
+
+<p>&nbsp;</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含着所有匹配元素的唯一父元素的元素集合。</p>
+
+<p>你可以使用可选的表达式来筛选。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;p&#8221;).parent();</p>
+
+<p>result:&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(8):parents([expr])</p>
+
+<p>&nbsp;</p>
+
+<p>return:jquery;</p>
+
+<p>explain:取得一个包含着所有匹配元素的祖先元素的元素集合（不包含根元素）。</p>
+
+<p>test:</p>
+
+<p>&lt;body&gt;&lt;div&gt;&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;/p&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;/body&gt;</p>
+
+<p>example:$(&#8220;span&#8221;).parents(&#8220;p&#8221;);</p>
+
+<p>result:&lt;p&gt;&lt;span&gt;&lt;Hello&gt;&lt;/span&gt;&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(9):prev([expr])</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素紧邻的前一个同辈元素的元素集合。</p>
+
+<p>可以用一个可选的表达式进行筛选。只有紧邻的同辈元素会被匹配到，而不是前面所有的同辈元素。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;p&#8221;).prev();</p>
+
+<p>result:&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(9):prevAll([expr])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>查找当前元素之前所有的同辈元素;</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div:last&#8221;).prevAll();</p>
+
+<p>result:&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(10):siblings([expr])</p>
+
+<p>return :jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素的所有唯一同辈元素的元素集合。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
+
+<p>example:$(&ldquo;div&rdquo;).siblings()</p>
+
+<p>result:</p>
+
+<p>[ &lt;p&gt;Hello&lt;/p&gt;, &lt;p&gt;And Again&lt;/p&gt; ]</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<h2>3:过滤函数：</h2>
+
+<hr />
+
+<p>(1):eq(insex);</p>
+
+<p>return:jQuery</p>
+
+<p>explain:获取第N个元素.这个元素的位置是从0算起。</p>
+
+<p>test:&lt;p&gt; This is just a test.&lt;/p&gt; &lt;p&gt; So is this&lt;/p&gt;</p>
+
+<p>example:$(&#8220;p&#8221;).eq(1);</p>
+
+<p>result:&lt;p&gt; So is this&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(2):filter(expr)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>筛选出与指定表达式匹配的元素集合。</p>
+
+<p>这个方法用于缩小匹配的范围。用逗号分隔多个表达式</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello Again&lt;/p&gt;&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).filter(&ldquo;.selected&rdquo;);</p>
+
+<p>result:</p>
+
+<p>&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(3):filter(fn)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>筛选出与指定函数返回值匹配的元素集合</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;ol&gt;&lt;li&gt;Hello&lt;/li&gt;&lt;/ol&gt;&lt;/p&gt;&lt;p&gt;How are you?&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).filter(function(index) {
+&nbsp; return $(&ldquo;ol&rdquo;, this).length == 0;
+});</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;How are you?&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(4):hasClass(class)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>检查当前的元素是否含有某个特定的类，如果有，则返回true。这其实就是 is(&ldquo;.&rdquo; + class)。</p>
+
+<p>test:</p>
+
+<p>&lt;div class=&ldquo;protected&rdquo;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).hasClass(&ldquo;protected&rdquo;)</p>
+
+<p>result:</p>
+
+<p>true</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(5):is(expr)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>用一个表达式来检查当前选择的元素集合，如果其中至少有一个元素符合这个给定的表达式就返回true。</p>
+
+<p>test:</p>
+
+<p>&lt;form&gt;&lt;input type=&ldquo;checkbox&rdquo; /&gt;&lt;/form&gt;</p>
+
+<p>explam:</p>
+
+<p>$(&ldquo;input[type=&lsquo;checkbox&rsquo;]&rdquo;).parent().is(&ldquo;form&rdquo;)</p>
+
+<p>result:</p>
+
+<p>true;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(6):map(callback)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>将一组元素转换成其他数组（不论是否是元素数组);</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;b&gt;Values: &lt;/b&gt;&lt;/p&gt;
+&lt;form&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;name&rdquo; value=&ldquo;John&rdquo;/&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;password&rdquo; value=&ldquo;password&rdquo;/&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;url&rdquo; value=&ldquo;<a href="http://ejohn.org/">http://ejohn.org/</a>&rdquo;/&gt;
+&lt;/form&gt;</p>
+
+<p>explam:</p>
+
+<p>$(&ldquo;p&rdquo;).append( $(&ldquo;input&rdquo;).map(function(){
+&nbsp; return $(this).val();
+}).get().join(&ldquo;, &rdquo;) );</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;John, password, <a href="http://ejohn.org/&amp;lt;/p&amp;gt;">http://ejohn.org/&amp;lt;/p&amp;gt;</a></p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(7):not(expr)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>删除与指定表达式匹配的元素</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p id=&ldquo;selected&rdquo;&gt;Hello Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).not( $(&ldquo;#selected&rdquo;)[0] )</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(8):slice(start,[end])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>选取一个匹配的子集;</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;cruel&lt;/p&gt;&lt;p&gt;World&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).slice(0, 1).wrapInner(&ldquo;&lt;b&gt;&lt;/b&gt;&rdquo;);</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;&lt;b&gt;Hello&lt;/b&gt;&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;本博客中同类文章还有，请见：<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html"><font color="#6699cc">我jQuery系列之目录汇总</font></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/01/1725700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1209,118 +1775,6 @@ this.textboxExtender1.SetEnableConvertEnterToTab(this.textBox1, true);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">WinForm控件查找奇思</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近做WinForm程序，尽搞些动态生成控件的，每次寻找某个空间时总要一大堆代码，简单但是写的多，烦啊。突然想起了Linq里的表达式方式，但是项目用的类库是2.0的。最后仿照Linq用范型写了一个遍历类:减少了一大堆不必要的代码。
-代码很简单，就不用解释了，直接贴↑。</p>
-
-<p>代码很简单，就不用解释了，直接贴&#8593;。</p>
-
-<pre><code>    public delegate bool SearchHandler(Control ctrFind);
-        public class WinSearch&lt;T&gt;
-        {
-    //ctr：查找起点控件。
-            public static T Search(Control ctr, SearchHandler handler)
-            {
-                if (handler == null)
-                    throw new Exception("Handler must be not null");
-                if (ctr == null)
-                    throw new Exception("Parent Control must be not null");
-                if (!(ctr is Control))
-                    throw new Exception("The fist parameter must be innert from Control");
-                return SearchProxy(ctr, handler);
-            }
-
-            protected static T SearchProxy(Control ctr,SearchHandler handler)
-            {
-                if (ctr.Controls.Count &lt; 1)
-                {
-                    return default(T);
-                }
-                else
-                {
-                    foreach (Control child in ctr.Controls)
-                    {
-                        if (child is T  &amp;&amp; handler(child))//注意返回范型类型应是如此才会返回。
-                        {
-                            return (T)(object)child;
-                        }
-                        else
-                        {
-                            foreach (Control ch in child.Controls)
-                            {
-                                object obj = SearchProxy(ch, handler);
-                                if (obj !=null)
-                                {
-                                    return (T)obj;
-                                }
-                            }
-                        }
-                    }
-                    return default(T);
-                }
-            }
-
-
-        }
-</code></pre>
-
-<p> 测试代码：</p>
-
-<pre><code>    private void button1_Click(object sender, EventArgs e)
-            {
-                Button btn = WinSearch&lt;Button&gt;
-                .Search(this, new SearchHandler(mehtod));
-                if (btn != null)
-                {
-                    MessageBox.Show(btn.Text);
-                }
-            }
-            public bool mehtod(Control ctr)
-            {
-                if (ctr.Text =="button2")
-                    return true;
-                return false;
-            }
-</code></pre>
-
-<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606587.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/12/">&larr; Older</a>
@@ -1359,6 +1813,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
       </li>
     
@@ -1384,10 +1842,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
       </li>
     
   </ul>

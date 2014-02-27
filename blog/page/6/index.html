@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; Layer 和Tier都是层，但是他们所表现的含义不同，Tier指的是软件系统中物理上的软件和硬件，具体指部署在某服务器上，而Layer（逻辑层）指软件系统中完成特定功能的逻辑模块，逻辑概念。 &nbsp;&nbsp; Layer是逻辑上 组织代码的形式。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,73 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">架构设计&#8211;逻辑层 vs 物理层</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; Layer 和Tier都是层，但是他们所表现的含义不同，Tier指的是软件系统中物理上的软件和硬件，具体指部署在某服务器上，而Layer（逻辑层）指软件系统中完成特定功能的逻辑模块，逻辑概念。</p>
+
+<p>&nbsp;&nbsp; Layer是逻辑上 组织代码的形式。比如逻辑分层中表现层，服务层，业务层，领域层，他们是软件功能来划分的。并不指代部署在那台具体的服务器上或者，物理位置。</p>
+
+<p>&nbsp; Tier这指代码运行部署的具体位置，是一个物理层次上的划为，Tier就是指逻辑层Layer具体的运行位置。所以逻辑层可以部署或者迁移在不同物理层，一个物理层可以部署运行多个逻辑层。</p>
+
+<p>&nbsp;&nbsp; 从Layer和Tier就会延伸到逻辑架构和物理架构。我们一个逻辑分层（N-Layer）的部署运行环境可以在一台或者是多台服务器，由于物理环境的多样性，逻辑层次的部署也具有多样性。这就需要我们必须了解物理架构和逻辑架构。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 大多数情况下我们所说的N层应用系统指的是物理模型，具体模块的分布物理位置。客户端，服务层，逻辑层，数据库服务器，与我们的逻辑模型之间并不是一对一的关系。逻辑上的分层架构与物理位置上的服务器数量和网络边界多少无关，逻辑架构层次只与我们的功能划分相关，是按照功能划分。经典的3-Layer架构：表现层，业务层，数据访问层，他们可能运行在同一物理位置上。也可以是3台计算机上，这并不是逻辑架构所关注的。逻辑层次和物理分层数量关系为：逻辑层数必须不小于物理层数，因为一个物理层可以部署一个或者多个逻辑层次，逻辑层次只能迁移在不同的物理环境。</p>
+
+<p>&nbsp;&nbsp; 逻辑层次的架构能帮助我们解决逻辑耦合，达到灵活配置，迁移。</p>
+
+<p>&nbsp;&nbsp; 一个良好的逻辑分层可以带来：</p>
+
+<ol>
+<li>逻辑组织代码2.  易于维护3.  代码更好的重用4.  更好的团队开发体验5.  代码逻辑的清晰度</li>
+</ol>
+
+
+<p>&nbsp; 一个良好的物理架构可以带来：</p>
+
+<ol>
+<li>性能的提升2.  可伸缩性3.  容错性4.  安全性</li>
+</ol>
+
+
+<p>&nbsp; 逻辑层次越多会影响程序运行的性能，但代码层次的低耦合，松散化，是需要架构师的权衡的，我觉得一般应用程序的瓶颈并不在这里。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2405,171 +2472,6 @@ public override bool CompileTimeValidate(System.Reflection.MethodBase method)
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">AOP之PostSharp初见-OnExceptionAspect</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PostSharp 这个静态植入的aop框架我就不多说了，在以前的aop文件，我们也尝试用<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>理解静态植入AOP的原理。最近公司准备购买Postsharp做一些AOP，减少开发是代码量，至于选择AOP相信也不用多说。我也在今天重新了解了些Postsharp最新版更新，这阵子的博客更新也少了，所以准备在<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>的基础上再一些Postsharp系列。今天既然是初见，那么我们就从最简单的OnExceptionAspect开始。</p>
-
-<p>一：OnExceptionAspect</p>
-
-<p>起定义如下：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132372435.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132381812.png" title="image" alt="image" /></a></p>
-
-<p>先写Aspect Attribute：</p>
-
-<pre><code>[Serializable] 
-    public class ExceptionAspectDemoAttribute : OnExceptionAspect 
-    { 
-
-        public override void OnException(MethodExecutionArgs args) 
-        { 
-            var msg = string.Format("时间[{0:yyyy年MM月dd日 HH时mm分}]方法{1}发生异常: {2}\n{3}", DateTime.Now, args.Method.Name, args.Exception.Message, args.Exception.StackTrace); 
-            Console.WriteLine(msg); 
-            args.FlowBehavior = FlowBehavior.Continue; 
-        } 
-        public override Type GetExceptionType(System.Reflection.MethodBase targetMethod) 
-        { 
-            return typeof(NullReferenceException); 
-        } 
-    }
-</code></pre>
-
-<p>注意Postsharp的Aspect都需要标记为可序列化的，因为在编译时会为我们二进制序列化为资源，减少在运行是的开销，这个将在后面专门讲。</p>
-
-<p>上面的code继承至OnExceptionAspect，并且override OnException和GetExceptionType，GetExceptionType为我们需要处理的特定异常。OnException为异常处理决策方法。我们的异常处理决策是当NullReferenceException时候我们会记录日志，并且方法指定继续（args.FlowBehavior = FlowBehavior.Continue）。</p>
-
-<p>看看我们的测试代码：</p>
-
-<pre><code> class Program 
-   { 
-       static void Main(string[] args) 
-       { 
-           Program.ExceptionAspectDemoAttribute1(); 
-           Program.ExceptionAspectDemoAttribute2(); 
-           Console.Read(); 
-       } 
-       [ExceptionAspectDemo] 
-       public static void ExceptionAspectDemoAttribute1() 
-       { 
-           string s = null; 
-           s.GetType(); 
-       } 
-       [ExceptionAspectDemo] 
-       public static void ExceptionAspectDemoAttribute2() 
-       { 
-           throw new Exception("exception"); 
-       } 
-   }
-</code></pre>
-
-<p>&nbsp;很显然我们的两个方法抛出了null异常和自定义异常，预期是NullReferenceException会被扑捉，而自定义异常会中断，运行效果如下：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013240186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132436890.png" title="image" alt="image" /></a>&nbsp;</p>
-
-<p>我们在来看看postsharp为我们做了什么，当然是反编译看看：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013246115.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132497243.png" title="image" alt="image" /></a></p>
-
-<p>二：Postsharp的Multicasting</p>
-
-<p>1:Multicasting class:</p>
-
-<p>&nbsp; 在这随便也说一下postsharp的Multicasting，多播这样翻译感觉有点死板呵呵，理解就行。利用这一点我们可以吧我们的aspect放在class，assembly等目标上匹配我们的多个目标。比如现在我们不想在我们的每个方法上加attribute，那我们可以选择在class上，如：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132509686.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132515475.png" title="image" alt="image" /></a></p>
-
-<p>反编译，同样注入了我们每个方法：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132524994.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132551142.png" title="image" alt="image" /></a></p>
-
-<p>2:Multicasting assembly:</p>
-
-<p>我们同样可以利用</p>
-
-<p>[assembly: PostSharpDemo.ExceptionAspectDemoAttribute()]</p>
-
-<p>标记在我们的程序集上。</p>
-
-<p>3:AttributeExclude:</p>
-
-<p>但是注意这样也标记了我们的aspect，某些时候可能会导致堆栈溢出 ，我们可以用AttributeExclude=true来排除。</p>
-
-<p>同时我们也可以设置应用目标：AttributeTargetMemberAttributes是一个枚举类型，定义如下：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013255520.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132564009.png" title="image" alt="image" /></a></p>
-
-<p>比如我们需要过滤编译时候生成的目标（自动属性，action等等），</p>
-
-<div class="cnblogs_code">
-<div>[assembly:&nbsp;PostSharpDemo1.MethodTraceAspect(AttributeExclude&nbsp;=&nbsp;<span style="color: #0000ff">true</span>,&nbsp;AttributePriority&nbsp;=&nbsp;<span style="color: #800080">0</span>,&nbsp;AttributeTargetMemberAttributes&nbsp;=&nbsp;MulticastAttributes.CompilerGenerated)]</div></div>
-
-
-<p>&nbsp;4:AttributePriority:</p>
-
-<p>还有AttributePriority，我们可以设置编译时优先级。如果我们对目标标记了多个aspect，这样postsharp就不确定注入先后顺序，这样不能确保正确性，在vs编译时候我们会看见警告：Their order of execution is undeterministic.</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132595140.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040133019119.png" title="image" alt="image" /></a></p>
-
-<p>这是时候AttributePriority就派上用途了来决定我们植入的先后优先级。</p>
-
-<p>5:其他匹配</p>
-
-<p>同上AttributeTargetMemberAttributes 我们还可以利用AttributeTargetMembers，AttributeTargetTypes进行目标名称的匹配，支持模糊匹配。</p>
-
-<p>附件：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">Demo下载</a></p>
-
-<p>我的AOP资料：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
-<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
-</ol>
-
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -2608,6 +2510,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
       </li>
     
@@ -2633,10 +2539,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
       </li>
     
   </ul>
