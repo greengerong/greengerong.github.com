@@ -5,6 +5,7 @@ date: 2014-02-28 00:27:22 +0800
 category: "angularjs"
 tags: [nodejs,javascript]
 ---
+
 在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。
 
 
