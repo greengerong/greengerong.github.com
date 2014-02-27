@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,452 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果我们了解wpf或者silverlight开发中的MVVM模式，就知道框架要求我们的ViewModel必须实现INotifyPropertyChanged，来得到属性改变的事件通知，更新UI。</p>
+
+<p>实现INotifyPropertyChanged接口很简单，而且一沉不变，属于重复劳动。在这里我们将看看如何运用PostSharp来解决我们的重复劳动。当然这里只是一个demo演示，具体在项目开发中你直接实现INotifyPropertyChanged，或者AOP植入，这取决我个人和团队文化。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在下面我们将会用到Postsharp的：</p>
+
+<ol>
+<li>IntroduceMember：向目标对象植入成员。</li>
+<li>IntroduceInterface：使得目标实现接口，参数接口类型。</li>
+<li>OnLocationSetValueAdvice：PostSharp的一种Advice Aspect。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 下面我就看看我们的代码是如何简洁来实现：</p>
+
+<pre><code> using System;
+  using System.ComponentModel;
+  using PostSharp.Aspects;
+  using PostSharp.Aspects.Advices;
+  using PostSharp.Extensibility;
+
+  namespace PostSharpDemo
+  {
+      [Serializable]
+      [IntroduceInterface(typeof(INotifyPropertyChanged), OverrideAction = InterfaceOverrideAction.Ignore)]
+      public class INotifyPropertyChangedAttribute : InstanceLevelAspect, INotifyPropertyChanged
+      {
+
+          [OnLocationSetValueAdvice, MulticastPointcut(Targets = MulticastTargets.Property)]
+          public void OnValueChanged(LocationInterceptionArgs args)
+          {
+              var current=args.GetCurrentValue();
+              if ((args.Value != null &amp;&amp; (!args.Value.Equals(current)))
+                  || (current != null &amp;&amp; (!current.Equals(args.Value))))
+              {
+                  args.ProceedSetValue();
+                  this.OnRaisePropertyChange(args.Location.Name);
+              }
+          }
+
+          #region INotifyPropertyChanged 成员
+
+          [IntroduceMember(IsVirtual = true, OverrideAction = MemberOverrideAction.Ignore)]
+          public event PropertyChangedEventHandler PropertyChanged;
+
+
+
+
+          protected void OnRaisePropertyChange(string property)
+          {
+              if (PropertyChanged != null)
+              {
+                  PropertyChanged.Invoke(this.Instance, new PropertyChangedEventArgs(property));
+              }
+          }
+          #endregion
+      }
+  }
+</code></pre>
+
+<p>测试代码：</p>
+
+<p>static void Main(string[] args)</p>
+
+<pre><code>    { 
+
+         Student stu = new Student(); 
+        (stu as INotifyPropertyChanged).PropertyChanged += new PropertyChangedEventHandler(Program_PropertyChanged); 
+        stu.ID = 10; 
+        stu.Name = "wolf"; 
+        stu.Sex = "Man"; 
+        stu.ID = 2; 
+        Console.Read(); 
+    } 
+
+    static void Program_PropertyChanged(object sender, PropertyChangedEventArgs e) 
+    { 
+        Console.WriteLine(string.Format("property {0} has changed", e.PropertyName)); 
+    }
+</code></pre>
+
+<p>实体类：</p>
+
+<pre><code>  [INotifyPropertyChanged] 
+   public class Student 
+   { 
+       public string Name 
+       { get; set; } 
+
+       public string Sex 
+       { get; set; } 
+
+       public int ID 
+       { get; set; } 
+   }
+</code></pre>
+
+<div class="cnblogs_code">运行效果如下：</div>
+
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006066024.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006218755.png" title="image" alt="image" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
+
+<p>本博客中相关文章有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/">AOP之PostSharp3-MethodInterceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 在上两篇我们介绍了<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">OnExceptionAspect</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/2275680.html">OnMethodBoundaryAspect</a> ，在这节我们将继续了解MethodInterceptionAspect，他为我们提供了关于方法处理的AOP切入，不同于OnMethodBoundaryAspect，他不是边界，是方法体。有了我们可以在我们的方法切入aspect很多有用的信息，比如将同步方法变为异步，防止多次点击重复提交，winform，wpf的多线程调用UI（参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html">PostSharp &ndash; Thread Dispatching（GUI多线程）</a>），长时间操作在超过用户接受时间弹出进度条等等有用的关于用户体验和业务逻辑功能，简化我们的编程开发。</p>
+
+<p>同样我们先来看看其MethodInterceptionAspect定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346079947.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346096618.png" title="image" alt="image" /></a></p>
+
+<p>Invoke MethodInterceptionArgs参数：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346138763.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346153482.png" title="image" alt="image" /></a></p>
+
+<p>我们一般使用Proceed是的方法进行处理。在这时我们可以加入线程池调用，使的其变为异步操作。</p>
+
+<p>同时MethodInterceptionAspect 还继承了MethodLevelAspect 的CompileTimeValidate编译是验证，CompileTimeInitialize编译时初始化，RuntimeInitialize运行时初始化，后边的初始化我们将在后面一节PostSharp范围（static和instance中讲到）。</p>
+
+<p>其定义很简单，在于我们的发挥：</p>
+
+<p>二：防止多次提交处理demo：</p>
+
+<p>我们这里只采用简单思路在方法进入禁止按钮可用，方法执行完成后恢复可用状态。我们将使监听winform事件处理方法，按钮来自EventHandle的第一个参数Sender。</p>
+
+<pre><code>[Serializable] 
+    public class UnMutipleTriggerAttribute : MethodInterceptionAspect 
+    { 
+
+
+public override bool CompileTimeValidate(System.Reflection.MethodBase method) 
+       { 
+           var ps = method.GetParameters(); 
+           if (ps != null &amp;&amp; ps.Count() &gt; 0 &amp;&amp; ps[0].Name == "sender") 
+               return true; 
+           return false; 
+       } 
+
+        public override void OnInvoke(MethodInterceptionArgs args) 
+        { 
+            if (args.Arguments.Count &gt; 0) 
+            { 
+                var controls = args.Arguments[0] as System.Windows.Forms.Control; 
+                if (controls != null &amp;&amp; controls.Enabled) 
+                { 
+                    controls.Enabled = false; 
+                    args.Proceed(); ; 
+                    controls.Enabled = true; 
+                } 
+            } 
+
+        } 
+    }
+</code></pre>
+
+<p>在这里我们是监听方法的处理事件函数根据vs自动生成规则，第一个参数是sender，事件源，这里利用了CompileTimeValidate在编译时决定是否注入aspect。</p>
+
+<p>注意这里只是一个简单的demo，只针对于同步操作，如要变为异步操作，这需要改为在异步操作后启用。</p>
+
+<p>测试在button点击方法加上attribute：</p>
+
+<pre><code> [UnMutipleTriggerAttribute] 
+      private void Save(object sender, EventArgs e) 
+      { 
+          System.Threading.Thread.Sleep(2000); 
+      }
+</code></pre>
+
+<p>效果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346163416.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346178857.png" title="image" alt="image" /></a></p>
+
+<p>这个例子很简单的就完成了。</p>
+
+<p><a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">demo下载</a></p>
+
+<p>参考：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">AOP之PostSharp初见-OnExceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PostSharp 这个静态植入的aop框架我就不多说了，在以前的aop文件，我们也尝试用<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>理解静态植入AOP的原理。最近公司准备购买Postsharp做一些AOP，减少开发是代码量，至于选择AOP相信也不用多说。我也在今天重新了解了些Postsharp最新版更新，这阵子的博客更新也少了，所以准备在<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>的基础上再一些Postsharp系列。今天既然是初见，那么我们就从最简单的OnExceptionAspect开始。</p>
+
+<p>一：OnExceptionAspect</p>
+
+<p>起定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132372435.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132381812.png" title="image" alt="image" /></a></p>
+
+<p>先写Aspect Attribute：</p>
+
+<pre><code>[Serializable] 
+    public class ExceptionAspectDemoAttribute : OnExceptionAspect 
+    { 
+
+        public override void OnException(MethodExecutionArgs args) 
+        { 
+            var msg = string.Format("时间[{0:yyyy年MM月dd日 HH时mm分}]方法{1}发生异常: {2}\n{3}", DateTime.Now, args.Method.Name, args.Exception.Message, args.Exception.StackTrace); 
+            Console.WriteLine(msg); 
+            args.FlowBehavior = FlowBehavior.Continue; 
+        } 
+        public override Type GetExceptionType(System.Reflection.MethodBase targetMethod) 
+        { 
+            return typeof(NullReferenceException); 
+        } 
+    }
+</code></pre>
+
+<p>注意Postsharp的Aspect都需要标记为可序列化的，因为在编译时会为我们二进制序列化为资源，减少在运行是的开销，这个将在后面专门讲。</p>
+
+<p>上面的code继承至OnExceptionAspect，并且override OnException和GetExceptionType，GetExceptionType为我们需要处理的特定异常。OnException为异常处理决策方法。我们的异常处理决策是当NullReferenceException时候我们会记录日志，并且方法指定继续（args.FlowBehavior = FlowBehavior.Continue）。</p>
+
+<p>看看我们的测试代码：</p>
+
+<pre><code> class Program 
+   { 
+       static void Main(string[] args) 
+       { 
+           Program.ExceptionAspectDemoAttribute1(); 
+           Program.ExceptionAspectDemoAttribute2(); 
+           Console.Read(); 
+       } 
+       [ExceptionAspectDemo] 
+       public static void ExceptionAspectDemoAttribute1() 
+       { 
+           string s = null; 
+           s.GetType(); 
+       } 
+       [ExceptionAspectDemo] 
+       public static void ExceptionAspectDemoAttribute2() 
+       { 
+           throw new Exception("exception"); 
+       } 
+   }
+</code></pre>
+
+<p>&nbsp;很显然我们的两个方法抛出了null异常和自定义异常，预期是NullReferenceException会被扑捉，而自定义异常会中断，运行效果如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013240186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132436890.png" title="image" alt="image" /></a>&nbsp;</p>
+
+<p>我们在来看看postsharp为我们做了什么，当然是反编译看看：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013246115.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132497243.png" title="image" alt="image" /></a></p>
+
+<p>二：Postsharp的Multicasting</p>
+
+<p>1:Multicasting class:</p>
+
+<p>&nbsp; 在这随便也说一下postsharp的Multicasting，多播这样翻译感觉有点死板呵呵，理解就行。利用这一点我们可以吧我们的aspect放在class，assembly等目标上匹配我们的多个目标。比如现在我们不想在我们的每个方法上加attribute，那我们可以选择在class上，如：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132509686.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132515475.png" title="image" alt="image" /></a></p>
+
+<p>反编译，同样注入了我们每个方法：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132524994.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132551142.png" title="image" alt="image" /></a></p>
+
+<p>2:Multicasting assembly:</p>
+
+<p>我们同样可以利用</p>
+
+<p>[assembly: PostSharpDemo.ExceptionAspectDemoAttribute()]</p>
+
+<p>标记在我们的程序集上。</p>
+
+<p>3:AttributeExclude:</p>
+
+<p>但是注意这样也标记了我们的aspect，某些时候可能会导致堆栈溢出 ，我们可以用AttributeExclude=true来排除。</p>
+
+<p>同时我们也可以设置应用目标：AttributeTargetMemberAttributes是一个枚举类型，定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013255520.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132564009.png" title="image" alt="image" /></a></p>
+
+<p>比如我们需要过滤编译时候生成的目标（自动属性，action等等），</p>
+
+<div class="cnblogs_code">
+<div>[assembly:&nbsp;PostSharpDemo1.MethodTraceAspect(AttributeExclude&nbsp;=&nbsp;<span style="color: #0000ff">true</span>,&nbsp;AttributePriority&nbsp;=&nbsp;<span style="color: #800080">0</span>,&nbsp;AttributeTargetMemberAttributes&nbsp;=&nbsp;MulticastAttributes.CompilerGenerated)]</div></div>
+
+
+<p>&nbsp;4:AttributePriority:</p>
+
+<p>还有AttributePriority，我们可以设置编译时优先级。如果我们对目标标记了多个aspect，这样postsharp就不确定注入先后顺序，这样不能确保正确性，在vs编译时候我们会看见警告：Their order of execution is undeterministic.</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132595140.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040133019119.png" title="image" alt="image" /></a></p>
+
+<p>这是时候AttributePriority就派上用途了来决定我们植入的先后优先级。</p>
+
+<p>5:其他匹配</p>
+
+<p>同上AttributeTargetMemberAttributes 我们还可以利用AttributeTargetMembers，AttributeTargetTypes进行目标名称的匹配，支持模糊匹配。</p>
+
+<p>附件：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">Demo下载</a></p>
+
+<p>我的AOP资料：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1246,551 +1692,6 @@ C#：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">浅谈.NET编译时注入（C#&#8211;&gt;IL）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; .NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器，在这里就不多说了，不是本文的重点。本文主要讨论下预编译过程中我们能做的改变编译情况，改变生成的ＩＬ，从编译前后看看微软Ｃ＃３．０一些语法糖，PostSharp的静态注入等等。</p>
-
-<p>１：我们先来看看最简单的var:</p>
-
-<p>Ｃ#:</p>
-
-<pre><code>public void TestVar() { 
-    var i = 0;    Console.WriteLine(i); }
-</code></pre>
-
-<p>使用Reflector查看生成</p>
-
-<p>ＩＬ：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124334478.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/20110726212434999.jpg" title="clip_image001" alt="clip_image001" /></a></p>
-
-<p>反编译后的Ｃ＃：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124353474.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124359853.jpg" title="clip_image002" alt="clip_image002" /></a></p>
-
-<p>这里ＶＳ在编译的时候将ｖａｒ为我们转变为了ｉｎｔ类型。</p>
-
-<p>２：Action&lt;int&gt;：</p>
-
-<p>Ｃ＃：</p>
-
-<pre><code>public void TestAction() { var i = 1; Func&lt;int,int&gt; f = t =&gt; t+1; i=10; f(i); }
-</code></pre>
-
-<p>反编译后Ｃ＃：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124351772.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124364737.jpg" title="clip_image004" alt="clip_image004" /></a></p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124369164.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124379131.jpg" title="clip_image005" alt="clip_image005" /></a></p>
-
-<p>编译器为我们在这里生成了代理方法。</p>
-
-<p>总结：</p>
-
-<p>关于lambda表达式的编译规则：</p>
-
-<p>当一个lambda expression被赋值给一个delegate类型，例如<a href="http://msdn2.microsoft.com/en-us/library/018hxwa8.aspx">Action&lt;T&gt;</a>或者<a href="http://msdn2.microsoft.com/en-us/library/bb549151.aspx">Func&lt;T, TResult&gt;</a>等，这个lambda expression会被编译器直接编译为
-1) 当lambda expression没有使用闭包内的非局部引用也没有使用到this时，编译为一个私有静态方法；
-2) 当lambda expression没有使用闭包内的非局部引用，但用到了this时，编译为一个私有成员方法；
-3) 当lambda expression中引用到非局部变量，则编译为一个私有的内部类，将引用到的非局部变量提升为内部类的。</p>
-
-<p>３：PostSharp：</p>
-
-<p>PostSharp是结合了 MSBuild Task 和 MSIL Injection 技术，编译时静态注入实现 AOP 编程。在编译时候改变VS的编译行为。更详细的信息，请访问 <a href="http://www.postsharp.org/">PostSharp</a> 网站</p>
-
-<p>原ｃ＃：</p>
-
-<pre><code>    using System;
-
-  using System.Collections.Generic;
-
-  using System.Linq;
-
-  using System.Text;
-
-  namespace ConsoleApplication1
-
-  {
-
-  class Program
-
-  {
-
-  static void Main(string[] args)
-
-  {
-
-  new Program().TestPostSharp();
-
-  }
-
-  [ErrorHandler()]
-
-  public void TestPostSharp()
-
-  {
-
-  throw new Exception("I will throw a exception!");
-
-  }
-
-  }
-
-  [Serializable]
-
-  public class ErrorHandlerAttribute : PostSharp.Laos.OnMethodBoundaryAspect
-
-  {
-
-  public override void OnException(PostSharp.Laos.MethodExecutionEventArgs eventArgs)
-
-  {
-
-  //do some AOP operation!
-
-  Console.WriteLine(eventArgs.Method+":" +eventArgs.Exception.Message);
-
-  eventArgs.FlowBehavior = PostSharp.Laos.FlowBehavior.Continue;
-
-  }
-
-  }
-
-  }
-</code></pre>
-
-<p>反编译后：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124385030.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124418146.jpg" title="clip_image007" alt="clip_image007" /></a></p>
-
-<p>今天就到此为至,只是简单的了解下IL注入实例,在后面会利用<strong>MSBuild Task+Mono Cecil</strong> 和<strong>PostSharp</strong>实现一些简单的注入实例.</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Silverlight获取WebHost配置信息&#8211;WebClient和XmlSerializer模拟</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-06T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; 在我们的silverlight项目中，是被打包为xap zip文件下载到客户端，所以silverlight中的app配置文件我们不能直接修改，而在其宿主web host中的web.config在服务端我们也不能直接访问。在我们的项目中遇见了这个问题所以我就有了此博客。</p>
-
-<p>&nbsp;&nbsp; 先说明解决这个问题的方案有：</p>
-
-<p>1：调用wcf，webservice，Asp.net页面等服务端数据源，异步显示在我们的UI。</p>
-
-<p>2：利用silverlight项目的宿主页面 object，传入初始化参数，在silverlight app中获取。</p>
-
-<p>上面的方案都是针对于我们的少量有限配置信息的获取。我这里做的是利用在服务端的xml配置文件来模拟配置文件（为什么不用web.config？以为存在权限信息的问题，所以我觉得尽量避免此文件信息暴露）。在silverlight的异步加载xml文档并解析xml文档。形成配置信息。</p>
-
-<p>为了全局使用，早些加载xml文档，我们需要在app中加一句：</p>
-
-<p>SLConfigManager.Current.ConfigPath = &ldquo;../SlConfig.xml&rdquo;;//配置文件的路径，相对于我们的xap文件路径。</p>
-
-<p>我们先看一下测试xml：</p>
-
-<pre><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
-&lt;Configuration&gt; 
-  &lt;appSettings&gt; 
-    &lt;add key="test1" value="123"&gt;&lt;/add&gt; 
-    &lt;add key="test2" value="1"&gt;&lt;/add&gt; 
-  &lt;/appSettings&gt; 
-  &lt;Class ClassID="111"&gt; 
-    &lt;Student Age="123"&gt; 
-      &lt;Name&gt;ddddd&lt;/Name&gt;     
-    &lt;/Student&gt; 
-    &lt;Student  Age="28"&gt; 
-      &lt;Name&gt;111&lt;/Name&gt;     
-    &lt;/Student&gt; 
-  &lt;/Class&gt; 
-&lt;/Configuration&gt;
-</code></pre>
-
-<p>这是我们可以使用：</p>
-
-<pre><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
-     { 
-         MessageBox.Show(SLConfigManager.Current.GetSection&lt;Class&gt;("Class").ClassID + ""); 
-         MessageBox.Show(SLConfigManager.Current.GetAppSettings("test1").ToString()); 
-         MessageBox.Show(SLConfigManager.Current.GetAppSettings&lt;Sex&gt;("test2").ToString()); 
-     } 
-
-        public enum Sex 
-     { 
-      man,woman 
-     }
-</code></pre>
-
-<p>在这里我们模拟了AppSettings，和Section（注：这里的section，不需要预申明，在利用xml转化形成的，更利于我们的配置扩展性，使用到了XmlRoot，XmlElement等attribute），在看看我们的Class类：</p>
-
-<pre><code>using System.Xml.Serialization; 
-</code></pre>
-
-<p>  namespace SilverlightApplication2
-  {</p>
-
-<pre><code>  [XmlRoot("Student")] 
-  public class Student 
-  { 
-      [XmlElement("Name")] 
-      public string Name 
-      { get; set; } 
-
-      [XmlAttribute("Age")] 
-      public int Age 
-      { 
-          get; 
-          set; 
-      } 
-  } 
-
-  [XmlRoot("Class")] 
-  public class Class 
-  { 
-      [XmlAttribute("ClassID")] 
-      public int ClassID 
-      { 
-          get; 
-          set; 
-      } 
-
-      [XmlArray()] 
-      [XmlArrayItem("Students")] 
-      public System.Collections.Generic.List&lt;Student&gt; Students 
-      { 
-          get; 
-          set; 
-      } 
-  } 
-</code></pre>
-
-<p>  }</p>
-
-<p>最后需要说明的是：在于我们的项目中可能存在xml文件还没有加载，的情况，所以加入了时间支持和IsLoaded属性标示。</p>
-
-<p>源码：</p>
-
-<pre><code>using System; 
-using System.Net; 
-using System.Windows; 
-using System.Windows.Controls; 
-using System.Windows.Documents; 
-using System.Windows.Ink; 
-using System.Windows.Input; 
-using System.Windows.Media; 
-using System.Windows.Media.Animation; 
-using System.Windows.Shapes; 
-using System.Xml; 
-using System.Xml.Linq; 
-using System.Linq; 
-using System.Collections.Generic; 
-using Green.Utility.Utils; 
-
-namespace SilverlightApplication2 
-{ 
-    public delegate void LoadComplete(); 
-
-    public class SLConfigManager 
-    { 
-        private XDocument document = null; 
-
-        private static readonly SLConfigManager _SLConfigManager = new SLConfigManager(); 
-        private Dictionary&lt;string, object&gt; dict = new Dictionary&lt;string, object&gt;(); 
-        private Dictionary&lt;string, string&gt; appSettings = new Dictionary&lt;string, string&gt;(); 
-        private string _ConfigPath = null; 
-
-        public static SLConfigManager Current 
-        { 
-            get 
-            { 
-                return _SLConfigManager; 
-            } 
-        } 
-
-        public string ConfigPath 
-        { 
-            get { return _ConfigPath; } 
-            set 
-            { 
-                if (_ConfigPath != value) 
-                { 
-                    _ConfigPath = value; 
-                    LoadResource(); 
-                } 
-            } 
-        } 
-
-        public bool IsLoaded 
-        { 
-            get; 
-            private set; 
-        } 
-        public event LoadComplete LoadComplete; 
-
-        public void EnsureLoadResource() 
-        { 
-
-            if (document == null) 
-            { 
-                LoadResource(); 
-            } 
-        } 
-
-        protected virtual void LoadResource() 
-        { 
-            if (string.IsNullOrEmpty(ConfigPath)) 
-            { 
-                throw new Exception("ConfigPath is required!"); 
-            } 
-
-            dict.Clear(); 
-            Uri url = new Uri(Application.Current.Host.Source, ConfigPath); 
-            WebClient client = new WebClient(); 
-            client.OpenReadCompleted += new OpenReadCompletedEventHandler(client_OpenReadCompleted); 
-            client.OpenReadAsync(url, client); 
-        } 
-
-        protected virtual void client_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) 
-        { 
-            if (e.Error != null) 
-            { 
-                throw e.Error; 
-            } 
-
-            var sw = new System.IO.StreamReader(e.Result); 
-            var xml = sw.ReadToEnd(); 
-            document = XDocument.Parse(xml); 
-            sw.Close(); 
-            e.Result.Close(); 
-            sw = null; 
-
-            GetappSettings(); 
-
-            IsLoaded = true; 
-            if (LoadComplete != null) 
-            { 
-                LoadComplete(); 
-            } 
-        } 
-
-        protected virtual void GetappSettings() 
-        { 
-            if (document != null) 
-            { 
-                var appSettingsel = document.Root.Element("appSettings"); 
-                if (appSettings != null) 
-                { 
-                    appSettingsel.Elements("add").ToList().ForEach(e =&gt; 
-                    { 
-                        var key = e.Attribute("key").Value; 
-                        var value = e.Attribute("value").Value; 
-                        if (!string.IsNullOrEmpty(key)&amp;&amp;!this.appSettings.ContainsKey(key)) 
-                        { 
-                            this.appSettings.Add(key, value); 
-                        } 
-                    }); 
-                } 
-            } 
-        } 
-
-        public T GetSection&lt;T&gt;(string section) where T : class ,new() 
-        { 
-            if (document == null) 
-            { 
-                // throw new Exception("Config Document is null!");                
-            } 
-            if (!dict.ContainsKey(section)) 
-            { 
-                var el = document.Root.Descendants().SingleOrDefault(t =&gt; t.Name == section); 
-                var xml = el.ToString(); 
-                dict.Add(section, XmlSerializer&lt;T&gt;(xml)); 
-            } 
-            return dict[section] as T; 
-        } 
-
-        protected virtual T XmlSerializer&lt;T&gt;(string xml) where T : class ,new() 
-        { 
-            System.Xml.Serialization.XmlSerializer serialzer = new System.Xml.Serialization.XmlSerializer(typeof(T)); 
-            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xml)); 
-            var obj = serialzer.Deserialize(ms) as T; 
-            ms.Flush(); 
-            ms.Close(); 
-            ms = null; 
-            return obj; 
-        } 
-
-        public T GetAppSettings&lt;T&gt;(string key) where T : IConvertible 
-        { 
-            if (appSettings.ContainsKey(key)) 
-            { 
-                var val = this.appSettings[key]; 
-                if (string.IsNullOrEmpty(val)) 
-                    return default(T); 
-                if (typeof(T).IsEnum) 
-                { 
-                    return (T)Enum.Parse(typeof(T), val, true); 
-                } 
-                return (T)Convert.ChangeType(val, typeof(T), null); 
-            } 
-            return default(T); 
-        } 
-
-        public string GetAppSettings(string key) 
-        { 
-            return GetAppSettings&lt;string&gt;(key); 
-        } 
-    } 
-}
-</code></pre>
-
-<p>最后附：<a href="http://files.cnblogs.com/whitewolf/SilverlightApplication2.rar" title="测试程序打包下载">测试程序打包下载</a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/06/SlConfig.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。</p>
-
-<p>&nbsp;</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/MixedRUntime1.jpg" alt="" /></p>
-
-<p>&nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入：</p>
-
-<p><font color="#ff0000">&nbsp;&lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
-&nbsp; &lt;/startup&gt; </font></p>
-
-<p>&nbsp;参考原文：</p>
-
-<p>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; error using .NET 4 Development Web Server</p>
-
-<p>If your application has a dependency on an assembly built in .NET 2 you will see the error below if you try to run your application when it has been built in.NET 4.</p>
-
-<p><em><strong>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; of the runtime and cannot be loaded in the 4.0 runtime without additional configuration information.</strong></em></p>
-
-<p>This can be important in VS2010 testing, as test projects must be built as .NET 4, there is no option to build with an older runtime. I suffered this problem when trying to do some development where I hosted a <a href="http://blogs.blackmarble.co.uk/blogs/rfennell/archive/2010/03/25/a-fix-to-run-typemock-isolator-inside-the-page-load-for-an-aspx-page-on-vs2010-net4.aspx">webpart that make calls into SharePoint (that was faked out with Typemock Isolator) inside a ASP.NET 4.0 test harness</a></p>
-
-<p>The answer to this problem is well documented, you need to add the <strong>useLegacyV2RuntimeActivationPolicy</strong> attribute to a .CONFIG file, but which one? It is not the <strong>web.config</strong> file you might suspect, but the <strong>C:\Program Files (x86)\Common Files\microsoft shared\DevServer\10.0\WebDev.WebServer40.exe.config</strong> file. The revised config file should read as follows (new bits in <font color="#ff0000">red</font>)</p>
-
-<blockquote><p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;utf-8&rdquo; ?&gt;
-&lt;configuration&gt;
-&nbsp;<font color="#ff0000"> &lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
-&nbsp; &lt;/startup&gt; </font></p>
-
-<p>&nbsp; &lt;runtime&gt;
-&nbsp;&nbsp;&nbsp; &lt;generatePublisherEvidence enabled=&ldquo;false&rdquo; /&gt;
-&nbsp; &lt;/runtime&gt;
-&lt;/configuration&gt;</p></blockquote>
-
-<p>Note: Don&#8217;t add the following _&lt;supportedRuntime version=&ldquo;v2.0.50727&rdquo; /&gt;&nbsp; this cause the web server to crash on start-up. _</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/05/14/2046449.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -1829,7 +1730,15 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/21/angular-form/">Angular form.$addControl</a>
       </li>
     
       <li class="post">
@@ -1849,15 +1758,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
   </ul>

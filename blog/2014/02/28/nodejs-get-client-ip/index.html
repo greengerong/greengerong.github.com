@@ -5,34 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ngCloak 实现 Angular 初始化闪烁最佳实践 - 破狼 Blog</title>
+  <title>nodejs获取客户端IP Address - 破狼 Blog</title>
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="angular blog 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24 * @example &lt;doc:example&gt; &lt;doc:source&gt; &lt;div id=&quot; &hellip;">
+  <meta name="description" content="在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。 function getClientIp(req) { return req.headers['x-forwarded-for'] || req.connection.remoteAddress || req. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -41,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak">
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
@@ -97,7 +74,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
   <header>
     
-      <h1 class="entry-title">ngCloak 实现 Angular 初始化闪烁最佳实践</h1>
+      <h1 class="entry-title">nodejs获取客户端IP Address</h1>
     
     
       <p class="meta">
@@ -113,7 +90,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2014-02-28T00:27:22+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://greengerong.github.io">Comments</a>
@@ -123,58 +100,17 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-<div class="entry-content"><p>angular blog</p>
+<div class="entry-content"><p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>   <span class="o">*</span> <span class="err">@</span><span class="nx">example</span>
-</span><span class='line'>       <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">example</span><span class="o">&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">source</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template1&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template2&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;ng-cloak&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:source&gt;</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">scenario</span><span class="o">&gt;</span>
-</span><span class='line'>           <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should remove the template directive and css class&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template1&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
-</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template2&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
-</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>           <span class="p">});</span>
-</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:scenario&gt;</span>
-</span><span class='line'>       <span class="o">&lt;</span><span class="err">/doc:example&gt;</span>
-</span><span class='line'>     <span class="o">*</span>
-</span><span class='line'>     <span class="o">*</span><span class="err">/</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">ngCloakDirective</span> <span class="o">=</span> <span class="nx">ngDirective</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">compile</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">attr</span><span class="p">.</span><span class="nx">$set</span><span class="p">(</span><span class="s1">&#39;ngCloak&#39;</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">element</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
+<pre><code>    function getClientIp(req) {
+        return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    };
+</code></pre>
 
+<p>代码，第一段判断是否有反向代理IP(头信息：x-forwarded-for)，在判断connection的远程IP，以及后端的socket的IP。</p>
 </div>
 
 
@@ -197,7 +133,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
+<time datetime="2014-02-28T00:27:22+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
       
 
 <span class="categories">
@@ -233,10 +169,8 @@ var jiathis_config = {data_track_clickback:'true'};
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/" title="Previous Post: angular controller as syntax vs scope">&laquo; angular controller as syntax vs scope</a>
+        <a class="basic-alignment left" href="/blog/2014/02/21/angular-form-addControl/" title="Previous Post: 细说angular form addControl方法">&laquo; 细说angular form addControl方法</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/12/27/angular-ngcloak/" title="Next Post: ngCloak 实现 angular 初始化闪烁最佳实践">ngCloak 实现 angular 初始化闪烁最佳实践 &raquo;</a>
       
     </p>
   </footer>

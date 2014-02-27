@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-02-22T09:14:21+08:00</updated>
+  <updated>2014-02-28T00:43:39+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,10 +14,152 @@
 
   
   <entry>
+    <title type="html"><![CDATA[nodejs获取客户端IP Address]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip/"/>
+    <updated>2014-02-28T00:27:22+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip</id>
+    <content type="html"><![CDATA[<p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
+
+<pre><code>    function getClientIp(req) {
+        return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    };
+</code></pre>
+
+<p>代码，第一段判断是否有反向代理IP(头信息：x-forwarded-for)，在判断connection的远程IP，以及后端的socket的IP。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[细说angular Form addControl方法]]></title>
     <link href="http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/"/>
     <updated>2014-02-21T17:24:37+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/02/21/angular-form-addControl</id>
+    <content type="html"><![CDATA[<p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
+
+<p>下面且让我们先来从angular源码中看起如下：</p>
+
+<p>首先是ngModel：</p>
+
+<pre><code>    var ngModelDirective = function() {
+      return {
+        require: ['ngModel', '^?form'],
+        controller: NgModelController,
+        link: function(scope, element, attr, ctrls) {
+          // notify others, especially parent forms
+
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
+
+          formCtrl.$addControl(modelCtrl);
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        }
+      };
+    };
+</code></pre>
+
+<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
+
+<p>在看看ngModel controller初始化代码：</p>
+
+<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+        function($scope, $exceptionHandler, $attr, $element, $parse) {
+     ....
+      this.$pristine = true;
+      this.$dirty = false;
+      this.$valid = true;
+      this.$invalid = false;
+      this.$name = $attr.name;
+</code></pre>
+
+<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
+
+<p>而FormController的addControl代码则是：</p>
+
+<pre><code>    /**
+     * @ngdoc function
+     * @name ng.directive:form.FormController#$addControl
+     * @methodOf ng.directive:form.FormController
+     *
+     * @description
+     * Register a control with the form.
+     *
+     * Input elements using ngModelController do this automatically when they are linked.
+     */
+    form.$addControl = function(control) {
+      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
+      // and not added to the scope.  Now we throw an error.
+      assertNotHasOwnProperty(control.$name, 'input');
+      controls.push(control);
+
+      if (control.$name) {
+        form[control.$name] = control;
+      }
+    };
+</code></pre>
+
+<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
+
+<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
+
+<h3>手动注册form controller</h3>
+
+<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
+
+<p>如下：</p>
+
+<pre><code>    .directive("dyName", [
+
+        function() {
+          return {
+            require: "ngModel",
+            link: function(scope, elm, iAttrs, ngModelCtr) {
+              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
+              var formController = elm.controller('form') || {
+                $addControl: angular.noop
+              };
+              formController.$addControl(ngModelCtr);
+
+              scope.$on('$destroy', function() {
+                formController.$removeControl(ngModelCtr);
+              });
+
+            }
+          };
+        }
+      ])
+</code></pre>
+
+<p>使用方式：</p>
+
+<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+      &lt;div class="control-group"&gt;
+        &lt;label class="control-label"&gt; : &lt;/label&gt;
+        &lt;div class="controls"&gt;
+          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
+
+<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
+
+<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Angular form.$addControl]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/21/angular-form/"/>
+    <updated>2014-02-21T17:24:37+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/21/angular-form</id>
     <content type="html"><![CDATA[<p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
 
 <p>下面且让我们先来从angular源码中看起如下：</p>
@@ -332,6 +474,66 @@
 <p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
 
 <p>希望大家已经明白了，不要再问这类问题了。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ngCloak 实现 Angular 初始化闪烁最佳实践]]></title>
+    <link href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak/"/>
+    <updated>2013-12-27T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak</id>
+    <content type="html"><![CDATA[<p>angular blog</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'>   <span class="o">*</span> <span class="err">@</span><span class="nx">example</span>
+</span><span class='line'>       <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">example</span><span class="o">&gt;</span>
+</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">source</span><span class="o">&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template1&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;template2&quot;</span> <span class="nx">ng</span><span class="o">-</span><span class="nx">cloak</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;ng-cloak&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:source&gt;</span>
+</span><span class='line'>         <span class="o">&lt;</span><span class="nx">doc</span><span class="o">:</span><span class="nx">scenario</span><span class="o">&gt;</span>
+</span><span class='line'>           <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should remove the template directive and css class&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template1&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
+</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
+</span><span class='line'>             <span class="nx">expect</span><span class="p">(</span><span class="nx">element</span><span class="p">(</span><span class="s1">&#39;.doc-example-live #template2&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">)).</span>
+</span><span class='line'>               <span class="nx">not</span><span class="p">().</span><span class="nx">toBeDefined</span><span class="p">();</span>
+</span><span class='line'>           <span class="p">});</span>
+</span><span class='line'>         <span class="o">&lt;</span><span class="err">/doc:scenario&gt;</span>
+</span><span class='line'>       <span class="o">&lt;</span><span class="err">/doc:example&gt;</span>
+</span><span class='line'>     <span class="o">*</span>
+</span><span class='line'>     <span class="o">*</span><span class="err">/</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">ngCloakDirective</span> <span class="o">=</span> <span class="nx">ngDirective</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">compile</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">attr</span><span class="p">.</span><span class="nx">$set</span><span class="p">(</span><span class="s1">&#39;ngCloak&#39;</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">element</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ng-cloak&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
 ]]></content>
   </entry>
   
@@ -1127,265 +1329,6 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
 <p>&nbsp;</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/26/3100241.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CSV和集合对象基于Annotation操作封装]]></title>
-    <link href="http://greengerong.github.io/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/"/>
-    <updated>2013-05-16T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang</id>
-    <content type="html"><![CDATA[<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件，对opencsv基于Annotation简单的封装，使得我们可以轻易的将CSV文件转化为List对像和把List对像导出为CSV文件。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 项目托管地址于github <a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于代码就不用多说了，简单看看如何使用。</p>
-
-<pre><code>package opencsv.utils;
-
-
-
-public class Person {
-
-
-
-private int id;
-
-
-
-@Csv("person name")
-
-private String name;
-
-
-
-@Ignore
-
-private int age;
-
-
-
-public Person(int id, String name, int age) {
-
-    this.id = id;
-
-    this.name = name;
-
-    this.age = age;
-
-}
-
-
-
-public Person() {
-
-
-
-}
-
-
-
-public int getId() {
-
-    return id;
-
-}
-
-
-
-public void setId(int id) {
-
-    this.id = id;
-
-}
-
-
-
-public String getName() {
-
-    return name;
-
-}
-
-
-
-public void setName(String name) {
-
-    this.name = name;
-
-}
-
-
-
-public int getAge() {
-
-    return age;
-
-}
-
-
-
-public void setAge(int age) {
-
-    this.age = age;
-
-}
-
-}
-</code></pre>
-
-<p>&nbsp;</p>
-
-<p>Mapping会自动将没有ignore的字段作为CSV的映射属性名作为CSV列头，如果针对特殊列则可以标记@CSV解决。</p>
-
-<p>1： 读取CSV:</p>
-
-<p>(1) 基于Annotation映射方式</p>
-
-<pre><code> @Test
-
-public void shouldGetPersonFromCSV() throws Exception {
-
-    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
-
-    List&lt;Person&gt; personList = personCsvMapper
-
-            .withMapping("id", "id")
-
-            .withMapping("person name", "name")
-
-            .fromCsv(reader);
-
-
-
-    assertThat(personList.size(), is(2));
-
-
-
-    final Person first = personList.get(0);
-
-    assertThat(first.getId(), is(1));
-
-    assertThat(first.getName(), is("name1"));
-
-
-
-    final Person second = personList.get(1);
-
-    assertThat(second.getId(), is(2));
-
-    assertThat(second.getName(), is("name2"));
-
-
-
-}
-</code></pre>
-
-<p>(2) 自定义映射方式&nbsp;</p>
-
-<pre><code>@Test
-
-public void shouldToCsv() throws Exception {
-
-    personCsvMapper.withMapping(new CsvColumnMapping(Person.class));
-
-    final ArrayList&lt;Person&gt; list = new ArrayList&lt;Person&gt;();
-
-    list.add(new Person(1, "name1", 20));
-
-    list.add(new Person(2, "name2", 30));
-
-    final StringWriter writer = new StringWriter();
-
-
-
-    personCsvMapper.toCsv(writer, list);
-
-
-
-    final String text = writer.toString();
-
-    assertThat(text, is("id,person name\n1,name1\n2,name2\n"));
-
-}
-</code></pre>
-
-<p>2: CSV输出</p>
-
-<pre><code>@Test
-
-public void shouldGetPersonFromCsv() throws Exception {
-
-    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
-
-    List&lt;Person&gt; personList = new CsvMapper&lt;Person&gt;(Person.class)
-
-            .withMapping(new CsvColumnMapping(Person.class))
-
-            .fromCsv(reader);
-
-
-
-    assertThat(personList.size(), is(2));
-
-
-
-    final Person first = personList.get(0);
-
-    assertThat(first.getId(), is(1));
-
-    assertThat(first.getName(), is("name1"));
-
-
-
-    final Person second = personList.get(1);
-
-    assertThat(second.getId(), is(2));
-
-    assertThat(second.getName(), is("name2"));
-
-
-
-}
-</code></pre>
-
-<p>最后在累赘下托管地址:<a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。其他的相比不用再说了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/16/3082700.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[闲谈简单设计(KISS)疑惑]]></title>
-    <link href="http://greengerong.github.io/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/"/>
-    <updated>2013-05-07T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo</id>
-    <content type="html"><![CDATA[<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忙碌了一年了项目又到了交付了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到&rdquo;合适&rdquo;的&rdquo;完美&rdquo;的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人统一规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
-
-<p>&nbsp;&nbsp;&nbsp; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为&rdquo;简约&rdquo;，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说&ldquo;拥抱变化&rdquo;，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，减少类数量的庞大，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的&ldquo;简单设计&rdquo;，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是&rdquo;简单设计&ldquo;却没有足够的重构力度，抑或完全的优先设计，不进行不断的持续改进，逐步细化，做到&ldquo;简约而不简单&rdquo;记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/07/3063984.html" title="原文首发">原文首发请看这里</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[闲谈简单设计(KISS)疑惑]]></title>
-    <link href="http://greengerong.github.io/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/"/>
-    <updated>2013-04-27T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo</id>
-    <content type="html"><![CDATA[<p>&#160;&#160;&#160;&#160;&#160;&#160; 忙碌了一年了项目又到了交互了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到”合适”的”完美”的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人同意规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
-
-<p>&#160;&#160;&#160; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为”简约”，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说“拥抱变化”，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
-
-<p>&#160;&#160;&#160;&#160;&#160; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
-
-<p>&#160;&#160;&#160;&#160; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的“简单设计”，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是”简单设计“却没有足够的重构力度，抑或完全的优先设计，不不断的持续改进，逐步细化，做到“简约而不简单”记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/27/3048250.html" title="原文首发">原文首发请看这里</a></p>
 ]]></content>
   </entry>
   

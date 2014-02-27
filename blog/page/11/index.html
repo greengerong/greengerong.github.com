@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="写code是他的快乐 看他写code成了我的快乐 喜欢他的认真 却不想他总给自己找压力 &hellip;&hellip; 如果可能 我来做你的下一行code，好不好？ 更痛快地Coding，给爱更多好心情 Visual Studio 2010网剧第二集:《想做你的Cod》 ** Visual &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Google Suggest 和Google Map的出现，引起了我们Web开发者的一次震动。随着Ajax技术的出现、盛行，本被忽视认为是二流编程语言的JavaScript脚本也开始了新的盛行， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,763 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/14/Ajax-za-tan/">Ajax杂谈</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/05/14/Ajax-za-tan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/05/14/Ajax-za-tan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Google Suggest 和Google Map的出现，引起了我们Web开发者的一次震动。随着Ajax技术的出现、盛行，本被忽视认为是二流编程语言的JavaScript脚本也开始了新的盛行，大量的JavaScript框架的出现如Microsoft Asp.Net Ajax、jQuery等。Ajax已经成为这些脚本框架必不可少的组成部分了，而且Ajax的开发也越来越简单化。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ajax是一种已不是加载脚本，其最古老的实现方式是利用iframe来加载远程的脚本利用top.Function来调用父窗体的方法。利用a等HTML的target属性来指定。简单但是后期维护复杂化了并且在跨越方面很麻烦。接着就XMLHttpRequest对象的出现，一定程度的简化了Ajax的开发，但是在不同的浏览器中实现有很多大不同，FireFox中XMLHttpRequest和IE中的ActiveObject等方式，以及它仅提供了很少和简单的Ajax请求和处理。在现在出现了很多的JavaScript框架，在基于XMLHttpRequest的封装和类库的提供，极大的简化了我们的Ajax编程。其中最为出名和盛行的jQuery框架。这里需说出的是jQuery一定程度的实现了部分跨域问题。</p>
+
+<p>下面我就说几点自己目前想到的Ajax注意或者技巧，思维也许有点乱，请谅解，将的不好，也请原谅。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 1：Ajax中的X是XML，它也可以很方便的加载XML，但是并不是说XML就是说XML就是Ajax的首选。首先大家都知道XML是一种严格的数据存储方式，有很多冗余信息。再则XML的处理也有一定的复杂性。XML能实现跨平台性，如WebService，这是WebService的优点，但是也是一个致命的缺点，它基于的XML冗余信息，所以在分布式中速度也是很慢的。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 相比而言Json对象是一个轻量级的存储方式，它是以名值对的形式存储。而且JavaScript脚本本身就是一个天然的Json对象，无需转化，可以直接使用，并且现在.NET框架中提供了对Json序列化的支持.我个人观点是首选Json。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：在服务器端为了性能等的考虑经常会有缓存，以及浏览器的缓存。有时我们需要避免，最简单的方式是加上一个时间戳，&#8221;Default.aspx?time=&#8221; + DateTime.Now。就可以避免缓存。如果你用的是Jquery的Ajax那可以直接设置cache:false禁用缓存。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 3：在Ajax编程需要注意的是<strong>Content-Type</strong>，有HTML、Text、Json、XML、Script等方式。我们很多的无故的错误经常就在这里的设置。需要注意Ajax的Content-Type，以及服务端输出的Content-Type。还有就是服务器端，我们要输出前的Response.Clear(),Response.ContentType=Type,以及完成时的Response.Flush()和Response.Clos（）。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 4：Ajax并不是高交互、高用户体验的代表，这需要说明。我们的应用不应该什么地方都用Ajax技术，使得Ajax技术在项目里泛滥，如果我们要用Ajax，那我们就必须为客户准备退路，因为ajax请求很可以由于各种原因而请求失败。</p>
+
+<p>&nbsp;&nbsp; 5：Ajax必究是基于客户端脚本，这就意味在存在一定的安全隐患，很容易暴露我们的某些敏感信息。特别是网上的脚本代码糜烂，我们有些人经常会在网上Copy下来仅小小仅测试下就加入了我们的项目，这是一个很不好的习惯。很容易得不偿失。</p>
+
+<p>&nbsp;&nbsp; 时间已晚，就说这么多吧，如果你还有什么心得或建议请留言。。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/14/1735119.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/09/jQuery-Alert-Dialogs-Alert-Confirm-Prompt-Replacements-fan-yi/">jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/05/09/jQuery-Alert-Dialogs-Alert-Confirm-Prompt-Replacements-fan-yi/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/05/09/jQuery-Alert-Dialogs-Alert-Confirm-Prompt-Replacements-fan-yi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p> 前不久在官方网站是看见这个插件，所以今天趁有空就看了一下，随便给大家共享一下。也许你早已知道了，如果是这样那请跳过，不要拍砖。</p>
+
+<p> 这个Jquery插件的目的是替代JavaScript的标准函数alert()，confirm（）<samp>，和 prompt（）。这个插件有</samp></p>
+
+<p> <samp>如下这些特点：</samp></p>
+
+<p> <samp>&nbsp; 1：这个插件可以使你可以支持你自己的css制定。使你的网站看起来更专业。</samp></p>
+
+<p> &nbsp;&nbsp; 2：允许你自定义对话框的标题。</p>
+
+<p> &nbsp; 3：在ＩＥ７中，可以使你避免使用JavaScript 的prompt（）函数带来的页面重新加载。</p>
+
+<p> &nbsp;&nbsp; 4：这些方法都模拟了Windows的模式对话框。在你改变改变浏览器窗口大小时候，它能够自适应用户</p>
+
+<p> 窗口的调整。</p>
+
+<p> &nbsp;&nbsp; 5：如果你引入了<a href="http://ui.jquery.com/">jQuery UI</a> <a href="http://docs.jquery.com/UI/Draggable">Draggable plugin</a>插件，那这个插件也可以被自由拖动。</p>
+
+<p> 先在这里说插件的下载地址，以供有需之人下载:</p>
+
+<p><a href="http://labs.abeautifulsite.net/projects/js/jquery/alerts/jquery.alerts-1.1.zip" title="http://labs.abeautifulsite.net/projects/js/jquery/alerts/jquery.alerts-1.1.zip">http://labs.abeautifulsite.net/projects/js/jquery/alerts/jquery.alerts-1.1.zip</a></p>
+
+<p> ### 一：首先在&lt;head&gt;&lt;/head&gt;导入JQuery,jquery.ui.draggable</p>
+
+<p> ### 和jquery.alerts的 css、js文件。</p>
+
+<pre><code>&lt;script src="/path/to/jquery.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;script src="/path/to/jquery.ui.draggable.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;script src="/path/to/jquery.alerts.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;link href="/path/to/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" /&gt;
+</code></pre>
+
+<p>为了在iE中正确的使用alert插件，你还得在Page中加入何时DTD：</p>
+
+<pre><code>  &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+</code></pre>
+
+<p> ### 二：使用</p>
+
+<p> 我们可以用下列方式来使用这个Jquery插件。</p>
+
+<ol>
+<li>jAlert(_message, [title, callback])</li>
+<li>jConfirm(_message, [title, callback])</li>
+<li>Prompt(_message, [value, title, callback])</li>
+</ol>
+
+
+<p> 注：不同于Javascript标准函数，我们可以在message中使用HTML参数显示你的提示信息。</p>
+
+<p> ### 三：兼容性：</p>
+
+<p> alert插件要求我们必须使用JQuery1.2.6或以上的jQuery包。</p>
+
+<p> 已经被测试能够在IE6、IE7、FF2、FF3、Safari 3 、Chrome 、Opera 9浏览器上很好的运行。</p>
+
+<p> ### 四：Demo：</p>
+
+<p> 注:在Demo中么有引入dragonable插件所以不能拖拽</p>
+
+<p>Test Alert</p>
+
+<pre><code>jAlert('This is a custom alert box;&lt;br/&gt;
+    &lt;a href=\"http://www.cnblogs.com/whitewolf/\"&gt;
+    本示例来自破浪博客&lt;/a&gt;',
+    'Alert Dialog');
+</code></pre>
+
+<p>Test Confirm</p>
+
+<pre><code>   jConfirm('Can you confirm this?&lt;br/&gt;
+&lt;a href=\"http://www.cnblogs.com/whitewolf/\"&gt;
+本示例来自破浪博客&lt;/a&gt;',
+'Confirmation Dialog', function(r) {
+jAlert('Confirmed: ' + r, 'Confirmation Results');
+});
+</code></pre>
+
+<p>Test Prompt</p>
+
+<pre><code>jPrompt('Type something:&lt;br/&gt;&lt;
+a href=\"http://www.cnblogs.com/whitewolf/\"&gt;
+本示例来自破浪博客&lt;/a&gt;',
+'WhiteWolf', 'Prompt Dialog', function(r) {
+if( r ) alert('You entered ' + r);
+});
+</code></pre>
+
+<p>本博客中同类文章还有，请见：<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html"><font color="#6699cc">我jQuery系列之目录汇总</font></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/09/1731120.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/">jQuery之筛选函数</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; jQuery的筛选函数提供了串联、查找和过滤函数，为我们的jQuery对象操作带来了很多的方便，今天我们就来温习下jQuery带来的这些筛选函数。</p>
+
+<hr />
+
+<h2>1：串联函数：</h2>
+
+<hr />
+
+<p>（1）：andSelf()</p>
+
+<p>return：jQuery；</p>
+
+<p>explain：</p>
+
+<p>加入先前所选的加入当前元素中</p>
+
+<p>对于筛选或查找后的元素，要加入先前所选元素时将会很有用。</p>
+
+<p>test：</p>
+
+<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example：</p>
+
+<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).andSelf().addClass(&#8220;class1&#8221;);</p>
+
+<p>result：</p>
+
+<p>&lt;div&gt;&lt;p class=&#8221;class1&#8221;&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<hr />
+
+<p>(2):end()</p>
+
+<p>return :jQuery;</p>
+
+<p>explain:</p>
+
+<p>回到最近的一个&#8221;破坏性&#8221;操作之前。即，将匹配的元素列表变为前一次的状态。</p>
+
+<p>如果之前没有破坏性操作，则返回一个空集。所谓的&#8221;破坏性&#8221;就是指任何改变所匹配的jQuery元素的操作。这包括在 Traversing 中任何返回一个jQuery对象的函数&mdash;&lsquo;add&rsquo;, &lsquo;andSelf&rsquo;, &lsquo;children&rsquo;, &lsquo;filter&rsquo;, &lsquo;find&rsquo;, &lsquo;map&rsquo;, &lsquo;next&rsquo;, &lsquo;nextAll&rsquo;, &lsquo;not&rsquo;, &lsquo;parent&rsquo;, &lsquo;parents&rsquo;, &lsquo;prev&rsquo;, &lsquo;prevAll&rsquo;, &lsquo;siblings&rsquo; and &lsquo;slice&rsquo;&mdash;再加上 Manipulation 中的 &lsquo;clone&#8217;。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).end();</p>
+
+<p>//$(&#8220;div&#8221;).find(&#8220;p&#8221;)：&lt;p&gt;test&lt;/p&gt;</p>
+
+<p>result:&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<hr />
+
+<h2>2:查找函数:</h2>
+
+<hr />
+
+<p>(1):add(exp);</p>
+
+<p>return :jQuery;</p>
+
+<p>explain:</p>
+
+<p>把与表达式匹配的元素添加到jQuery对象中。这个函数可以用于连接分别与两个表达式匹配的元素结果集。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;test1&lt;/p&gt;&lt;a&gt;test2&lt;/a&gt;</p>
+
+<p>example：</p>
+
+<p>$(&#8220;p&#8221;).add(&#8220;a&#8221;);</p>
+
+<p>result:</p>
+
+<p>[&lt;p&gt;test1&lt;/p&gt;,&lt;a&gt;test2&lt;/a&gt;]//数组</p>
+
+<hr />
+
+<p>(2):children([expr]);</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素的所有子元素的元素集合。</p>
+
+<p>可以通过可选的表达式来过滤所匹配的子元素。注意：parents()将查找所有祖辈元素，而children()之考虑子元素而不考虑所有后代元素。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).children();</p>
+
+<p>result:&lt;span&gt;Hello Again&lt;/span&gt;</p>
+
+<hr />
+
+<p>(3):find(expr)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>搜索所有与指定表达式匹配的元素。这个函数是找出正在处理的元素的后代元素的好方法。</p>
+
+<p>所有搜索都依靠jQuery表达式来完成。这个表达式可以使用CSS1-3的选择器语法来写。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;, how are you?&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).find(&ldquo;span&rdquo;);</p>
+
+<p>result:&lt;span&gt;Hello&lt;/span&gt;</p>
+
+<hr />
+
+<p>(4):next([expr])</p>
+
+<p>return :jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素紧邻的后面同辈元素的元素集合。</p>
+
+<p>这个函数只返回后面那个紧邻的同辈元素，而不是后面所有的同辈元素（可以使用nextAll）。可以用一个可选的表达式进行筛选。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;a&gt;h1&lt;/a&gt;&lt;/p&gt;;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;span&#8221;).next();</p>
+
+<p>result:&lt;a&gt;h1&lt;/a&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(5):nextAll([expr])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:查找当前元素之后所有的同辈元素。</p>
+
+<p>test:&lt;div&gt;h1&lt;/div&gt;&lt;div&gt;h2&lt;/div&gt;&lt;div&gt;h3&lt;/div&gt;;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div:first&#8221;).nextAll();</p>
+
+<p>result:&lt;div&gt;h2&lt;div&gt;,&lt;div&gt;h3&lt;/div&gt;;:</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(6):offsetParent()</p>
+
+<p>&nbsp;</p>
+
+<p>return :jQuery</p>
+
+<p>explain:</p>
+
+<p>返回第一个匹配元素用于定位的父节点。</p>
+
+<p>这返回父元素中第一个其position设为relative或者absolute的元素。此方法仅对可见元素有效。</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(7):parent([expr])</p>
+
+<p>&nbsp;</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含着所有匹配元素的唯一父元素的元素集合。</p>
+
+<p>你可以使用可选的表达式来筛选。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;p&#8221;).parent();</p>
+
+<p>result:&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(8):parents([expr])</p>
+
+<p>&nbsp;</p>
+
+<p>return:jquery;</p>
+
+<p>explain:取得一个包含着所有匹配元素的祖先元素的元素集合（不包含根元素）。</p>
+
+<p>test:</p>
+
+<p>&lt;body&gt;&lt;div&gt;&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;/p&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;/body&gt;</p>
+
+<p>example:$(&#8220;span&#8221;).parents(&#8220;p&#8221;);</p>
+
+<p>result:&lt;p&gt;&lt;span&gt;&lt;Hello&gt;&lt;/span&gt;&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(9):prev([expr])</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素紧邻的前一个同辈元素的元素集合。</p>
+
+<p>可以用一个可选的表达式进行筛选。只有紧邻的同辈元素会被匹配到，而不是前面所有的同辈元素。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;p&#8221;).prev();</p>
+
+<p>result:&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(9):prevAll([expr])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>查找当前元素之前所有的同辈元素;</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div:last&#8221;).prevAll();</p>
+
+<p>result:&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(10):siblings([expr])</p>
+
+<p>return :jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素的所有唯一同辈元素的元素集合。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
+
+<p>example:$(&ldquo;div&rdquo;).siblings()</p>
+
+<p>result:</p>
+
+<p>[ &lt;p&gt;Hello&lt;/p&gt;, &lt;p&gt;And Again&lt;/p&gt; ]</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<h2>3:过滤函数：</h2>
+
+<hr />
+
+<p>(1):eq(insex);</p>
+
+<p>return:jQuery</p>
+
+<p>explain:获取第N个元素.这个元素的位置是从0算起。</p>
+
+<p>test:&lt;p&gt; This is just a test.&lt;/p&gt; &lt;p&gt; So is this&lt;/p&gt;</p>
+
+<p>example:$(&#8220;p&#8221;).eq(1);</p>
+
+<p>result:&lt;p&gt; So is this&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(2):filter(expr)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>筛选出与指定表达式匹配的元素集合。</p>
+
+<p>这个方法用于缩小匹配的范围。用逗号分隔多个表达式</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello Again&lt;/p&gt;&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).filter(&ldquo;.selected&rdquo;);</p>
+
+<p>result:</p>
+
+<p>&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(3):filter(fn)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>筛选出与指定函数返回值匹配的元素集合</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;ol&gt;&lt;li&gt;Hello&lt;/li&gt;&lt;/ol&gt;&lt;/p&gt;&lt;p&gt;How are you?&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).filter(function(index) {
+&nbsp; return $(&ldquo;ol&rdquo;, this).length == 0;
+});</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;How are you?&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(4):hasClass(class)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>检查当前的元素是否含有某个特定的类，如果有，则返回true。这其实就是 is(&ldquo;.&rdquo; + class)。</p>
+
+<p>test:</p>
+
+<p>&lt;div class=&ldquo;protected&rdquo;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).hasClass(&ldquo;protected&rdquo;)</p>
+
+<p>result:</p>
+
+<p>true</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(5):is(expr)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>用一个表达式来检查当前选择的元素集合，如果其中至少有一个元素符合这个给定的表达式就返回true。</p>
+
+<p>test:</p>
+
+<p>&lt;form&gt;&lt;input type=&ldquo;checkbox&rdquo; /&gt;&lt;/form&gt;</p>
+
+<p>explam:</p>
+
+<p>$(&ldquo;input[type=&lsquo;checkbox&rsquo;]&rdquo;).parent().is(&ldquo;form&rdquo;)</p>
+
+<p>result:</p>
+
+<p>true;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(6):map(callback)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>将一组元素转换成其他数组（不论是否是元素数组);</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;b&gt;Values: &lt;/b&gt;&lt;/p&gt;
+&lt;form&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;name&rdquo; value=&ldquo;John&rdquo;/&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;password&rdquo; value=&ldquo;password&rdquo;/&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;url&rdquo; value=&ldquo;<a href="http://ejohn.org/">http://ejohn.org/</a>&rdquo;/&gt;
+&lt;/form&gt;</p>
+
+<p>explam:</p>
+
+<p>$(&ldquo;p&rdquo;).append( $(&ldquo;input&rdquo;).map(function(){
+&nbsp; return $(this).val();
+}).get().join(&ldquo;, &rdquo;) );</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;John, password, <a href="http://ejohn.org/&amp;lt;/p&amp;gt;">http://ejohn.org/&amp;lt;/p&amp;gt;</a></p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(7):not(expr)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>删除与指定表达式匹配的元素</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p id=&ldquo;selected&rdquo;&gt;Hello Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).not( $(&ldquo;#selected&rdquo;)[0] )</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(8):slice(start,[end])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>选取一个匹配的子集;</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;cruel&lt;/p&gt;&lt;p&gt;World&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).slice(0, 1).wrapInner(&ldquo;&lt;b&gt;&lt;/b&gt;&rdquo;);</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;&lt;b&gt;Hello&lt;/b&gt;&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;本博客中同类文章还有，请见：<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html"><font color="#6699cc">我jQuery系列之目录汇总</font></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/01/1725700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -898,429 +1655,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/12/04/ji-lu-ji-zhong-chuang-ti-chu-xian-fang-shi-win32API/">记录几种窗体出现方式（win32API）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2009/12/04/ji-lu-ji-zhong-chuang-ti-chu-xian-fang-shi-win32API/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2009/12/04/ji-lu-ji-zhong-chuang-ti-chu-xian-fang-shi-win32API/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>窗体的几种出现方式：</p>
-
-<p>public const Int32 AW_HOR_POSITIVE = 0x00000001;</p>
-
-<pre><code>                public const Int32 AW_HOR_NEGATIVE = 0x00000002;
-
-                public const Int32 AW_VER_POSITIVE = 0x00000004;
-
-                public const Int32 AW_VER_NEGATIVE = 0x00000008;
-
-                public const Int32 AW_CENTER = 0x00000010;
-
-                public const Int32 AW_HIDE = 0x00010000;
-
-                public const Int32 AW_ACTIVATE = 0x00020000;
-
-                public const Int32 AW_SLIDE = 0x00040000;
-
-                public const Int32 AW_BLEND = 0x00080000;
-
-                [DllImport("user32.dll", CharSet = CharSet.Auto)]
-
-                public static extern bool AnimateWindow(
-
-                    IntPtr hwnd,  // handle to window   
-
-                    int dwTime, // duration of animation   
-
-                    int dwFlags // animation type   
-
-                );
-
-
-
-    AW_ACTIVATE = 0x00020000; //平常窗体出的方式,即突发式
-
-
-
-    AW_BLEND = 0x00080000; //渐入式，由透明逐渐出现
-
-
-
-    AW_CENTER = 0x00000010; //由中心逐渐出现
-
-
-
-    AW_HIDE = 0x00010000；//没有发现有什么特别的地方，好像也是突发出现
-
-
-
-    AW_HOR_NEGATIVE = 0x00000002;//由右至左渐出
-
-
-
-    AW_HOR_POSITIVE = 0x00000001;//由左至右渐出
-
-
-
-    AW_SLIDE = 0x00040000;//未发现特殊效果，只看到是突发式
-
-
-
-    AW_VER_NEGATIVE = 0x00000008//由下到上渐出
-
-
-
-    AW_VER_POSITIVE = 0x00000004;//出上到下渐出
-</code></pre>
-
-<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/12/04/1617257.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/">IExtenderProvider - vs中的魔法师 [转]</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-11-21T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>前言</strong></p>
-
-<div class="postbody">
-
-在需要录入数据的字段比较多的表单应用程序中，为了给用户更好的体验，我们通常会将[Enter]键转为[TAB]将输入焦点移到下一个控件，或是将获得焦点的输入控件背景经一个醒目的背景颜色显示等等。以往的做法通常是从TextBox、ComboBox等标准输入控件派生一个新的控件，在新控件中改变击键和在获得/失去焦点时的动作，但此方法的不便之外就是到项目的最后，会增加了一系列的标准控件的小功能扩展控件，增大了后期的维护工作量。在DotNet中，对于类似的对标准控件的&#8220;小功能扩展&#8221;我们有了更好解决方案，那就是神奇的IExtenderProvider接口，它可以给任何控件&#8220;变&#8221;出一个属性来^_^
-
-#### **关于IExtenderProvider&nbsp;接口**
-
-IExtenderProvider位于System.ComponentModel命名空间，其声明如下：
-
-&nbsp;
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:4c9e8390-f491-48d8-8426-2ec247b1fbbf" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
-http://www.CodeHighlighter.com/
---><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">interface</span><span style="color: #000000"> IExtenderProvider
-{
-</span><span style="color: #0000ff">bool</span><span style="color: #000000"> CanExtend(</span><span style="color: #0000ff">object</span><span style="color: #000000"> extendee);
-}
-</span></div>
-</pre></div>
-
-&nbsp;
-
-此接口只有一个方法`bool CanExtend(object)`，这个方法告诉VS.net设计器是否将扩展属性显示在给出控件的属性窗口中。实现了IExtenderProvider接口的组件称为&#8220;扩展程序提供程序&#8221;。DotNet 2.0中自带的ToolTips和ErrorProvider就是二个典型的扩展程序提供程序。如将ToolTips控件添加到窗体中后，TextBox1控件便多了个ToolTips on toolTips1的属性。
-
-&nbsp;![](http://images.cnblogs.com/cnblogs_com/wuchang/200701/01.png)
-
-我们在属性窗口中给此属性设置值时，VS.net设计器生成如下的代码：
-
-&nbsp;
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:0e1f80db-37d8-4ddd-ad48-19f0fe87b0c4" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
-http://www.CodeHighlighter.com/
---><span style="color: #0000ff">this</span><span style="color: #000000">.toolTip1.SetToolTip(</span><span style="color: #0000ff">this</span><span style="color: #000000">.textBox1, </span><span style="color: #000000">"</span><span style="color: #000000">some tooltips</span><span style="color: #000000">"</span><span style="color: #000000">);</span></div>
-</pre></div>
-可见，我们给ToolTips on toolTips1属性设置的文本是存储在toolTips1控件中，但是程序执行时是在textBox1上显示相应的提示信息而不是在toolTips1上。这样，我们无需对窗体上现有的控件做任何修改就可以让他们都有了toolTips提示功能! 
-
-&nbsp;
-
-接下来，我们来创建一个自己的扩展程序提供程序，给TextBox控件添加[ConverEnterToTAB]功能。
-
-**创建自己的IExtenderProvider&nbsp;组件**
-
-这时候我们注意到`IExtenderProvider接口`并没有提供任何有关扩展属性的消息，那vs.net设计器是如何知道扩展程序提供什么样的扩展属性给控件呢？是`ProvideProperty特性(Attribute)!设计器会在实现<code>IExtenderProvider`接口的组件中寻找所有的`ProvideProperty`特性，`ProvideProperty`特性标明了扩展程序给什么类型的控件提供什么扩展扩展属性的信息。`ProvideProperty特性的声明如下：
-`</code>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; width: 560px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:44eb2a50-3928-4807-80d0-29c1972446a0" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
-http://www.CodeHighlighter.com/
---><span style="color: #000000">[AttributeUsageAttribute(AttributeTargets.Class, AllowMultiple</span><span style="color: #000000">=</span><span style="color: #0000ff">true</span><span style="color: #000000">)]
-</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">sealed</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> ProvidePropertyAttribute : Attribute
-</span></div>
-</pre></div>
-此特性有二个构造方法：
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:9a867422-aad3-4771-be4d-e688aee09a71" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
-http://www.CodeHighlighter.com/
---><span style="color: #0000ff">public</span><span style="color: #000000"> ProvidePropertyAttribute (
-</span><span style="color: #0000ff">string</span><span style="color: #000000"> propertyName,   </span><span style="color: #008000">//</span><span style="color: #008000">扩展到指定类型对象的属性名称。</span><span style="color: #008000">
-</span><span style="color: #000000">    </span><span style="color: #0000ff">string</span><span style="color: #000000"> receiverTypeName   </span><span style="color: #008000">//</span><span style="color: #008000">此属性可以扩展的数据类型的名称。 </span><span style="color: #008000">
-</span><span style="color: #000000">)
-</span><span style="color: #000000">--------------------------------------------</span><span style="color: #000000">
-</span><span style="color: #0000ff">public</span><span style="color: #000000"> ProvidePropertyAttribute (
-</span><span style="color: #0000ff">string</span><span style="color: #000000"> propertyName,   </span><span style="color: #008000">//</span><span style="color: #008000">扩展到指定类型对象的属性名称。 </span><span style="color: #008000">
-</span><span style="color: #000000">    Type receiverType   </span><span style="color: #008000">//</span><span style="color: #008000">可以接收此属性的对象的数据类型的 Type。</span><span style="color: #008000">
-</span><span style="color: #000000">)</span></div>
-</pre></div>
-`在ProvideProperty特性中指定提供的属性的名称和可接收属性的组件类型，如，下面代码给TextBox类型组件添加一个名为&lt;Name&gt;的属性：` 
-
-&nbsp;
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:cba84224-723a-4d26-a2e6-b0a81fb97525" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
-http://www.CodeHighlighter.com/
---><span style="color: #000000">[ProvideProperty(</span><span style="color: #000000">"</span><span style="color: #000000">&lt;Name&gt;</span><span style="color: #000000">"</span><span style="color: #000000">, </span><span style="color: #0000ff">typeof</span><span style="color: #000000">(TextBox))]
-</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> TextboxExtender : Component, IExtenderProvider
-{...</span></div>
-</pre></div>
-
-一旦在控件上声明了ProvideProperty特性，就需要在控件中提供名为Get&lt;Name&gt;和Set&lt;Name&gt;的二个Public方法。Get&lt;Name&gt;方法有一个参数，参数类型和ProvideProperty特性中定义的类型相同，返回此组件此属性的值。Set&lt;Name&gt;方法带两个参数，第一个参数是`ProvideProperty特性中指定的组件类型，第二个参数是要设置给扩展属性的数据，类型和Get&lt;Name&gt;方法返回的数据类型相同。`
-
-下列是给TextBox添加EnableConvertEnterToTab扩展属性的完整代码：
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:7e419b41-f1e2-49ce-9319-71be8d637011" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
-http://www.CodeHighlighter.com/
---><span style="color: #0000ff">namespace</span><span style="color: #000000"> wuChang.Controls
-{
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> 将TextBox的回车键转换为TAB键
-</span><span style="color: #808080">///</span><span style="color: #008000"> wuChang@guet.edu.cn
-</span><span style="color: #808080">///</span><span style="color: #008000"> wuchang.cnblogs.com
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #808080">
-</span><span style="color: #000000">    [ProvideProperty(</span><span style="color: #000000">"</span><span style="color: #000000">EnableConvertEnterToTab</span><span style="color: #000000">"</span><span style="color: #000000">, </span><span style="color: #0000ff">typeof</span><span style="color: #000000">(TextBox))]
-</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> TextboxExtender : Component, IExtenderProvider
-{
-</span><span style="color: #0000ff">private</span><span style="color: #000000"> Hashtable htDate </span><span style="color: #000000">=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> Hashtable();
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> 取得相应组件EnableConvertEnterToTab扩展属性的值
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="control"&gt;&lt;/param&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;returns&gt;&lt;/returns&gt;</span><span style="color: #808080">
-</span><span style="color: #000000">        [DefaultValue(</span><span style="color: #0000ff">false</span><span style="color: #000000">)]
-[Description(</span><span style="color: #000000">"</span><span style="color: #000000">是否允许将回车键转换为TAB键</span><span style="color: #000000">"</span><span style="color: #000000">)]
-</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">bool</span><span style="color: #000000"> GetEnableConvertEnterToTab(TextBox control)
-{
-</span><span style="color: #0000ff">return</span><span style="color: #000000"> </span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Contains(control);
-}
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> 将需要转换Enter的控件保存到Hashtable中，前添加KeyDown事件。
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="control"&gt;&lt;/param&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="value"&gt;&lt;/param&gt;</span><span style="color: #808080">
-</span><span style="color: #000000">        </span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">void</span><span style="color: #000000"> SetEnableConvertEnterToTab(TextBox control, </span><span style="color: #0000ff">bool</span><span style="color: #000000"> value)
-{
-</span><span style="color: #0000ff">if</span><span style="color: #000000"> (value)
-{
-</span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Add(control, value);
-control.KeyDown </span><span style="color: #000000">+=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> KeyEventHandler(control_KeyDown);
-}
-</span><span style="color: #0000ff">else</span><span style="color: #000000">
-{
-control.KeyDown </span><span style="color: #000000">-=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> KeyEventHandler(control_KeyDown);
-</span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Remove(control);
-}
-}
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> 将目标控件的键盘事件{Enter}转为{TAB}
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="sender"&gt;&lt;/param&gt;</span><span style="color: #008000">
-</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="e"&gt;&lt;/param&gt;</span><span style="color: #808080">
-</span><span style="color: #000000">        </span><span style="color: #0000ff">void</span><span style="color: #000000"> control_KeyDown(</span><span style="color: #0000ff">object</span><span style="color: #000000"> sender, KeyEventArgs e)
-{
-</span><span style="color: #0000ff">if</span><span style="color: #000000"> (e.KeyCode </span><span style="color: #000000">==</span><span style="color: #000000"> Keys.Enter)
-{
-e.Handled </span><span style="color: #000000">=</span><span style="color: #000000"> </span><span style="color: #0000ff">true</span><span style="color: #000000">;
-SendKeys.Send(</span><span style="color: #000000">"</span><span style="color: #000000">{TAB}</span><span style="color: #000000">"</span><span style="color: #000000">);
-}
-}
-</span><span style="color: #0000ff">#region</span><span style="color: #000000"> IExtenderProvider Members</span><span style="color: #000000">
-</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">bool</span><span style="color: #000000"> CanExtend(</span><span style="color: #0000ff">object</span><span style="color: #000000"> extendee)
-{
-</span><span style="color: #0000ff">return</span><span style="color: #000000"> extendee </span><span style="color: #0000ff">is</span><span style="color: #000000"> TextBox;
-}
-</span><span style="color: #0000ff">#endregion</span><span style="color: #000000">
-}
-}</span></div>
-</pre></div>
-
-注意这里给给GetEnableConvertEnterToTab方法添加[DefaultValue(false)]特性，这样如果给组件的GetEnableConvertEnterToTab扩展属性设计值为False时，设计器将不会生成设置代码。如设置扩展属性为true时会生成这样的代码：
-this.textboxExtender1.SetEnableConvertEnterToTab(this.textBox1, true);
-设置为Falsh时，设计器不会生成任何的代码。
-</div>
-
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/wuchang/200701/02.png" alt="img" /></p>
-
-<p>参考资料：</p>
-
-<ol>
-<li><a href="http://www.codeproject.com/dotnet/iextenderprovider.asp" title="http://www.codeproject.com/dotnet/iextenderprovider.asp">http://www.codeproject.com/dotnet/iextenderprovider.asp</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/admin/ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm" title="ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm">ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm</a></li>
-</ol>
-
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/21/1607678.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">WinForm控件查找奇思</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近做WinForm程序，尽搞些动态生成控件的，每次寻找某个空间时总要一大堆代码，简单但是写的多，烦啊。突然想起了Linq里的表达式方式，但是项目用的类库是2.0的。最后仿照Linq用范型写了一个遍历类:减少了一大堆不必要的代码。
-代码很简单，就不用解释了，直接贴↑。</p>
-
-<p>代码很简单，就不用解释了，直接贴&#8593;。</p>
-
-<pre><code>    public delegate bool SearchHandler(Control ctrFind);
-        public class WinSearch&lt;T&gt;
-        {
-    //ctr：查找起点控件。
-            public static T Search(Control ctr, SearchHandler handler)
-            {
-                if (handler == null)
-                    throw new Exception("Handler must be not null");
-                if (ctr == null)
-                    throw new Exception("Parent Control must be not null");
-                if (!(ctr is Control))
-                    throw new Exception("The fist parameter must be innert from Control");
-                return SearchProxy(ctr, handler);
-            }
-
-            protected static T SearchProxy(Control ctr,SearchHandler handler)
-            {
-                if (ctr.Controls.Count &lt; 1)
-                {
-                    return default(T);
-                }
-                else
-                {
-                    foreach (Control child in ctr.Controls)
-                    {
-                        if (child is T  &amp;&amp; handler(child))//注意返回范型类型应是如此才会返回。
-                        {
-                            return (T)(object)child;
-                        }
-                        else
-                        {
-                            foreach (Control ch in child.Controls)
-                            {
-                                object obj = SearchProxy(ch, handler);
-                                if (obj !=null)
-                                {
-                                    return (T)obj;
-                                }
-                            }
-                        }
-                    }
-                    return default(T);
-                }
-            }
-
-
-        }
-</code></pre>
-
-<p> 测试代码：</p>
-
-<pre><code>    private void button1_Click(object sender, EventArgs e)
-            {
-                Button btn = WinSearch&lt;Button&gt;
-                .Search(this, new SearchHandler(mehtod));
-                if (btn != null)
-                {
-                    MessageBox.Show(btn.Text);
-                }
-            }
-            public bool mehtod(Control ctr)
-            {
-                if (ctr.Text =="button2")
-                    return true;
-                return false;
-            }
-</code></pre>
-
-<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606587.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/12/">&larr; Older</a>
@@ -1359,7 +1693,15 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/21/angular-form/">Angular form.$addControl</a>
       </li>
     
       <li class="post">
@@ -1379,15 +1721,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a>
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
   </ul>
