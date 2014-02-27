@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; PostSharp 这个静态植入的aop框架我就不多说了，在以前的aop文件，我们也尝试用MSBuild+Mono.Cicel理解静态植入AOP的原理。最近公司准备购买Postsharp做一些AOP，减少开发是代码量，至于选择AOP相信也不用多说。 &hellip;">
+  <meta name="description" content="&nbsp;&nbsp; 在上两篇我们介绍了OnExceptionAspect和OnMethodBoundaryAspect ，在这节我们将继续了解MethodInterceptionAspect，他为我们提供了关于方法处理的AOP切入，不同于OnMethodBoundaryAspect， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,129 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/">AOP之PostSharp3-MethodInterceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 在上两篇我们介绍了<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">OnExceptionAspect</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/2275680.html">OnMethodBoundaryAspect</a> ，在这节我们将继续了解MethodInterceptionAspect，他为我们提供了关于方法处理的AOP切入，不同于OnMethodBoundaryAspect，他不是边界，是方法体。有了我们可以在我们的方法切入aspect很多有用的信息，比如将同步方法变为异步，防止多次点击重复提交，winform，wpf的多线程调用UI（参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html">PostSharp &ndash; Thread Dispatching（GUI多线程）</a>），长时间操作在超过用户接受时间弹出进度条等等有用的关于用户体验和业务逻辑功能，简化我们的编程开发。</p>
+
+<p>同样我们先来看看其MethodInterceptionAspect定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346079947.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346096618.png" title="image" alt="image" /></a></p>
+
+<p>Invoke MethodInterceptionArgs参数：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346138763.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346153482.png" title="image" alt="image" /></a></p>
+
+<p>我们一般使用Proceed是的方法进行处理。在这时我们可以加入线程池调用，使的其变为异步操作。</p>
+
+<p>同时MethodInterceptionAspect 还继承了MethodLevelAspect 的CompileTimeValidate编译是验证，CompileTimeInitialize编译时初始化，RuntimeInitialize运行时初始化，后边的初始化我们将在后面一节PostSharp范围（static和instance中讲到）。</p>
+
+<p>其定义很简单，在于我们的发挥：</p>
+
+<p>二：防止多次提交处理demo：</p>
+
+<p>我们这里只采用简单思路在方法进入禁止按钮可用，方法执行完成后恢复可用状态。我们将使监听winform事件处理方法，按钮来自EventHandle的第一个参数Sender。</p>
+
+<pre><code>[Serializable] 
+    public class UnMutipleTriggerAttribute : MethodInterceptionAspect 
+    { 
+
+
+public override bool CompileTimeValidate(System.Reflection.MethodBase method) 
+       { 
+           var ps = method.GetParameters(); 
+           if (ps != null &amp;&amp; ps.Count() &gt; 0 &amp;&amp; ps[0].Name == "sender") 
+               return true; 
+           return false; 
+       } 
+
+        public override void OnInvoke(MethodInterceptionArgs args) 
+        { 
+            if (args.Arguments.Count &gt; 0) 
+            { 
+                var controls = args.Arguments[0] as System.Windows.Forms.Control; 
+                if (controls != null &amp;&amp; controls.Enabled) 
+                { 
+                    controls.Enabled = false; 
+                    args.Proceed(); ; 
+                    controls.Enabled = true; 
+                } 
+            } 
+
+        } 
+    }
+</code></pre>
+
+<p>在这里我们是监听方法的处理事件函数根据vs自动生成规则，第一个参数是sender，事件源，这里利用了CompileTimeValidate在编译时决定是否注入aspect。</p>
+
+<p>注意这里只是一个简单的demo，只针对于同步操作，如要变为异步操作，这需要改为在异步操作后启用。</p>
+
+<p>测试在button点击方法加上attribute：</p>
+
+<pre><code> [UnMutipleTriggerAttribute] 
+      private void Save(object sender, EventArgs e) 
+      { 
+          System.Threading.Thread.Sleep(2000); 
+      }
+</code></pre>
+
+<p>效果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346163416.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346178857.png" title="image" alt="image" /></a></p>
+
+<p>这个例子很简单的就完成了。</p>
+
+<p><a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">demo下载</a></p>
+
+<p>参考：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1567,317 +1690,6 @@ C#：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Silverlight获取WebHost配置信息&#8211;WebClient和XmlSerializer模拟</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-06T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; 在我们的silverlight项目中，是被打包为xap zip文件下载到客户端，所以silverlight中的app配置文件我们不能直接修改，而在其宿主web host中的web.config在服务端我们也不能直接访问。在我们的项目中遇见了这个问题所以我就有了此博客。</p>
-
-<p>&nbsp;&nbsp; 先说明解决这个问题的方案有：</p>
-
-<p>1：调用wcf，webservice，Asp.net页面等服务端数据源，异步显示在我们的UI。</p>
-
-<p>2：利用silverlight项目的宿主页面 object，传入初始化参数，在silverlight app中获取。</p>
-
-<p>上面的方案都是针对于我们的少量有限配置信息的获取。我这里做的是利用在服务端的xml配置文件来模拟配置文件（为什么不用web.config？以为存在权限信息的问题，所以我觉得尽量避免此文件信息暴露）。在silverlight的异步加载xml文档并解析xml文档。形成配置信息。</p>
-
-<p>为了全局使用，早些加载xml文档，我们需要在app中加一句：</p>
-
-<p>SLConfigManager.Current.ConfigPath = &ldquo;../SlConfig.xml&rdquo;;//配置文件的路径，相对于我们的xap文件路径。</p>
-
-<p>我们先看一下测试xml：</p>
-
-<pre><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
-&lt;Configuration&gt; 
-  &lt;appSettings&gt; 
-    &lt;add key="test1" value="123"&gt;&lt;/add&gt; 
-    &lt;add key="test2" value="1"&gt;&lt;/add&gt; 
-  &lt;/appSettings&gt; 
-  &lt;Class ClassID="111"&gt; 
-    &lt;Student Age="123"&gt; 
-      &lt;Name&gt;ddddd&lt;/Name&gt;     
-    &lt;/Student&gt; 
-    &lt;Student  Age="28"&gt; 
-      &lt;Name&gt;111&lt;/Name&gt;     
-    &lt;/Student&gt; 
-  &lt;/Class&gt; 
-&lt;/Configuration&gt;
-</code></pre>
-
-<p>这是我们可以使用：</p>
-
-<pre><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
-     { 
-         MessageBox.Show(SLConfigManager.Current.GetSection&lt;Class&gt;("Class").ClassID + ""); 
-         MessageBox.Show(SLConfigManager.Current.GetAppSettings("test1").ToString()); 
-         MessageBox.Show(SLConfigManager.Current.GetAppSettings&lt;Sex&gt;("test2").ToString()); 
-     } 
-
-        public enum Sex 
-     { 
-      man,woman 
-     }
-</code></pre>
-
-<p>在这里我们模拟了AppSettings，和Section（注：这里的section，不需要预申明，在利用xml转化形成的，更利于我们的配置扩展性，使用到了XmlRoot，XmlElement等attribute），在看看我们的Class类：</p>
-
-<pre><code>using System.Xml.Serialization; 
-</code></pre>
-
-<p>  namespace SilverlightApplication2
-  {</p>
-
-<pre><code>  [XmlRoot("Student")] 
-  public class Student 
-  { 
-      [XmlElement("Name")] 
-      public string Name 
-      { get; set; } 
-
-      [XmlAttribute("Age")] 
-      public int Age 
-      { 
-          get; 
-          set; 
-      } 
-  } 
-
-  [XmlRoot("Class")] 
-  public class Class 
-  { 
-      [XmlAttribute("ClassID")] 
-      public int ClassID 
-      { 
-          get; 
-          set; 
-      } 
-
-      [XmlArray()] 
-      [XmlArrayItem("Students")] 
-      public System.Collections.Generic.List&lt;Student&gt; Students 
-      { 
-          get; 
-          set; 
-      } 
-  } 
-</code></pre>
-
-<p>  }</p>
-
-<p>最后需要说明的是：在于我们的项目中可能存在xml文件还没有加载，的情况，所以加入了时间支持和IsLoaded属性标示。</p>
-
-<p>源码：</p>
-
-<pre><code>using System; 
-using System.Net; 
-using System.Windows; 
-using System.Windows.Controls; 
-using System.Windows.Documents; 
-using System.Windows.Ink; 
-using System.Windows.Input; 
-using System.Windows.Media; 
-using System.Windows.Media.Animation; 
-using System.Windows.Shapes; 
-using System.Xml; 
-using System.Xml.Linq; 
-using System.Linq; 
-using System.Collections.Generic; 
-using Green.Utility.Utils; 
-
-namespace SilverlightApplication2 
-{ 
-    public delegate void LoadComplete(); 
-
-    public class SLConfigManager 
-    { 
-        private XDocument document = null; 
-
-        private static readonly SLConfigManager _SLConfigManager = new SLConfigManager(); 
-        private Dictionary&lt;string, object&gt; dict = new Dictionary&lt;string, object&gt;(); 
-        private Dictionary&lt;string, string&gt; appSettings = new Dictionary&lt;string, string&gt;(); 
-        private string _ConfigPath = null; 
-
-        public static SLConfigManager Current 
-        { 
-            get 
-            { 
-                return _SLConfigManager; 
-            } 
-        } 
-
-        public string ConfigPath 
-        { 
-            get { return _ConfigPath; } 
-            set 
-            { 
-                if (_ConfigPath != value) 
-                { 
-                    _ConfigPath = value; 
-                    LoadResource(); 
-                } 
-            } 
-        } 
-
-        public bool IsLoaded 
-        { 
-            get; 
-            private set; 
-        } 
-        public event LoadComplete LoadComplete; 
-
-        public void EnsureLoadResource() 
-        { 
-
-            if (document == null) 
-            { 
-                LoadResource(); 
-            } 
-        } 
-
-        protected virtual void LoadResource() 
-        { 
-            if (string.IsNullOrEmpty(ConfigPath)) 
-            { 
-                throw new Exception("ConfigPath is required!"); 
-            } 
-
-            dict.Clear(); 
-            Uri url = new Uri(Application.Current.Host.Source, ConfigPath); 
-            WebClient client = new WebClient(); 
-            client.OpenReadCompleted += new OpenReadCompletedEventHandler(client_OpenReadCompleted); 
-            client.OpenReadAsync(url, client); 
-        } 
-
-        protected virtual void client_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) 
-        { 
-            if (e.Error != null) 
-            { 
-                throw e.Error; 
-            } 
-
-            var sw = new System.IO.StreamReader(e.Result); 
-            var xml = sw.ReadToEnd(); 
-            document = XDocument.Parse(xml); 
-            sw.Close(); 
-            e.Result.Close(); 
-            sw = null; 
-
-            GetappSettings(); 
-
-            IsLoaded = true; 
-            if (LoadComplete != null) 
-            { 
-                LoadComplete(); 
-            } 
-        } 
-
-        protected virtual void GetappSettings() 
-        { 
-            if (document != null) 
-            { 
-                var appSettingsel = document.Root.Element("appSettings"); 
-                if (appSettings != null) 
-                { 
-                    appSettingsel.Elements("add").ToList().ForEach(e =&gt; 
-                    { 
-                        var key = e.Attribute("key").Value; 
-                        var value = e.Attribute("value").Value; 
-                        if (!string.IsNullOrEmpty(key)&amp;&amp;!this.appSettings.ContainsKey(key)) 
-                        { 
-                            this.appSettings.Add(key, value); 
-                        } 
-                    }); 
-                } 
-            } 
-        } 
-
-        public T GetSection&lt;T&gt;(string section) where T : class ,new() 
-        { 
-            if (document == null) 
-            { 
-                // throw new Exception("Config Document is null!");                
-            } 
-            if (!dict.ContainsKey(section)) 
-            { 
-                var el = document.Root.Descendants().SingleOrDefault(t =&gt; t.Name == section); 
-                var xml = el.ToString(); 
-                dict.Add(section, XmlSerializer&lt;T&gt;(xml)); 
-            } 
-            return dict[section] as T; 
-        } 
-
-        protected virtual T XmlSerializer&lt;T&gt;(string xml) where T : class ,new() 
-        { 
-            System.Xml.Serialization.XmlSerializer serialzer = new System.Xml.Serialization.XmlSerializer(typeof(T)); 
-            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xml)); 
-            var obj = serialzer.Deserialize(ms) as T; 
-            ms.Flush(); 
-            ms.Close(); 
-            ms = null; 
-            return obj; 
-        } 
-
-        public T GetAppSettings&lt;T&gt;(string key) where T : IConvertible 
-        { 
-            if (appSettings.ContainsKey(key)) 
-            { 
-                var val = this.appSettings[key]; 
-                if (string.IsNullOrEmpty(val)) 
-                    return default(T); 
-                if (typeof(T).IsEnum) 
-                { 
-                    return (T)Enum.Parse(typeof(T), val, true); 
-                } 
-                return (T)Convert.ChangeType(val, typeof(T), null); 
-            } 
-            return default(T); 
-        } 
-
-        public string GetAppSettings(string key) 
-        { 
-            return GetAppSettings&lt;string&gt;(key); 
-        } 
-    } 
-}
-</code></pre>
-
-<p>最后附：<a href="http://files.cnblogs.com/whitewolf/SilverlightApplication2.rar" title="测试程序打包下载">测试程序打包下载</a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/06/SlConfig.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -1940,11 +1752,11 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a>
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
       </li>
     
   </ul>
