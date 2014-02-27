@@ -4,7 +4,6 @@ title: "ngCloak 实现 angular 初始化闪烁最佳实践"
 category: "angularjs"
 tags: [angular,javascript] 
 ---
-
 在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式({% raw %} {{ express }} {% endraw %} ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。
 
 在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({% raw %}{{ express }} {% endraw %})我们也可以改为ng-bind来实现避免。
