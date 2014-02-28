@@ -29,4 +29,5 @@ GO的版本：
 
 ![http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0](http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0)
 
-Thoughtworks官方的宣布文章[http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c](http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c)
+ *   [Thoughtworks官方的宣布文章](http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c)
+*    你也可以在ThoughtWorks中国微信雷小达看到:[GO！我们开源了！](http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&mid=200062098&idx=1&sn=25198a84122904cd113ef010637d27ed&uin=MjA0MjY0NDk0MA%3D%3D)
