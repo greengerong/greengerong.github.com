@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Thoughtworks持续集成平台GO开源了"
+title: "ThoughtWorks持续集成平台GO开源了"
 date: 2014-02-28 22:11:34 +0800
 comments: true
 categories: 
 ---
 ![go](http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0)
 
-Thoughtworks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。    
+ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。    
 
 Go下载地址为[http://www.go.cd/download/](http://www.go.cd/download/).
 
