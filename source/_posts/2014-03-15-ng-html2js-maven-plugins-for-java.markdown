@@ -22,11 +22,11 @@ directive template/templateUrl),你可以选择讲html page
   代码如下：
 
 
-    <script type="text/ng-template" id="/tpl.html">
+          <script type="text/ng-template" id="/tpl.html">
 
-      Content of the template.
+            Content of the template.
 
-    </script>
+          </script>
 
 
   这将会在angular的compile时候解析，angular将会把它放在angular的$templateCache
@@ -37,7 +37,7 @@ directive template/templateUrl),你可以选择讲html page
   angular将会首先在$templateCache中查找是否有对此url的缓存：
 
 
-    $templateCache.get('templateId.html')
+            $templateCache.get('templateId.html')
 
 
   如果存在缓存，着angular将会直接用缓存中获取，并不会在发送一次ajax。
@@ -61,12 +61,12 @@ directive template/templateUrl),你可以选择讲html page
   时候利用build自己放入$templateCache。
 
 
-    angular.module('myApp', [])
-    .run(function($templateCache) {
-        $templateCache.put('templateId.html',
-            'This is the content of the template'
-        );
-    });
+        angular.module('myApp', [])
+        .run(function($templateCache) {
+            $templateCache.put('templateId.html',
+                'This is the content of the template'
+            );
+        });
 
 
 形如上面的输出，将html文件打成一个js文件。
