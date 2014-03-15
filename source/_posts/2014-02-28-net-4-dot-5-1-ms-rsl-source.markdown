@@ -3,7 +3,7 @@ layout: post
 title: "微软开放了.NET 4.5.1的源代码"
 date: 2014-02-28 12:25:25 +0800
 comments: true
-categories: 
+categories: [.net,opensource]
 ---
 [.NET Reference Source](http://referencesource.microsoft.com/)发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，[在Visual Studio 2013中调试.NET Framework](http://referencesource-beta.microsoft.com/setup.html)。
 
