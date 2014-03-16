@@ -39,8 +39,10 @@ archetype plugin，然后就可以喝杯coffe等待build success。
 mac版本，你可以找到文件：
 
 
-    ~/Library/Caches/IntelliJIdea<version>/Maven/Indices/'UserArchetypes.xml
-然后用你喜欢的编辑器打开它：
+    ~/Library/Caches/IntelliJIdea<version>/Maven/Indices/UserArchetypes.xml
+
+
+然后用你喜欢的编辑器打开它(例如博主当前使用的Atom)：
 
 
     <?xml version="1.0" encoding="UTF-8"?>
