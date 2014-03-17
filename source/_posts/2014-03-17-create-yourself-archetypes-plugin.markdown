@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "自定义项目脚手架- mvean archetypes"
+title: "自定义项目脚手架- maven archetypes"
 date: 2014-03-17 08:14:21 +1100
 comments: true
 categories: [java, maven]
