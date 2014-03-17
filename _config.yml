@@ -72,7 +72,7 @@ github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
-twitter_user: 
+twitter_user:
 twitter_tweet_button: false
 
 # Google +1
@@ -100,7 +100,7 @@ disqus_show_comment_count: true
 google_analytics_tracking_id:
 
 # Baidu Analytics
-baidu_analytics_tracking: true 
+baidu_analytics_tracking: true
 
 # Facebook Like
 facebook_like: false
@@ -114,5 +114,4 @@ MetaWeblog:
     cto:
        MetaWeblog_username: grzx2210@qq.com
        MetaWeblog_url: http://whitewolfblog.blog.51cto.com/xmlrpc.php
-       MetaWeblog_blogid: whitewolfblog
-
+       MetaWeblog_blogid: grzx2210@qq.com
