@@ -121,7 +121,7 @@ copy到项目目录结构去。
 
 4.  接下来在archetype项目下install plugin：mvn clean install.
 
-5.  利用已有crchetype plugin创建项目：
+5.  利用已有archetype plugin创建项目：
 
     命令行：
 
@@ -132,11 +132,11 @@ copy到项目目录结构去。
   intellij选择增加archetype plugin：
   ![/images/blog_img/Intellij-archetype-plugin.png](/images/blog_img/Intellij-archetype-plugin.png)
 
-对于删除intellij test archetype信息，请参见[Intellij修改archetype Plugin配置](http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/).
+对于删除intellij测试archetype信息，请参见[Intellij修改archetype Plugin配置](http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/).
 
 注意：
 
 *  如果你也需要文件名字或者目录名字，则需要用特殊变量\_\_artifactId\_\_(双下划线)作为占位符。
 
 
-如果你想直接尝试本文demo,请移到到github [maven-archetypes-demo](https://github.com/greengerong/maven-archetypes-demo).
+    本文demo,请移到到github [maven-archetypes-demo](https://github.com/greengerong/maven-archetypes-demo).
