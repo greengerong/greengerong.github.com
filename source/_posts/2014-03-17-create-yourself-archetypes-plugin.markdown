@@ -77,6 +77,7 @@ copy到项目目录结构去。
 
 更多配置信息参考[archetype-descriptor](https://maven.apache.org/archetype/archetype-common/archetype-descriptor.html).
 
+
 3.  为将创建的项目增加pom.xml文件，以${artifactId} / ${groupId} 变量作为占位符，例如：
 
 
@@ -136,7 +137,7 @@ copy到项目目录结构去。
 
 注意：
 
-*  如果你也需要文件名字或者目录名字，则需要用特殊变量{% raw %}__artifactId__{% endraw %}(双下划线)作为占位符。
+*  如果你也需要文件名字或者目录名字，则需要用特殊变量{% raw %}__{% endraw %}artifactId{% raw %}__{% endraw %}(双下划线)作为占位符。
 
 
 如果你想直接尝试本文demo,请移到到github [maven-archetypes-demo](https://github.com/greengerong/maven-archetypes-demo).
