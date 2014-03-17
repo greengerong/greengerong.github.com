@@ -137,7 +137,7 @@ copy到项目目录结构去。
 
 注意：
 
-*  如果你也需要文件名字或者目录名字，则需要用特殊变量{% raw %}__{% endraw %}artifactId{% raw %}__{% endraw %}(双下划线)作为占位符。
+*  如果你也需要文件名字或者目录名字，则需要用特殊变量\_\_artifactId\_\_(双下划线)作为占位符。
 
 
 如果你想直接尝试本文demo,请移到到github [maven-archetypes-demo](https://github.com/greengerong/maven-archetypes-demo).
