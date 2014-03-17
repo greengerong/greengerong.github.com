@@ -8,8 +8,7 @@ categories: [java, maven]
 在上篇[Intellij修改archetype Plugin配置](http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/)
 中我们已经简单介绍了关于archetype的作用。
 
-简单来说maven archetype插件就是下哦昂木创建的脚手架，
-通过命令行或者IDE集成简化我们创建项目的工作。例如：
+简单来说maven archetype插件就是创建项目的脚手架,通过命令行或者IDE集成简化项目创建的工作。例如：
 
 *  org.apache.maven.archetypes:maven-archetype-quickstart
 *  org.apache.maven.archetypes:maven-archetype-site
