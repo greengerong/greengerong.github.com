@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "架构设计模式区分"
+title: "软件架构设计模式简述"
 date: 2014-03-18 22:07:08 +1100
 comments: true
 categories: [DDD,design]
