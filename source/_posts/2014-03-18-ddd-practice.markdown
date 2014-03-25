@@ -62,6 +62,7 @@ ORM(Object Relation Mapping)框架辅助。
 请参考[《企业应用架构模式》](http://book.douban.com/subject/4826290/)，以及[实现领域驱动设计](http://book.douban.com/subject/25844633/)
 
 最后推荐最新的领域驱动设计书籍资料：此书被DDD鼻祖Eric Evans誉为继其开山之作后，近十年内第一本将DDD落到具体(接地气)的经典书籍。
+
 ![实现领域驱动设计](http://img5.douban.com/lpic/s27236377.jpg)
 
 *  [亚马逊](http://www.amazon.cn/%E5%AE%9E%E7%8E%B0%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1-%E6%B2%83%E6%81%A9%E2%80%A2%E5%BC%97%E5%86%9C/dp/B00IYTVWA6/ref=sr_1_1?s=books&ie=UTF8&qid=1395749901&sr=1-1)
