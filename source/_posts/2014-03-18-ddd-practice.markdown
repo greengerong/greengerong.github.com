@@ -58,12 +58,12 @@ ORM(Object Relation Mapping)框架辅助。
 适应UI的表现存在视图对象(VO，有时我们简单VO的存在直接用数据传输对象(DTO)代替)，所以存在DTO Mapping，在这里的VO或者DTO，往往
 都是一层简单getter,setter的数据载体。
 
-在领域驱动设计中还包含工作单元(UOW))，仓储，值类型,实体，聚合根，领域事件，领域边界，以及领域跟踪一类的概念，关于这些更多的只是
+在领域驱动设计中还包含工作单元(UOW))，仓储，值类型,实体，聚合根，领域事件，领域边界，以及领域跟踪一类的概念，关于这些更多的知识
 请参考[《企业应用架构模式》](http://book.douban.com/subject/4826290/)，以及[实现领域驱动设计](http://book.douban.com/subject/25844633/)
 
 最后推荐最新的领域驱动设计书籍资料：此书被DDD鼻祖Eric Evans誉为继其开山之作后，近十年内第一本将DDD落到具体(接地气)的经典书籍。
 
-![实现领域驱动设计](http://img5.douban.com/lpic/s27236377.jpg)
+![实现领域驱动设计](/images/blog_img/implement-ddd.jpg)
 
 *  [亚马逊](http://www.amazon.cn/%E5%AE%9E%E7%8E%B0%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1-%E6%B2%83%E6%81%A9%E2%80%A2%E5%BC%97%E5%86%9C/dp/B00IYTVWA6/ref=sr_1_1?s=books&ie=UTF8&qid=1395749901&sr=1-1)
 *  [当当](http://product.dangdang.com/23439300.html#ddclick?act=click&pos=23439300_0_1_p&cat=01.00.00.00.00.00&key=%CE%D6%B6%F7.%B8%A5%C5%A9&qinfo=&pinfo=1_1_72&minfo=&ninfo=&custid=&permid=20140309205553118327545287259908607&ref=http%3A%2F%2Fproduct.dangdang.com%2F23439300.html&rcount=&type=&t=1395231961000)

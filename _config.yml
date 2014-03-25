@@ -111,7 +111,4 @@ MetaWeblog:
       MetaWeblog_username: white-wolf
       MetaWeblog_url: http://www.cnblogs.com/whitewolf/services/metaweblog.aspx
       MetaWeblog_blogid: white-wolf
-    cto:
-       MetaWeblog_username: grzx2210@qq.com
-       MetaWeblog_url: http://whitewolfblog.blog.51cto.com/xmlrpc.php
-       MetaWeblog_blogid: grzx2210@qq.com
+      
