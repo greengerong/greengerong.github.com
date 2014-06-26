@@ -18,7 +18,7 @@ tags: [angular,javascript]
 
 地址为：
 
-    [http://angular.duapp.com/guide](http://angular.duapp.com/guide)
+    [http://www.ngnice.com/docs/guide](http://www.ngnice.com/docs/guide)
 
 在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些"译者注"之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。
 
