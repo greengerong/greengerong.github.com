@@ -1,0 +1,1368 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Green.AgileMapper开源项目的使用(1) - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="Green.AgileMapper开源项目的使用(1)">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Green.AgileMapper开源项目的使用(1)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人，我在网上搜索等到很多实体匹配的框架EmitMapper，AutoMapper等，但是他们都不能满足dto和do的对象的按规则匹配包装。最后我只得花了半个小时写了一个简单的代码生成器，完成了我的任务。但是事后总觉得不爽，于是有了写下这个AgileMapper框架来适应领域开发中的po，do，dto，vo着一些列对象的相互包装，建立一个按规则包装的Mapper框架。项目已经完成上传于CodePlex <a href="http://agilemapper.codeplex.com/" title="http://agilemapper.codeplex.com/">http://agilemapper.codeplex.com/</a> ，目前刚成型，希望大家能够帮助测试，提出bug，或者修复。我不是很清楚开源协议，选择了一个 协议。大家可以随便使用和修改应用来满足各自的需求，但是如果有些bug修复或者好的通用的修改希望大家能够，提交供我和其他人学习共同进步，但是这不是必须的，你也可以选择保留。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AgileMapper架构设计类图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333323869.png" title="AgileMapper" alt="AgileMapper" /></p>
+
+<p>&nbsp;&nbsp;&nbsp; 在AgileMapper中支持多种MappingConfigurator（匹配管理器）都集成至MappingConfiguratorBase（MappingConfiguratorBase中拥有唯一的对象之间对于相等的默认表达式守信，针对于dto转化为do对象级联删除情况），内置了AttributeMappingConfigurator，XMLMappingConfigurator，DataRowMappingConfigurator三种匹配管理器。支持xml书写，attribute标记规则。由这些管理器根据具体标记标记方式产生一组IMappingRule（匹配规则），内置了5中匹配规则（简单，集合，表达式，对象，datarow）。</p>
+
+<p>&nbsp;&nbsp; 在AgileMapper为我们提供了MappingConfiguratorBase的扩展，IMappingRule的扩展，已经多余Attribute标注的扩展CustomerMappingAttribute，已经xml的配置扩展。</p>
+
+<p>下面我们来使用AgileMapper提供的内置Mapper。</p>
+
+<p>测试预备：</p>
+
+<p>Domain Object：</p>
+
+<pre><code>public class StudenDo 
+
+{ 
+
+   public int ID 
+
+   { 
+
+       get; 
+
+       set; 
+
+   } 
+
+
+
+   public string Name 
+
+   { get; set; } 
+
+
+
+   public Sex Sex 
+
+   { get; set; } 
+
+
+
+   public Address Address 
+
+   { get; set; } 
+
+
+
+   public ContactWay ContactWay 
+
+   { get; set; } 
+
+
+
+   public List&lt;string&gt; CourseIds 
+
+   { get; set; } 
+
+
+
+   public List&lt;KeyValuePair&gt; Propertys 
+
+   { get; set; } 
+
+
+
+} 
+
+
+
+public class KeyValuePair 
+
+{ 
+
+   public string Key 
+
+   { get; set; } 
+
+
+
+   public string Value 
+
+   { get; set; } 
+
+} 
+
+
+
+ public enum Sex 
+
+{ 
+
+   男, 女 
+
+ }
+
+
+
+public class ContactWay 
+
+{ 
+
+  public string Phone 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+
+
+  public string Email 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+
+
+  public string QQ 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+}
+
+
+public class Address 
+
+ { 
+
+   public string Country 
+
+   { 
+
+       get; 
+
+       set; 
+
+   } 
+
+
+
+   public string Province 
+
+   { get; set; } 
+
+
+
+   public string Street 
+
+   { get; set; } 
+
+
+
+   public string Particular 
+
+   { get; set; } 
+
+}
+</code></pre>
+
+<p>Dto：</p>
+
+<pre><code>public class StudenDto 
+
+   { 
+
+       public int ID 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string Name 
+
+       { get; set; } 
+
+
+
+       public Sex Sex 
+
+       { get; set; } 
+
+
+
+       [Mapping("Address.Country")] 
+
+       public string Country 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       [Mapping("Address.Province")] 
+
+       public string Province 
+
+       { get; set; } 
+
+
+
+       // [Mapping("Address.Street")] 
+
+       [IgnoreMapping] 
+
+       public string Street 
+
+       { get; set; } 
+
+
+
+       [ExpressionMapping("Address.Country +\" 国籍 \"+Address.Province +\" 省 \"")] 
+
+       public string Particular 
+
+       { get; set; } 
+
+
+
+       [ObjectMappingAttribute] 
+
+       public ContactWayDto ContactWay 
+
+       { get; set; } 
+
+
+
+       [CollectionMapping()] 
+
+       public List&lt;string&gt; CourseIds 
+
+       { get; set; } 
+
+
+
+       [CollectionMapping(EqualExpression="from.Key==to.Key",IsDeleteNotInFromItem=true)] 
+
+       public List&lt;KeyValuePair&gt; Propertys 
+
+       { get; set; } 
+
+
+
+       [ExpressionMapping("Propertys[0].Key")] 
+
+       public string FirstPropertyKey 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+
+
+
+
+public class ContactWayDto 
+
+    { 
+
+        public string Phone 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+
+
+        public string Email 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+
+
+        public string QQ 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+    }
+
+
+
+public class AddressDto 
+
+{ 
+
+    public string Country 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    public string Province 
+
+    { get; set; } 
+
+
+
+    public string Street 
+
+    { get; set; } 
+
+
+
+    public string Particular 
+
+    { get; set; } 
+
+}
+</code></pre>
+
+<p>一：Attribute标注：</p>
+
+<pre><code>        [TestMethod] 
+
+     public void AttributeConfig_SimpleMapping_Gen() 
+
+     { 
+
+
+
+         StudenDo stu = new StudenDo() 
+
+         { 
+
+             ID = 1, 
+
+             Name = "test1", 
+
+             Sex = Sex.女, 
+
+             Address = new Address() 
+
+             { 
+
+                 Country = "中国", 
+
+                 Province = "四川", 
+
+                 Street = "高新区" 
+
+             }, 
+
+             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+             ContactWay = new ContactWay() 
+
+             { 
+
+                 Phone = "1111111111111111", 
+
+                 Email = "xxxx@12f", 
+
+                 QQ = "7889789999889" 
+
+             } 
+
+         }; 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(); 
+
+
+
+         var dt1 = DateTime.Now; 
+
+         var stuDto = mapper.Warp(stu); 
+
+         var sp = DateTime.Now - dt1; 
+
+
+
+         dt1 = DateTime.Now; 
+
+         stuDto = mapper.Warp(stu); 
+
+         var sp1 = DateTime.Now - dt1; 
+
+
+
+         Assert.AreEqual(stuDto.ID, stu.ID); 
+
+         Assert.AreEqual(stuDto.Name, stu.Name); 
+
+         Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+         Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+         //object 
+
+         // Assert.AreEqual(stuDto.ContactWay,null); 
+
+         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+         //expression 
+
+         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
+
+         Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
+
+         //collection            
+
+         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+
+
+         Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
+
+         Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
+
+         Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
+
+
+
+         //Warp 2 
+
+         var stuDo = new StudenDo(); 
+
+         mapper.Warp(stuDto, stuDo); 
+
+
+
+         Assert.AreEqual(stuDo.ID, stuDto.ID); 
+
+         Assert.AreEqual(stuDo.Name, stuDto.Name); 
+
+         Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
+
+         Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
+
+         Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
+
+         //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
+
+         //object 
+
+         Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
+
+         //collection 
+
+
+
+         Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
+
+         Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
+
+
+
+         Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
+
+         Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
+
+         Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void AttributeConfig_SimpleMapping() 
+
+     { 
+
+         StudenDo stu = new StudenDo() 
+
+         { 
+
+             ID = 1, 
+
+             Name = "test1", 
+
+             Sex = Sex.女, 
+
+             Address = new Address() 
+
+             { 
+
+                 Country = "中国", 
+
+                 Province = "四川", 
+
+                 Street = "高新区" 
+
+             }, 
+
+             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+             ContactWay = new ContactWay() 
+
+             { 
+
+                 Phone = "1111111111111111", 
+
+                 Email = "xxxx@12f", 
+
+                 QQ = "7889789999889" 
+
+             } 
+
+         }; 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(); 
+
+         var stuDto = mapper.Warp(typeof(StudenDto), stu) as StudenDto; 
+
+
+
+         Assert.AreEqual(stuDto.ID, stu.ID); 
+
+         Assert.AreEqual(stuDto.Name, stu.Name); 
+
+         Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+         Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+         //object 
+
+         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+         //expression 
+
+         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
+
+         //collection            
+
+         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+     }
+</code></pre>
+
+<p>二：xml配置标注规则：&nbsp;</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+
+&lt;AgileMapper&gt; 
+
+  &lt;Extensions&gt; 
+
+    &lt;Extension Name="SimpleMappingRule" Type="Green.AgileMapper.SimpleMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="ObjectMappingRule" Type="Green.AgileMapper.ObjectMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="CollectionMappingRule" Type="Green.AgileMapper.CollectionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="ExpressionMappingRule" Type="Green.AgileMapper.ExpressionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+  &lt;/Extensions&gt; 
+
+  &lt;Mappings&gt; 
+
+    &lt;Mapping FromType="AgileMapper.Test.StudenDto,AgileMapper.Test"  &gt; 
+
+      &lt;SimpleMappingRule FromPoperty="Country" ToPoperty="Address.Country"&gt;&lt;/SimpleMappingRule&gt; 
+
+      &lt;SimpleMappingRule FromPoperty="Province" ToPoperty="Address.Province"&gt;&lt;/SimpleMappingRule&gt;           
+
+      &lt;ObjectMappingRule  FromPoperty="ContactWay" ToPoperty="ContactWay"&gt;&lt;/ObjectMappingRule&gt; 
+
+      &lt;CollectionMappingRule FromPoperty="CourseIds" ToPoperty="CourseIds"&gt;&lt;/CollectionMappingRule&gt; 
+
+      &lt;CollectionMappingRule FromPoperty="Propertys" ToPoperty="Propertys" EqualExpression="from.Key==to.Key" IsDeleteNotInFromItem="true"&gt;&lt;/CollectionMappingRule&gt; 
+
+      &lt;ExpressionMappingRule  FromPoperty="Particular" Expression="Address.Country +Address.Province"&gt;&lt;/ExpressionMappingRule&gt; 
+
+      &lt;ExpressionMappingRule  FromPoperty="FirstPropertyKey" Expression="Propertys[0].Key"&gt;&lt;/ExpressionMappingRule&gt; 
+
+      &lt;Ignores&gt; 
+
+        &lt;Ignore Name="Street"&gt;&lt;/Ignore&gt; 
+
+      &lt;/Ignores&gt; 
+
+    &lt;/Mapping&gt; 
+
+  &lt;/Mappings&gt; 
+
+&lt;/AgileMapper&gt;
+</code></pre>
+
+<p>测试代码：</p>
+
+<p>[TestMethod]</p>
+
+<pre><code>    public void XMlConfig_SimpleMapping_Gen() 
+
+    { 
+
+
+
+        StudenDo stu = new StudenDo() 
+
+        { 
+
+            ID = 1, 
+
+            Name = "test1", 
+
+            Sex = Sex.女, 
+
+            Address = new Address() 
+
+            { 
+
+                Country = "中国", 
+
+                Province = "四川", 
+
+                Street = "高新区" 
+
+            }, 
+
+            CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+            Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+            ContactWay = new ContactWay() 
+
+            { 
+
+                Phone = "1111111111111111", 
+
+                Email = "xxxx@12f", 
+
+                QQ = "7889789999889" 
+
+            } 
+
+        }; 
+
+
+
+        var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(new XMLMappingConfigurator(@"E:\Project\OpenSource\AgileMapper\AgileMappper.Test\XMLConfigurator\AgileMapper.xml")); 
+
+
+
+        var stuDto = mapper.Warp(stu);           
+
+
+
+        Assert.AreEqual(stuDto.ID, stu.ID); 
+
+        Assert.AreEqual(stuDto.Name, stu.Name); 
+
+        Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+        Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+        Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+        Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+        //object 
+
+        // Assert.AreEqual(stuDto.ContactWay,null); 
+
+        Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+        Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+        //expression 
+
+        Assert.AreEqual(stuDto.Particular.Replace(" ", ""), string.Format("{0}{1}", stu.Address.Country, stu.Address.Province)); 
+
+        Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
+
+        //collection            
+
+        Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+        Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+
+
+        Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
+
+        Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
+
+        Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
+
+
+
+        //Warp 2 
+
+        var stuDo = new StudenDo(); 
+
+        mapper.Warp(stuDto, stuDo); 
+
+
+
+        Assert.AreEqual(stuDo.ID, stuDto.ID); 
+
+        Assert.AreEqual(stuDo.Name, stuDto.Name); 
+
+        Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
+
+        Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
+
+        Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
+
+        //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
+
+        //object 
+
+        Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
+
+        Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
+
+        //collection 
+
+
+
+        Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
+
+        Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
+
+
+
+        Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
+
+        Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
+
+        Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
+
+    }
+</code></pre>
+
+<p>三：DataRow的测试：&nbsp;</p>
+
+<p>测试预备StudentModelForDataRow：</p>
+
+<pre><code>public class StudentModelForDataRow 
+
+  { 
+
+      public int ID 
+
+      { get; set; } 
+
+
+
+      public string Name 
+
+      { get; set; } 
+
+  }
+</code></pre>
+
+<p>测试代码：&nbsp;</p>
+
+<pre><code>    [TestMethod] 
+
+     public void DataRowConfig_SameTable_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+
+
+         var rowClone = dt.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(typeof(DataRow), row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_UnSameTable_MutipleRule_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         DataTable dt2 = new DataTable(); 
+
+         dt2.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)), 
+
+              new DataColumn("Sex",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt2.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         row[2] = "Nan"; 
+
+         dt2.Rows.Add(row); 
+
+
+
+         var rowClone = dt.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_UnSameTable_Not_MutipleRule_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         DataTable dt2 = new DataTable(); 
+
+         dt2.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)), 
+
+              new DataColumn("Sex",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+
+
+         var rowClone = dt2.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_To_Object_CloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+         StudentModelForDataRow model = new StudentModelForDataRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, model); 
+
+         Assert.AreEqual(model.ID, row[0]); 
+
+         Assert.AreEqual(model.Name, row[1]); 
+
+     }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; DataRow匹配针对相同的表结构和不同表结构，以及实体类和DataRow之间的转化。&nbsp;</p>
+
+<p>单元测试结果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333394223.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/20120329133348267.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 对于xml配置的架构还没做，以及基于T4模板的按照规则代码生成模板还在进一步开发中，敬请期待。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天就写在这里了，欢迎大家的指正和修改，希望你的修改如果更好能通知我，给我好的建议和探讨，谢谢。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/03/29/AgileMapper1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/02/12/IOC-AOP-sui-bi-mu-lu/" title="Previous Post: IOC/AOP随笔目录">&laquo; IOC/AOP随笔目录</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/" title="Next Post: 架构设计--逻辑层 vs 物理层">架构设计--逻辑层 vs 物理层 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

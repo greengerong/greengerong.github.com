@@ -1,0 +1,2717 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/7">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/">Green.AgileMapper开源项目的使用(1)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人，我在网上搜索等到很多实体匹配的框架EmitMapper，AutoMapper等，但是他们都不能满足dto和do的对象的按规则匹配包装。最后我只得花了半个小时写了一个简单的代码生成器，完成了我的任务。但是事后总觉得不爽，于是有了写下这个AgileMapper框架来适应领域开发中的po，do，dto，vo着一些列对象的相互包装，建立一个按规则包装的Mapper框架。项目已经完成上传于CodePlex <a href="http://agilemapper.codeplex.com/" title="http://agilemapper.codeplex.com/">http://agilemapper.codeplex.com/</a> ，目前刚成型，希望大家能够帮助测试，提出bug，或者修复。我不是很清楚开源协议，选择了一个 协议。大家可以随便使用和修改应用来满足各自的需求，但是如果有些bug修复或者好的通用的修改希望大家能够，提交供我和其他人学习共同进步，但是这不是必须的，你也可以选择保留。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AgileMapper架构设计类图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333323869.png" title="AgileMapper" alt="AgileMapper" /></p>
+
+<p>&nbsp;&nbsp;&nbsp; 在AgileMapper中支持多种MappingConfigurator（匹配管理器）都集成至MappingConfiguratorBase（MappingConfiguratorBase中拥有唯一的对象之间对于相等的默认表达式守信，针对于dto转化为do对象级联删除情况），内置了AttributeMappingConfigurator，XMLMappingConfigurator，DataRowMappingConfigurator三种匹配管理器。支持xml书写，attribute标记规则。由这些管理器根据具体标记标记方式产生一组IMappingRule（匹配规则），内置了5中匹配规则（简单，集合，表达式，对象，datarow）。</p>
+
+<p>&nbsp;&nbsp; 在AgileMapper为我们提供了MappingConfiguratorBase的扩展，IMappingRule的扩展，已经多余Attribute标注的扩展CustomerMappingAttribute，已经xml的配置扩展。</p>
+
+<p>下面我们来使用AgileMapper提供的内置Mapper。</p>
+
+<p>测试预备：</p>
+
+<p>Domain Object：</p>
+
+<pre><code>public class StudenDo 
+
+{ 
+
+   public int ID 
+
+   { 
+
+       get; 
+
+       set; 
+
+   } 
+
+
+
+   public string Name 
+
+   { get; set; } 
+
+
+
+   public Sex Sex 
+
+   { get; set; } 
+
+
+
+   public Address Address 
+
+   { get; set; } 
+
+
+
+   public ContactWay ContactWay 
+
+   { get; set; } 
+
+
+
+   public List&lt;string&gt; CourseIds 
+
+   { get; set; } 
+
+
+
+   public List&lt;KeyValuePair&gt; Propertys 
+
+   { get; set; } 
+
+
+
+} 
+
+
+
+public class KeyValuePair 
+
+{ 
+
+   public string Key 
+
+   { get; set; } 
+
+
+
+   public string Value 
+
+   { get; set; } 
+
+} 
+
+
+
+ public enum Sex 
+
+{ 
+
+   男, 女 
+
+ }
+
+
+
+public class ContactWay 
+
+{ 
+
+  public string Phone 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+
+
+  public string Email 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+
+
+  public string QQ 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+}
+
+
+public class Address 
+
+ { 
+
+   public string Country 
+
+   { 
+
+       get; 
+
+       set; 
+
+   } 
+
+
+
+   public string Province 
+
+   { get; set; } 
+
+
+
+   public string Street 
+
+   { get; set; } 
+
+
+
+   public string Particular 
+
+   { get; set; } 
+
+}
+</code></pre>
+
+<p>Dto：</p>
+
+<pre><code>public class StudenDto 
+
+   { 
+
+       public int ID 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string Name 
+
+       { get; set; } 
+
+
+
+       public Sex Sex 
+
+       { get; set; } 
+
+
+
+       [Mapping("Address.Country")] 
+
+       public string Country 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       [Mapping("Address.Province")] 
+
+       public string Province 
+
+       { get; set; } 
+
+
+
+       // [Mapping("Address.Street")] 
+
+       [IgnoreMapping] 
+
+       public string Street 
+
+       { get; set; } 
+
+
+
+       [ExpressionMapping("Address.Country +\" 国籍 \"+Address.Province +\" 省 \"")] 
+
+       public string Particular 
+
+       { get; set; } 
+
+
+
+       [ObjectMappingAttribute] 
+
+       public ContactWayDto ContactWay 
+
+       { get; set; } 
+
+
+
+       [CollectionMapping()] 
+
+       public List&lt;string&gt; CourseIds 
+
+       { get; set; } 
+
+
+
+       [CollectionMapping(EqualExpression="from.Key==to.Key",IsDeleteNotInFromItem=true)] 
+
+       public List&lt;KeyValuePair&gt; Propertys 
+
+       { get; set; } 
+
+
+
+       [ExpressionMapping("Propertys[0].Key")] 
+
+       public string FirstPropertyKey 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+
+
+
+
+public class ContactWayDto 
+
+    { 
+
+        public string Phone 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+
+
+        public string Email 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+
+
+        public string QQ 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+    }
+
+
+
+public class AddressDto 
+
+{ 
+
+    public string Country 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    public string Province 
+
+    { get; set; } 
+
+
+
+    public string Street 
+
+    { get; set; } 
+
+
+
+    public string Particular 
+
+    { get; set; } 
+
+}
+</code></pre>
+
+<p>一：Attribute标注：</p>
+
+<pre><code>        [TestMethod] 
+
+     public void AttributeConfig_SimpleMapping_Gen() 
+
+     { 
+
+
+
+         StudenDo stu = new StudenDo() 
+
+         { 
+
+             ID = 1, 
+
+             Name = "test1", 
+
+             Sex = Sex.女, 
+
+             Address = new Address() 
+
+             { 
+
+                 Country = "中国", 
+
+                 Province = "四川", 
+
+                 Street = "高新区" 
+
+             }, 
+
+             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+             ContactWay = new ContactWay() 
+
+             { 
+
+                 Phone = "1111111111111111", 
+
+                 Email = "xxxx@12f", 
+
+                 QQ = "7889789999889" 
+
+             } 
+
+         }; 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(); 
+
+
+
+         var dt1 = DateTime.Now; 
+
+         var stuDto = mapper.Warp(stu); 
+
+         var sp = DateTime.Now - dt1; 
+
+
+
+         dt1 = DateTime.Now; 
+
+         stuDto = mapper.Warp(stu); 
+
+         var sp1 = DateTime.Now - dt1; 
+
+
+
+         Assert.AreEqual(stuDto.ID, stu.ID); 
+
+         Assert.AreEqual(stuDto.Name, stu.Name); 
+
+         Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+         Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+         //object 
+
+         // Assert.AreEqual(stuDto.ContactWay,null); 
+
+         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+         //expression 
+
+         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
+
+         Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
+
+         //collection            
+
+         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+
+
+         Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
+
+         Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
+
+         Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
+
+
+
+         //Warp 2 
+
+         var stuDo = new StudenDo(); 
+
+         mapper.Warp(stuDto, stuDo); 
+
+
+
+         Assert.AreEqual(stuDo.ID, stuDto.ID); 
+
+         Assert.AreEqual(stuDo.Name, stuDto.Name); 
+
+         Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
+
+         Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
+
+         Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
+
+         //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
+
+         //object 
+
+         Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
+
+         //collection 
+
+
+
+         Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
+
+         Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
+
+
+
+         Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
+
+         Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
+
+         Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void AttributeConfig_SimpleMapping() 
+
+     { 
+
+         StudenDo stu = new StudenDo() 
+
+         { 
+
+             ID = 1, 
+
+             Name = "test1", 
+
+             Sex = Sex.女, 
+
+             Address = new Address() 
+
+             { 
+
+                 Country = "中国", 
+
+                 Province = "四川", 
+
+                 Street = "高新区" 
+
+             }, 
+
+             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+             ContactWay = new ContactWay() 
+
+             { 
+
+                 Phone = "1111111111111111", 
+
+                 Email = "xxxx@12f", 
+
+                 QQ = "7889789999889" 
+
+             } 
+
+         }; 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(); 
+
+         var stuDto = mapper.Warp(typeof(StudenDto), stu) as StudenDto; 
+
+
+
+         Assert.AreEqual(stuDto.ID, stu.ID); 
+
+         Assert.AreEqual(stuDto.Name, stu.Name); 
+
+         Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+         Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+         //object 
+
+         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+         //expression 
+
+         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
+
+         //collection            
+
+         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+     }
+</code></pre>
+
+<p>二：xml配置标注规则：&nbsp;</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+
+&lt;AgileMapper&gt; 
+
+  &lt;Extensions&gt; 
+
+    &lt;Extension Name="SimpleMappingRule" Type="Green.AgileMapper.SimpleMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="ObjectMappingRule" Type="Green.AgileMapper.ObjectMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="CollectionMappingRule" Type="Green.AgileMapper.CollectionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="ExpressionMappingRule" Type="Green.AgileMapper.ExpressionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+  &lt;/Extensions&gt; 
+
+  &lt;Mappings&gt; 
+
+    &lt;Mapping FromType="AgileMapper.Test.StudenDto,AgileMapper.Test"  &gt; 
+
+      &lt;SimpleMappingRule FromPoperty="Country" ToPoperty="Address.Country"&gt;&lt;/SimpleMappingRule&gt; 
+
+      &lt;SimpleMappingRule FromPoperty="Province" ToPoperty="Address.Province"&gt;&lt;/SimpleMappingRule&gt;           
+
+      &lt;ObjectMappingRule  FromPoperty="ContactWay" ToPoperty="ContactWay"&gt;&lt;/ObjectMappingRule&gt; 
+
+      &lt;CollectionMappingRule FromPoperty="CourseIds" ToPoperty="CourseIds"&gt;&lt;/CollectionMappingRule&gt; 
+
+      &lt;CollectionMappingRule FromPoperty="Propertys" ToPoperty="Propertys" EqualExpression="from.Key==to.Key" IsDeleteNotInFromItem="true"&gt;&lt;/CollectionMappingRule&gt; 
+
+      &lt;ExpressionMappingRule  FromPoperty="Particular" Expression="Address.Country +Address.Province"&gt;&lt;/ExpressionMappingRule&gt; 
+
+      &lt;ExpressionMappingRule  FromPoperty="FirstPropertyKey" Expression="Propertys[0].Key"&gt;&lt;/ExpressionMappingRule&gt; 
+
+      &lt;Ignores&gt; 
+
+        &lt;Ignore Name="Street"&gt;&lt;/Ignore&gt; 
+
+      &lt;/Ignores&gt; 
+
+    &lt;/Mapping&gt; 
+
+  &lt;/Mappings&gt; 
+
+&lt;/AgileMapper&gt;
+</code></pre>
+
+<p>测试代码：</p>
+
+<p>[TestMethod]</p>
+
+<pre><code>    public void XMlConfig_SimpleMapping_Gen() 
+
+    { 
+
+
+
+        StudenDo stu = new StudenDo() 
+
+        { 
+
+            ID = 1, 
+
+            Name = "test1", 
+
+            Sex = Sex.女, 
+
+            Address = new Address() 
+
+            { 
+
+                Country = "中国", 
+
+                Province = "四川", 
+
+                Street = "高新区" 
+
+            }, 
+
+            CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+            Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+            ContactWay = new ContactWay() 
+
+            { 
+
+                Phone = "1111111111111111", 
+
+                Email = "xxxx@12f", 
+
+                QQ = "7889789999889" 
+
+            } 
+
+        }; 
+
+
+
+        var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(new XMLMappingConfigurator(@"E:\Project\OpenSource\AgileMapper\AgileMappper.Test\XMLConfigurator\AgileMapper.xml")); 
+
+
+
+        var stuDto = mapper.Warp(stu);           
+
+
+
+        Assert.AreEqual(stuDto.ID, stu.ID); 
+
+        Assert.AreEqual(stuDto.Name, stu.Name); 
+
+        Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+        Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+        Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+        Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+        //object 
+
+        // Assert.AreEqual(stuDto.ContactWay,null); 
+
+        Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+        Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+        //expression 
+
+        Assert.AreEqual(stuDto.Particular.Replace(" ", ""), string.Format("{0}{1}", stu.Address.Country, stu.Address.Province)); 
+
+        Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
+
+        //collection            
+
+        Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+        Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+
+
+        Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
+
+        Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
+
+        Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
+
+
+
+        //Warp 2 
+
+        var stuDo = new StudenDo(); 
+
+        mapper.Warp(stuDto, stuDo); 
+
+
+
+        Assert.AreEqual(stuDo.ID, stuDto.ID); 
+
+        Assert.AreEqual(stuDo.Name, stuDto.Name); 
+
+        Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
+
+        Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
+
+        Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
+
+        //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
+
+        //object 
+
+        Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
+
+        Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
+
+        //collection 
+
+
+
+        Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
+
+        Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
+
+
+
+        Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
+
+        Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
+
+        Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
+
+    }
+</code></pre>
+
+<p>三：DataRow的测试：&nbsp;</p>
+
+<p>测试预备StudentModelForDataRow：</p>
+
+<pre><code>public class StudentModelForDataRow 
+
+  { 
+
+      public int ID 
+
+      { get; set; } 
+
+
+
+      public string Name 
+
+      { get; set; } 
+
+  }
+</code></pre>
+
+<p>测试代码：&nbsp;</p>
+
+<pre><code>    [TestMethod] 
+
+     public void DataRowConfig_SameTable_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+
+
+         var rowClone = dt.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(typeof(DataRow), row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_UnSameTable_MutipleRule_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         DataTable dt2 = new DataTable(); 
+
+         dt2.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)), 
+
+              new DataColumn("Sex",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt2.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         row[2] = "Nan"; 
+
+         dt2.Rows.Add(row); 
+
+
+
+         var rowClone = dt.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_UnSameTable_Not_MutipleRule_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         DataTable dt2 = new DataTable(); 
+
+         dt2.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)), 
+
+              new DataColumn("Sex",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+
+
+         var rowClone = dt2.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_To_Object_CloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+         StudentModelForDataRow model = new StudentModelForDataRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, model); 
+
+         Assert.AreEqual(model.ID, row[0]); 
+
+         Assert.AreEqual(model.Name, row[1]); 
+
+     }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; DataRow匹配针对相同的表结构和不同表结构，以及实体类和DataRow之间的转化。&nbsp;</p>
+
+<p>单元测试结果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333394223.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/20120329133348267.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 对于xml配置的架构还没做，以及基于T4模板的按照规则代码生成模板还在进一步开发中，敬请期待。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天就写在这里了，欢迎大家的指正和修改，希望你的修改如果更好能通知我，给我好的建议和探讨，谢谢。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/03/29/AgileMapper1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/12/IOC-AOP-sui-bi-mu-lu/">IOC/AOP随笔目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/02/12/IOC-AOP-sui-bi-mu-lu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/02/12/IOC-AOP-sui-bi-mu-lu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在当前软件开发OO设计中，面对软件需求的各种潜在变化，我们可能会采用领域驱动开发，把我们的各个业务逻辑分层次隔离解除耦合，这就出现了N层架构（这面值得是逻辑上的分层，当然我们的逻辑分层层次需要比物理架构层次多），这样将会使得我们的软件能够适应更多的需求变化。关于领域驱动开发的实例网上都很多，不得不推荐的是微软开源实例项目的NLayerApp：<a href="http://microsoftnlayerapp.codeplex.com/" title="http://microsoftnlayerapp.codeplex.com/">http://microsoftnlayerapp.codeplex.com/</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然而在于我们的逻辑分层的每一层次之间的耦合度解耦也是一个常见的问题.这样在层次的变化中我们需要实现不变更服务层次，这是我们的设计必须依赖于不变接口（抽象）。对于分层的接口对象创建我们当前流程的解决方案是IOC框架，负责不变对象的创建组合，当下流行的IOC框架有：<a href="http://code.google.com/p/autofac/">Autofac</a>，<a href="http://sourceforge.net/projects/castleproject/files/Windsor/2.5/Castle.Windsor.2.5.3.zip/download">Castle Windsor</a>，<a href="http://entlib.codeplex.com/">Unity</a>，<a href="http://www.springframework.net/">Spring.NET</a>，<a href="http://sourceforge.net/projects/structuremap/files/">StructureMap</a>，<a href="http://ninject.org/download">Ninject</a>，当然这么多IOC框架供我们选择。我本人只了解 <a href="http://sourceforge.net/projects/castleproject/files/Windsor/2.5/Castle.Windsor.2.5.3.zip/download">Castle Windsor</a>，<a href="http://entlib.codeplex.com/">Unity</a>，更喜欢<a href="http://entlib.codeplex.com/">Unity</a>这套微软自身的轻量级ioc框架。关于IOC框架的测试园友<a href="http://home.cnblogs.com/u/liping13599168/">Leepy</a>有测试<a href="http://www.cnblogs.com/liping13599168/archive/2011/07/17/2108734.html">各大主流.Net的IOC框架性能测试比较</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 另外我还想说的是我们的业务处理中有很多共性，并非业务本身的，比如权限，日志，缓存等功能模块，如果我们每次都重复将是一个巨大的工作量和难以维护的成本。应运而生的AOP框架，就是一种从业务纵向切入，对目标实现权限，日志等。对于AOP的实现主流框架主要有透明代理和静态植入两大类。Castle和EL中的PIAB就是一种透明代理的实现方式，PostSharp则是编译时静态注入框架。其他框架还有<a href="http://setpoint.codehaus.org/Downloads">SetPoint</a>，<a href="http://sourceforge.net/projects/aopnet/files">NAop</a>，<a href="http://aspectsharpcomp.sourceforge.net/download.htm">NKalore</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 今天整理一下本博客汇总关于IOC，AOP的随笔，忘大家不辞吝啬多多指教，共同进步。</p>
+
+<p>一：IOC目录：</p>
+
+<ol>
+<li><p>IOC应用篇：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/02/07/2342071.html">WCF利用企业库Unity框架的IOC层次解耦</a></li>
+</ol>
+</li>
+</ol>
+
+
+<p>二：AOP目录：</p>
+
+<ol>
+<li><p>AOP静态植入原理：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html">浅谈.NET编译时注入（C#&#8212;&gt;IL）</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html">MSBuild + MSILInect实现编译时AOP之预览</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html">MSBuild + MSILInect实现编译时AOP-改变前后对比</a></li>
+</ol>
+</li>
+<li><p>PostSharp AOP：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">AOP之PostSharp初见-OnExceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html">AOP之PostSharp2-OnMethodBoundaryAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html">AOP之PostSharp3-MethodInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html">AOP之PostSharp5-LocationInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html">AOP之PostSharp6-EventInterceptionAspect(事件异步调用)</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html">PostSharp &ndash; Thread Dispatching（GUI多线程）</a></li>
+</ol>
+</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp; 本系列中的随笔还有继续，我会不断更新。忘大家不辞吝啬多多指教，共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/12/2348521.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/">PropertyGrid无意的发现DisplayNameAttribute及应用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 说到这个winform属性控件<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)，要从以前参与项目架构研发，做报表引擎开始，当时我们的目的是想做一个比较简单的报表引擎没有RDLC等报表复杂，是为了让我们的可以操作，用户可以凭借表单拖拽设置样式完成报表模板设置，与我们开发人员代码实现的数据流结合，产生基于apose.cells的excel报表。把我们多而烦的报表业务交给用户完成，用户利用报表设计完成的模板保存为xml保存至服务器，工以后使用。当时做到表单控件属性设计无疑我们采用了<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)控件，<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)支持很多的控件设计时交互，很强大，但是对于控件的属性汉化却存在问题，当时也没仔细查阅msdn，直接让控件属性为中文字段设计完成，对用户提示。最后项目基本完成，能够应对简单报表，稍微减少了些开发工作量吧。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在时隔今天做基本控件的封装的时候突然看见了System.ComponentModel.DisplayNameAttribute这个标签，见名就考虑是做什么的，查询msdn才知道他就可以完成对<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx )的现实名称修改（<a href="http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute(v=VS.80">http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute(v=VS.80).aspx?TPSecNotice</a>.aspx?TPSecNotice &ldquo;<a href="http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute">http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute</a>(v=VS.80).aspx?TPSecNotice&rdquo;)）。于是便尝试了一下。</p>
+
+<p>代码：</p>
+
+<pre><code>        using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+
+    namespace WindowsFormsApplication1 
+    { 
+        class TestControl : System.Windows.Forms.TextBox, Green.SmartUIControls.ISmartUIControl 
+        { 
+            [System.ComponentModel.Browsable(true)] 
+            [System.ComponentModel.DefaultValue(null)] 
+            [System.ComponentModel.Description("数据绑定匹配属性")] 
+            [System.ComponentModel.Category("Green.SmartUIControl")] 
+            [System.ComponentModel.DisplayName(ControlResource.Data)] 
+            public string Data 
+            { get; set; } 
+
+            #region ISmartUIControl 成员 
+            private Green.SmartUIControls.IDataBindSetting _DataBindSetting; 
+            [System.ComponentModel.Browsable(false)] 
+            public Green.SmartUIControls.IDataBindSetting DataBindSetting 
+            { 
+                get 
+                { 
+                    if (_DataBindSetting == null &amp;&amp; !this.DesignMode) 
+                    { 
+                        _DataBindSetting = new Green.SmartUIControls.DefaultDataBindSetting(this); 
+                    } 
+                    return _DataBindSetting; 
+                } 
+                set 
+                { 
+                    if (value != null) 
+                    { 
+                        _DataBindSetting = value; 
+                    } 
+                } 
+            } 
+            [System.ComponentModel.Browsable(true)] 
+            [System.ComponentModel.DefaultValue(null)] 
+            [System.ComponentModel.Description("数据绑定匹配属性")] 
+            [System.ComponentModel.Category("Green.SmartUIControl")] 
+            [System.ComponentModel.DisplayName(ControlResource.DataBindProperty)] 
+            public string DataBindProperty 
+            { 
+                get; 
+                set; 
+            } 
+
+            [System.ComponentModel.Browsable(true)] 
+            [System.ComponentModel.DefaultValue(null)] 
+            [System.ComponentModel.Description("Dock")] 
+            [System.ComponentModel.Category("Green.SmartUIControl")] 
+            [System.ComponentModel.DisplayName(ControlResource.Dock)] 
+            public override System.Windows.Forms.DockStyle Dock 
+            { 
+                get 
+                { 
+                    return base.Dock; 
+                } 
+                set 
+                { 
+                    base.Dock = value; 
+                } 
+            } 
+            #endregion 
+        } 
+
+        public class ControlResource 
+        { 
+    #if Debug 
+            public const string Dock = "Dock"; 
+            public const string DataBindProperty = "DataBindProperty"; 
+            public const string Data = "Data"; 
+    #else 
+
+            public const string Dock = "停靠"; 
+            public const string DataBindProperty = "数据绑定匹配属性"; 
+            public const string Data = "数据"; 
+    #endif 
+        } 
+    }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp; 最后需要特别说明的是对于Attribute我们只能传入常量。在我们的很多开发员使用控件等时候我们也许都习惯了英文对于中文不适应了，但是我们可以利用vs的条件编译绕过，编译出不同的dll包，开发版和用户使用版本。如上面的对于调试和发布版的显示设置。这个ControlResource我们可以开发一个简单的工具对其xml保存并生成我们需要的代码维护。</p>
+
+<p>看图：</p>
+
+<p>设置Dock=Top：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126194804.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126241645.png" title="QQ截图未命名2" alt="QQ截图未命名2" /></a></p>
+
+<p>设置Dock=Bottom：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126254842.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126261909.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 同时我也考虑到在我们的工作流自定义表单设计和代码生成工具等中我们也可以运用，表单设计的控件字段属性设置，保存为xml或者二级制，xaml存储之类。简单说一句对于silverlight，wpf 的对于我觉得保存为xaml是最简单的，我们可以直接保存xaml，并简单转换加入父容器中。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/11/2347096.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/">WCF利用企业库Unity框架的IOC层次解耦</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-07T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/02/07/WCF-li-yong-qi-ye-ku-Unity-kuang-jia-di-IOC-ceng-ci-jie-ou/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 由于工作几个月来框架开发已经好久没写博客了，今天想抽点时间出来冒泡。在领域驱动开发中SOA已经成为我们开发的主流技术，在面对当前众多的UI框架选择（asp.net mvc,silverlight,wpf,winform,wp7等一些列甚至跨语言），我们能够重用和抽象的业务逻辑是不会变化的，为了屏蔽这些UI的复杂性和差异性，我们可能会采用诸如wcf soap的服务发布。再说在领域驱动开发中我们肯定会把各个逻辑分层次隔离解除耦合，这就出现了N层架构，在于我们的每一层次之间的耦合度当前流程的解决方案IOC框架，以及业务解耦AOP。这里要解决的是SOA框架WCF和IOC框架的结合。</p>
+
+<p>&nbsp;&nbsp;&nbsp; WCF框架是一个极易扩展的框架，提供了非常多的扩展点（InstanceProvider，MessageInspector，CallContextInitializer，MessageFilter，MessageFormatter，ParameterInspector等等）。在这里IOC是作为一个容器组装创建的框架，我们需要的是对服务对象的创建，所以我们选择的当然是InstanceProvider扩展点。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 多说一句废话，正如前篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a>和 <a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a>中所说，我是一个固执的人，个人希望注入支持自定义配置文件，不喜欢把配置信息全部写在一个web.config/app.config中，也不喜欢el的写在同一个外部配置文件中，倾向于每个模块在一个不同的配置文件，并在模块中在区分container容器，所以特别写了每个单独配置文件的延时加载，缓存。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面就是对InstanceProvider的扩展：</p>
+
+<pre><code>public class ELUnityInstanceProvider : IInstanceProvider 
+   { 
+       private Type contractType; 
+       private string container; 
+       private string configFile; 
+       private string name; 
+       private static object lockObj = new object(); 
+       private static Dictionary&lt;string, UnityConfigurationSection&gt; sectionDict = new Dictionary&lt;string, UnityConfigurationSection&gt;(); 
+
+       public ELUnityInstanceProvider(Type contractType, string container, string configFile, string name) 
+       { 
+           this.name = name; 
+           this.configFile = configFile; 
+           this.contractType = contractType; 
+           this.container = container; 
+       } 
+
+       #region IInstanceProvider 成员 
+
+       public object GetInstance(System.ServiceModel.InstanceContext instanceContext, System.ServiceModel.Channels.Message message) 
+       { 
+           Microsoft.Practices.Unity.Configuration.UnityConfigurationSection unitySection = GetUnityConfigurationSection(); 
+
+           if (unitySection != null) 
+           { 
+               var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(this.container) ? unitySection.Containers.Default.Name : this.container); 
+               var obj = string.IsNullOrEmpty(this.name) ? container.Resolve(this.contractType) : container.Resolve(this.contractType, this.name); 
+
+               var piabAtttr = obj.GetType().GetCustomAttributes(typeof(ELPolicyinjectionAttribute), false) as ELPolicyinjectionAttribute[]; 
+               if (piabAtttr.Length &gt; 0) 
+               { 
+                   obj = Microsoft.Practices.EnterpriseLibrary.PolicyInjection.PolicyInjection.Wrap(this.contractType, obj); 
+               } 
+               return obj; 
+           } 
+           return null; 
+       } 
+       private Microsoft.Practices.Unity.Configuration.UnityConfigurationSection GetUnityConfigurationSection() 
+       { 
+           if (!string.IsNullOrEmpty(this.configFile)) 
+           { 
+               if (!sectionDict.ContainsKey(this.configFile)) 
+               { 
+                   lock (lockObj) 
+                   { 
+                       if (!sectionDict.ContainsKey(this.configFile)) 
+                       { 
+                           Microsoft.Practices.Unity.Configuration.UnityConfigurationSection unitySection = null; 
+                           var fileMap = new System.Configuration.ExeConfigurationFileMap { ExeConfigFilename = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, this.configFile) }; 
+                           System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(fileMap, System.Configuration.ConfigurationUserLevel.None); 
+                           unitySection = configuration == null ? null : configuration.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+                           if (unitySection == null) 
+                               return null; 
+                           sectionDict.Add(this.configFile, unitySection); 
+                       } 
+                   } 
+               } 
+               return sectionDict[this.configFile]; 
+           } 
+
+           return System.Configuration.ConfigurationManager.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+       } 
+
+       public object GetInstance(System.ServiceModel.InstanceContext instanceContext) 
+       { 
+           return this.GetInstance(instanceContext, null); 
+       } 
+
+       public void ReleaseInstance(System.ServiceModel.InstanceContext instanceContext, object instance) 
+       { 
+           IDisposable disposable = instance as IDisposable; 
+           if (disposable != null) 
+           { 
+               disposable.Dispose(); 
+           } 
+           instance = null; 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 下面我们需要已Attribute方式贴在Contract上：</p>
+
+<pre><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
+   { 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       #region IContractBehavior 成员 
+
+       public void AddBindingParameters(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters) 
+       { 
+
+       } 
+
+       public void ApplyClientBehavior(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime) 
+       { 
+
+       } 
+
+       public void ApplyDispatchBehavior(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.DispatchRuntime dispatchRuntime) 
+       { 
+           dispatchRuntime.InstanceProvider = new ELUnityInstanceProvider(contractDescription.ContractType, this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public void Validate(ContractDescription contractDescription, ServiceEndpoint endpoint) 
+       { 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p> 对于wcf同时我们也该支持配置文件扩展：</p>
+
+<pre><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
+   { 
+       [ConfigurationProperty("Container", IsRequired = false, DefaultValue = "")] 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       [ConfigurationProperty("ConfigFile", IsRequired = false, DefaultValue = "")] 
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       [ConfigurationProperty("Name", IsRequired = false, DefaultValue = "")] 
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       protected override object CreateBehavior() 
+       { 
+           return new ELUnityBehavior(this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public override Type BehaviorType 
+       { 
+           get { return typeof(ELUnityBehavior); } 
+       } 
+   }
+
+public class ELUnityBehavior : IEndpointBehavior 
+   { 
+       public string Container 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string ConfigFile 
+       { 
+           get; 
+           set; 
+       } 
+
+       public string Name 
+       { 
+           get; 
+           set; 
+       } 
+
+       public ELUnityBehavior(string container, string configFile, string name) 
+       { 
+           this.Name = name; 
+           this.ConfigFile = configFile; 
+           this.Container = container; 
+       } 
+       #region IEndpointBehavior 成员 
+
+       public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters) 
+       { 
+
+       } 
+
+       public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime) 
+       { 
+
+       } 
+
+       public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher) 
+       { 
+           endpointDispatcher.DispatchRuntime.InstanceProvider = new ELUnityInstanceProvider(endpoint.Contract.ContractType, this.Container, this.ConfigFile, this.Name); 
+       } 
+
+       public void Validate(ServiceEndpoint endpoint) 
+       { 
+
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>目前我们已经简单实现了：看看测试：</p>
+
+<pre><code>   Contract：
+
+   [ServiceContract()] 
+   [Green.WCFExtensions.ELUnityBehavior(Container = "test", ConfigFile = "App1.config")]   
+  public interface IHelloService 
+  { 
+      [OperationContract] 
+      string Say(string name); 
+  }
+
+Service：
+
+public class HelloService1 : IHelloService 
+   { 
+       [Microsoft.Practices.Unity.Dependency("proxy")] 
+       public IHelloService Service 
+       { 
+           get; 
+           set; 
+       } 
+
+       #region IHelloService 成员 
+          public string Say(string name) 
+       { 
+                     return Service.Say(name); 
+
+       } 
+
+       #endregion 
+   } 
+
+   public class HelloServiceProxy : IHelloService 
+   { 
+       #region IHelloService 成员 
+       public string Say(string name) 
+       { 
+           return string.Format("Hello:{0}", name); 
+       } 
+
+       #endregion 
+   }
+</code></pre>
+
+<p>配置app1.config:</p>
+
+<pre><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
+&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloService1,WcfService" &gt; &lt;/register&gt;
+</code></pre>
+
+<p>IOC,AOP博客参考：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">AOP之PostSharp初见-OnExceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html">AOP之PostSharp2-OnMethodBoundaryAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html">AOP之PostSharp3-MethodInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html">AOP之PostSharp5-LocationInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html">AOP之PostSharp6-EventInterceptionAspect</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/admin/AOP%E4%B9%8BPostSharp7-%E8%A7%A3%E5%86%B3IOC%20%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5new%E9%97%AE%E9%A2%98%EF%BC%8C%E7%AE%80%E5%8C%96IOC%E5%BC%80%E5%8F%91%E5%92%8CIOC%E5%AF%B9%E8%B1%A1LazyLoad">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad </a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/category/312638.html">http://www.cnblogs.com/whitewolf/category/312638.html</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/07/2342071.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/30/ji-lu-you-Equal-ji-chu-zhi-shi-yin-qi-di-nei-cun-xie-lou/">记录由Equal基础知识引起的内存泄露</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-30T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/30/ji-lu-you-Equal-ji-chu-zhi-shi-yin-qi-di-nei-cun-xie-lou/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/30/ji-lu-you-Equal-ji-chu-zhi-shi-yin-qi-di-nei-cun-xie-lou/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在最近的公司框架开发中，利用了网上某大牛的反射缓存库作为辅助。在测试的时候发现出现了巨大的内存泄露，在频繁的操作后，内存不断的产生巨大的开销，10多分钟就占有了5,6m的内存。解决问题的时，公司不能上网，没有内存分析工具，没有我钟爱的ANTS Memory Profiler帮助下，我们只能靠简单的内存输出来二分查找缩小范围，利用</p>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/system.diagnostics.aspx">System.Diagnostics</a>命名空间下的Process的WorkingSet64属性来统计两次输出的内存增长量（WorkingSet64：描述关联的进程分配的物理内存量（以字节为单位））。花了半天终于定位到了第三方的缓存块，一看吓一跳居然缓存了2,3万的对象。看到这里我很清楚的猜测到自定义缓存key一定没有重写来自Object的Equal方法，在三两下很快解决了这次问题。哎，本不该相信第三方，刚开始还以为我数据绑定注册的一大堆客户端控件的事件引起的，但是我实现了IDisposable并取消了事件的，必究事件代理是强类型引用。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在这里我简单说说这个本是基础知识的东西。说道Equal，我们会联想到==操作符，==对于值类型表示的是值相等，除string类型（内部重写）外表示的是对象的引用，同一个引用地址才会相等。Equal描述的是对象的内容是否相等。但是在Object中默认实现是对引用reference的比较，我们要实现值的比较这必须重写Equal方法和GetHashCode方法，这两个是同时重写的。在我们的IList.Contains，IDictionary.Contains中利用对象的比较就是默认的Equal方法比较，所以我们必须重写这个方法，来达到我们实际的值比较。<a href="http://msdn.microsoft.com/zh-cn/library/ms173147(v=vs.90">MSDN：Equals() 和运算符 == 的重写准则（C# 编程指南）</a>.aspx)</p>
+
+<p>&nbsp;&nbsp; 然而在我们3.0后的表达式linq中对于对象的比较，我们需要实现的IEqualityComparer&lt;T&gt;接口，如下定义：</p>
+
+<p>public static bool Contains&lt;TSource&gt;(this IEnumerable&lt;TSource&gt; source, TSource value, IEqualityComparer&lt;TSource&gt; comparer);</p>
+
+<p>在微软内部实现了5个重要的类，如下图（图来自博客园鹤冲天大牛）：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/ldp615/201108/201108012131243444.png"><img src="http://images.cnblogs.com/cnblogs_com/ldp615/201108/201108012131253311.png" title="image" alt="image" /></a></p>
+
+<p>在这里我不想在说很多，关于可以参见博客园鹤冲天大牛的<a href="http://www.cnblogs.com/ldp615/archive/2011/08/01/distinct-entension.html">c# 扩展方法奇思妙用基础篇八：Distinct 扩展</a>，<a href="http://www.cnblogs.com/ldp615/archive/2011/08/02/2125112.html">何止 Linq 的 Distinct 不给力</a>文章实战。</p>
+
+<p>最后给初学者提醒一句，对于IList.Contains，IDictionary.Contains注意实现Equal和GetHashCode，Linq比较IEqualityComparer&lt;TSource&gt;。</p>
+
+<p>本不该错的，应该是大牛忘写了吧，可是害惨了我。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/30/2307894.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/">AOP之PostSharp6-EventInterceptionAspect(事件异步调用)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-13T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在上几章我们讨论了方法属性字段的aspect，现在我们再来看看事件机制的aspect。和字段，属性location一样，在c#中字段也可以转化为方法名为add，remove的方法处理，所以对于事件的aspect，同样类似于我们的方法。我们先看看EventInterceptionAspect的定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947164625.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947198892.png" title="image" alt="image" /></a></p>
+
+<p>aspect类包含我们对于事件aspect所必要的注册，取消，调用的注入。</p>
+
+<p>其参数定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947203069.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947226648.png" title="image" alt="image" /></a></p>
+
+<p>为我们提供了，ProceedAddHandler，ProceedInvokeHandler，ProceedRemoveHandler的事件处理代理。同样包含来自AdviceArgs的Instance对象。</p>
+
+<p>&nbsp; 对于事件aspect的例子真的不好想，在这里我们只是简单的做个事件变为异步调用的代码作为demo：</p>
+
+<pre><code> [Serializable]
+    public class AsynEventAspectAttribute : PostSharp.Aspects.EventInterceptionAspect
+    {
+
+        public override void OnInvokeHandler(PostSharp.Aspects.EventInterceptionArgs args)
+        {
+            var th = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(new Action&lt;object&gt;((obj) =&gt;
+                {
+                    System.Threading.Thread.Sleep(new Random().Next(1000));
+                    try
+                    {
+                        args.ProceedInvokeHandler();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        args.ProceedRemoveHandler();
+                    }
+                })));
+            th.Start();
+        }
+    }
+</code></pre>
+
+<p>&nbsp;测试代码：</p>
+
+<pre><code> namespace PostSharpDemo 
+{ 
+    public class TestAsyncAspect 
+    { 
+        [AsynEventAspectAttribute] 
+        public event EventHandler SomeEvent = null; 
+
+        public void OnSomeEvent() 
+        { 
+            if (SomeEvent != null) 
+            { 
+
+                SomeEvent(this, EventArgs.Empty); 
+            } 
+        } 
+    } 
+}
+
+class Program 
+    { 
+        static void Main(string[] args) 
+        {
+
+TestAsyncAspect pro = new TestAsyncAspect(); 
+          for (int i = 0; i &lt; 10; i++) 
+          { 
+              pro.SomeEvent += new EventHandler(pro_SomeEvent); 
+          } 
+          pro.OnSomeEvent(); 
+    //      pro.SomeEvent -= new EventHandler(pro_SomeEvent); 
+          Console.WriteLine("主线程完了！"); 
+          Console.Read(); 
+      } 
+
+      static void pro_SomeEvent(object sender, EventArgs e) 
+      { 
+          Console.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId); 
+      }    
+
+}
+</code></pre>
+
+<p>&nbsp;效果图如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947247402.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947264536.png" title="image" alt="image" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/">AOP之PostSharp5-LocationInterceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这节我们要讨论的是PostSharp的LocationInterceptionAspect，PostSharp官方把Property和Field成为Location。所以LocationInterceptionAspect就是为了实现Property和Field的拦截。在我们前面讨论了关于方法OnMethodBoundaryAspect的aspect，我们很容易想到，在c#中Property就是一个编译时分为Get和Set两个方法，对于property的aspect就类似于了我们的Method的aspect。而对于Field的aspect同样可以转换为对Property的aspect。</p>
+
+<p>下面我们用反编译工具来证实一下我的说法.</p>
+
+<p>代码：</p>
+
+<pre><code>    [LazyLoad("test", "test")] 
+     private string TestField;
+</code></pre>
+
+<p>编译后：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144511133.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445152198.png" title="image" alt="image" /></a></p>
+
+<p>我们在来看看LocationInterceptionAspect定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445172495.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445215649.png" title="image" alt="image" /></a></p>
+
+<p>其OnGetvalue和OnSetValue是我们主要拦截的方法，起参数LocationInterceptionArgs定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445276277.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445362807.png" title="image" alt="image" /></a></p>
+
+<p>同样给也拥有来自父类AdviceArgs的Instance对象，对于对象级Location为所在对象，静态则为null；</p>
+
+<p>LocationInterceptionAspect的使用方法和我们的OnMethodBoundaryAspect和类似，使用方式也一样，对于使用对不重要，鄙人觉得更重要的是我们的设计思想。</p>
+
+<p>我暂时能想到的很好的LocationInterceptionAspect使用场景则是LazyLoad，对于3.5表达式的出现，我们到处都可以简单这个词，在c#类库中也加入了这个类。</p>
+
+<p>这里我们只是做一个简单的演示demo，根据attribute上制定的类型的方法延时加载对象，废话不说了上code：</p>
+
+<p>  [Serializable]</p>
+
+<pre><code>   public class LazyLoadAttribute : LocationInterceptionAspect 
+   { 
+       public string MethodName 
+       { 
+           get; 
+           private set; 
+       } 
+
+       public string PrivoderFullName 
+       { 
+           get; 
+           private set; 
+       } 
+
+       public LazyLoadAttribute(string MethodName, string PrivoderFullName) 
+       { 
+           Green.Utility.Guard.ArgumentNotNullOrEmpty(MethodName, "MethodName"); 
+           Green.Utility.Guard.ArgumentNotNullOrEmpty(PrivoderFullName, "PrivoderFullName"); 
+           this.MethodName = MethodName; 
+           this.PrivoderFullName = PrivoderFullName; 
+       } 
+
+       public override void OnGetValue(LocationInterceptionArgs args) 
+       { 
+           if (args.GetCurrentValue() == null) 
+           { 
+               Console.WriteLine("Loading...."); 
+               var value = this.LoadProperty(args.Instance); 
+               if (value != null) 
+               {                    
+                   args.Value = value; 
+                   args.ProceedSetValue(); 
+               } 
+           } 
+           args.ProceedGetValue(); 
+       } 
+
+       private object LoadProperty(object p) 
+       { 
+           var type = Type.GetType(this.PrivoderFullName);//具体加载程序集需要自定义需求，这里仅为了测试简化。 
+           if (type != null) 
+           { 
+               var method = type.GetMethod(this.MethodName); 
+               if (method != null) 
+               { 
+                   object[] ps = null; 
+                   if (p != null) 
+                   { 
+                       ps = new object[] { p }; 
+                   } 
+                   object entity = null; 
+                   if (!method.IsStatic) 
+                   { 
+                       entity = System.Activator.CreateInstance(type); 
+                   } 
+                   return method.Invoke(entity, ps); 
+               } 
+           } 
+           return null; 
+       } 
+   }
+</code></pre>
+
+<p>测试code：</p>
+
+<pre><code>class Program 
+   {       
+       static void Main(string[] args) 
+       {            
+
+           /* 
+            * demo4*/ 
+
+           Student stu = new Student(); 
+           stu.ID = 10; 
+           Console.WriteLine(stu.Name); 
+           Console.WriteLine(stu.Name); 
+
+           Console.WriteLine(Student.TestStaticProperty); 
+           Console.WriteLine(Student.TestStaticProperty); 
+           Console.Read(); 
+       }
+
+public static string TextLazyLoadStaticMenthod(Student stu) 
+      { 
+          return "Student" + stu.ID; 
+      } 
+
+      public string TextLazyLoadInstacnceMenthod(Student stu) 
+      { 
+          return "Student" + stu.ID; 
+      } 
+
+      public string TextLazyLoadStaticPropertyMenthod() 
+      { 
+          return "测试"; 
+      } 
+  }
+
+public class Student 
+   { 
+      // [LazyLoad("TextLazyLoadStaticMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       [LazyLoad("TextLazyLoadInstacnceMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       public string Name 
+       { get; set; } 
+       public string Sex 
+       { get; set; } 
+
+       [LazyLoad("TextLazyLoadStaticPropertyMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       public static string TestStaticProperty 
+       { get; set; } 
+
+       public int ID 
+       { get; set; } 
+   }
+</code></pre>
+
+<div class="cnblogs_code" onclick="cnblogs_code_show('c8e815c6-3301-42ff-93ea-f8f84b47d5b3')">效果图片如下：</div>
+
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144540238.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445444222.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">dmeo</a></p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果我们了解wpf或者silverlight开发中的MVVM模式，就知道框架要求我们的ViewModel必须实现INotifyPropertyChanged，来得到属性改变的事件通知，更新UI。</p>
+
+<p>实现INotifyPropertyChanged接口很简单，而且一沉不变，属于重复劳动。在这里我们将看看如何运用PostSharp来解决我们的重复劳动。当然这里只是一个demo演示，具体在项目开发中你直接实现INotifyPropertyChanged，或者AOP植入，这取决我个人和团队文化。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在下面我们将会用到Postsharp的：</p>
+
+<ol>
+<li>IntroduceMember：向目标对象植入成员。</li>
+<li>IntroduceInterface：使得目标实现接口，参数接口类型。</li>
+<li>OnLocationSetValueAdvice：PostSharp的一种Advice Aspect。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 下面我就看看我们的代码是如何简洁来实现：</p>
+
+<pre><code> using System;
+  using System.ComponentModel;
+  using PostSharp.Aspects;
+  using PostSharp.Aspects.Advices;
+  using PostSharp.Extensibility;
+
+  namespace PostSharpDemo
+  {
+      [Serializable]
+      [IntroduceInterface(typeof(INotifyPropertyChanged), OverrideAction = InterfaceOverrideAction.Ignore)]
+      public class INotifyPropertyChangedAttribute : InstanceLevelAspect, INotifyPropertyChanged
+      {
+
+          [OnLocationSetValueAdvice, MulticastPointcut(Targets = MulticastTargets.Property)]
+          public void OnValueChanged(LocationInterceptionArgs args)
+          {
+              var current=args.GetCurrentValue();
+              if ((args.Value != null &amp;&amp; (!args.Value.Equals(current)))
+                  || (current != null &amp;&amp; (!current.Equals(args.Value))))
+              {
+                  args.ProceedSetValue();
+                  this.OnRaisePropertyChange(args.Location.Name);
+              }
+          }
+
+          #region INotifyPropertyChanged 成员
+
+          [IntroduceMember(IsVirtual = true, OverrideAction = MemberOverrideAction.Ignore)]
+          public event PropertyChangedEventHandler PropertyChanged;
+
+
+
+
+          protected void OnRaisePropertyChange(string property)
+          {
+              if (PropertyChanged != null)
+              {
+                  PropertyChanged.Invoke(this.Instance, new PropertyChangedEventArgs(property));
+              }
+          }
+          #endregion
+      }
+  }
+</code></pre>
+
+<p>测试代码：</p>
+
+<p>static void Main(string[] args)</p>
+
+<pre><code>    { 
+
+         Student stu = new Student(); 
+        (stu as INotifyPropertyChanged).PropertyChanged += new PropertyChangedEventHandler(Program_PropertyChanged); 
+        stu.ID = 10; 
+        stu.Name = "wolf"; 
+        stu.Sex = "Man"; 
+        stu.ID = 2; 
+        Console.Read(); 
+    } 
+
+    static void Program_PropertyChanged(object sender, PropertyChangedEventArgs e) 
+    { 
+        Console.WriteLine(string.Format("property {0} has changed", e.PropertyName)); 
+    }
+</code></pre>
+
+<p>实体类：</p>
+
+<pre><code>  [INotifyPropertyChanged] 
+   public class Student 
+   { 
+       public string Name 
+       { get; set; } 
+
+       public string Sex 
+       { get; set; } 
+
+       public int ID 
+       { get; set; } 
+   }
+</code></pre>
+
+<div class="cnblogs_code">运行效果如下：</div>
+
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006066024.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006218755.png" title="image" alt="image" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
+
+<p>本博客中相关文章有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/">AOP之PostSharp3-MethodInterceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp3-MethodInterceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 在上两篇我们介绍了<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">OnExceptionAspect</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/2275680.html">OnMethodBoundaryAspect</a> ，在这节我们将继续了解MethodInterceptionAspect，他为我们提供了关于方法处理的AOP切入，不同于OnMethodBoundaryAspect，他不是边界，是方法体。有了我们可以在我们的方法切入aspect很多有用的信息，比如将同步方法变为异步，防止多次点击重复提交，winform，wpf的多线程调用UI（参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html">PostSharp &ndash; Thread Dispatching（GUI多线程）</a>），长时间操作在超过用户接受时间弹出进度条等等有用的关于用户体验和业务逻辑功能，简化我们的编程开发。</p>
+
+<p>同样我们先来看看其MethodInterceptionAspect定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346079947.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346096618.png" title="image" alt="image" /></a></p>
+
+<p>Invoke MethodInterceptionArgs参数：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346138763.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346153482.png" title="image" alt="image" /></a></p>
+
+<p>我们一般使用Proceed是的方法进行处理。在这时我们可以加入线程池调用，使的其变为异步操作。</p>
+
+<p>同时MethodInterceptionAspect 还继承了MethodLevelAspect 的CompileTimeValidate编译是验证，CompileTimeInitialize编译时初始化，RuntimeInitialize运行时初始化，后边的初始化我们将在后面一节PostSharp范围（static和instance中讲到）。</p>
+
+<p>其定义很简单，在于我们的发挥：</p>
+
+<p>二：防止多次提交处理demo：</p>
+
+<p>我们这里只采用简单思路在方法进入禁止按钮可用，方法执行完成后恢复可用状态。我们将使监听winform事件处理方法，按钮来自EventHandle的第一个参数Sender。</p>
+
+<pre><code>[Serializable] 
+    public class UnMutipleTriggerAttribute : MethodInterceptionAspect 
+    { 
+
+
+public override bool CompileTimeValidate(System.Reflection.MethodBase method) 
+       { 
+           var ps = method.GetParameters(); 
+           if (ps != null &amp;&amp; ps.Count() &gt; 0 &amp;&amp; ps[0].Name == "sender") 
+               return true; 
+           return false; 
+       } 
+
+        public override void OnInvoke(MethodInterceptionArgs args) 
+        { 
+            if (args.Arguments.Count &gt; 0) 
+            { 
+                var controls = args.Arguments[0] as System.Windows.Forms.Control; 
+                if (controls != null &amp;&amp; controls.Enabled) 
+                { 
+                    controls.Enabled = false; 
+                    args.Proceed(); ; 
+                    controls.Enabled = true; 
+                } 
+            } 
+
+        } 
+    }
+</code></pre>
+
+<p>在这里我们是监听方法的处理事件函数根据vs自动生成规则，第一个参数是sender，事件源，这里利用了CompileTimeValidate在编译时决定是否注入aspect。</p>
+
+<p>注意这里只是一个简单的demo，只针对于同步操作，如要变为异步操作，这需要改为在异步操作后启用。</p>
+
+<p>测试在button点击方法加上attribute：</p>
+
+<pre><code> [UnMutipleTriggerAttribute] 
+      private void Save(object sender, EventArgs e) 
+      { 
+          System.Threading.Thread.Sleep(2000); 
+      }
+</code></pre>
+
+<p>效果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346163416.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112042346178857.png" title="image" alt="image" /></a></p>
+
+<p>这个例子很简单的就完成了。</p>
+
+<p><a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">demo下载</a></p>
+
+<p>参考：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">AOP之PostSharp初见-OnExceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PostSharp 这个静态植入的aop框架我就不多说了，在以前的aop文件，我们也尝试用<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>理解静态植入AOP的原理。最近公司准备购买Postsharp做一些AOP，减少开发是代码量，至于选择AOP相信也不用多说。我也在今天重新了解了些Postsharp最新版更新，这阵子的博客更新也少了，所以准备在<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>的基础上再一些Postsharp系列。今天既然是初见，那么我们就从最简单的OnExceptionAspect开始。</p>
+
+<p>一：OnExceptionAspect</p>
+
+<p>起定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132372435.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132381812.png" title="image" alt="image" /></a></p>
+
+<p>先写Aspect Attribute：</p>
+
+<pre><code>[Serializable] 
+    public class ExceptionAspectDemoAttribute : OnExceptionAspect 
+    { 
+
+        public override void OnException(MethodExecutionArgs args) 
+        { 
+            var msg = string.Format("时间[{0:yyyy年MM月dd日 HH时mm分}]方法{1}发生异常: {2}\n{3}", DateTime.Now, args.Method.Name, args.Exception.Message, args.Exception.StackTrace); 
+            Console.WriteLine(msg); 
+            args.FlowBehavior = FlowBehavior.Continue; 
+        } 
+        public override Type GetExceptionType(System.Reflection.MethodBase targetMethod) 
+        { 
+            return typeof(NullReferenceException); 
+        } 
+    }
+</code></pre>
+
+<p>注意Postsharp的Aspect都需要标记为可序列化的，因为在编译时会为我们二进制序列化为资源，减少在运行是的开销，这个将在后面专门讲。</p>
+
+<p>上面的code继承至OnExceptionAspect，并且override OnException和GetExceptionType，GetExceptionType为我们需要处理的特定异常。OnException为异常处理决策方法。我们的异常处理决策是当NullReferenceException时候我们会记录日志，并且方法指定继续（args.FlowBehavior = FlowBehavior.Continue）。</p>
+
+<p>看看我们的测试代码：</p>
+
+<pre><code> class Program 
+   { 
+       static void Main(string[] args) 
+       { 
+           Program.ExceptionAspectDemoAttribute1(); 
+           Program.ExceptionAspectDemoAttribute2(); 
+           Console.Read(); 
+       } 
+       [ExceptionAspectDemo] 
+       public static void ExceptionAspectDemoAttribute1() 
+       { 
+           string s = null; 
+           s.GetType(); 
+       } 
+       [ExceptionAspectDemo] 
+       public static void ExceptionAspectDemoAttribute2() 
+       { 
+           throw new Exception("exception"); 
+       } 
+   }
+</code></pre>
+
+<p>&nbsp;很显然我们的两个方法抛出了null异常和自定义异常，预期是NullReferenceException会被扑捉，而自定义异常会中断，运行效果如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013240186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132436890.png" title="image" alt="image" /></a>&nbsp;</p>
+
+<p>我们在来看看postsharp为我们做了什么，当然是反编译看看：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013246115.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132497243.png" title="image" alt="image" /></a></p>
+
+<p>二：Postsharp的Multicasting</p>
+
+<p>1:Multicasting class:</p>
+
+<p>&nbsp; 在这随便也说一下postsharp的Multicasting，多播这样翻译感觉有点死板呵呵，理解就行。利用这一点我们可以吧我们的aspect放在class，assembly等目标上匹配我们的多个目标。比如现在我们不想在我们的每个方法上加attribute，那我们可以选择在class上，如：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132509686.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132515475.png" title="image" alt="image" /></a></p>
+
+<p>反编译，同样注入了我们每个方法：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132524994.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132551142.png" title="image" alt="image" /></a></p>
+
+<p>2:Multicasting assembly:</p>
+
+<p>我们同样可以利用</p>
+
+<p>[assembly: PostSharpDemo.ExceptionAspectDemoAttribute()]</p>
+
+<p>标记在我们的程序集上。</p>
+
+<p>3:AttributeExclude:</p>
+
+<p>但是注意这样也标记了我们的aspect，某些时候可能会导致堆栈溢出 ，我们可以用AttributeExclude=true来排除。</p>
+
+<p>同时我们也可以设置应用目标：AttributeTargetMemberAttributes是一个枚举类型，定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013255520.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132564009.png" title="image" alt="image" /></a></p>
+
+<p>比如我们需要过滤编译时候生成的目标（自动属性，action等等），</p>
+
+<div class="cnblogs_code">
+<div>[assembly:&nbsp;PostSharpDemo1.MethodTraceAspect(AttributeExclude&nbsp;=&nbsp;<span style="color: #0000ff">true</span>,&nbsp;AttributePriority&nbsp;=&nbsp;<span style="color: #800080">0</span>,&nbsp;AttributeTargetMemberAttributes&nbsp;=&nbsp;MulticastAttributes.CompilerGenerated)]</div></div>
+
+
+<p>&nbsp;4:AttributePriority:</p>
+
+<p>还有AttributePriority，我们可以设置编译时优先级。如果我们对目标标记了多个aspect，这样postsharp就不确定注入先后顺序，这样不能确保正确性，在vs编译时候我们会看见警告：Their order of execution is undeterministic.</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132595140.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040133019119.png" title="image" alt="image" /></a></p>
+
+<p>这是时候AttributePriority就派上用途了来决定我们植入的先后优先级。</p>
+
+<p>5:其他匹配</p>
+
+<p>同上AttributeTargetMemberAttributes 我们还可以利用AttributeTargetMembers，AttributeTargetTypes进行目标名称的匹配，支持模糊匹配。</p>
+
+<p>附件：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">Demo下载</a></p>
+
+<p>我的AOP资料：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/8/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/6/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

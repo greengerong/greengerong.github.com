@@ -1,0 +1,1242 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/6">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">PowerShell强大管道</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性，我们可以利用强大的.net FCL在PowerShell中。PowerShell提供强大的管道模型，管道指的是一个命令的输出可以利用操作符（|）方便的传递到下个命令作为输入。PowerShell不同传统管道模型的是它是一门基于对象的管道流，即在命令之间传递的对象不是简单的文本。下面我们就以本地文件操作来实践PowerShell的管道常见命令：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：集合遍历ForEach-Object：可以简写为foreach，或者%代替，提供了管道传入的对集合的遍历，同时提供了操作前begin，操作process，结束end命令，其中$_提供对当前索引的指代。</p>
+
+<p>&nbsp; 示例：下面我们实践利用ForEach-Object来计算本地文件目录的文件大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531544186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153154315.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：条件选择Where-Object：可以简写为where或者？代替。提供了对管道输入集合的过滤筛选，类似于SQL中的where条件，$_提供对当前索引的指代。</p>
+
+<p>&nbsp;&nbsp; 示例：输出文件大于100KB的文件名字和大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531563054.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153159287.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp; 3：选择Select-Object：简写select，提供了对对象的选择类似于sql的select，.net的new匿名对象。同时select支持-first和-last取最前面或者最后面的几个相当于sql 中top，与下例中Sort-Object结合将很有用。</p>
+
+<p>&nbsp; 示例：选择目录下文件的文件名和大小输出：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532005959.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153202584.png" title="SNAGHTML3b707d0" alt="SNAGHTML3b707d0" /></a></p>
+
+<p>&nbsp;&nbsp; 4：排序Sort-Object：简写sort，对于集合对象参照一个或者多个属性排序，可以指定-descending为倒序。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：获取最大的前5个文件：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532038731.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532053422.png" title="SNAGHTML3bc4128" alt="SNAGHTML3bc4128" /></a></p>
+
+<p>&nbsp;&nbsp; 5：管道树Tee-Object：简写为tee，可以把管道模型传入的对象记录在文件日志或者赋值给变量保存等。提供-inputObject ，-filePath ，-variable</p>
+
+<p>&nbsp; 示例：保存文件对象时$test变量：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532061570.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532075638.png" title="SNAGHTML3c03d8f" alt="SNAGHTML3c03d8f" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 6：分组Group-Object：简写group，提供依据属性分组类似sql group by。</p>
+
+<p>&nbsp;&nbsp; 示例：按照文件类型分组并按照组内文件个数排序
+ <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532082149.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532092772.png" title="SNAGHTML3c30688" alt="SNAGHTML3c30688" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp; 7：集合统计Measure-Object：简写：measure，提供了对集合的统计，简便的方法来获取最小值、最大值及平均值属性。</p>
+
+<p>&nbsp; 示例：统计文件大小的最小值，最大值，平均值，总大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532109524.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532117920.png" title="SNAGHTML3c60aad" alt="SNAGHTML3c60aad" /></a></p>
+
+<p>&nbsp;&nbsp; 8：比较Compare-Object：简写diff，提供了对两个对象或集合的比较，其中有单侧指向器，=&gt;表达此对象出现在右边，&lt;=表示差异对象存在于左边。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：新建一个文件夹2，比较连个目录的不同：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532123592.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532124215.png" title="SNAGHTML3cb035d" alt="SNAGHTML3cb035d" /></a></p>
+
+<p>今天就到这里，PowerShell很强大，继续学习。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543247.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/">架构设计目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-06T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/06/jia-gou-she-ji-mu-lu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 架构引用<a href="http://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84">维基百科</a>：软件体系结构是构建<a href="http://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BD%AF%E4%BB%B6">计算机软件</a>实践的基础。与建筑师设定建筑项目的设计原则和目标，作为绘图员画图的基础一样，一个<a href="http://zh.wikipedia.org/w/index.php?title=%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">软件架构师</a>或者<a href="http://zh.wikipedia.org/w/index.php?title=%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">系统架构师</a>陈述软件构架以作为满足不同客户需求的实际系统设计方案的基础。从和目的、主题、材料和结构的联系上来说，软件架构可以和建筑物的<a href="http://zh.wikipedia.org/w/index.php?title=%E6%9E%B6%E6%9E%84&amp;amp;action=edit&amp;amp;redlink=1" title="%E6%9E%B6%E6%9E%84&amp;action=edit&amp;redlink=1">架构</a>相比拟。一个软件架构师需要有广泛的软件理论知识和相应的经验来实施和管理软件产品的高级设计。软件架构师定义和设计软件的模块化，模块之间的交互，用户界面风格，对外接口方法，创新的设计特性，以及高层事物的对象操作、逻辑和流程。</p>
+
+<p>软件架构师与客户商谈概念上的事情，与经理商谈广泛的设计问题，与软件工程师商谈创新的结构特性，与程序员商谈实现技巧，外观和风格。</p>
+
+<p>软件架构是一个系统的草图。软件架构描述的对象是直接构成系统的抽象组件。各个组件之间的连接则明确和相对细致地描述组件之间的通讯。在实现阶段，这些抽象组件被细化为实际的组件，比如具体某个类或者对象。在<a href="http://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">面向对象</a>领域中，组件之间的连接通常用<a href="http://zh.wikipedia.org/wiki/%E6%8E%A5%E5%8F%A3_%28%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%29">接口</a>来实现。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 架构来源于建筑工程学，描述对软件密集型系统设计蓝图。在不同软件领域，有其不同特征，但有一部分共同基础设计原则和共性。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在这里将进行一些软件架构设计系列，此系列已经完成了架构层次设计，此系列仍在继续更新中&#8230;</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+<li>  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a></li>
+<li>   <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html">存储过程传言</a></li>
+<li> 表现层及其模式</li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/07/07/2580630.html"><font color="#6699cc">表现层模式-MVC</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/06/2537593.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">架构设计-数据访问层简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">服务层</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层</a>，以及一些面<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言</a>。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质，并能对数据进行读取和写入CRUD。这就是数据访问层。你可能是利用xml等文件格式磁盘存储，常用的关系数据库存储，或者NoSql(not only sql)的内存存储或文档存储等等存储介质。而这里我只关心关系数据库存储。</p>
+
+<p>&nbsp;&nbsp; 数据层需要提供的职责有：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：CRUD服务。作为唯一可以与存储介质交互的中间层出现，负责业务对象的增加，修改，删除，加载。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：查询服务。这不同于CRUD中的R（read），read倾向于的单个对象，元组。而这里的查询针对复杂查询，比如一个国内电商的客户为四川的订单。这里会涉及仓储层。所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。</p>
+
+<p>&nbsp;&nbsp; 3：事务管理。这里所说的是业务事务，在一个应用系统中每次请求都会产生多次的多数据对象的新增，修改，删除操作。如果我们每次都依次代开数据库连接，准备数据包，操作数据库，关闭数据连接。这些将会给我们带来很多不必要的性能开销。数据库管理员经常会要求&#8220;尽量少的与数据库交互&#8221;，这也必须成为我们的开发原则。更好的操作是我们在内存中建立一个和数据仓库，维护变化的对象，在业务操作完成一次性提交到数据存储介质，提供业务事务。业务事务有个很好听的名字工作单元（UOW），在微软给我们提供的DataSet，orm框架都回必须存在业务事务。</p>
+
+<p>&nbsp;&nbsp; 4：并发处理。UOW应避免业务数据连接的多次提交打开而出现，但在内存离线操作，这就可能导致数据一致性问题。在多用户的环境，对数据并发处理需要制定一个策略。一般我们会采用乐观并发处理：用户可以任意的离线修改，在修改更新时候检查对象是否被修改，如果被修改者本次更新失败。简单的说就是防止丢失修改。防止丢失修改，我们可以采用where 加上一系列原值，或者加上修改时间戳或者版本号标记。同时还有许多其他的并发解决模式，但乐观并发锁用到更普遍。</p>
+
+<p>&nbsp;&nbsp; 5：数据上下文：整和所有职责。在数据访问层概念职责都会有一个共同的暴露给外部的接口。我们需要一个高层次的组件，来同一提供对数据存储介质的访问操作。，同一访问数据库CRUD，事务，并发服务的高层次类，叫做数据上下文（Context）。EF中的ObjectContext，NHibernate的session，linq to sql 的DataContext等等。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 数据访问层的一些概念（这里不会是全部，仅一些个人觉得重要的概念）：</p>
+
+<p>&nbsp; 1： 数据映射器：将内存中修改的对象提交至存储介质，则需要要映射逻辑来完成，数据映射器就是就是一个实现将某种类型的业务对象持久化的类（数据映射器模式定义如《P of EAA》）。</p>
+
+<p>&nbsp; 2：仓储层（Repository）：在上面提到：所谓仓储模式指的是一个提供业务对象查询的类，他隐藏了数据查询的解析步骤，封装sql解析逻辑。在面向对象的世界里我们用对象进行查询，返回结果为对象集。这里的查询可能是从数据库，或者来至缓存，这取决你的策略，你仓储层的实现。</p>
+
+<p>&nbsp; 3:工作单元（UOW）：Martin Fowler《P of EAA》 定义：工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。在上面第3点业务事务讲的差不多，这里不是累述。</p>
+
+<p>&nbsp;&nbsp; 4：标示映射（Identity Map）：其作用在于：便于跟踪业务对象，调用者在一个业务事务中使用的是同一个实例，而不是每次执行产生一个新的对象。表示映射为一个散列表存储（散列具有快速定位O(1)）。类似于缓存的实现方式，保证了在同一个业务事务数据上下文引用修改同一个业务对象。但绝不同于缓存。从持续时间来说，标示映射生命周期为业务事务内。实现上等同于数据上下文期。但比起缓存来说其周期太短，根本不能对性能有多大的改善。缓存更重要的命中率，而标示映射保证同一数据上下文采用修改同一个业务对象的引用。</p>
+
+<p>&nbsp;&nbsp; 5：乐观并发锁：在上面也曾提到，其保证离线操作数据的对数据一致性的冲突解决方法。首先乐观在于允许离线操作，容忍冲突，防止数据丢失修改，可利用原读取数据值得where条件或者时间戳，版本号解决。</p>
+
+<p>&nbsp; 6：延时加载：对象并不是一次性加载完成，而是按照需求多次加载数据，到用时加载。业务对象太多关联，数据量太多余庞大，而我们每次业务事务需要操作的对象都只会是部分，不需要太多的数据对象。同事业务对象中还存在循环引用，这样不适于对象整体的一次性加载。延时加载提供了优化，意图在&#8220;尽可能的少加载，并按需加载，只加载需要的数据部分&#8221;。</p>
+
+<p>7：持久化透明对象（PI或POCO）：当对象模型不存在任何外部依赖，特别是对于数据访问层的依赖，那么这个模型就是持久化透明的，POCO。一个POCO的对象不需要继承至某个特定的类，实现特定的接口，或提供专门的构造函数。一个非持久化透明的对象这以为者存在外部的依赖，而我们更喜欢领域对象只是一个简单额c#类，可以在持久化层等独立切换。这就导致实现的时候我们无法很直接的跟踪业务对象，这就是面向方面编程（AOP）或者代理模式的大显身手。可惜AOP在.net中不是那么直接，很多ORM框架如NHibernate之类的利用代理模式Emit动态注入IL实现跟踪，添加新的行为。所以NHibernate中要求领域对象的所有字段属性方法都必须是虚方法可重写的。:</p>
+
+<p>8：CQRS（Command Query Responsibility Segregation，命令查询职责分离）：CQRS是在DDD的实践中引入CQS理论而出现的一种体系结构模式，命令和查询被分离。具体可以参 Martin Fowler的CQRS文章： <a href="http://martinfowler.com/bliki/CQRS.html" title="http://martinfowler.com/bliki/CQRS.html">http://martinfowler.com/bliki/CQRS.html</a></p>
+
+<p>&nbsp; 暂时写到这里，一下想不全，天已不早了，后续慢慢补上吧。</p>
+
+<p>同些列文章还有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>2.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a>3.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>4.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>5.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a>6.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>7.  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/">软件架构设计箴言理解</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-02T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天和师弟聊天聊到他们项目开发，有些同事总是提前考虑性能优化，需求变更又是一大堆的重写，让我想起了Donald Knuth 提到的：对软件的过早地优化是万恶的根源。这里就简单的说几条重要的软件名人哲学。</p>
+
+<p>1：软件中唯一不变的就是变化。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在软件开发过程中需求是不停的变化，随着客户对系统的认识，和现有开发功能和软件的认识，也许以开始他提出的需求就是背离的。记得网上有一句笑话，师说需求变化的：</p>
+
+<blockquote><p>&nbsp; 程序员XX遭遇车祸成植物人，医生说活下来的希望只有万分之一，唤醒更为渺茫。可他的Lead和亲人没有放弃，他们根据XX工作如命的作风，每天都在他身边念：&#8220;XX，需求又改了，该干活了，你快来呀！&#8221;，奇迹终于发生了，XX醒来了，第一句话：&#8220;需求又改了</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp; 在设计和架构中，凡事无绝对，作为架构师或者项目负责人你必须永远的清晰认识到没有完美的架构和设计，没有万能的软件。只存在当前环境，需求方案，团队人员素质，物理环境，安全等综合因素下的合适方案，由于总总原因你的解决方案可能不是某一个单一因素下的最优解。站在这个位置你需要做的是找到这个综合下的最优解，权衡。不要只从表面说某个人某个团队的解决方案怎么查怎么不好，或者这就是当时综合因素的最优解，站在同样的位置环境你不一定做得更好。在架构设计和人生，在我看来很相似，总是有一堆抉择，每一次的抉择都会带来得和失，权衡得失取舍。</p>
+
+<p>2:KISS:(Keep It Simple,Stupid):</p>
+
+<p>&nbsp;&nbsp;&nbsp; 保持简单，但不过于太简单。在《UNIX下的编程哲学》中提到很多保持设计简单，我们能清晰看到这条原则。现在视觉设计，都崇尚简约设计，简单而不庸俗，而不是一大堆的豪华奢侈打造。VB编程开始的可视化设计，可见即可得，google的首页，商业风格。在我们的软件设计中也需要简洁的设计，用户需要的是可见可量化的功能的正确性，而是你运用了多牛b的技术模式，但绝不是一味的太过于简单。你想把意见简单的事情做复杂化是很容易的事情，但是把一件复杂的事情简单化却不那么容易。简单的人生就是幸福。但是这里需要说明的是简单是优秀的，但简单是有底线边界的，超过底线的简单也有变得稚幼。比如事务性脚本模式比其他3中常见模式都简单，但往往复杂的需求它不是最优解，因为他太过于简单了（如果你还不了解是事务性脚本可以参见这里<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>）。</p>
+
+<p>3：面向抽象编程。</p>
+
+<p>&nbsp;&nbsp; 在设计模式，架构模式，OO中都是一条完全的主线，作为oo第一原则存在。我不起那个软件牛人曾说过：请牢记没有接口的话就不要开始实现。这句话也许过于偏激，但是如果你接口理解为不变或者不易变的话，理解或契约（公司和你的合同）更贴切些吧（可能是一个不变的类，如果你能肯定的说出你的这个实现在以后，在项目开发维护中是不会变得，我觉得这也是接口，接口在于不变和不易变），你也许会同意这句话。对于目前的需求你肯定能够没有抽象没够接口完全写出完美的代码，但是第一条中我们说明的软件中唯一不变的就是变化，在未来的需求中你能够很好的一样的优秀吗？如果不能，那么我认为面对当前需求就该为以后提供扩展延伸。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 我个人理解23中设计模式中大多数基本都是围绕着这个Program to an interface, not an implementation（依赖接口而不是实现）第一原则为目的。当然我们也不能不说还有第二原则：组合优先于继承。以后的什么DIP（依赖倒置，IOC的原则），LSP（里氏替换），OCP（开闭原则）等等都是他们的延伸和扩展。在追溯的话这一些列都是为了软件系统&#8220;高内聚，低耦合&#8221;（可以简叙述为：功能完备(高内聚)的对象之间是靠接口(低耦合)通讯交互的），内聚是描述的功能性完备程度，耦合是表述模块间的依赖程度。这里插一句话某同事给我说依赖接口不是还有依赖嘛，我希望的是没有耦合，我的回答是：计算机二八原则说明了这一切，既然事务出现在一起了，那绝不是偶然情况，所以他们之间必定存在依赖，在软件设计中我们所能做的就是引入中间对象使其变为间接依赖，而减少他们之间的依赖，而我们希望这个中间对象是个相对稳定的，设计中一切都是一个词：间接，分层，mvc，mvp，soa，中间件等等都是体现直接依赖变为间接依赖。说这个话题的原因是引出我们&#8220;高内聚，低耦合&#8221;行之有效的方法SOC（分离关注点），这不只是OO的任然对面向过程编程行之有效，他是在20年前 SP（结构化编程）中提出来的。</p>
+
+<p>&nbsp; 如果你想对设计原则有更多的了解，可以参见这里<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a> 和 <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a>。</p>
+
+<p>4：首先考虑可维护，延伸性，事后优化</p>
+
+<p>&nbsp;&nbsp; 这里也是本文的起因，正如开篇所说，Donald Knuth 提到的：对软件的过早地优化是万恶的根源。在开发的时候我们不需要进行任何性能的优化，即使你认为这里可能存在性能的瓶颈，你需要考虑的更多的是设计的扩展和延伸性，以后的继续添加新功能和维护。对于用户需话要的需求，性能优化很多时候只是作为一个更好的体验存在。只有当真正出现性能瓶颈的时候，你才需要做性能的优化。一个可延伸可扩展，层次分明，代码清晰的模块，对于你的优化也是件容易的事情，在对项目后期对于项目的总体需求明白下你也有得到更多的优化方案。在重构模式中同样也提倡时候优化。过早的优化导致你的项目会越陷越深，到最后才知道用户其实根本不需要这么高的需求，或者是用户根本不常用的功能模块。优化也需要有标准，多少时间是用户能忍受的，目前是多少时间。往往用户对性能要求的只有那个少量常用的操作，而对于功能性需求的变更却是无止境的，维护成本却是高昂的。</p>
+
+<p>&nbsp; 最后说一句，经常有人说反射性能低下，对我们必须承认反射比其他方案性能是不好，但是我们有解决方案：缓存。在则说性能低下，是以什么什么标准？用户的接受程度？反射我们可以有其替代方案Emit，Expression tree。从反射，Expression tree，Emit的选择，其使用难度在提升，开发效率在增加，性能在改善。本人一般却倾向于Expression tree，两种剧中吧。</p>
+
+<p>5：继承是为了多态而不是重用</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; OOP中可以编写一个类，然后我可以不断的继承重用去扩展新需求。这是类的重用，是全部的重用？重用这个词看上去也许更加的微妙。多态是面向对象的核心特征之一，也不记不清那里听到的：重用只是继承的附带功能。在我们的继承体系中不宜庞大如果一个拥有4,5层的继承体系，对你的理解也增加难度，而且集成体系必须是个干净的继承体系，满足LSP（里氏替换原则）：在所有用到父类的地方都可以替换为子类，还能正常准确工作。这就要求你继承更多的是修改扩展父类的行为，尽量避免状态。继承只是不要为了重用的为目的，在恰当的时机更好的办法是实现一个完全的类来替换不能满足现有需求的类。这也是oo原则第二原则吧，组合优先于继承。组合比如设计模式中的策略模式，你得到的是一个算法组合功能个数是一个笛卡尔积。但也是绝对的组合，只是优先，不是取代，软件和现实世界都是充满了矛盾的，就如开篇第一条&#8220;软件中唯一不变的就是变化&#8221;就是最大的矛盾，来自辩证唯物主义，你要做的是权衡。组合表述的是整体的替换，如策略模式模式的算法整体替换。继承是部分的少量的扩展修改行为，比如设计模式中的模版方案，在父类的流程控制下，部分步骤的修改，数据，事务的流转控制权在父类。这条在最后说一句：设计模式不是万能的，只是前人的优秀经验，是依赖于场景存在的，了解设计模式我觉得更重要的是其使用场景，在遇见同类场景的时候知道可以有这种模式作为解决方案或许更好，仅作为供你选择的解决问题方案。</p>
+
+<p>6：用户的一切输入都是万恶的</p>
+
+<p>&nbsp;&nbsp;&nbsp; 用户的输入是属于我们系统之外的，是无法控制的，是不可罗列的。对于用户来说软件只是一个黑盒子，不需要，也没必要了解具体内在实现。对于汽车销售人员不需要了解发动机螺栓是怎么上的一样，他了解宣传的是能有什么优势，能给用户带来那些方面的满足，价格？性能？速度？豪华？&#8230;.对于门户网站来说你对应的用户不仅是可信任的用户，可能还有竞争对手黑客攻击行为。如果你的系统信任于用户的输入，早晚一天总会&#8220;纸包不住火的&#8221;，用户有意无意的一次输入就可能导致你系统的功能性的全盘崩溃，你不应该限制用户的操作，你是不能命令用户该输入什么不能输入什么，比如某天某人使用用户可能降工资了或者挨批了，心情不好，你也许会潜意思的对你的系统进行挑战。</p>
+
+<p>&nbsp; 说到这里随便说一句，以前项目组有人层提过由于自动化测试服务器运行时间太长了，把部分验证等逻辑移到单元测试中保证。对于我的理解来说自动化测试近似于集成测试吧，功能性测试，应该是黑盒子。在单元测试中我们总是假设输入是正确的，某个依赖也是正确的，验证输出的正确。而集成测试重点在于这一些都是层次的组合，贯通，不存在假设的正确性，只有来自测试人员的测试用例得到预期的输出。</p>
+
+<p>&nbsp;&nbsp; 今天就写到这里吧，还有很多但是一下想不起来，后续有机会的话对于重要的也会继续补上。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 现实是矛盾的，没有完美的设计，也没有绝对的简单。生活也是如此就如：简单就是幸福，快乐就是幸福。那么简单的标准是什么？怎样才是快乐？这在于你自己的抉择，权衡。想起了某次面试和小公司面试官谈话，面试官说ORM存在性能问题，而且一直在纠结的说反对DDD，反对模式。本人先说了如果存在了性能问题有什么解决方案，首先怎么做如果不能满足再怎么做，从索引缓存到分表服务集群，再总结性的一句话：架构如人生，总是要面临得到取舍。</p>
+
+<p>&nbsp;</p>
+
+<p>博客中架构设计随笔有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/29/jia-gou-she-ji-ye-wu-luo-ji-ceng-jian-shu/">架构设计-业务逻辑层简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/29/jia-gou-she-ji-ye-wu-luo-ji-ceng-jian-shu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/29/jia-gou-she-ji-ye-wu-luo-ji-ceng-jian-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 业务逻辑层是专门处理软件业务需求的一层，处于数据库之上，服务层之下，完成一些列对Domain Object的CRUD，作为一组微服务提供给服务层来组织在暴露给表现层，如库存检查，用法合法性检查，订单创建。</p>
+
+<p>&nbsp;&nbsp; 业务逻辑层包含领域对象模型，领域实体，业务规则，验证规则，业务流程。1：领域对象模型为系统结构描述，包含实体功能描述，实体之间的关系。领域模型处于天生的复杂性:2：领域实体：业务层是一些操作业务对象（BO）的处理。业务对象包含数据和行为，是一个完整的业务对象。其不同于上节<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>提到的数据迁移对象（dto），对于dto存在数据的，不存在行为，dto是bo（ddd中又称do）的子集，负责与特定界面需求的扁平化实体，dto仅仅是一个数据载体，需要跨越应用程序边界，而业务对象则不会存在复制迁移，往往一个业务对象存在一个或者多个数据迁移对象。3:业务最大的逻辑就在处理一些列现实世界的规则，这也是软件中最容易变化的部分，这里通常会出现我们众多的if-else或者switch-case的地方。也这因为如果说以个人觉得在我们的项目最应该关系和分离需求的层次。4：验证规则：业务规则很大程度上也是对对象的数据验证，验证业务对象的当前数据状态。我觉得在每个业务对象上都应该存在一个对外部对象暴露的验证接口，可以考虑微软企业库的VAB 基于Attribute声明式验证或者上节<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/27/2520593.html">流畅的验证组件：FluentValidation</a>中的FluentValidation验证组件基于IOC的解耦。</p>
+
+<p>&nbsp;&nbsp; 业务层模式：在常见的业务层模式中主要分为过程是模式和面向对象模式。过程模式有是事务性脚本和表模式，而面向对象模式为活动记录模式和领域驱动模式。理论上说事务性脚本模式是最简单的开发模式，其前期投入下，但随着项目周期和复杂度上升明显，而领域模型（DDD）前期投入较大，但是理论上说是随着项目周期和复杂度呈线性增加，当然这些都是理论值。</p>
+
+<p>&nbsp; 1：事务脚本模式是业务逻辑层最简单的模式，面向过程模式。该模式以用于的操作为起点，设计业务组件，即业务逻辑直接映射到用户界面的操作。这通常是从表现层逻辑出发，表现层我需要什么业务层提供什么，直到数据层。针对没一个用户的新功能都需要新增一个从UI到关系数据库的分支流程。其使用与逻辑不是很复杂或者变化不大稳定的应用系统开发。其不需要付出与业务无关的额外代价，并且在现代VS之类的IDE帮助下能够很快的进行快速应用开发（RAD）。也由于这种优势，也是其最大的劣势，程序中充满了IF-else，switch-case之类的逻辑或者大量的static的方法，每个功能都是一个程序分支，这对代码无法重用。编码不易于维护，对复杂项目和变化需求不适应。</p>
+
+<p>&nbsp; 2：表模式：为每个数据库表定义一个表模块类，包含操作该数据的所有行为方法。作为一个容器，将数据和行为组织在一起。其对数据的粒度针对于数据表，而非数据行，因此需要以集合或者表传递数据信息。表模式基于对象但是完全又数据库驱动开发，在业务模型和数据库关系模型显著差异的情况下，应对需求，并不是那么适合。但是在.net中提供的一些列如强类型DataSet等IDE的辅助下自动生成大量的代码，也是一个不错的选择，因为部分数据库的操作趋于自动化。表模式没太过于关注业务，而是关注数据库表结构。而业务逻辑和领域问题才是软件核心。</p>
+
+<p>&nbsp; 3：活动记录模式：一个以数据库表一行Row为对象，并且对象中包含行为和数据的模式方法。其数据对象很大程度的接近数据库表结构。在活动记录模式对象中通常也包含操作对象的CRUD行为，数据验证等业务规则。对于业务不是很复杂，对象关系与关系模型映射不具有很大差异情况，活动记录模式会运用的很好。活动模式比较简单化设计，在上现行的很多如Linq to sql，ActiveRecord框架的辅助下，将针对问题领域不是太过复杂的项目十分有用。但是其模式和数据库表结构的相互依赖，导致若你修改数据库结构，你不得不同时修改对象以及相关逻辑。如果不能保证数据库关系模型和对象模式的很大程度的相似这就进入的困境。</p>
+
+<p>4：领域模型：在前面的几种模式都是项目开始站在了以数据为中心的角度，而不是业务本身的问题领域。而领域模型关注系统问题领域，首先开始为领域对象设计。与活动记录模式来说，领域模型完全站在了问题领域业务概念模型一边，与数据库，持久化完成独立，其推崇持久化透明（POCO）。其可以充分利用面向对象设计，不受持久化机制的任何约束。其实完全又业务驱动出来的。但是其最大的优势如上各个模式一样也是其最大的劣势对象模型和关系模型具有天然的阻抗，我们的领域实体早晚需要映射到持久化机制。还好的是当前有NHibearnate,EF,Fluent NHibearnate这类ORM框架辅助。在DDD中包含UOW，仓储，值类型和聚合根，领域事件，领域跟踪一类的概念，这将在以后具体说明。</p>
+
+<p>&nbsp; 模式的选择在与架构师的决定，这也是架构师具有挑战意义的职责，需要根据具体的项目需求，团队，个人等外界因素最终决定，不存在万能的模式，也不存在完美的设计。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Interface继承至System.Object？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-23T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 这其实是个很基础的问题，在我们学习C#类型的时候第一句就是所有的对象都继承至System.Object。今天一个同事问我Interface继承之System.Object。所以才有了本文。</p>
+
+<p>&nbsp; 在这里我只从几个方面简单的说明：</p>
+
+<p>&nbsp; 1：从语义：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; Interface在oo中表示一组行为的集合，是高层次的抽象，契约，一种稳定的表现。好比我们生活的公司和员工之间的合同，双方都必须遵循。所以我们的接口必须是一个干净纯洁的体系。加入interface继承之System.Object，这以为这是不是，Interface有Equal，ToString等方法？这明显破坏了接口的干净体系。</p>
+
+<p>2：实践（C#）：</p>
+
+<p>&nbsp;&nbsp; 如果interface继承之System.Object，这我们可以从System.Type获取其基类：</p>
+
+<p>如下测试：</p>
+
+<p>public interface Itest{}</p>
+
+<p>public class test{}</p>
+
+<p>typeof(Itest).BaseTye//为null</p>
+
+<p>typeof(test).BaseType//System.Object.</p>
+
+<p>3:我们从IL指令来看（这也是最有力的证明）：</p>
+
+<p>我们先写一个接口和一个类，他们都是空实现：</p>
+
+<p>namespace ConsoleApplication1  <br/>
+{   <br/>
+&nbsp;&nbsp;&nbsp; public class test   <br/>
+&nbsp;&nbsp;&nbsp; {   <br/>
+&nbsp;&nbsp;&nbsp; }</p>
+
+<p>&nbsp;&nbsp;&nbsp; public interface Itest  <br/>
+&nbsp;&nbsp;&nbsp; {   <br/>
+&nbsp;&nbsp;&nbsp; }   <br/>
+}</p>
+
+<p>&nbsp;</p>
+
+<p>在反编译查看IL：</p>
+
+<p>test clas:</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004187699.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/20120523000419947.png" title="image" alt="image" /></a></p>
+
+<p>而interface Itest的IL：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004197566.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004208405.png" title="image" alt="image" /></a></p>
+
+<p>从上面两个IL比较我们可以清晰的看出来class有显示的extends [mscorlib]System.Object，而接口没有，本篇的答案到这里你应该很清晰吧。这里还需要说明的是他们都是class，说明都是一种类型，而interface是一种特殊的类型。</p>
+
+<p>接口能定义什么？接口能定义行为（方法），无参属性（属性，又称守信），有参属性（索引），不能定义私例字段，定义都是对编译器都是一组方法行为。</p>
+
+<p>&nbsp;&nbsp; 在最后我们在来说说前面说的&#8220;所有的对象都继承至System.Object&#8221;，这是真的嘛？在c#的编译过程中为我们提供了一个选项NOAUTOINHERIT，是的我们可以为自定义类型去掉默认的System.Object的基类。这就打破了System.Object创世之祖的戒律。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/23/2514123.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/">SOA面向服务架构简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-22T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上篇中我们简单谈了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>，在这里我们将继续服务层的架构，在本节我们将重点在于分布式服务。在分布式系统中表现层和业务逻辑层 并不处于同一物理部署，所以我们必须存在分布式服务，以契约方式发布于网络中，我们的关注点在于服务，面向服务编程，这种通过组合业务逻辑暴露可用服务的架构叫做面向服务架构（SOA）。</p>
+
+<p>&nbsp;&nbsp;&nbsp; SOA强调一个松耦合，基于宏服务的架构，通过契约暴露给服务消费者可用的服务交互。SOA是以服务为组成构建，原则有：</p>
+
+<ol>
+<li>边界清晰：
+&nbsp;&nbsp;&nbsp; 服务层是消费者交互到系统业务的唯一入口,所有我们的服务必须能够被消费者所理解,以及最好处理Request/Response基于消息交换RPC调用,职责明确单一.还有我们更希望我们的服务为作用明确的,CQS(命令-查询分离原则).</li>
+<li>服务的自治性
+&nbsp;&nbsp;&nbsp; 服务自治主要表现在每个服务都是独立的，其系统部署，管理监控都是独立的。自治体现了服务的松耦合，但并不是服务就是一个孤岛，其可以通过消息交换消费其他服务。</li>
+<li>使用契约（接口和数据载体），而非实现
+&nbsp;&nbsp;&nbsp;&nbsp; 这也是面向对象设计第一原则。在我们的服务设计中SOA一个重要目标就是互操作，基于SOAP等标准协议实现跨平台互操作，可能存在异构系统。所以我们该选择接口而不是语言具体的类以及基于消息交互。服务对于开发就是一些列行为的组合，数据契约就是数据迁移对象，数据载体。契约使得我们并不关心服务的内部实现，而只关心提供了那些服务，服务的签名如何，怎么调用之类的。</li>
+<li>兼容性基于策越
+对于消费者来说服务是否能满足他的需求，这需要服务语义兼容，语义兼容也应该通过可访问方式暴露。是的服务可发现。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp; ＳＯＡ是一种设计原则规范，其目标在于为复杂系统提供互操作性和以服务为基础组件构造系统逻辑。把具体的业务逻辑和流程屏蔽，暴露出用户可用的行为集合。ＳＯＡ是一中原则而非集体技术。wcf，webservice是具体ＳＯＡ技术。同时ＳＯＡ也不是我们的目标，客户是不与关心我们采用ｓｏａ与否，这只是我们对系统的一种解决方案。</p>
+
+<p>SOA优势在于给我们提供更好的代码重用，版本控制，安全控制，扩展延伸性。同时降低和服务的耦合，交互必须依赖于服务契约和数据契约，并不关心服务的内部实现。在我们的版本升级，修改过程中可以完全可以重新实现替换原有服务，并不会影响消费程序的使用。</p>
+
+<p>最后我们必须的说下当下流行的restfull，通常我们认为这是一种风格，而非架构，是由Roy Thomas Fielding在其博士论文 《Architectural Styles and the Design of Network-based Software Architectures》中提出REST是英文Representational State Transfer的缩写，中文翻译为&#8220;表述性状态转移&#8221;。是一种基于ｗｅｂ的架构，它很好的利用http协议的ｍｅｔｈｏｄ。根据不同的ｍｅｔｈｏｄ表示对资源的不同语义操作。其核心在于将发布在网络的一切事物归属为资源，每个资源定位于一个资源定位符（ＵＲＩ）。以及无状态，缓存，分层架构。在微软最新的WCF resetfull，web api应用框架。以及wcf ria ，wcf data service，需要的注意的是微软同时候加入的自己的oData协议（开元数据协议）。</p>
+
+<p>最后说一点：我觉得不管是服务或者resetfull服务我们都必须定义契约，依赖于契约，虽然微软的而技术允许我们直接寄宿服务类，但是对于服务的扩展和延伸而言，说这句话的原因在于我最近看见一些直接寄宿服务类的resetfull架构。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/21/jia-gou-she-ji-zhong-fu-wu-ceng-di-jian-dan-li-jie/">架构设计中服务层的简单理解</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/21/jia-gou-she-ji-zhong-fu-wu-ceng-di-jian-dan-li-jie/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/21/jia-gou-she-ji-zhong-fu-wu-ceng-di-jian-dan-li-jie/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 在ddd设计中我们经常会提到服务层，服务层是什么？职责是什么？有什么好处？。</p>
+
+<p>&nbsp;&nbsp; 先看简单的层次图（注：这里并没有考虑其他多余的领域逻辑数据层存储，或者UOW这些细节）</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205212307194805.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205212307202688.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp; 我的理解是服务层是处于我的应用程序业务层和表现层之间的应用程序边界,边界可能是很薄的一层类设计或者是分布式服务网络跃点。它是一个与技术无关的名词。由表现层直接调用，契约，执行命令（修改状态（CUD））或者是查询返回dto（数据迁移对象）（cms，命令-查询分离）。他对业务逻辑层接口很清楚，组织业务逻辑 微服务形成宏服务，适配表现层。</p>
+
+<p>&nbsp;&nbsp; 这里谈到宏服务和微服务，宏服务有一些列粗粒度的服务组成。用户的一次操作usecase，比如电子商务下单，CreateOrder就是一个宏服务，而不是下单中的细粒度的商品库存检查，订单合法性等。而与之对应的微服务（有时也叫应用程序服务），则表现为问题领域逻辑细节，就如上面的库存检查和合法性检查这些细粒度的服务。宏服务是由一个或者多个微服务组成，有时我们的usecase逻辑很简单服务层仅由单一微服务组成，变现为很简单的几句微服务调用。</p>
+
+<p>&nbsp; 服务层的职责：</p>
+
+<p>&nbsp; 1：在面软件开发不管是结构化编程（sp）还是面向对象编程（oop）我们一直都强调高内聚低耦合，分离关注点（soc）。服务层处于应用程序和业务层之间，应用边界，使得两次直接解耦，利用第三个对象破坏两对象直接的依赖，并转化适配领域对象（do）和试图对象（vo）的差异。</p>
+
+<p>&nbsp; 2：服务层隐藏了业务逻辑层的细节，其内部需要组织业务微服务，提供更宏观，面向表现层的服务逻辑，利用契约接口暴露，包装。系统所有的交互都是从表现层进入。</p>
+
+<p>&nbsp; 目前流行SOA架构，提供了一种分布式服务架构，以服务为关注点，提高服务和业务逻辑的重用，但是这里说的服务并不是特定的技术wcf或者webservice，服务同时候可能是一次规定契约的一些列粗粒度组织的类组成。但是利用SOA或者MTS建立服务会让我们的服务得到跟多的附加优势，例如安全，事物，日志，扩展性的提升。</p>
+
+<p>&nbsp; 服务层带来的优势：如上所述服务层为表现层提供的同一的接口契约和入口。让我们的业务层可以关注与实现问题领域逻辑，问题领域实际需求。组织微服务避免太多的细粒度服务的调用充斥在我们的项目表现层和问题领域中，过多的交互。如果采用soa等服务领域可以让我们的应用程序轻易的跨过应用程序边界和网络跃点。但是需要付出一点的性能代价。</p>
+
+<p>&nbsp;&nbsp; 数据迁移对象（dto）就是携带数据穿过应用程序边界的对象，减少数据的交互次数，常常我们将其作为值对象，只是一组简单的get，set属性组成，不存在行为操作，仅仅为数据的载体。在领域设计中dto是一个很重要的模式，不是我们所有的领域对象都能轻松的到达表现层，仅仅表现层和领域层部署在同一物理位置。如果需要穿过网络跃点或者进程边界，因为领域对象使我们的业务的核心存在很多的自然世界的关系，依赖，甚至可能存在循环依赖比如电商用户和订单，用户用户一组订单的集合，而每个订单都指向一个特定的用户，我们就必须破换掉这种循环依赖，才可能使其可序列化，穿过跃点。其次我们的领域对象往往都是一堆领域富对象，存在大量数据，很多时候我们的场景并不需要全部的数据信息。有了dto的存在就能很好的解决这些问题，是的我们的项目变得simple（keep it simple，Stupid。 KISS原则）。</p>
+
+<p>&nbsp;&nbsp; 但是与此同时dto存在会为我们带来一些额外的复杂度，我们必须有一层do到dto的映射适配层。</p>
+
+<p>&nbsp;&nbsp; 理论上完美的设计我们需要为每一个应用定义一个dto，但是在一个复杂的系统中我们可能存在很多的领域对象，加入500个do，每个do一般都会存在多个dto，这将一个增加一个庞大的集合和mapping逻辑，对于维护也存在不小的挑战。在软件领域存在一句话就是bug的数量随着代码量增加，代码量增加需要测试点也随着增加。除非我们必须跨越应用程序网络跃点边界，我觉得否则我们也可以存在一些简单do的直接使用。根据世界项目，情形由我们的架构师决定。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/12/zhuan-zai-yi-xie-ruan-jian-she-ji-di-yuan-ze/">(转载)一些软件设计的原则</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/12/zhuan-zai-yi-xie-ruan-jian-she-ji-di-yuan-ze/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/12/zhuan-zai-yi-xie-ruan-jian-she-ji-di-yuan-ze/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以前本站向大家介绍过一些软件开发的原则，比如<a href="http://coolshell.cn/articles/1007.html" title="优质代码的十诫">优质代码的十诫</a>和<a href="http://coolshell.cn/articles/2324.html" title="Unix传奇(下篇)">Unix传奇(下篇)</a>中所以说的UNIX的设计原则。相信大家从中能够从中学了解到一些设计原理方面的知识，正如我在《<a href="http://coolshell.cn/articles/4506.html" title="再谈&#8220;我是怎么招聘程序员的&#8221;（上）">再谈&#8220;我是怎么招聘程序&#8221;</a>》中所说的，一个好的程序员通常由其操作技能、知识水平，经验层力和能力四个方面组成。在这里想和大家说说设计中的一些原则，我认为这些东西属于长期经验总结出来的知识。这些原则，每一个程序员都应该了解。但是请不要教条主义，在使用的时候还是要多多考虑实际情况。其实，<strong>下面这些原则，不单单只是软件开发，可以推广到其它生产活动中，甚至我们的生活中</strong>。</p>
+
+<h4>Don&#8217;t Repeat Yourself (DRY)</h4>
+
+<p>DRY
+是一个最简单的法则，也是最容易被理解的。但它也可能是最难被应用的（因为要做到这样，我们需要在泛型设计上做相当的努力，这并不是一件容易的事）。它意味着，当我们在两个或多个地方的时候发现一些相似的代码的时候，我们需要把他们的共性抽象出来形一个唯一的新方法，并且改变现有的地方的代码让他们以一些合适的参数调用这个新的方法。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself" title="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">http://en.wikipedia.org/wiki/Don%27t_repeat_yourself</a></p>
+
+<h4>Keep It Simple, Stupid (KISS)</h4>
+
+<p>KISS原则在设计上可能最被推崇的，在家装设计，界面设计 ，操作设计上，复杂的东西越来越被众人所BS了，而简单的东西越来越被人所认可，比如<a href="http://coolshell.cn/articles/1907.html" title="UI的恶梦">这些UI的设计</a>和我们<a href="http://coolshell.cn/articles/3605.html" title="为什么中国的网页设计那么烂？">中国网页</a>（尤其是<a href="http://coolshell.cn/articles/3872.html" title="微软用新浪来当反面教材">新浪的网页</a>）者是负面的例子。&#8220;宜家&#8221;（IKEA）简约、效率的家居设计、生产思路；&#8220;微软&#8221;（Microsoft）&#8220;所见即所得&#8221;的理念；&#8220;谷歌&#8221;（Google)简约、直接的商业风格，无一例外的遵循了&#8220;kiss&#8221;原则，也正是&#8220;kiss&#8221;原则，成就了这些看似神奇的商业经典。而苹果公司的iPhone/iPad将这个原则实践到了极至。</p>
+
+<p>把一个事情搞复杂是一件简单的事，但要把一个复杂的事变简单，这是一件复杂的事。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/KISS_principle" title="http://en.wikipedia.org/wiki/KISS_principle">http://en.wikipedia.org/wiki/KISS_principle</a></p>
+
+<h4>Program to an interface, not an implementation</h4>
+
+<p>这是设计模式中最根本的哲学，注重接口，而不是实现，依赖接口，而不是实现。接口是抽象是稳定的，实现则是多种多样的。以后面我们会面向对象的SOLID原则中会提到我们的依赖倒置原则，就是这个原则的的另一种样子。还有一条原则叫
+<strong>Composition over
+inheritance</strong>（喜欢组合而不是继承），这两条是那23个经典设计模式中的设计原则。</p>
+
+<h4>Command-Query Separation (CQS)&nbsp; &#8211; 命令-查询分离原则</h4>
+
+<ul>
+<li>查询：当一个方法返回一个值来回应一个问题的时候，它就具有查询的性质；</li>
+<li>命令：当一个方法要改变对象的状态的时候，它就具有命令的性质；</li>
+</ul>
+
+
+<p>通常，一个方法可能是纯的Command模式或者是纯的Query模式，或者是两者的混合体。在设计接口时，如果可能，应该尽量使接口单一化，保证方法的行为严格的是命令或者是查询，这样查询方法不会改变对象的状态，没有副作用，而会改变对象的状态的方法不可能有返回值。也就是说：如果我们要问一个问题，那么就不应该影响到它的答案。实际应用，要视具体情况而定，语义的清晰性和使用的简单性之间需要权衡。将Command和Query功能合并入一个方法，方便了客户的使用，但是，降低了清晰性，而且，可能不便于基于断言的程序设计并且需要一个变量来保存查询结果。</p>
+
+<p>在系统设计中，很多系统也是以这样原则设计的，查询的功能和命令功能的系统分离，这样有则于系统性能，也有利于系统的安全性。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/Command-query_separation" title="http://en.wikipedia.org/wiki/Command-query_separation">http://en.wikipedia.org/wiki/Command-query_separation</a></p>
+
+<h4>You Ain&#8217;t Gonna Need It (YAGNI)</h4>
+
+<p>这个原则简而言之为&#8212;&#8212;只考虑和设计必须的功能，避免过度设计。只实现目前需要的功能，在以后您需要更多功能时，可以再进行添加。</p>
+
+<ul>
+<li>如无必要，勿增复杂性。</li>
+<li>软件开发先是一场沟通博弈。</li>
+</ul>
+
+
+<p>以前本站有一篇关于<a href="http://coolshell.cn/articles/3005.html" title="代码重构的一个示例">过度重构的文章</a>，这个示例就是这个原则的反例。而，WebSphere的设计者就<a href="http://www.bbc.co.uk/news/business-11944966">表示过他过度设计了这个产品</a>。我们的程序员或是架构师在设计系统的时候，会考虑很多扩展性的东西，导致在架构与设计方面使用了大量折衷，最后导致项目失败。这是个令人感到讽刺的教训，因为本来希望尽可能延长项目的生命周期，结果反而缩短了生命周期。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/You_Ain%27t_Gonna_Need_It" title="http://en.wikipedia.org/wiki/You_Ain%27t_Gonna_Need_It">http://en.wikipedia.org/wiki/You_Ain%27t_Gonna_Need_It</a></p>
+
+<h4>Law of Demeter &#8211; 迪米特法则</h4>
+
+<p>迪米特法则(Law of Demeter)，又称&#8220;最少知识原则&#8221;（Principle of Least
+Knowledge），其来源于1987年荷兰大学的一个叫做Demeter的项目。Craig Larman把Law of
+Demeter又称作&#8220;不要和陌生人说话&#8221;。在《程序员修炼之道》中讲LoD的那一章叫作&#8220;解耦合与迪米特法则&#8221;。关于迪米特法则有一些很形象的比喻：</p>
+
+<ul>
+<li>如果你想让你的狗跑的话，你会对狗狗说还是对四条狗腿说？</li>
+<li>如果你去店里买东西，你会把钱交给店员，还是会把钱包交给店员让他自己拿？</li>
+</ul>
+
+
+<p>和狗的四肢说话？让店员自己从钱包里拿钱？这听起来有点荒唐，不过在我们的代码里这几乎是见怪不怪的事情了。</p>
+
+<p>对于LoD，正式的表述如下：</p>
+
+<blockquote><p>对于对象 &#8216;O&#8217; 中一个方法&#8217;M&#8217;，M应该只能够访问以下对象中的方法:</p>
+
+<ol>
+<li>对象O；</li>
+<li>与O直接相关的Component Object；</li>
+<li>由方法M创建或者实例化的对象；</li>
+<li>作为方法M的参数的对象。</li>
+</ol>
+</blockquote>
+
+<p>在《Clean Code》一书中，有一段Apache framework中的一段违反了LoD的代码：</p>
+
+<p>final String outputDir =
+ctxt.getOptions().getScratchDir().getAbsolutePath();</p>
+
+<p>这么长的一串对其它对象的细节，以及细节的细节，细节的细节的细节&#8230;&#8230;的调用，增加了耦合，使得代码结构复杂、僵化，难以扩展和维护。</p>
+
+<p>在《重构》一书中的代码的环味道中有一种叫做&#8220;Feature Envy&#8221;(依恋情结），形象的描述了一种违反了LoC的情况。Feature
+Envy就是说一个对象对其它对象的内容更有兴趣，也就是说老是羡慕别的对象的成员、结构或者功能，大老远的调用人家的东西。这样的结构显然是不合理的。我们的程序应该写得比较&#8220;害羞&#8221;。不能像前面例子中的那个不把自己当外人的店员一样，拿过客人的钱包自己把钱拿出来。&#8220;害羞&#8221;的程序只和自己最近的朋友交谈。这种情况下应该调整程序的结构，让那个对象自己拥有它羡慕的feature，或者使用合理的设计模式（例如Facade和Mediator）。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/Principle_of_Least_Knowledge" title="http://en.wikipedia.org/wiki/Principle_of_Least_Knowledge">http://en.wikipedia.org/wiki/Principle_of_Least_Knowledge</a></p>
+
+<h4>面向对象的S.O.L.I.D 原则</h4>
+
+<p>一般来说这是面向对象的五大设计原则，但是，我觉得这些原则可适用于所有的软件开发。</p>
+
+<p><strong>Single Responsibility Principle (SRP) &#8211; 职责单一原则</strong></p>
+
+<p>关于单一职责原则，其核心的思想是：<strong>一个类，只做一件事，并把这件事做好，其只有一个引起它变化的原因</strong>。单一职责原则可以看作是低耦合、高内聚在面向对象原则上的引申，将职责定义为引起变化的原因，以提高内聚性来减少引起变化的原因。职责过多，可能引起它变化的原因就越多，这将导致职责依赖，相互之间就产生影响，从而极大的损伤其内聚性和耦合度。单一职责，通常意味着单一的功能，因此不要为一个模块实现过多的功能点，以保证实体只有一个引起它变化的原因。</p>
+
+<ul>
+<li>Unix/Linux是这一原则的完美体现者。各个程序都独立负责一个单一的事。</li>
+<li>Windows是这一原则的反面示例。几乎所有的程序都交织耦合在一起。</li>
+</ul>
+
+
+<p><strong>Open/Closed Principle (OCP) &#8211; 开闭原则</strong></p>
+
+<p>关于开发封闭原则，其核心的思想是：模块是可扩展的，而不可修改的。也就是说，<strong>对扩展是开放的，而对修改是封闭的</strong>。</p>
+
+<ul>
+<li>对扩展开放，意味着有新的需求或变化时，可以对现有代码进行扩展，以适应新的情况。</li>
+<li>对修改封闭，意味着类一旦设计完成，就可以独立完成其工作，而不要对类进行任何修改。</li>
+</ul>
+
+
+<p>对于面向对象来说，需要你依赖抽象，而不是实现，23个经典设计模式中的&#8220;策略模式&#8221;就是这个实现。对于非面向对象编程，一些API需要你传入一个你可以扩展的函数，比如我们的C
+语言的qsort()允许你提供一个&#8220;比较器&#8221;，STL中的容器类的内存分配，ACE中的多线程的各种锁。对于软件方面，浏览器的各种插件属于这个原则的实践。</p>
+
+<p><strong>Liskov substitution principle (LSP) &#8211; 里氏代换原则</strong></p>
+
+<p>软件工程大师Robert C. Martin把里氏代换原则最终简化为一句话：&#8220;Subtypes must be substitutable for
+their base
+types&#8221;。也就是，子类必须能够替换成它们的基类。即：子类应该可以替换任何基类能够出现的地方，并且经过替换以后，代码还能正常工作。另外，不应该在代码中出现if/else之类对子类类型进行判断的条件。里氏替换原则LSP是使代码符合开闭原则的一个重要保证。正是由于子类型的可替换性才使得父类型的模块在无需修改的情况下就可以扩展。</p>
+
+<p>这么说来，似乎有点教条化，我非常建议大家看看这个原则个两个最经典的案例&#8212;&#8212;&#8220;正方形不是长方形&#8221;和&#8220;鸵鸟不是鸟&#8221;。通过这两个案例，你会明白《墨子
+小取》中说的
+&#8212;&#8212;&#8220;娣，美人也，爱娣，非爱美人也&#8230;.盗，人也；恶盗，非恶人也。&#8221;&#8212;&#8212;妹妹虽然是美人，但喜欢妹妹并不代表喜欢美人。盗贼是人，但讨厌盗贼也并不代表就讨厌人类。<strong>这个原则让你考虑的不是语义上对象的间的关系，而是实际需求的环境</strong>。</p>
+
+<p>在很多情况下，在设计初期我们类之间的关系不是很明确，LSP则给了我们一个判断和设计类之间关系的基准：需不需要继承，以及怎样设计继承关系。</p>
+
+<p><strong>Interface Segregation Principle (ISP) &#8211; 接口隔离原则</strong></p>
+
+<p>接口隔离原则意思是把功能实现在接口中，而不是类中，使用多个专门的接口比使用单一的总接口要好。</p>
+
+<p>举个例子，我们对电脑有不同的使用方式，比如：写作，通讯，看电影，打游戏，上网，编程，计算，数据等，如果我们把这些功能都声明在电脑的抽类里面，那么，我们的上网本，PC机，服务器，笔记本的实现类都要实现所有的这些接口，这就显得太复杂了。所以，我们可以把其这些功能接口隔离开来，比如：工作学习接口，编程开发接口，上网娱乐接口，计算和数据服务接口，这样，我们的不同功能的电脑就可以有所选择地继承这些接口。</p>
+
+<p>这个原则可以提升我们&#8220;搭积木式&#8221;的软件开发。对于设计来说，Java中的各种Event
+Listener和Adapter，对于软件开发来说，不同的用户权限有不同的功能，不同的版本有不同的功能，都是这个原则的应用。</p>
+
+<p><strong>Dependency Inversion Principle (DIP) &#8211; 依赖倒置原则</strong></p>
+
+<p>高层模块不应该依赖于低层模块的实现，而是依赖于高层抽象。</p>
+
+<p>举个例子，墙面的开关不应该依赖于电灯的开关实现，而是应该依赖于一个抽象的开关的标准接口，这样，当我们扩展程序的时候，我们的开关同样可以控制其它不同的灯，甚至不同的电器。也就是说，电灯和其它电器继承并实现我们的标准开关接口，而我们的开关产商就可不需要关于其要控制什么样的设备，只需要关心那个标准的开关标准。这就是依赖倒置原则。</p>
+
+<p>这就好像浏览器并不依赖于后面的web服务器，其只依赖于HTTP协议。这个原则实在是太重要了，社会的分工化，标准化都是这个设计原则的体现。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/Solid_(object-oriented_design">http://en.wikipedia.org/wiki/Solid_(object-oriented_design</a></p>
+
+<h4>Common Closure Principle（CCP）&#8211; 共同封闭原则</h4>
+
+<p>一个包中所有的类应该对同一种类型的变化关闭。一个变化影响一个包，便影响了包中所有的类。一个更简短的说法是：一起修改的类，应该组合在一起（同一个包里）。如果必须修改应用程序里的代码，我们希望所有的修改都发生在一个包里（修改关闭），而不是遍布在很多包里。CCP原则就是把因为某个同样的原因而需要修改的所有类组合进一个包里。如果2个类从物理上或者从概念上联系得非常紧密，它们通常一起发生改变，那么它们应该属于同一个包。</p>
+
+<p>CCP延伸了开闭原则（OCP）的&#8220;关闭&#8221;概念，当因为某个原因需要修改时，把需要修改的范围限制在一个最小范围内的包里。</p>
+
+<p><strong>参考</strong>：<a href="http://c2.com/cgi/wiki?CommonClosurePrinciple">http://c2.com/cgi/wiki?CommonClosurePrinciple</a></p>
+
+<h4>Common Reuse Principle (CRP) &#8211; 共同重用原则</h4>
+
+<p>包的所有类被一起重用。如果你重用了其中的一个类，就重用全部。换个说法是，没有被一起重用的类不应该被组合在一起。CRP原则帮助我们决定哪些类应该被放到同一个包里。依赖一个包就是依赖这个包所包含的一切。当一个包发生了改变，并发布新的版本，使用这个包的所有用户都必须在新的包环境下验证他们的工作，即使被他们使用的部分没有发生任何改变。因为如果包中包含有未被使用的类，即使用户不关心该类是否改变，但用户还是不得不升级该包并对原来的功能加以重新测试。</p>
+
+<p>CCP则让系统的维护者受益。CCP让包尽可能大（CCP原则加入功能相关的类），CRP则让包尽可能小（CRP原则剔除不使用的类）。它们的出发点不一样，但不相互冲突。</p>
+
+<p><strong>参考</strong>：<a href="http://c2.com/cgi/wiki?CommonReusePrinciple">http://c2.com/cgi/wiki?CommonReusePrinciple</a></p>
+
+<h4>Hollywood Principle &#8211; 好莱坞原则</h4>
+
+<p>好莱坞原则就是一句话&#8212;&#8212;&#8220;don&#8217;t call us, we&#8217;ll call
+you.&#8221;。意思是，好莱坞的经纪人们不希望你去联系他们，而是他们会在需要的时候来联系你。也就是说，所有的组件都是被动的，所有的组件初始化和调用都由容器负责。组件处在一个容器当中，由容器负责管理。</p>
+
+<p>简单的来讲，就是由容器控制程序之间的关系，而非传统实现中，由程序代码直接操控。这也就是所谓&#8220;控制反转&#8221;的概念所在：</p>
+
+<ol>
+<li>不创建对象，而是描述创建对象的方式。</li>
+<li>在代码中，对象与服务没有直接联系，而是容器负责将这些联系在一起。</li>
+</ol>
+
+
+<p>控制权由应用代码中转到了外部容器，控制权的转移，是所谓反转。</p>
+
+<p>好莱坞原则就是IoC（Inversion of Control）或DI（Dependency Injection
+）的基础原则。这个原则很像依赖倒置原则，依赖接口，而不是实例，但是这个原则要解决的是怎么把这个实例传入调用类中？你可能把其声明成成员，你可以通过构造函数，你可以通过函数参数。但是
+IoC可以让你通过配置文件，一个由Service Container
+读取的配置文件来产生实际配置的类。但是程序也有可能变得不易读了，程序的性能也有可能还会下降。</p>
+
+<p><strong>参考</strong>：</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Hollywood_Principle">http://en.wikipedia.org/wiki/Hollywood_Principle</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Inversion_of_Control">http://en.wikipedia.org/wiki/Inversion_of_Control</a></li>
+</ul>
+
+
+<h4>High Cohesion &amp; Low/Loose coupling &amp; &#8211; 高内聚， 低耦合</h4>
+
+<p>这个原则是UNIX操作系统设计的经典原则，把模块间的耦合降到最低，而努力让一个模块做到精益求精。</p>
+
+<ul>
+<li>内聚：一个模块内各个元素彼此结合的紧密程度</li>
+<li>耦合：一个软件结构内不同模块之间互连程度的度量</li>
+</ul>
+
+
+<p>内聚意味着重用和独立，耦合意味着多米诺效应牵一发动全身。</p>
+
+<p><strong>参考</strong>：</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Coupling_%28computer_science%29" title="http://en.wikipedia.org/wiki/Coupling_(computer_science)">http://en.wikipedia.org/wiki/Coupling_%28computer_science%29</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Cohesion_%28computer_science%29" title="http://en.wikipedia.org/wiki/Cohesion_(computer_science)">http://en.wikipedia.org/wiki/Cohesion_%28computer_science%29</a></li>
+</ul>
+
+
+<h4>Convention over Configuration（CoC）&#8211; 惯例优于配置原则</h4>
+
+<p>简单点说，就是将一些公认的配置方式和信息作为内部缺省的规则来使用。例如，Hibernate的映射文件，如果约定字段名和类属性一致的话，基本上就可以不要这个配置文件了。你的应用只需要指定不convention的信息即可，从而减少了大量convention而又不得不花时间和精力啰里啰嗦的东东。配置文件很多时候相当的影响开发效率。</p>
+
+<p>Rails 中很少有配置文件（但不是没有，数据库连接就是一个配置文件），Rails 的fans号称期开发效率是 java 开发的 10
+倍，估计就是这个原因。Maven也使用了CoC原则，当你执行mvn
+-compile命令的时候，不需要指源文件放在什么地方，而编译以后的class文件放置在什么地方也没有指定，这就是CoC原则。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/Convention_over_Configuration" title="http://en.wikipedia.org/wiki/Convention_over_Configuration">http://en.wikipedia.org/wiki/Convention_over_Configuration</a></p>
+
+<h4>Separation of Concerns (SoC) &#8211; 关注点分离</h4>
+
+<p>SoC
+是计算机科学中最重要的努力目标之一。这个原则，就是在软件开发中，通过各种手段，将问题的各个关注点分开。如果一个问题能分解为独立且较小的问题，就是相对较易解决的。问题太过于复杂，要解决问题需要关注的点太多，而程序员的能力是有限的，不能同时关注于问题的各个方面。正如程序员的记忆力相对于计算机知识来说那么有限一样，程序员解决问题的能力相对于要解决的问题的复杂性也是一样的非常有限。在我们分析问题的时候，如果我们把所有的东西混在一起讨论，那么就只会有一个结果&#8212;&#8212;乱。</p>
+
+<p>我记得在上一家公司有一个项目，讨论就讨论了1年多，项目本来不复杂，但是没有使用SoC，全部的东西混为一谈，再加上一堆程序员注入了各种不同的观点和想法，整个项目一下子就失控了。最后，本来一个1年的项目做了3年。</p>
+
+<p>实现关注点分离的方法主要有两种，一种是标准化，另一种是抽象与包装。标准化就是制定一套标准，让使用者都遵守它，将人们的行为统一起来，这样使用标准的人就不用担心别人会有很多种不同的实现，使自己的程序不能和别人的配合。Java
+EE就是一个标准的大集合。每个开发者只需要关注于标准本身和他所在做的事情就行了。就像是开发镙丝钉的人只专注于开发镙丝钉就行了，而不用关注镙帽是怎么生产的，反正镙帽和镙丝钉按标来就一定能合得上。不断地把程序的某些部分抽像差包装起来，也是实现关注点分离的好方法。一旦一个函数被抽像出来并实现了，那么使用函数的人就不用关心这个函数是如何实现的，同样的，一旦一个类被抽像并实现了，类的使用者也不用再关注于这个类的内部是如何实现的。诸如组件，分层，面向服务，等等这些概念都是在不同的层次上做抽像和包装，以使得使用者不用关心它的内部实现细节。</p>
+
+<p>说白了还是&#8220;高内聚，低耦合&#8221;。</p>
+
+<p><strong>参考</strong>：<a href="http://sulong.me/archives/99">http://sulong.me/archives/99</a></p>
+
+<h4>Design by Contract (DbC) &#8211; 契约式设技</h4>
+
+<p>DbC的核心思想是对软件系统中的元素之间相互合作以及&#8220;责任&#8221;与&#8220;义务&#8221;的比喻。这种比喻从商业活动中&#8220;客户&#8221;与&#8220;供应商&#8221;达成&#8220;契约&#8221;而得来。例如：</p>
+
+<ul>
+<li>供应商必须提供某种产品（责任），并且他有权期望客户已经付款（权利）。</li>
+<li>客户必须付款（责任），并且有权得到产品（权利）。</li>
+<li>契约双方必须履行那些对所有契约都有效的责任，如法律和规定等。</li>
+</ul>
+
+
+<p>同样的，如果在程序设计中一个模块提供了某种功能，那么它要：</p>
+
+<ul>
+<li>期望所有调用它的客户模块都保证一定的进入条件：这就是模块的先验条件（客户的义务和供应商的权利，这样它就不用去处理不满足先验条件的情况）。</li>
+<li>保证退出时给出特定的属性：这就是模块的后验条件&#8212;&#8212;（供应商的义务，显然也是客户的权利）。</li>
+<li>在进入时假定，并在退出时保持一些特定的属性：不变式。</li>
+</ul>
+
+
+<p>契约就是这些权利和义务的正式形式。我们可以用&#8220;三个问题&#8221;来总结DbC，并且作为设计者要经常问：</p>
+
+<ul>
+<li>它期望的是什么？</li>
+<li>它要保证的是什么？</li>
+<li>它要保持的是什么？</li>
+</ul>
+
+
+<p>根据Bertrand
+Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前提条件以及一个后续条件，前提条件说明方法接受什么样的参数数据等，只有前提条件得到满足时，这个方法才能被调用；同时后续条件用来说明这个方法完成时的状态，如果一个方法的执行会导致这个方法的后续条件不成立，那么这个方法也不应该正常返回。</p>
+
+<p>现在把前提条件以及后续条件应用到继承子类中，子类方法应该满足：</p>
+
+<ol>
+<li>前提条件不强于基类．</li>
+<li>后续条件不弱于基类．</li>
+</ol>
+
+
+<p>换句话说，通过基类的接口调用一个对象时，用户只知道基类前提条件以及后续条件。因此继承类不得要求用户提供比基类方法要求的更强的前提条件，亦即，继承类方法必须接受任何基类方法能接受的任何条件（参数）。同样，继承类必须顺从基类的所有后续条件，亦即，继承类方法的行为和输出不得违反由基类建立起来的任何约束，不能让用户对继承类方法的输出感到困惑。</p>
+
+<p>这样，我们就有了基于契约的LSP，基于契约的LSP是LSP的一种强化。</p>
+
+<p><strong>参考</strong>：<a href="http://en.wikipedia.org/wiki/Design_by_contract">http://en.wikipedia.org/wiki/Design_by_contract</a></p>
+
+<h4>Acyclic Dependencies Principle (ADP) &#8211; 无环依赖原则</h4>
+
+<p>包之间的依赖结构必须是一个直接的无环图形，也就是说，在依赖结构中不允许出现环（循环依赖）。如果包的依赖形成了环状结构，怎么样打破这种循环依赖呢？有2种方法可以打破这种循环依赖关系：第一种方法是创建新的包，如果A、B、C形成环路依赖，那么把这些共同类抽出来放在一个新的包D里。这样就把C依赖A变成了C依赖D以及A依赖D，从而打破了循环依赖关系。第二种方法是使用DIP（依赖倒置原则）和ISP（接口分隔原则）设计原则。</p>
+
+<p>无环依赖原则（ADP）为我们解决包之间的关系耦合问题。在设计模块时，不能有循环依赖。</p>
+
+<p><strong>参考</strong>：<a href="http://c2.com/cgi/wiki?AcyclicDependenciesPrinciple">http://c2.com/cgi/wiki?AcyclicDependenciesPrinciple</a></p>
+
+<h4>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</h4>
+
+<p>上面这些原则可能有些学院派，也可能太为理论，我在这里说的也比较模糊和简单，这里只是给大家一个概貌，如果想要了解更多的东西，大家可以多google一下。</p>
+
+<p>不过这些原则看上去都不难，但是要用好却并不那么容易。要能把这些原则用得好用得精，而不教条，我的经验如下：（我以为这是一个理论到应用的过程）</p>
+
+<ol>
+<li>你可以先粗浅或是表面地知道这些原则。</li>
+<li>但不要急着马上就使用。</li>
+<li>在工作学习中观察和总结别人或自己的设计。</li>
+<li>再回过头来了回顾一下这些原则，相信你会有一些自己的心得。</li>
+<li>有适度地去实践一下。</li>
+<li>Goto第 3步。</li>
+</ol>
+
+
+<p>原文：<a href="http://coolshell.cn/articles/4535.html">一些软件设计的原则</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">架构设计&#8211;逻辑层 vs 物理层</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; Layer 和Tier都是层，但是他们所表现的含义不同，Tier指的是软件系统中物理上的软件和硬件，具体指部署在某服务器上，而Layer（逻辑层）指软件系统中完成特定功能的逻辑模块，逻辑概念。</p>
+
+<p>&nbsp;&nbsp; Layer是逻辑上 组织代码的形式。比如逻辑分层中表现层，服务层，业务层，领域层，他们是软件功能来划分的。并不指代部署在那台具体的服务器上或者，物理位置。</p>
+
+<p>&nbsp; Tier这指代码运行部署的具体位置，是一个物理层次上的划为，Tier就是指逻辑层Layer具体的运行位置。所以逻辑层可以部署或者迁移在不同物理层，一个物理层可以部署运行多个逻辑层。</p>
+
+<p>&nbsp;&nbsp; 从Layer和Tier就会延伸到逻辑架构和物理架构。我们一个逻辑分层（N-Layer）的部署运行环境可以在一台或者是多台服务器，由于物理环境的多样性，逻辑层次的部署也具有多样性。这就需要我们必须了解物理架构和逻辑架构。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 大多数情况下我们所说的N层应用系统指的是物理模型，具体模块的分布物理位置。客户端，服务层，逻辑层，数据库服务器，与我们的逻辑模型之间并不是一对一的关系。逻辑上的分层架构与物理位置上的服务器数量和网络边界多少无关，逻辑架构层次只与我们的功能划分相关，是按照功能划分。经典的3-Layer架构：表现层，业务层，数据访问层，他们可能运行在同一物理位置上。也可以是3台计算机上，这并不是逻辑架构所关注的。逻辑层次和物理分层数量关系为：逻辑层数必须不小于物理层数，因为一个物理层可以部署一个或者多个逻辑层次，逻辑层次只能迁移在不同的物理环境。</p>
+
+<p>&nbsp;&nbsp; 逻辑层次的架构能帮助我们解决逻辑耦合，达到灵活配置，迁移。</p>
+
+<p>&nbsp;&nbsp; 一个良好的逻辑分层可以带来：</p>
+
+<ol>
+<li>逻辑组织代码2.  易于维护3.  代码更好的重用4.  更好的团队开发体验5.  代码逻辑的清晰度</li>
+</ol>
+
+
+<p>&nbsp; 一个良好的物理架构可以带来：</p>
+
+<ol>
+<li>性能的提升2.  可伸缩性3.  容错性4.  安全性</li>
+</ol>
+
+
+<p>&nbsp; 逻辑层次越多会影响程序运行的性能，但代码层次的低耦合，松散化，是需要架构师的权衡的，我觉得一般应用程序的瓶颈并不在这里。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/7/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/5/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

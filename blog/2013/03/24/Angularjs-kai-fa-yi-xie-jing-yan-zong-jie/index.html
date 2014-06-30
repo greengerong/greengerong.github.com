@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Angularjs开发一些经验总结 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="Angularjs开发一些经验总结">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Angularjs开发一些经验总结</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-24T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在去年到今年参与了2个使用Angularjs作为客户端开发框架的项目开发。主要利用asp.net web api作为restfull服务提供框架和angularjs结合。Angularjs作为html的扩展，旨在建立一个丰富的动态web应用，通过Directive建立一套html扩展的DSL模型，利用PM模式变形MVVM（在网上很多称MVC模式，本人认为在angular0.8是属于经典MVC模式，但在1.0把scope独立注入过后，更倾向于MVVM模式，这将会后续随笔中写道）简化前端开发和使得前端业务逻辑得以分离，view和表现逻辑的分离，更便于维护，扩展。Angularjs本来就是采用TDD开发的，提供了一套单元测试组件和End 2 End的测试框架。Angularjs的的强大之处在于提供了一套内似WPF，Silverlight的强大数据绑定和格式化，过滤组件，这也是MVVM模式所必备的条件；再加之IOC的注入机制，使得不能业务逻辑的分离，服务代码的更大程度抽象重用。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在这节随便中将讨论的angularjs开发的一些基本准则，为什么会有这篇随便呢，因为看见一些项目对于angularjs的乱用。</p>
+
+<p>&nbsp; 1：不要一个page一个God似无所不能的controller包含所有页面逻辑。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs ng-controller旨在将业务逻辑的区分，更推荐按照业务逻辑的划分controller，做到业务功能的高内聚，controller的单一原则SRP。</p>
+
+<p>&nbsp; 2：View中包含尽量少的逻辑。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 就像jsp，asp这类服务端模板引擎一样，我们应该把尽量少的逻辑放在view中，因为这样会导致view和逻辑的紧耦合性，view在软件开发中是最易变化的，而表现层逻辑却相对于view是相对稳定的行为。同时也导致的view中的逻辑不能被自动化测试，持续集成所覆盖，这将导致以后修改重构和模块的集成的痛苦。很明显的就是太多的angularjs的ng-switch，ng-when和页面计算表达式等等。</p>
+
+<p>3：注意一些特殊的节点式的angularjs directive，因为在IE7上这是不被认识的，因为IE的严格XML模式。如果你想make ie7 happy，</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 1：请注意导入json2或者json3的js</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 2：xmlns:ng命令空间和节点element式directive。</p>
+
+<blockquote><p>&lt;html xmlns:ng=&ldquo;<a href="http://angularjs.org">http://angularjs.org</a>&rdquo;&gt;</p>
+
+<p>&lt;head&gt;</p>
+
+<p>&lt;!&mdash;[if lte IE 8]&gt;</p>
+
+<p>&lt;script&gt;</p>
+
+<p>document.createElement(&lsquo;ng-include&rsquo;);</p>
+
+<p>document.createElement(&lsquo;ng-pluralize&rsquo;);</p>
+
+<p>document.createElement(&lsquo;ng-view&rsquo;);</p>
+
+<p>&nbsp;</p>
+
+<p>// Optionally these for CSS</p>
+
+<p>document.createElement(&lsquo;ng:include&rsquo;);</p>
+
+<p>document.createElement(&lsquo;ng:pluralize&rsquo;);</p>
+
+<p>document.createElement(&lsquo;ng:view&rsquo;);</p>
+
+<p>&lt;/script&gt;</p>
+
+<p>&lt;![endif]&mdash;&gt;</p>
+
+<p>&lt;/head&gt;</p></blockquote>
+
+<p>&nbsp; &nbsp; 3:除官网介绍的几个注意点之外 需要将</p>
+
+<pre><code>&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;lt;div &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;ng-app&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"xxx"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;gt;
+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;`改为&lt;/pre&gt;
+&lt;pre class="prettyprint"&gt;`&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;lt;div &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;id&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"ng-app" &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;ng-app&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"xxx"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;`&lt;/pre&gt;
+
+&amp;nbsp;另外注意html 头部要引入（否则会进入坑爹的quirk模式）
+
+&lt;pre class="prettyprint"&gt;`&lt;span class="dec"&gt;&lt;span class="dec"&gt;&lt;span class="dec"&gt;&lt;span class="dec"&gt;&amp;lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>4：在controller和service中绝对不能出现html的DOM和CSS代码。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这会导致逻辑的混杂耦合，对于angularjs自身的绑定对html操作，很多时候你会分不清是view的影响源，导致修复bug，和新增功能，重构的艰难，常常出现很多的诡异行为。最好的实践模式则是把必须的dom，css操作移向angular的Directive，或者view中。在angularjs模式中只有directive和view才能出现dom和css的逻辑操作。</p>
+
+<p>&nbsp; 5：controller中公用的逻辑推向service（factory，value，config)，采用IOC的注入，提高代码的重用度，修改的单一点，开闭原则。</p>
+
+<p>&nbsp; 6：controller应该只包含业务逻辑，对于数据模型的格式化过滤尽量交给angular框架filter等处理。</p>
+
+<p>7：viewmodel中最好建立一个通用属性比如vm，它承载view渲染的最小量化model，对于model的变形事件则在vm之外scope之上。这才是MVVM推荐方式。事件相当于WPF中的command，负责模型事件的传递修改模型，从而从模型的改变通知view的强制更新（WPF中model必须实现INotifyPropertyChange接口）。同时这样vm属性也便于数据的填充和收集回发服务端。</p>
+
+<p>8：IOC注入优先，注有助于良好的设计，逻辑的可重用和单元的可测试性，面向对象的&ldquo;开闭原则&rdquo;，修改的单一点。</p>
+
+<p>9：良好的分层设计，对于服view的交互采用controller通过viewmode（scope）的推送，服务器的交互推向service层次，利用angularjs的$resource或者$http获取更新数据model，与服务端交互。层次属于纵向分割，将一类功能逻辑的接口放在一起，架构层次，而model则从业务的逻辑横向分离。</p>
+
+<p>10：服务端的服务的接口需要考虑表现层客户端的应用提供，这是一个良好的SOA服务设计的准则，这里不用多余的描述，具体请移步<a href="http://www.cnblogs.com/whitewolf/category/379884.html">架构篇</a>。</p>
+
+<p>11：如果你的公司应用了敏捷开发则，TDD的开发是必备的，angularjs本也是解决javascript测试驱动开发项目。</p>
+
+<p>&nbsp;12：scope的纯净性，scope上的每一个函数和属性必须为view所用（事件传递或者属性绑定），不用的可以作为工具函数或者service处置.</p>
+
+<p>&nbsp;13：对controller之间如果不是强依赖，只是弱引用则最好用事件$emit,$on,<span style="font-size: 16px; font-family: 楷体;">$broadcast</span>,是的controller之间低耦合（<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html">Angularjs Controller 间通信机制</a>）。</p>
+
+<p>&nbsp;14：angularjs的的模块管理参见<a href="http://kb.cnblogs.com/page/176541/">如何组织大型JavaScript应用中的代码？</a>.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp; 最后想说说angularjs也不是银弹，并不是万能的，不是所有的项目都适合应用，它适用于CRUD的应用系统，内置了一些默认规则（惯例优先），对于表现层频繁交互的项目不适用，对于一些特殊的项目比如spring hdiv的项目也不是那么友好，或者就是你希望兼容更多的IE8一下的版本的应用系统，同样也不实用。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-24T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/" title="Previous Post: JavaScript 函数replace揭秘">&laquo; JavaScript 函数replace揭秘</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/" title="Next Post: Node.js connect ECONNREFUSED错误">Node.js connect ECONNREFUSED错误 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

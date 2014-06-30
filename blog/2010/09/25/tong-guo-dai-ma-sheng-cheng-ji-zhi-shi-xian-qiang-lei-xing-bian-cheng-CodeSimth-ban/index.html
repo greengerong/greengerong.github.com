@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>通过代码生成机制实现强类型编程-CodeSimth版 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="通过代码生成机制实现强类型编程-CodeSimth版">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">通过代码生成机制实现强类型编程-CodeSimth版</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-25T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一直想写一个Code生成系列，但写到CodeSimth，发觉在<a href="http://terrylee.cnblogs.com/archive/2005/12/28/306254.aspx">TerryLee</a> 和<a href="http://www.cnblogs.com/Bear-Study-Hard/category/43725.html">努力学习的小熊</a> 两位大牛的博客里讲很详尽，所以就像写些示例方面的，但是苦于没有想到写些什么。最近<a href="http://www.cnblogs.com/artech/">Artech</a>写了两篇<a href="http://www.cnblogs.com/artech/archive/2010/09/16/1827499.html">从数据到代码&#8212;&#8212;通过代码生成机制实现强类型编程&mdash;上篇和下篇</a>，大牛写得是CodeDom的，今天我就想借借大牛的示例写个CodeSimth版的，希望<a href="http://www.cnblogs.com/artech/">Artech</a>不要怪我，呵呵。我的Code生成技术已经写了CodeDom的见<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">CodeDom系列目录</a>，欢迎各位园友指教。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好直接到主题。首先是数据实体MessageEntry（我到老A的基础上添加了description属性作为代码字段描述）：</p>
+
+<pre><code>       public class MessageEntry 
+        { 
+            public string Id { get; private set; } 
+            public string Value { get; private set; }        
+            public string Description { get; private set; } 
+            public MessageEntry(string id, string value) 
+            { 
+                this.Id = id; 
+                this.Value = value;         
+            } 
+
+            public MessageEntry(string id, string value, string description) 
+            { 
+                this.Id = id; 
+                this.Value = value; 
+                this.Description = description; 
+            } 
+
+            public string Format(params object[] args) 
+            { 
+                return string.Format(this.Value, args); 
+            } 
+        } 
+</code></pre>
+
+<p>在我的机子上的CodeSimth是2..0版本的所以不能使用Linq命名空间，我又想利用这个空间，比较快捷，所以我就在先3.0转化为</p>
+
+<p>Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;实体再传入模板：</p>
+
+<p>Code：</p>
+
+<pre><code>     using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+    using System.Xml; 
+    using System.Xml.Linq; 
+
+    namespace Wolf 
+    { 
+        public class MessageCodeGenerator 
+        { 
+            public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; GeneratorCode(string  path) 
+            { 
+                return GeneratorCode(XElement.Load(path)); 
+            } 
+            public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; GeneratorCode(XElement root) 
+            { 
+
+                var elemts = root.Elements("message").GroupBy(e =&gt; ((XAttribute)e.Attribute("category")).Value); 
+                Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;  dict = new Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;(); 
+                foreach (var item in elemts) 
+                { 
+                    List&lt;MessageEntry&gt; list = new List&lt;MessageEntry&gt;(); 
+                    foreach (var g in item) 
+                    { 
+                        if (g.Attribute("description") != null) 
+                        { 
+                            list.Add(new MessageEntry(((XAttribute)g.Attribute("id")).Value, ((XAttribute)g.Attribute("value")).Value, ((XAttribute)g.Attribute("description")).Value)); 
+                        } 
+                        else 
+                        { 
+                            list.Add(new MessageEntry(((XAttribute)g.Attribute("id")).Value, ((XAttribute)g.Attribute("value")).Value)); 
+                        } 
+
+                    } 
+                    dict.Add(item.Key.ToString(), list); 
+                } 
+                return dict; 
+
+            } 
+        } 
+    }
+</code></pre>
+
+<p> 这下就可以开始写模板了，见下Code：</p>
+
+<pre><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
+
+    &lt;%@ Import NameSpace="System" %&gt; 
+    &lt;%@ Import NameSpace="System.Xml" %&gt; 
+    &lt;%@ Import NameSpace="System.Text" %&gt; 
+    &lt;%@ Import NameSpace="System.Collections.Generic" %&gt; 
+    &lt;%@ Import NameSpace="Wolf" %&gt; 
+    &lt;%@ Assembly Name="Wolf" %&gt; 
+
+    &lt;script runat="template"&gt; 
+
+    private Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; dict; 
+    public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; Generator 
+    { 
+        get 
+        { 
+            return dict; 
+        } 
+        set 
+        { 
+            dict=value; 
+        } 
+    } 
+
+    public string GeneratorCode() 
+            {            
+                string str = "using Wolf;\r\nusing System;\r\nusing System.Collections.Generic;\r\nnamespace Wolf.Message\r\n{ \r\n   public class Messages\r\n    {\r\n"; 
+                foreach (string catage in Generator.Keys) 
+                { 
+                    str += "        public class  "+catage + "\r\n        {        \r\n"; 
+                    foreach (Wolf.MessageEntry entry in Generator[catage]) 
+                    { 
+                        str += "\r\n            /// &lt;summary&gt;" + 
+                        "\r\n            ///" + entry.Description + 
+                        "\r\n            /// &lt;/summary&gt;" + 
+                        "\r\n            public static Wolf.MessageEntry " + entry.Id + " = new MessageEntry(\"" + entry.Id + "\", \"" + entry.Value +"\", \"" + entry.Value +"\");\r\n"; 
+                    } 
+                    str += "\r\n        }\r\n\r\n"; 
+
+                } 
+                str += "\r\n    }\r\n}"; 
+                return str; 
+            } 
+
+    &lt;/script&gt; 
+    //Copyright (C) Wolf.  All rights reserved. 
+    &lt;%=  GeneratorCode()%&gt;
+</code></pre>
+
+<p>很简单，就不说了，如果有问题请留言，其中命名空间完全可以以属性方式传入。</p>
+
+<p>XMl实体用的是老A的：</p>
+
+<pre><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
+    &lt;messages&gt;   
+    &lt;message id="MandatoryField" value="The {0} is mandatory."  category="Validation"  description="description" /&gt;   
+    &lt;message id="GreaterThan" value="The {0} must be greater than {1}."  category="Validation" description="description" /&gt;   
+    &lt;message id="ReallyDelete" value="Do you really want to delete the {0}."  category="Confirmation" description="description" /&gt;  
+&lt;/messages&gt;
+</code></pre>
+
+<p>我想脱离CodeSimth工具，所以在建立了一个控制台程序，引用CodeSmith.Engine.dll程序集。</p>
+
+<p>Code：</p>
+
+<pre><code> public static void Main(string[] args) 
+       { 
+          //    Wolf.Message.Messages.Confirmation.ReallyDelete.Value 
+           // test(); 
+           CodeTemplate template = CompileTemplate(@"E:\MyApp\LinqTest\ConsoleApplication1\MessageCodeGenerator.cst",s=&gt;Console.WriteLine(s)); 
+           if (template != null) 
+           { 
+               template.SetProperty("_MessageFilePath", ""); 
+               Wolf.MessageCodeGenerator gen = new MessageCodeGenerator(); 
+      Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; dict = gen.GeneratorCode(@"E:\MyApp\LinqTest\ConsoleApplication1\Sample.xml"); 
+               template.SetProperty("Generator", dict); 
+               template.RenderToFile("gen.cs", true); 
+              // System.Diagnostics.Process.Start("gen.cs"); 
+           } 
+          // Console.Read(); 
+
+       }
+
+       public static CodeTemplate CompileTemplate(string templateName,Action&lt;string&gt; errorWriter) 
+       { 
+           CodeTemplateCompiler compiler = new CodeTemplateCompiler(templateName); 
+           compiler.Compile(); 
+
+           if (compiler.Errors.Count == 0) 
+           { 
+               return compiler.CreateInstance(); 
+           } 
+           else 
+           { 
+               for (int i = 0; i &lt; compiler.Errors.Count; i++) 
+               { 
+                   errorWriter(compiler.Errors[i].ToString()); 
+               } 
+               return null; 
+           } 
+
+       }
+</code></pre>
+
+<p>生成后的代码：</p>
+
+<p>&nbsp;</p>
+
+<pre><code> using Wolf; 
+using System; 
+using System.Collections.Generic; 
+namespace Wolf.Message 
+{ 
+    public class Messages 
+    { 
+        public class Validation 
+        { 
+
+            /// &lt;summary&gt; 
+            ///description 
+            /// &lt;/summary&gt; 
+            public static Wolf.MessageEntry MandatoryField = new MessageEntry("MandatoryField", 
+
+"The {0} is mandatory.", "The {0} is mandatory."); 
+
+            /// &lt;summary&gt; 
+            ///description 
+            /// &lt;/summary&gt; 
+            public static Wolf.MessageEntry GreaterThan = new MessageEntry("GreaterThan", 
+
+"The {0} must be greater than {1}.", "The {0} must be greater than {1}."); 
+
+        } 
+
+        public class Confirmation 
+        { 
+
+            /// &lt;summary&gt; 
+            ///description 
+            /// &lt;/summary&gt; 
+            public static Wolf.MessageEntry ReallyDelete = new MessageEntry("ReallyDelete", 
+
+"Do you really want to delete the {0}.", "Do you really want to delete the {0}."); 
+
+        } 
+
+    } 
+}
+</code></pre>
+
+<p>ok，全部完成。同时你也可以完全集成与VS中利用VSX Vs扩展，可以参考<a href="http://www.cnblogs.com/default/archive/2010/02/26/1674582.html">明年我18 的VSX系列</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-25T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/" title="Previous Post: Linq多表查询条件批量删除">&laquo; Linq多表查询条件批量删除</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/09/27/CodeSmith-mo-ban-yin-qing-xi-lie-mu-lu/" title="Next Post: CodeSmith模板引擎系列-目录">CodeSmith模板引擎系列-目录 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

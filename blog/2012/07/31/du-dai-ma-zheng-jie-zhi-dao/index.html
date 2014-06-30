@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>读代码整洁之道 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="读代码整洁之道">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/07/31/du-dai-ma-zheng-jie-zhi-dao">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">读代码整洁之道</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-31T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 现在的软件系统开发难度主要在于其复杂度和规模，客户需求也不再像Winston Royce瀑布模型期望那样在系统编码前完成所有的设计满足用户软件需求。在这个信息爆炸技术日新月异的时代，需求总是在不停的变化，随之在2001年业界17位大牛聚集在美国犹他州的滑雪胜地雪鸟（Snowbird）雪场，提出了&#8220;Agile&#8221;（敏捷）软件开发价值观，并在他们的努力推动下，开始在业界流行起来。在《代码整洁之道》（Clean Code），提出一种软件质量，可持续开发不仅在于项目架构设计，还与代码质量密切相关，代码的整洁度和质量成正比，一份整洁的代码在质量上是可靠的，为团队开发，后期维护，重构奠定了良好的基础。在这本书中作者提出了注重实际开发实践的细节，而不是站在空洞的理论来谈论整洁之道。</p>
+
+<p>什么是整洁代码？不同的人会站在不同的角度阐述不同的说法。而我最喜欢的是Grady Booch（《面向对象分析与设计》作者）阐述：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &#8220;整洁的代码简单直接。整洁的代码如同优美的散文。整洁的代码从不隐藏设计者的意图，充满了干净利落的抽象和直截了当的控制语句。&#8221;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 整洁的代码就是一种简约（简单而不过于太简单）的设计，阅读代码的人能很清晰的明白这里在干什么，而不是隐涩难懂，整洁的代码读起来让人感觉到就像阅读散文-艺术的沉淀，作者是精心在意缔造出来。</p>
+
+<p>一：命名</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 命名包括变量、函数、参数，类等，一个好的命名能够很好的表述其所承载的业务，从命名上就已经很好的答复了为什么存在，做了什么事，应该怎么用等的大部分的问题，阅读者看到它的时候不必去深究其实现细节，一切都在命名上一目了然。一个好的命名必须是名副其实，不存在歧义（双关语或常见属于冲突），直接了当（否定语句或者误导性命名）。</p>
+
+<p>二：函数：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 从汇编/C时代开始的到现在函数一直都存在与我们开发中不可或缺的一部分，结构化组织，重用.作为函数式语言的一等公民，所有程序的第一组代码。</p>
+
+<ol>
+<li>好的函数必须足够的小，其次还是足够的小。很容易想像阅读上千行的代码，是多么巨大的自我心理挑战，在实习的时候工作于毫无分层逻辑的WinForm平台下，完全依赖RAD模式带来后置cs页面上千行的代码，每次修改都令我恼怒，恨不得重写整个业务逻辑。2.  一个函数在于短小精悍，只作一件事情，并做好这件事，只做一件事才能得到更好的利用函数名表述自己。3.  好的函数还应该是CQS（查询命令分离）无副作用的（不存在隐藏歧义的背后逻辑），并对其他类型不存在&#8220;依恋情节(Feature Envy)&#8220;（类中的变量被所有的函数使用这是理想的高内聚，万物皆有其位，而后物尽归其位）。4.  函数的参数应该足够的少，无最好，一次之，再次为二，尽量避免三个以及三个以上，对于太多的参数你可能该采用IntroduceParameterObject(引入参数对象)。5.  重复的代码。重复在软件系统是万恶的,我们熟悉的分离关注点，面向对象，设计原则&#8230;都是为了减少重复提高重用，Don&#8217;t repeat yourself！(DRY)。</li>
+</ol>
+
+
+<p>三：注释、格式：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 并不是写出完备的注释就是好的开发人员，如果代码清晰的表述自己意图，那么注释反而多余。在《重构-改善现有代码之道》中Martin Fowler指出多余的注释是一种代码坏味道。就是好的注释随着项目的维护不断的重构很多时候也会变得不那么适应，而我们很少会去主动维护。再则误导性的注释更为使用者所憎恨。当然有时我们也得使用注释，注释并不是万恶的，当我们没法用代码来描述自己的时候，我们需要注释去描述意图；多余有副作用的代码给使用者提供警告注释。TODO开发时进度控制，比如你在进行较大规模领域重构，目前有些逻辑不再适应，不那么自然，而对它的重构还在任务列表最后，你可以选择标注在TODO中，最后完成从ToDoList中去掉每一个TODO任务。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 良好的代码格式，会使得我们阅读更容易，一套共同的格式会让我们查找理解更快速。每个团队都应该遵循一套固定的代码格式规范，整个软件系统的统风格统一，而不是各自为政各成一体。</p>
+
+<p>四：对象和数据结构：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 数据结构指的就是数据的载体，暴露数据，而几乎没有有意义的行为的贫血类。最常见的应用在分布式服务，以wcf，webservice，reset之类的分布式服务中不可或缺的数据传输对象（DTO）模式，DTO（Request/Response）就是一个很典型的数据载体，只存在简单的get，set属性，并且更倾向于作为值对象存在。而对象则刚好相反作为面向对象的产物，必须封装隐藏数据，而暴露出行为接口，DDD中领域模型倾向于对象不仅在数据更多暴露行为操作自己或者关联状态。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 数据结构和对象之间看是细微的差别却导致了不同的本质区别：使用数据结构的代码便于在不改动现在数据结构的前提下添加新的行为（函数），面向对象代码则便于不改动现 有函数的前提下添加新的类。换句话说就是数据结构难以添加新的的数据类型，因为需要改动所有函数，面向对象的代码则难以添加新的函数，因为需要修改所有的类。在任何一个复杂的系统都会同时存在数据结构和对象，我们需要判断的是我们需要的是需要添加的新的数据类型还是新的行为函数。</p>
+
+<p>&nbsp;&nbsp; 隐藏作为面向对象主要特性中的最重要特性，封装隐藏是面向对象中最重要的特性，一个好的面向对象代码肯定是对对象的内部细节做到很好的隐藏封装，封装过后才有是多态，委派之类的。一个好的面向对象的代码一定是具有很好的隐藏封装，易于测试，不稳定因素往往集中在一处很小或者固定的位置，不稳定因素的变更不会导致更大面积的修改扩散。</p>
+
+<p>&nbsp; 对象的隐藏要求：方法不应和任何调用方法返回的对象操作，换句话之和朋友说话，不和陌生人说话（迪米特法则，或被译为最小知识原则），比如：ctxt.getOptions().getSearchDir().getAbsolutePath()，就是迪米特法则的反例模式。</p>
+
+<p>五：异常处理：</p>
+
+<p>&nbsp;&nbsp; 每个软件系统都避不开异常处理，需要防止它搞乱我们的逻辑。</p>
+
+<ol>
+<li>利用异常处理代替返回异常编码，返回异常编码会是的代码中充满了if/else，switch/case扰乱我的代码流转。2.  对于特定异常扑捉，可以面向异常编程，编写特定的异常类，使得对异常封装转化，更容易捕善后获处理。3.  避免返回null，在软件系统中最常见头疼的就是NullReferenceException。在非特定场景下，我们应该极力的避免返回null。面对这种场景我们可以采用null object Pattern（空对象模式）返回特例对象，如c#类库中的Guid.Empty，string.Empty；对于集合类型我们可以返回长度0的空集合而非null；</li>
+</ol>
+
+
+<p>六：边界：</p>
+
+<p>&nbsp;&nbsp; 在系统开发中不可能一切都得从零开始，自己写所有的代码，更好的方案是需要整合一些开源或者第三方的项目，为我所用。但是不能让这些非自己的代码渗侵中我们的代码各处，有一些所以功能很强大的第三方产品，但不一定具有很好的抽象。很多时候我更宁愿花些时间抽象出我们自己所需要的接口在第三方类库上外覆一层自己的抽象，这样不仅便于TDD，因为我们能够很好的创建伪对象，使的测试独立不依赖外部资源，得到快速反馈；而且在设计上得到很好的扩展，当由于某些原因如第三方类库不再能满足业务需求，或者权益收费等等，我们可以很好的切换底层而使得修改不会扩散到系统各处。外覆类也是处理遗留代码带入测试容器的一种很好实践。</p>
+
+<p>七:单元测试：</p>
+
+<p>&nbsp;&nbsp;&nbsp; TDD中测试代码在往往和产品代码差不多，在系统中占据一半的代码量，不好的测试代码也可能拖累项目的开发。整洁的测试代码应该是遵循first原则的：</p>
+
+<ol>
+<li>快速（Fast）：测试应该快速，因为需要不断的运行测试得到反馈，我们需要的快速反馈，错误的快速定位。所以你的测试就不能依赖太多的外部资源，数据库，硬件环境等等，对于这些外部资源应该采用伪对象模式来隔离。2.  独立（Independent）：测试应该是独立的，独立于测试用例之间，独立于特定的环境，独立于测试的运行顺利。数据的独立通常采用两种独立方式，每个测试环境的独立，很多时候我们希望每个测试运行完成后环境（如数据库）和运行前保持一致，如数据库高层次测试我们更希望在每次测试完成后不会带来多余或者改变数据。再则就是数据的隔离，我们的行为测试（BDD，集成高角度的测试）都会依赖一些固定的信息，通常是登陆系统的人员，我们可以采用么个测试建立一个不同的登陆人员来使的每个测试之间的s数据隔离。3.  可重复（Repeatable）：测试应该可以在任何环境下可重复，可运行，因为测试独立于环境外部资源。4.  自足验证（Self-Validation）：测试应该有通过失败的标示，从每一个测试上能得到一处代码逻辑的通过失败。每个测试都有对同一件事物的一种行为的断言，也之断言一件事，从而能够很好的错误定位，避免高技巧性的测试。5.  及时（Timely）：测试应该是及时编写的，TDD要求测试必须在实现代码之前，提前以使用者的角度定义使用接口方式。如果你是在编码后补测试，你的测试覆盖很可能不够，而且容易定式于实现的逻辑写测试，很多时候对于较低层次的测试也不是那么容易写的。一个设计良好的代码必须也是可测试的。</li>
+</ol>
+
+
+<p>八：类：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 面向对象的相似行为的抽象，函数代码块的组织形式，在面向对象中我们的软件系统是由众多的类和类之间的交互协作完成了。面向对象特征：封装，继承，多态度，委派。一个设计良好的类该是具有良好的封装，站在使用者的调度考虑那些是使用接口，那些是内部细节；这是面向对象最主要的特征，但是有时会与测试冲突，可以适当的放开并仅限于于测试调用。继承和多态在面向对象中可以实现重用，但我更倾向于继承不是为了重用，而是隔离变化；大量的滥用继承不干净的继承体系将会导致庞大的继承体系，继承体系中众多职责重复在各个同级派生类，理想的继承应该是满足里氏替换原则（LSP：每个父类出现的地方都应该可以被派生类所替换，并且能正确的工作）；面oo第二原则组合优先。而委派则是一个类把部分功能委派给其他类来完成，体现类之间的协作，类似组合。</p>
+
+<p>九：并发编程：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 并发是一种时间(When)和目的(What)的解耦,提供应用程序的吞吐量，提高cpu利用率；但是并发编码不是那么容易，再加上临界资源竞争死锁。在并发编程的时候我们必须尽量遵守一些原则：</p>
+
+<ol>
+<li>并发已经足够复杂，我们更需要代码分离，分离线程相关代码和非线程相关代码，单一权责，尽可能降低其复杂度。2.  限制临街资源的作用域，为临界资源加锁是防止并发的策略，但是必须正确的加锁，如果形成等待环，就导致死锁。3.  利用数据副本（值对象或者克隆）在线程之间传递数据，避免线程之前操作的并发影响；线程独立，使其在自己的环境中运行，不能其他线程共享数据。4.  对于临界资源加锁应尽量保持加锁范围尽可能的小。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 更多关于简单设计，迭进，逐步编程代码，坏味道，并发示例请参见<a href="http://book.51cto.com/art/200912/168058.htm">代码整洁之道</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/31/2617473.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-31T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/14/XUnit-pei-zhi-Resharper-kuai-jie-jian/" title="Previous Post: XUnit配置Resharper快捷键">&laquo; XUnit配置Resharper快捷键</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/09/05/AngularJS-Slider-zhi-ling-directive-kuo-zhan/" title="Next Post: AngularJS Slider指令(directive)扩展">AngularJS Slider指令(directive)扩展 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

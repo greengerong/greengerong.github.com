@@ -1,0 +1,1229 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/21/angular-form-addControl/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
+
+<p>下面且让我们先来从angular源码中看起如下：</p>
+
+<p>首先是ngModel：</p>
+
+<pre><code>    var ngModelDirective = function() {
+      return {
+        require: ['ngModel', '^?form'],
+        controller: NgModelController,
+        link: function(scope, element, attr, ctrls) {
+          // notify others, especially parent forms
+
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
+
+          formCtrl.$addControl(modelCtrl);
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        }
+      };
+    };
+</code></pre>
+
+<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
+
+<p>在看看ngModel controller初始化代码：</p>
+
+<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+        function($scope, $exceptionHandler, $attr, $element, $parse) {
+     ....
+      this.$pristine = true;
+      this.$dirty = false;
+      this.$valid = true;
+      this.$invalid = false;
+      this.$name = $attr.name;
+</code></pre>
+
+<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
+
+<p>而FormController的addControl代码则是：</p>
+
+<pre><code>    /**
+     * @ngdoc function
+     * @name ng.directive:form.FormController#$addControl
+     * @methodOf ng.directive:form.FormController
+     *
+     * @description
+     * Register a control with the form.
+     *
+     * Input elements using ngModelController do this automatically when they are linked.
+     */
+    form.$addControl = function(control) {
+      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
+      // and not added to the scope.  Now we throw an error.
+      assertNotHasOwnProperty(control.$name, 'input');
+      controls.push(control);
+
+      if (control.$name) {
+        form[control.$name] = control;
+      }
+    };
+</code></pre>
+
+<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
+
+<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
+
+<h3>手动注册form controller</h3>
+
+<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
+
+<p>如下：</p>
+
+<pre><code>    .directive("dyName", [
+
+        function() {
+          return {
+            require: "ngModel",
+            link: function(scope, elm, iAttrs, ngModelCtr) {
+              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
+              var formController = elm.controller('form') || {
+                $addControl: angular.noop
+              };
+              formController.$addControl(ngModelCtr);
+
+              scope.$on('$destroy', function() {
+                formController.$removeControl(ngModelCtr);
+              });
+
+            }
+          };
+        }
+      ])
+</code></pre>
+
+<p>使用方式：</p>
+
+<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+      &lt;div class="control-group"&gt;
+        &lt;label class="control-label"&gt; : &lt;/label&gt;
+        &lt;div class="controls"&gt;
+          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
+
+<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
+
+<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-16T02:02:17+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/16/angularjs-chinese-guide-public/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
+
+<p>从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
+
+<p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
+
+<p>在经过一段时间的协调和大家付出工作之外的业余时间，如今Angularjs的中文本学习指南终于上线出炉</p>
+
+<p>地址为：</p>
+
+<pre><code>[http://www.ngnice.com/](http://www.ngnice.com/)
+</code></pre>
+
+<p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
+
+<p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
+
+<p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-15T21:43:06+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/15/index-for-ng-options/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.</p>
+
+<p>其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。</p>
+
+<p>把这个问题换成角度来看,我们所需要的就是js数组的下标，所以我们如果我们能够在对象上加入下标，使用表达式作为option的label就能解决了。</p>
+
+<p>但是第一印象让我想起的是js数组本来就是一个key/value的对象，只是key为数组下标而已，所以有了如下之设计：</p>
+
+<p>html:</p>
+
+<pre><code>  &lt;pre&gt;&lt;/pre&gt;
+
+  &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
+</code></pre>
+
+<p>  js:</p>
+
+<pre><code>$scope.getDesc1 = function(key, value) {
+    return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
+};
+</code></pre>
+
+<p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
+
+<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+  &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
+  &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
+  &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
+  &lt;option value="11" &gt;12-&amp;gt;jw_jobcomment&lt;/option&gt;
+  &lt;option value="12" &gt;13-&amp;gt;jw_companyInfo&lt;/option&gt;
+  ....
+&lt;/select&gt;
+</code></pre>
+
+<p>所以这样是无法解决的。还好博主还有一招，ngOptions支持Angularjs的filter，所以我们可以对数据源对象上加上一个order字段标示下标作为序号。并且你可以在一个2年前的Angular的issue中看到Angular已经fix issue，option会对数组进行按下标顺序生成。</p>
+
+<p>html:</p>
+
+<pre><code>&lt;pre&gt;&lt;/pre&gt;
+
+&lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
+</code></pre>
+
+<p>js:</p>
+
+<pre><code>    var app = angular.module('plunker', []);
+
+    app.controller('MainCtrl', function($scope) {
+      $scope.t = [{
+        "field": "jw_companyTalent"
+      }, {
+        "field": "jw_reportgroup"
+      }];
+      $scope.getDesc = function(l) {
+        return l.order + "-&gt;" + l.field;
+      };
+    }).filter("index", [
+      function() {
+        return function(array) {
+          return (array || []).map(function(item, index) {
+            item.order = index + 1;
+            return item;
+          });
+        };
+      }
+    ]);
+</code></pre>
+
+<p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-11T22:27:29+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
+
+<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
+
+<p>如ngClick在官方文档是这么描述的：</p>
+
+<pre><code>Expression to evaluate upon click. (Event object is available as $event)
+</code></pre>
+
+<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
+
+<pre><code>    var ngEventDirectives = {};
+    forEach(
+      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+      function(name) {
+        var directiveName = directiveNormalize('ng-' + name);
+        ngEventDirectives[directiveName] = ['$parse', function($parse) {
+          return {
+            compile: function($element, attr) {
+              var fn = $parse(attr[directiveName]);
+              return function(scope, element, attr) {
+                element.on(lowercase(name), function(event) {
+                  scope.$apply(function() {
+                    fn(scope, {$event:event});
+                  });
+                });
+              };
+            }
+          };
+        }];
+      }
+    );
+</code></pre>
+
+<p>在上边代码我们可以得到两个信息：</p>
+
+<ol>
+<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
+<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
+</ol>
+
+
+<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
+
+<p>html 代码</p>
+
+<pre><code>    &lt;!DOCTYPE html&gt;
+    &lt;html id="ng-app" ng-app="app"&gt;
+    &lt;head&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
+      &lt;meta charset="utf-8"&gt;
+      &lt;title&gt;JS Bin&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body ng-controller="demo as d"&gt;
+       &lt;div ng-click="d.click('parent',$event)"&gt;
+         given some text for click
+         &lt;hr&gt;
+         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
+         &lt;hr&gt;
+         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
+
+       &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;             
+</code></pre>
+
+<p>js 代码</p>
+
+<pre><code>angular.module("app",[])
+.controller("demo",[function(){
+  var vm = this;
+
+  vm.click = function(name,$event){
+    console.log(name +" -----called");
+    if(vm.stopPropagation){
+      $event.stopPropagation();
+    }
+  };
+
+  return vm;
+}]);
+</code></pre>
+
+<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
+
+<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
+
+<p>希望大家已经明白了，不要再问这类问题了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/27/angular-ngcloak-new/">ngCloak 实现 Angular 初始化闪烁最佳实践</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/27/angular-ngcloak-new/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak-new/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
+
+<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
+
+<pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
+ &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
+ &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
+</code></pre>
+
+<p>angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：</p>
+
+<pre><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
+&lt;/style&gt;
+</code></pre>
+
+<p>从上面我们可以看见angular将带有ng-clock的的元素设置为display:none，隐藏掉，在等到angular解析到带有ng-clock的节点时候，会把attribute和class同时remove掉，这样就可以实现防止节点的闪烁。</p>
+
+<pre><code>var ngCloakDirective = ngDirective({
+      compile: function(element, attr) {
+        attr.$set('ngCloak', undefined);
+        element.removeClass('ng-cloak');
+      }
+});
+</code></pre>
+
+<p>在angular-bootstrap.js中会看见这样的代码去增加前面所说的css：</p>
+
+<pre><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
+</code></pre>
+
+<p>好像闪烁的问题好像已经能够被我解决了，恩是否是这样的，理论也改如此，但是现实是残酷的，我们的感性认识经常会被现实一记重重的耳光，我们才能很更深入全面的思考，如果浏览器的速度比angular在head中加入css的速度还快呢？我在给公司的一个项目组解决这个闪烁的问题的时候就遇见了这个问题。怎么办呢？那我们只能使出我们必杀技，自己把css加入我们的css文件引入heade，启动加载，ok这样就可以完美解决了。(如果你也遇见了加了ng-cloak还不起作用的话，那么试试直接引入css文件吧)</p>
+
+<p>到这里关于ng-cloak的原理和解决方案已经完成，欢迎继续关注angular的后续经验篇分享。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-24T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天要和大家分享的是angular从1.2版本开始带来了新语法Controller as。再次之前我们对于angular在view上的绑定都必须使用直接的scope对象，对于controller来说我们也得必须注入$scope这个service。如下：</p>
+
+<pre><code>angular.module("app",[])
+.controller("demoController",["$scope",function($scope){
+    $scope.title = "angualr";
+ }])
+
+&lt;div ng-app="app" ng-controller="demoController"&gt;
+    hello : {{title}} !
+&lt;/div&gt;
+</code></pre>
+
+<p>有些人觉得即使这样我们的controller还是不够POJO，以及对于coffescript爱好者不足够友好，所以在angular在1.2给我带来了一个新的语法糖这就是本文将要说的controller as的语法糖，修改上面的demo将会变成：</p>
+
+<pre><code>angular.module("app",[])
+.controller("demoController",[function(){
+    this.title = "angualr";
+}])
+
+&lt;div ng-app="app" ng-controller="demoController as demo"&gt;
+     hello : {{demo.title}} !
+&lt;/div&gt;
+</code></pre>
+
+<p>这里我们可以看见现在controller不再有$scope的注入了，感觉controller就是一个很简单的平面的JavaScript对象了，不存在任何的差别了。再则就是view上多增加了个demoController as demo，给controller起了一个别名，在此后的view模板中靠这个别名来访问数据对象。</p>
+
+<p>或许看到这里你会问为什么需要如此啊，不就是个语法糖而已，先别着急，我们会在后边分析$scope和他的差别。在此之前我们先来看看angular源码的实现这样才会有助于我们的分析：</p>
+
+<p>下面是一段来自angular的code：在1499行开始(行数只能保证在写作的时候有效)</p>
+
+<pre><code>  if (directive.controllerAs) {
+          locals.$scope[directive.controllerAs] = controllerInstance;
+   }
+</code></pre>
+
+<p>如果你希望看更完全的code请猛击这里<a href="https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js">https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js</a>.</p>
+
+<p>从上面的代码我们能看见的是：angular只是把controller这个对象实例以其as的别名在scope上创建了一个新的对象属性。靠，就这么一行代码搞定！</p>
+
+<p>先别急，既然是语法糖，那么它肯定有他出现的原因，让我们来和直接用$scope对比下：</p>
+
+<p>在此文之前我在angularjs的群中和大家讨论了下我的看法，得到大家不错的反馈，所以有了本文，记录和分享下来。</p>
+
+<p>我规定对于controller as的写法如下：</p>
+
+<pre><code>angular.module("app",[])
+ .controller("demoController",[function(){
+        var vm = this;
+
+        vm.title = "angualr";
+
+        return vm;
+ }])
+</code></pre>
+
+<p>其优势为：</p>
+
+<ol>
+<li>定义vm这样会让我们更好的避免JavaScript的this的坑。</li>
+<li>如果某个版本的angular不再支持controller as,可以轻易的注入$scope,修改为 var vm = $scope;</li>
+<li>因为不再注入$scope了，controller更加的POJO，就是一个很普通的JavaScript对象。</li>
+<li>也因为没有了$scope，而controller实例将会成为scope上的一个属性，所以在controller中我们再也不能使用$watch,$emit,$on之类的特殊方法，因为这些东西往往不该出现在controller中的，给大家一个警告，更好的控制。但是一旦如果没办法必须用的话，可以在征得项目组一致同意，将此controller退回$scope.</li>
+<li>因为controller实例将会只是$scope的一个属性，所以view模板上的所有字段都会在一个引用的属性上，这可以避开JavaScript原型链继承对于值类型的坑。参加<a href="https://github.com/angular/angular.js/wiki/Understanding-Scopes">https://github.com/angular/angular.js/wiki/Understanding-Scopes</a>.</li>
+<li>controller as 对于 coffescript,liveScript更友好。
+7.模板上定义的每个字段方法都会在scope寄存在controller as别名上的引用上，所以在controller继承中，不会在出现命名冲突的问题。</li>
+</ol>
+
+
+<p>注释:对于route，也有个controllerAs的属性可以设置，下面代码来之angular doc文档：</p>
+
+<pre><code>    angular.module('ngViewExample', ['ngRoute', 'ngAnimate'],
+     function($routeProvider, $locationProvider) {
+    $routeProvider.when('/Book/:bookId', {
+      templateUrl: 'book.html',
+      controller: BookCntl,
+      controllerAs: 'book'
+    });
+    $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+      templateUrl: 'chapter.html',
+      controller: ChapterCntl,
+      controllerAs: 'chapter'
+    });
+
+    // configure html5 to get links working on jsfiddle
+         $locationProvider.html5Mode(true);
+     });
+</code></pre>
+
+<p>今天就到这里，谢谢。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/15/jqueryinputmarsk4angular/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。</p>
+
+<p>当然在官方的angular-ui ui-utils中有一个相应的组件叫做ui-mask，但是其mask功能是很初级脆弱的。所以我希望能得到一个更强大的mask组件。我所知的<a href="https://github.com/RobinHerbots/jquery.inputmask">jquery.inputmask</a>就是这样一个我所期望的强大的mask组件，所以我不必再去重造轮子，好的软件就是为了不停被重复利用。所以写了一个adapter，<a href="https://github.com/greengerong/green.inputmask4angular">https://github.com/greengerong/green.inputmask4angular</a>.</p>
+
+<p>其使用如下，可以去下载项目查看其中的demo page。</p>
+
+<pre><code>&lt;div class="hero-unit"&gt;
+                &lt;h1&gt;'Allo, 'Allo!&lt;/h1&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;mask&lt;/h3&gt;
+                    &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
+                    &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
+                    &lt;pre&gt;{{ test | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;y-m-d&lt;/h3&gt;
+                    &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
+                    &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
+                    &lt;pre&gt;{{ test1 | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+
+                &lt;div&gt;
+                    &lt;h3&gt;Regex&lt;/h3&gt;
+                    &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
+                    &lt;input type="text" ng-model="test3" input-mask="'Regex'"
+                     mask-option="regexOption"/&gt;
+                    &lt;pre&gt;{{ test3 | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;Function&lt;/h3&gt;
+                    &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
+                    &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
+                    &lt;pre&gt;{{ test4 | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+</code></pre>
+
+<p> controller code:</p>
+
+<pre><code>'use strict';
+
+    angular.module('green.inputmaskApp')
+        .controller('MainCtrl', ["$scope", function ($scope) {
+
+            $scope.testoption = {
+                "mask": "99-9999999",
+                "oncomplete": function () {
+                    console.log();
+                    console.log(arguments,"oncomplete!this log form controler");
+                },
+                "onKeyValidation": function () {
+                    console.log("onKeyValidation event happend! this log form controler");
+                }
+            }
+
+            //default value
+            $scope.test1 = new Date();
+
+            $scope.dateFormatOption = {
+                parser: function (viewValue) {
+                    return viewValue ? new Date(viewValue) : undefined;
+                },
+                formatter: function (modelValue) {
+                    if (!modelValue) {
+                        return "";
+                    }
+                    var date = new Date(modelValue);
+                    return (date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate()).replace(/\b(\d)\b/g, "0$1");
+                },
+                isEmpty: function (modelValue) {
+                    return !modelValue;
+                }
+            };
+
+
+            $scope.mask = { regex: ["999.999", "aa-aa-aa"]};
+
+
+            $scope.regexOption = {
+                regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"
+            };
+
+            $scope.functionOption = {
+             mask: function () { 
+                return ["[1-]AAA-999", "[1-]999-AAA"]; 
+            }};
+
+
+        }]);
+</code></pre>
+
+<p>这里值列列举了jquery.inputmask的简单实用方式，更复杂的方式请移步到jquery.inputmask查看。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/15/angular-model--format/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/15/angular-model--format/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在angular开发中我们经常会遇见输入框中的string的值，却想在scope上的model表现为整型、浮点、货币，或者在radio的value是一个true,false的Boolean类型，一组check box的vlue组成一个Array的数组类型，因为我们的后台程序的model设计接口如此。你是否还在后台应用程序或者ajax提交前做mapper，还在重复着着伪angular的做法？</p>
+
+<p>在本人github创建了一个开源项目<a href="https://github.com/greengerong/ngmodel-format">https://github.com/greengerong/ngmodel-format</a>,为了让我们能够轻易的对付这些琐事，你可以在demo下得html或者middle way的测试中看见其使用方法，同时如果不满足你的需求，你仍然可以很简单的扩展你需要的功能：你需要的只是在你的module的run阶段注入modelFormatConfig的constant service 加入所需的key值，加上自己的formatter，parser，isEmpty方法，如果你仍然想继续深入的对用户的输入进行一些控制的话，也可以加入keyDown时间去stopPropagation，preventDefault一些key值。</p>
+
+<p>下面我们看看其相应的使用方式：</p>
+
+<p>请移步到<a href="http://jsbin.com/uJUrANa/1/watch?html,js,output">http://jsbin.com/uJUrANa/1/watch?html,js,output</a>，由于嵌入iframe对样式存在影响，所以暂不嵌入</p>
+
+<p>注意由于在jsbin拒绝引入github text/plain的文件 所以这里是直接把源码贴进去了的，如果使用的话最好是使用github上的，这里的代码是不会更新的。</p>
+
+<p>在jsbin demo上你能够很清楚的看见使用方式。那么我就不用在废话多说了，哈哈。有问题可以提交github issue。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/11/angularjs-web-component/">Web组件化-angularjs实践</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/11/angularjs-web-component/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/11/angularjs-web-component/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在过去的web标准经历了一个飞速的发展，随着时间的推移，用户对web的体验也越来越重视，从最初的简单静态页面到以ajax标志的web2.0，在这个时代我们所面临的问题是用户的体验和可恶的浏览器的兼容(IE成为了我们所唾弃的产物，IE6的葬礼之类的形式足以表明这点)，所以有了Prototype，Mootools，jQuery这类浏览器兼容和util的库，特别jQuery的出现以其独特的兼容性，一致性和优雅的选择器和链式风格影响了整个业界的发展,作为这个时代的产物jQuery是个很出色的库，正的如它所说，做到了&#8221;write less，do more&#8221;,成为这个时代的标志。然而随着互联网的突增，我们的JavaScript代码量也暴增，是的我们再度陷入到JavaScript的维护管理的困境。JavaScript本来是一门作为浏览器上的脚本语言出身，并不适合于大规模开发。所以在我们所能看见的MDV框架的出现，这个时候前段的JavaScript代码已得到我们越来越注重，MDV框架提出了我们也需要向对待后端系统(spring,web api)一样对前段逻辑进行统一管理，分层(表现逻辑，viewmodel，视图)。所以Backbone，AngularJS，Ember，Spine之类的数据绑定框架横空出世，力求给我们带来代码的模块管理，数据、视图的分离，他们以他们不同的方式解决共同的问题：</p>
+
+<p>1.如何更好地模块化开发</p>
+
+<p>2.业务数据如何组织</p>
+
+<p>3.界面和业务数据，业务逻辑的分离</p>
+
+<p>与此同时其实用户体验的要求html5，ECMAScript也在快速的推进。在这里我想说的是 Web组件化的也在蓬勃的发展起来，以Google额polymer为代表的框架，库也在悄无声息的到来，虽然这需要等到浏览器的大统一，但是我们相信在不久的将来将会到来。在这里我所激动和希望是组件的共享，假设我们能够一个想java maven repo，cdn之类的共有或者私有repo，在你需要的地方只需要import那将是多么美好的事情，这也许是意淫，但也未必不可。</p>
+
+<p>有希望总是好的，在过去一年我所尝试的就是基于angular这优秀的框架directive dsl和maven build去实现我所期望的组件化共享愿景。在基于node的<a href="http://component.io/">component</a>前端管理框架稍有相似之处。</p>
+
+<p>回到正题，在angularjs中如何去做到组件化：</p>
+
+<p><img src="/images/blog_img/web-angular.jpg" alt="/images/blog_img/web-angular.jpg" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/10/use-phantomjs-to-get-pdf/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近在node.js项目开发中，遇见生成PDF的需求，当然生成PDF不是一个新意的需求；我可以选择利用开源的pdfkit或者其他node pdf模块，或者通过edge.js调用.net/python下的pdf库去做生成pdf。但是在我看来对于这些东西不管如何也需要花费我们太多的时间(pdf报表的内容报表很复杂)，不如把所有的画图实现逻辑推向大家所熟悉的html+css来的简洁，快速，这样对于pdf格式变化和图形计算逻辑的变化推到ejs、jade之类的模板引擎，对于以后的修改维护扩展是个很不错的选择。所以选择phantomjs加载页面生成PDF对于我来说不是个不错的选择，同时对于html+css我所需要兼容的仅有webkit一种浏览器，没有厌恶的浏览器兼容性顾虑。所以说做就做，我在项目上花了半个小时配置phantomjs的自动化脚本（在各环境能够自动勾践），以及实现了一个简单页面的PDF转化。</p>
+
+<p>rasterize.js（来自官方pdf demo）：</p>
+
+<pre><code>var page = require('webpage').create(),
+        system = require('system'),
+        address, output, size;
+
+    if (system.args.length &lt; 3 || system.args.length &gt; 5) {
+        console.log('Usage: rasterize.js URL filename [paperwidth*paperheight|paperformat] [zoom]');
+        console.log('  paper (pdf output) examples: "5in*7.5in", "10cm*20cm", "A4", "Letter"');
+        phantom.exit(1);
+    } else {
+        address = system.args[1];
+        output = system.args[2];
+        page.viewportSize = { width: 600, height: 600 };
+        if (system.args.length &gt; 3 &amp;&amp; system.args[2].substr(-4) === ".pdf") {
+            size = system.args[3].split('*');
+            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '0px' }
+                : { format: system.args[3], orientation: 'portrait', margin: '1cm' };
+        }
+        if (system.args.length &gt; 4) {
+            page.zoomFactor = system.args[4];
+        }
+        page.open(address, function (status) {
+            if (status !== 'success') {
+                console.log('Unable to load the address!');
+                phantom.exit();
+            } else {
+                window.setTimeout(function () {
+                    page.render(output);
+                    phantom.exit();
+                });
+            }
+        });
+    }
+</code></pre>
+
+<p>在node调用端，使用exec调用命令行输入得到文件并返回到node response流：</p>
+
+<p>guid utils:</p>
+
+<pre><code>    'use strict';
+
+    var guid = function () {
+        var uid = 0;
+        this.newId = function () {
+            uid = uid % 1000;
+            var now = new Date();
+            var utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+            return utc.getTime() + uid++;
+        }
+    }
+
+    exports.utils = {
+        guid: new guid()
+    };
+</code></pre>
+
+<p>pdfutil:</p>
+
+<pre><code>    'use strict';
+
+    var exec = require('child_process').exec;
+    var utils = require('./utils').utils;
+    var nodeUtil = require('util');
+
+    var outPut = function (id, req, res) {
+        var path = nodeUtil.format("tmp/%s.pdf", utils.guid.newId());
+        var port = req.app.settings.port;
+        var pdfUrl = nodeUtil.format("%s://%s%s/pdf/%s", req.protocol, req.host, ( port == 80 || port == 443 ? '' : ':' + port ), id);
+
+        exec(nodeUtil.format("phantomjs tool/rasterize.js %s %s A4", pdfUrl, path), function (error, stdout, stderr) {
+            if (error || stderr) {
+                res.send(500, error || stderr);
+                return;
+            }
+            res.set('Content-Type', 'application/pdf');
+            res.download(path);
+        });
+
+    };
+
+    exports.pdfUtils = {
+        outPut: outPut
+    };
+</code></pre>
+
+<p>响应的代码也可以很好的转换为java/c#&hellip;的命令行调用来得到pdf并推送到response流中。一切都这么简单搞定。</p>
+
+<p>node也有node-phantom模块，但是用它生成的pdf样式有点怪，所以最后还是坚持采用了exec方式去做。</p>
+
+<p>还有就是phantomjs生成PDF不会把css的背景色和北京图片带进去，所以对于这块专门利用了纯色图片img标签，并position:relative或者absolute去定位文字.这点还好因为这个页面上用户不会看的，</p>
+
+<p>文章也到此结尾，希望多多交流，继续关注，谢谢大家。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

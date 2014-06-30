@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>(翻译)31天Windows Phone学习-1-项目模板 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="(翻译)31天Windows Phone学习-1-项目模板">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">(翻译)31天Windows Phone学习-1-项目模板</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>的 <a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">31 Days of Windows Phone</a> 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习，所以准备拿来对Windows Phone 7的简单入门学习。并翻译出来供像我一样的菜鸟学习，我的E文并不好，所以翻译难免会有一些不对的忘大家原谅和多多指教。说道E文又想起大学时，就是因为这个E文让我少的了一大笔奖学金，哎。翻译这个系列，也顺便提高一下我的E文吧，呵呵。</p>
+
+<p>&nbsp;&nbsp; 步入正题：今天是我们Windows Phone学习的第一天，是一些关于项目模板的。</p>
+
+<p>&nbsp; 首先： 在学习Windows Phone7之前我们假设你已经对Microsoft 的Silverlight有了一定的了解，如果你还不了解，你也可以参考作者的&nbsp; 20天Silverlight这个系列&nbsp; ，讲解的都是一些Silverlight的基础级知识。</p>
+
+<p>&nbsp; 再者我们假设你已经安装了Microsoft 所有Windows Phone Tools，如果你没有安装，你可以从这里下载<a href="http://developer.windowsphone.com/">http://developer.windowsphone.com/</a>，从这里我们会获得Visual Studio 2010 for Windows Phone和 Expression Blend 4 for&nbsp; Windows Phone。如果在你的机子已经安装了官方的正式版，你仅需要更新添加一些新的模板。</p>
+
+<p>&nbsp;&nbsp; 在今天我们会预览一下Visual Studio 2010为我们的Windows Phone应用程序生成的默认模板。</p>
+
+<p><img src="http://www.jeffblankenburg.com/image.axd?picture=NewProject.png" title="NewProject" alt="NewProject" /></p>
+
+<h4><font style="font-weight: bold">Solution Explorer：</font></h4>
+
+<p>下面是vs2010默认为我们生成的解决方案，我不准备详细介绍各个文件，你可以从<a target="_blank"><a href="http://bit.ly/8XcWaO"><font color="#3d81ee">安装上所有Tools</font></a>&nbsp;</a>并自己尝试，比较简单。</p>
+
+<h4><img src="http://www.jeffblankenburg.com/image.axd?picture=SolutionExplorer.png" title="SolutionExplorer" alt="SolutionExplorer" /></h4>
+
+<h4><font style="font-weight: bold">ApplicationIcon.png:</font></h4>
+
+<p>&nbsp; 是Phone application List现实的图标，你也可以替换成你想要的图标。</p>
+
+<h4><font style="font-weight: bold">App.xaml：</font></h4>
+
+<h4>&nbsp; 有点像ASP.NET web.config 文件，保存了我们应用程序的常用数据和设置，我更喜欢防止我的style在这里，但这不是必须的。</h4>
+
+<h4><font style="font-weight: bold">App.xaml.cs：</font></h4>
+
+<p>是前一文件（App.xaml）的Code-Behind文件，和前一个文件一起定义我们应用程序的入口点，初始化应用程序级别的全局静态资源(StaticResource)和启动程序的页面。</p>
+
+<h4><font style="font-weight: bold">AssemblyInfo.cs：</font></h4>
+
+<p>定义了我们应用程序的程序集信息，入 版本，名称等。个人觉得和我们的WinForm、Asp.net程序应该差不多。</p>
+
+<h4><font style="font-weight: bold">Background.png：</font></h4>
+
+<p>是我们应用程启动时的屏幕背景，我们也可以替换为你需要的图标。</p>
+
+<h4><font style="font-weight: bold">MainPage.xaml：</font></h4>
+
+<p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
+
+<pre>&lt;Tasks&gt;</pre>
+
+
+<pre>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
+
+
+<pre> &lt;/Tasks&gt;</pre>
+
+
+<h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
+
+<p>前一个文件(MainPage.xaml)的Code-Behind文件，在这里需要我们编辑页面启动页面的Code.</p>
+
+<h4><font style="font-weight: bold">SplashScreenImage.jpg:</font></h4>
+
+<p>应用程序加载图标（即：我的应用程序启动，第一个页面还没有显示时）。我们也可以替换这个图标。在这里只是为了让我们的用户了解程序正在加载。</p>
+
+<h4><font style="font-weight: bold">WMAppManifest.xml：</font></h4>
+
+<p>用于定义我们应用程序打包的文件(manifest)。 Silverlight程序最终会打成xap包（zip格式），里面包含了程序需要用到的所有资源（例如图片，声音文件等等），和依赖 的第三方DLL等等。AppManifest.xml文件用于定义打包的结构。</p>
+
+<p>&nbsp;</p>
+
+<p>第一天学习很简单，就到这里的作者给我们提供了Code下载，其实我觉得没有必要。所以偷个懒了。</p>
+
+<p>本文E文原文：<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>关于Windows Phone的一些学习资料：</p>
+
+<p>1：首先是翻译的原文：&nbsp;<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>博客<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>2: 园友<a href="#">306Room</a>的一起学Windows Phone系列<a href="http://www.cnblogs.com/randylee/category/258713.html" title="http://www.cnblogs.com/randylee/category/258713.html">http://www.cnblogs.com/randylee/category/258713.html</a></p>
+
+<p>3：<a href="http://windowsteamblog.com/windows_phone/" title="http://windowsteamblog.com/windows_phone/">http://windowsteamblog.com/windows_phone/</a></p>
+
+<p>4：<a href="http://create.msdn.com/en-US/" title="http://create.msdn.com/en-US/">http://create.msdn.com/en-US/</a></p>
+
+<p>还有其他的我在后续看见了，也会一一不上。也希望大家给我提供一些学习资料，共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/10/1873273.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/27/Dbml-wen-jian-ti-qu-jian-biao-TSql-CodeSmith/" title="Previous Post: Dbml文件提取建表TSql-CodeSmith">&laquo; Dbml文件提取建表TSql-CodeSmith</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/11/11/MEF-xue-xi-bi-ji/" title="Next Post: MEF学习笔记">MEF学习笔记 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

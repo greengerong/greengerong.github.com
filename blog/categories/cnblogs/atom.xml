@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Cnblogs | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/cnblogs/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2014-06-30T15:01:39+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[记录maven java.lang.String Cannot Be Cast to XX Error]]></title>
+    <link href="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/"/>
+    <updated>2013-09-10T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error</id>
+    <content type="html"><![CDATA[<p>&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:java;gutter:false;">-----------------------------------------------------
+
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:225)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:145)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:84)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:59)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.singleThreadedBuild(LifecycleStarter.java:183)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:161)
+         at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:319)
+         at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:156)
+         at org.jvnet.hudson.maven3.launcher.Maven3Launcher.main(Maven3Launcher.java:79)
+         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+         at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+         at java.lang.reflect.Method.invoke(Method.java:601)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launchStandard(Launcher.java:329)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:239)
+         at org.jvnet.hudson.maven3.agent.Maven3Main.launch(Maven3Main.java:146)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:127)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:74)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:118)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:48)
+         at hudson.remoting.Request$2.run(Request.java:326)
+         at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)
+         at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+         at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
+         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+         at java.lang.Thread.run(Thread.java:722)
+Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibility occured while executing [group id]:[artifact id]:[version]:start: java.lang.String cannot be cast to java.io.File
+-----------------------------------------------------
+</pre>
+</div>
+
+
+<p>&nbsp; &nbsp; &nbsp; 在花费了我大半的时间，将本地环境的maven，jdk等设为和ci一致后最后定位到maven的版本问题，其终究原因是因为maven在3.0.3才支持配置参数为泛型集合(List&lt;T&gt;,Set&lt;T&gt;&hellip;)，在3.0.2及一下本班不支持此写法。</p>
+
+<p>&nbsp; &nbsp; &nbsp;修改次error的方法有两种：</p>
+
+<ol>
+<li>将ci Server的maven更新到3.0.3以上。(但是在我们的ci server更新有些困难，还有本人认为如果写一个plugin只能工作的固定version，这和一个废物差不多，所以选择了第二种方法)。</li>
+<li>将泛型集合List&lt;T&gt;改为Array T[]。（项目中某大神写的List&lt;File&gt;我轻易的改为File[].在执行前改为Arrays.asList(XXX)）;</li>
+</ol>
+
+
+<p>&nbsp; &nbsp; &nbsp;一切搞定。在此记录希望对于遇见同类问题的人有所帮助。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/09/10/3313515.html" title="原文首发">原文首发请看这里</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sublime 2 for Mac Link to Command]]></title>
+    <link href="http://greengerong.github.io/blog/2013/07/01/sublime-2-for-mac-link-to-command/"/>
+    <updated>2013-07-01T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/07/01/sublime-2-for-mac-link-to-command</id>
+    <content type="html"><![CDATA[<p><span>Sublime command for mac :</span></p>
+
+<p><span>execute those command:</span></p>
+
+<p><span>sudo ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime</span></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/07/01/3165484.html" title="原文首发">原文首发请看这里</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[语言设计中的鸭子类型风格]]></title>
+    <link href="http://greengerong.github.io/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/"/>
+    <updated>2013-06-30T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge</id>
+    <content type="html"><![CDATA[<p>&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导，并不在乎类型的真正实体，只要他的行为有鸭子的特性，那么我们就可以把它当做一只鸭子来看到。在动态语言设计中，可以解释为无论一个对象是什么类型的，只要它具有某类型的行为（方法），则它就是这一类型的实例，而不在于它是否显示的实现或者继承。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 鸭子类型在动态语言中被广为奉行。某类接口需要一个log接口，换句话说这借口中需要调用传入对象的log，方法，在动态语言中无论你传入的是什么对象，只有具有log方法则就是合法的。而java，c#这类静态强类型语言（当前首先声明c#已经不是纯的静态强类型语言，它具有dynamic，表达式，当然这里所说的c#是去掉这类特性，或者说C#2.0吧）我们传入的对象是必须显示实现该接口的类实例，他们直接必须具有显示的继承链。</p>
+
+<p>&nbsp;&nbsp; &nbsp;&nbsp;以上所说的是两类语言设计中的对抽象的制约的区别。</p>
+
+<p>&nbsp;&nbsp;&nbsp; Javascript中鸭子型的实现：</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">function</span><span style="color: #000000;"> log(logger){
+
+       logger.log(&ldquo;hello world&rdquo;)；
+
+}
+
+log({log:</span><span style="color: #0000ff;">function</span><span style="color: #000000;">(msg){
+
+       console.log(msg);
+
+}});</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>代码量很少，这里只是一种简单的约定，而不是强制，使得我们的自控感增强，所以我喜欢javascript这门语言给我的自由度。但是相对于java这类静态强类型语言而言是将语法的检查推向了运行时期，延迟了发现问题的时间，不助于我们的调试。在强类型系统的语言中由于具有完备的类型信息，我们可以提高良好的IDE于开发时限制，有助于我们的大规模开发。所以这里没有对错，只是看你的选择和喜爱。如果你是一个优秀的程序员，动态语言这种检查的推迟对你并无什么问题，因为你能够有条理次序的节奏型开发。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 关于鸭子型风格这里还得必须提到go语言，也是go语言带来我对这种风格的思考。</p>
+
+<p>我们还可以显示的定义在消费者方法中，形如&nbsp;</p>
+
+<div class="cnblogs_code">
+<pre>func SomeFunction(logger <span style="color: #0000ff;">interface</span>{Log(<span style="color: #0000ff;">string</span><span style="color: #000000;">)}){
+
+    logger.Log(&ldquo;hello world, I am go lang&rdquo;).
+
+}</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>实现提供者：</p>
+
+<div class="cnblogs_code">
+<pre>type S <span style="color: #0000ff;">struct</span><span style="color: #000000;"> { }
+
+func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="color: #0000ff;">string</span><span style="color: #000000;">) {
+
+    console.log(msg)
+
+}</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在类型S就是一个实现了Logger的实例。</p>
+
+<p>&nbsp;</p>
+
+<p>Go还有一种叫做空接口，能够容纳万物的东西;</p>
+
+<div class="cnblogs_code">
+<pre>func log(any <span style="color: #0000ff;">interface</span>{}) <span style="color: #0000ff;">int</span><span style="color: #000000;"> {
+
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> any.(I).Get()
+
+ }</span></pre>
+</div>
+
+
+<p>&nbsp; &nbsp;Go语言不同于其他鸭子类型语言的是它实现了在编译时期检查，同时也不失这种自由度。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 另外TypeScript想必你也知道 ，这与google的dart一样致力于将javascript带入大规模开发的语言，不同的是TypeScript是javascript的超集，并不是重造一门新语言。他为javascript引入的接口，类型，泛型等较完备的类型系统，是的能够有更好的IDE支持，从某种程度上来说，这是对鸭子类型或者javascript编译器的检查推迟的弥补。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/06/30/3163358.html" title="原文首发">原文首发请看这里</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[隐藏在mock之后的‘快感’]]></title>
+    <link href="http://greengerong.github.io/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/"/>
+    <updated>2013-05-29T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan</id>
+    <content type="html"><![CDATA[<p>&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo;独立&ldquo;的过度。 在前边转载过《软件开发中没有所谓正确的方法》，当你把某一种方法论作为银弹使用的时候，早晚魔鬼会伴随在你身边。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock给我带来了感知，剥离了类与类之间的依赖，有助于我们更好的工作在当前的关注点 .但同时由于太多的对场景的假设，导致这块代码成为了信息的孤岛，甚至很多时候不得不用mock的第二特性verify，order，以至于你的测试关心的不再是代码存在的business逻辑，而倾向代码层面的设计实现，这就把你单元测试推向了&ldquo;白盒测试&ldquo;的位置，导致测试变为脆弱的测试。每当简单的重构导致内部的变化，你的测试也必须随着改变。</p>
+
+<p>&nbsp; &nbsp; &nbsp;鄙人认为作为一个好的测试而言，在一次合法的简单重构之下，是不需要修改测试的，因为你修改的只是内部实现，而不是business的改变，如果你边改测试边重构或者重构后挂到一大堆测试，这意味这你的测试不是一个稳定的测试或者你不是一次合法的重构（也许redesign，override）。</p>
+
+<p>&nbsp; &nbsp; &nbsp;在同事的项目中对mock的极端到了对简单的View Object 也采用builder模式，可是内部却全是mock given。在我看来而言View Object只是一个简单的数据载体，不存在行为逻辑，我们毫无必要去做mock，mock该是针对假设，而应该尽量避免对状态mock。在同事的项目中导致需要写一个测试之前，作为测试的准备given ，必须理解存在代码的实现，因为你需要一堆given，比如对于person对象，如果你在实现中需要得到account则：</p>
+
+<p>given(person.getAccount()).willReturn(some account);</p>
+
+<p>&nbsp; &nbsp; &nbsp;导致我需要了解实现需要什么property，如果我需要新的的property也许只是简单的把某个&ldquo;依恋情结&rdquo;放入了object，测试也需要被修改，导致重构者对自己的重构并不那么自信，这将影响重构成为日常行为，随着堆积的&rdquo;坏味道&ldquo;这将一点一点的侵蚀你的代码，项目慢慢的也许会不能的不可控。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock并不是一个坏的东西，结果的好坏在于使用的人，团队 的意识，如果是mock anywhere或者杜绝mock走向两个任意的极端都将是一个错误的抉择。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock更多的使用场景为对外界资源解依赖增强感知能力，以及对无响应的重要business的验证，后者长体现于一个没有返回子void的method，但是method比如增加用户积分，记录用户信息等的。然而对于有响应的business，我需要的不是mock而应该是assert，对于测试来说对于business来说应试是我的输入应该得到我预期的响应，而非我verify某个行为发生了，那么其结果一定就正确，当然对于实现来说这是成立的，但是从测试的价值来说这厮无意义的，这将是一个脆弱的测试，我认为一个好的测试将是&ldquo;黑盒测试&ldquo;，是一个business的描述，对一份约定，契约的阐述。</p>
+
+<p>&nbsp; &nbsp; &nbsp; 附言，如果你因为测试的速度，独立性来为自己的mock证明，那将是无意义的，不是每一个测试都必须在黄金法则内（0.1s），如果你对外部依赖，耗时依赖的分离，这我相信将不再是问题所在，测试的优化将是另一个有趣的话题，将不是本文内容之列。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/29/3107019.html" title="原文首发">原文首发请看这里</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[集成服务监控器-green.monitor发布]]></title>
+    <link href="http://greengerong.github.io/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/"/>
+    <updated>2013-05-26T00:00:00+08:00</updated>
+    <id>http://greengerong.github.io/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu</id>
+    <content type="html"><![CDATA[<p>&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常，在这里浪费了大量时间，在笔者为所在项目建立了一个第三方集成服务监控的Monitor，去实时监控项目所依赖的所有集成服务，数据库。现在开源在github <a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a>，在其sample目录下有个使用demo。</p>
+
+<h2><em>maven&nbsp;</em>dependency</h2>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>com.github.greengerong<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>green.monitor<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>1.2<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<h2>demo效果如下：</h2>
+
+<p><img src="http://images.cnitblog.com/blog/63184/201305/26183719-93e330e6d3b04c219f0ea423b973a356.png" alt="" /></p>
+
+<h1>建立自己的monitor：</h1>
+
+<p>1：首先在你spring mvc web project 的 pom文件中引 入green-monitor的dependency。(spring 3.0以上)
+2：在spring mvc的 ioc context config中启用annotation dirver，如下xml：</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">beans </span><span style="color: #ff0000;">xmlns</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans"</span><span style="color: #ff0000;">
+         xmlns:xsi</span><span style="color: #0000ff;">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #ff0000;">
+         xmlns:p</span><span style="color: #0000ff;">="http://www.springframework.org/schema/p"</span><span style="color: #ff0000;">
+         xmlns:mvc</span><span style="color: #0000ff;">="http://www.springframework.org/schema/mvc"</span><span style="color: #ff0000;">
+         xmlns:context</span><span style="color: #0000ff;">="http://www.springframework.org/schema/context"</span><span style="color: #ff0000;">
+         xmlns:util</span><span style="color: #0000ff;">="http://www.springframework.org/schema/util"</span><span style="color: #ff0000;">
+         xsi:schemaLocation</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"</span><span style="color: #0000ff;">&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">mvc:annotation-driven</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">context:component-scan </span><span style="color: #ff0000;">base-package</span><span style="color: #0000ff;">="green.monitor"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">id</span><span style="color: #0000ff;">="viewResolver"</span><span style="color: #ff0000;"> class</span><span style="color: #0000ff;">="org.springframework.web.servlet.view.InternalResourceViewResolver"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="prefix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>/WEB-INF/pages/<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="suffix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>.jsp<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">bean</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">beans</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>3:在项目resources(mian/resources)下建立monitor-config.xml。如果需要 在不同环境配置不同信息，可以在运行机器上加入key为appenv的环境变量，程序会根据不同agent加载monitor-config.[appenv].xml配置文件.或者利用mavn，gradle这类构建工具按环境输出配置信息。</p>
+
+<p>配置文件形如：</p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitoring </span><span style="color: #ff0000;">version</span><span style="color: #0000ff;">="1.0"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="monitor-sample"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitor </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #0000ff;">&gt;</span>green.monitor.demo.MockMonitorRunner<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitor</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="hello service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/hello<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=success<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for hello service.should be success.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="error service 2"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=must be failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for error service.should be failed.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="Random failed Service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This monitor will be random failed!<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitoring</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>这样你就可以运行monitor了，url为host + &ldquo;/monitor&rdquo;</p>
+
+<h1>扩展</h1>
+
+<p>1：扩展runner 同时monitor为你提供了自我特定需求扩展的机会，在xml config中你应该主意到了有个monitor的配置节，这里就可以配置你自定义runner（其实现MonitorRunner接口),配置节name则作为后边item的引用name。</p>
+
+<p>系统默认加入了web-service,dababase,http-connection3个常用runner。具体使用请看demo。
+2：系统提供了service为基于spring restfull api,所以你可以在其他地方展示该monitor状况。(在下一个版本将提供jsonp的跨域处理)。</p>
+
+<p>&nbsp; &nbsp;monitor project repo:&nbsp;<a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/26/3100241.html" title="原文首发">原文首发请看这里</a></p>
+]]></content>
+  </entry>
+  
+</feed>

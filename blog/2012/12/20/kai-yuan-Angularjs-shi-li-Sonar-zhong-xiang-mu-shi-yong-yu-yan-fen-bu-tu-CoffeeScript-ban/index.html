@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>开源：Angularjs示例--Sonar中项目使用语言分布图(CoffeeScript版) - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="开源：Angularjs示例--Sonar中项目使用语言分布图(CoffeeScript版)">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">开源：Angularjs示例--Sonar中项目使用语言分布图(CoffeeScript版)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 关于<strong><a href="https://github.com/greengerong/SonarLanguage">SonarLanguage</a></strong>是什么东东，这里就不在描述了，如果你对它感兴趣的话，请移步到上篇随笔<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/02/2798001.html">开源：Angularjs示例&mdash;Sonar中项目使用语言分布图</a>。这里是最近学习CoffeeScript的练习版。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://coffeescript.org/">CoffeeScript</a>是一门简洁的，构架于JavaScript之上的预处理器语言，可以静态编译成JavaScript，语法主要受ruby和python影响，目前已经为众多rails和node项目采用。CoffeeScript不是JavaScript的超集，也不是完全替代品。CoffeeScript有点在于：</p>
+
+<ol>
+<li>更少，更紧凑，和更清晰的代码</li>
+<li>通过规避和改变对JavaScript中不良部分的使用，只留下精华，让代码减少出错率，更容易维护</li>
+<li>在很多常用模式的实现上采用了JavaScript中的最佳实践</li>
+<li>CoffeeScript生成的JavaScript代码都可以完全通过<a href="http://www.javascriptlint.com/">JSLint</a>的检测</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 多的也不想说那么多了，这里主要是个简介，CoffeeScript的练笔示例。</p>
+
+<p>代码如下：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;collapse:true;;gutter:true;">app = angular.module('app', [])
+
+    .value("$host", "http://nemo.sonarsource.org")
+
+    .factory("$requestUrl", ($host) -&gt; "#{$host}/api/resources")
+
+    .factory("$dynamicColor", ($host) -&gt;
+
+        [r,g,b] = [10,10,0]
+
+        {
+
+          getColor: -&gt;
+
+               [r,g,b] = [(r+100), (g+400), (b + 200)]
+
+               "##{(r + 256 * g + 65536 * b).toString 16 }"
+
+          ,
+
+          reset: -&gt; 
+
+               [r,g,b] = [10,10,0] 
+
+        };
+
+    ).directive('chartData', -&gt; 
+
+            drawChart = (elementId, data) -&gt; 
+
+               chart = new AmCharts.AmPieChart() 
+
+               chart.dataProvider = data
+
+               chart.titleField = "name"
+
+               chart.valueField = "percentage"
+
+               chart.colorField = "color"
+
+               chart.labelsEnabled = false
+
+               chart.pullOutRadius = 0
+
+               chart.depth3D = 20
+
+               chart.angle = 45
+
+               legend = new AmCharts.AmLegend()
+
+               legend.makerType = "square"
+
+               legend.align = "center"
+
+               chart.addLegend legend
+
+               chart.write elementId
+
+               chart;
+
+            (scope, element, attr) -&gt; 
+
+                  scope.already.push( -&gt; 
+
+                     data = scope.$eval(attr.chartData);
+
+                     drawChart(element[0].id, data); 
+
+                  ) if element[0].id 
+
+    )
+
+report = ($scope, $window, $http, $requestUrl, $dynamicColor) -&gt;
+
+    $scope.already = []
+
+    $window.angularJsonpCallBack = (data) -&gt;
+
+         @data = data
+
+         getObjectByKey = (msr , key) -&gt;
+
+            m for m in msr when m.key == key 
+
+         $scope.gridSource = $scope.projects = data
+
+         ready = (queues) -&gt; angular.forEach(queues, (q) -&gt; q() ) 
+
+         ready $scope.already 
+
+    $scope.getLanguageChartData = -&gt; 
+
+         data = _.groupBy $scope.projects , (project) -&gt; project.lang 
+
+         $dynamicColor.reset()
+
+         chartData = _.map(data, (array, key) -&gt; 
+
+                      "name":key
+
+                      "percentage":array.length,
+
+                      "color":$dynamicColor.getColor())
+
+         _.sortBy(chartData, (num) -&gt; num.percentage )
+
+    $scope.search = -&gt;
+
+        source = []
+
+        if not this.searchName
+
+            source = @projects
+
+        else 
+
+            source = _.filter @projects, (p) -&gt; 
+
+                       p.name.toLowerCase().indexOf $scope.searchName.toLowerCase() != -1 
+
+        source = _.sortBy(source, (p) -&gt; p[$scope.sortCondition.key].toLowerCase()) if @sortCondition and @sortCondition.key
+
+        source.reverse() if @sortCondition.sort and not @sortCondition.sort[$scope.sortCondition.key] 
+
+        @gridSource = source
+
+    $scope.sort = (name) -&gt;
+
+        @sortCondition ?= {}
+
+        @sortCondition.sort ?= {}
+
+        @sortCondition.key = name
+
+        @sortCondition.sort[name] = not @sortCondition.sort[name]
+
+        @search();
+
+    $scope.init = -&gt;
+
+        $http.jsonp "#{$requestUrl}?callback=angularJsonpCallBack"
+
+app.controller "report", report
+</pre>
+</div>
+
+
+<p>最终编译的JavaScript为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;collapse:true;;gutter:true;">var app, report;
+
+app = angular.module('app', []).value("$host", "http://nemo.sonarsource.org").factory("$requestUrl", function($host) {
+  return "" + $host + "/api/resources";
+}).factory("$dynamicColor", function($host) {
+  var b, g, r, _ref;
+  _ref = [10, 10, 0], r = _ref[0], g = _ref[1], b = _ref[2];
+  return {
+    getColor: function() {
+      var _ref1;
+      _ref1 = [r + 100, g + 400, b + 200], r = _ref1[0], g = _ref1[1], b = _ref1[2];
+      return "#" + ((r + 256 * g + 65536 * b).toString(16));
+    },
+    reset: function() {
+      var _ref1;
+      return _ref1 = [10, 10, 0], r = _ref1[0], g = _ref1[1], b = _ref1[2], _ref1;
+    }
+  };
+}).directive('chartData', function() {
+  var drawChart;
+  drawChart = function(elementId, data) {
+    var chart, legend;
+    chart = new AmCharts.AmPieChart();
+    chart.dataProvider = data;
+    chart.titleField = "name";
+    chart.valueField = "percentage";
+    chart.colorField = "color";
+    chart.labelsEnabled = false;
+    chart.pullOutRadius = 0;
+    chart.depth3D = 20;
+    chart.angle = 45;
+    legend = new AmCharts.AmLegend();
+    legend.makerType = "square";
+    legend.align = "center";
+    chart.addLegend(legend);
+    chart.write(elementId);
+    return chart;
+  };
+  return function(scope, element, attr) {
+    if (element[0].id) {
+      return scope.already.push(function() {
+        var data;
+        data = scope.$eval(attr.chartData);
+        return drawChart(element[0].id, data);
+      });
+    }
+  };
+});
+
+report = function($scope, $window, $http, $requestUrl, $dynamicColor) {
+  $scope.already = [];
+  $window.angularJsonpCallBack = function(data) {
+    var getObjectByKey, ready;
+    this.data = data;
+    getObjectByKey = function(msr, key) {
+      var m, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = msr.length; _i &lt; _len; _i++) {
+        m = msr[_i];
+        if (m.key === key) {
+          _results.push(m);
+        }
+      }
+      return _results;
+    };
+    $scope.gridSource = $scope.projects = data;
+    ready = function(queues) {
+      return angular.forEach(queues, function(q) {
+        return q();
+      });
+    };
+    return ready($scope.already);
+  };
+  $scope.getLanguageChartData = function() {
+    var chartData, data;
+    data = _.groupBy($scope.projects, function(project) {
+      return project.lang;
+    });
+    $dynamicColor.reset();
+    chartData = _.map(data, function(array, key) {
+      return {
+        "name": key,
+        "percentage": array.length,
+        "color": $dynamicColor.getColor()
+      };
+    });
+    return _.sortBy(chartData, function(num) {
+      return num.percentage;
+    });
+  };
+  $scope.search = function() {
+    var source;
+    source = [];
+    if (!this.searchName) {
+      source = this.projects;
+    } else {
+      source = _.filter(this.projects, function(p) {
+        return p.name.toLowerCase().indexOf($scope.searchName.toLowerCase() !== -1);
+      });
+    }
+    if (this.sortCondition &amp;&amp; this.sortCondition.key) {
+      source = _.sortBy(source, function(p) {
+        return p[$scope.sortCondition.key].toLowerCase();
+      });
+    }
+    if (this.sortCondition.sort &amp;&amp; !this.sortCondition.sort[$scope.sortCondition.key]) {
+      source.reverse();
+    }
+    return this.gridSource = source;
+  };
+  $scope.sort = function(name) {
+    var _base, _ref, _ref1;
+    if ((_ref = this.sortCondition) == null) {
+      this.sortCondition = {};
+    }
+    if ((_ref1 = (_base = this.sortCondition).sort) == null) {
+      _base.sort = {};
+    }
+    this.sortCondition.key = name;
+    this.sortCondition.sort[name] = !this.sortCondition.sort[name];
+    return this.search();
+  };
+  return $scope.init = function() {
+    return $http.jsonp("" + $requestUrl + "?callback=angularJsonpCallBack");
+  };
+};
+
+app.controller("report", report);
+</pre>
+</div>
+
+
+<blockquote><p>就这么多了，关于CoffeeScript请参考</p>
+
+<ol>
+<li><a href="http://coffeescript.org/">CoffeeScript</a></li>
+<li><a href="http://ruby-china.org/topics/4789">CoffeeScript详解</a></li>
+<li><a href="http://amix.dk/blog/post/19612">CoffeeScript: The beautiful way to write JavaScript</a></li>
+<li><a href="http://developer.51cto.com/art/201109/292065.htm">当jQuery遭遇CoffeeScript&mdash;&mdash;妙不可言</a>></li>
+</ol>
+
+
+<p>本人也会在随后的随笔中继续更新CoffeeScript，请持续关注。</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/20/2827141.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-20T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/" title="Previous Post: Javascript覆盖率(jstd)报表解析Maven插件">&laquo; Javascript覆盖率(jstd)报表解析Maven插件</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/23/li-yong-Node-js-ben-di-gou-jian/" title="Next Post: 利用Node.js本地构建">利用Node.js本地构建 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

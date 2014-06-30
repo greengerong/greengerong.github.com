@@ -1,0 +1,1161 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。 解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
+默认是 PK%.U27:TABLE%，U27表示截取27个字符。改成PK% &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/9">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">PD设计中表名过长，自动生成的主外键名截取的问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。</p>
+
+<p>解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
+默认是 <span style="color: red">PK<em>%.U27:TABLE%</span>，<span style="color: red">U27</span>表示截取27个字符。改成PK</em>%TABLE%主键名就不会被截取了。</p>
+
+<p>其他键同理：找到相应的ConstName Value去掉U.\d:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/27/1996786.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Excel 货币中文大写汉字转化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Excel转化货币数字为中文大写：例如：</p>
+
+<p>效果图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/ExcelP.jpg" alt="" /></p>
+
+<p>代码：</p>
+
+<pre><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
+</code></pre>
+
+<p>&nbsp;这个奖可以结合ASPOSE.Cells处理我的报表导出Excel的汇总，计算问题：<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/21/Aspose_Cells_Template1.html"><font color="#6699cc">报表中的Excel操作之Aspose.Cells（Excel模板）</font></a> 唯一需要改变的就是D8这个单元汇总格是需要动态变更的，可以利用{r}。{-n}，{c}等来处理。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/26/1996192.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/12/Python-Tools-for-Visual-Studio/">Python Tools for Visual Studio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/12/Python-Tools-for-Visual-Studio/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/12/Python-Tools-for-Visual-Studio/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#160;&#160;&#160; 今天在CodeProject订阅中看这个开源项目，简单的看了看项目介绍，和测试。这对于喜欢CPython、IronPython的朋友们来说，该是一个喜悦，现在在ms的开源项目支持下，我们可以就在我们的vs2010IDE下编写程序了。</p>
+
+<p>下面是CodePlex上的一个效果展示：Python Tools for Visual Studio主页：<a href="http://pytools.codeplex.com/" title="http://pytools.codeplex.com/">http://pytools.codeplex.com/</a></p>
+
+<p> CPython and IronPython</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103121111565782.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103121111575060.png" title="p_intro_pic_med2" alt="p_intro_pic_med2" /></a></p>
+
+<p> 现在还是Beta版：支持智能感知、CPython 和 IronPython，NumPy &amp; SciPy for .Net、本地和远程调试、支持并行计算，很快聚会支持以当下流行的云计算、大规模，数据密集型并行编程（Dryad）。</p>
+
+<p>其他资料：
+  <li>CPython <a href="http://www.python.org">http://www.python.org</a>;</li>  <li>IronPython <a href="http://ironpython.codeplex.com">http://ironpython.codeplex.com</a>;</li>  <li>IPython <a href="http://ipython.scipy.org">http://ipython.scipy.org</a> ;</li>  <li>NumPy/SciPy&#160; <a href="http://scipy.org">http://scipy.org</a>;</li>  <li>NumPy/SciPy for .Net 将会在: <a href="http://scipy.org">http://scipy.org</a> ；</li></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/12/1982093.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/05/duan-dian/">断电</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/05/duan-dian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/05/duan-dian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&shy;</p>
+
+<p>与屋外的夜融合&shy;</p>
+
+<p>没了相伴的影&shy;</p>
+
+<p>去了柳绿花红,还有&shy;</p>
+
+<p>面部的表情,&shy;</p>
+
+<p>正如落魄的&shy;茫然</p>
+
+<p>死亡的静谧 &shy;</p>
+
+<p>&shy;</p>
+
+<p>我在内心默祷&shy;</p>
+
+<p>任书桌的狼籍 &shy;</p>
+
+<p>墨汁的飘洒 &shy;</p>
+
+<p>黑的延续&shy;</p>
+
+<p>尽情低落的幸福</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &mdash;破狼</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/05/1971372.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/04/html5-web-ben-di-cun-chu/">Html5-web本地存储</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/04/html5-web-ben-di-cun-chu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/04/html5-web-ben-di-cun-chu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>&nbsp;&nbsp; 在html5中为我们提供了一种本地缓存机制，它将取代我们的cookie，并且它是不会随浏览器发会我们的服务器端的。我们可以采用js在客户端自由的操作本地缓存。html5中缓存主要有localStorage，和sessionStorage。他们的用法一致。区别在于他们的时间限制不同。localStorage是不存在时间限制的。而sessionStorage这时基于session的数据存储，在关闭或者离开网站后，数据将会被删除。</p>
+
+<p>&nbsp; 下面我们来简单看看官方的示例操作：</p>
+
+<p><strong>javascript</strong></p>
+
+<p>localStorage.fresh = &#8220;vfresh.org&#8221;;&nbsp;&nbsp; //设置一个键值
+var a = localStorage.fresh;&nbsp;&nbsp; //获取键值</p>
+
+<p>或者使用它的API：
+<strong>javascript</strong></p>
+
+<p>//清空storage
+localStorage.clear();</p>
+
+<p>//设置一个键值
+localStorage.setItem(&#8220;fresh&#8221;,&#8220;vfresh.org&#8221;);</p>
+
+<p>//获取一个键值
+localStorage.getItem(&#8220;fresh&#8221;);&nbsp;</p>
+
+<p>//return &#8220;vfresh.org&#8221; //获取指定下标的键的名称（如同Array）
+localStorage.key(0);&nbsp;</p>
+
+<p>//return &#8220;fresh&#8221; //删除一个键值
+localStorage.removeItem(&#8220;fresh&#8221;);</p>
+
+<p>&nbsp;</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sessionStorage相同就不用在废话了，他相当于我们的过期时间Expire=0的cookie；</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1970457.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/">Wpf消息循环之消息传递</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 几天遇见一个问题需要检查某个wpf程序是否已经运行，如果没有运行则启动传递参数，如果已运行则需要直接传递消息。在没有运行 情况下传递参数很简单，我们只需要Process cmd窗口启动并传递参数，在程序中处理。但是如果程序已经启动有点麻烦，凭着我曾winform的经验第一时间想到的是win32 api&nbsp; SendMessage,我们的C#程序只需要DllImport就可以调用了。经过一番查找和对wpf window和DispatcherObject的Reflector，花了我大半天终于找到了System.Windows.Interop.HwndSource中有AddHock方法可以添加对win32消息机制的监听。这下就很好办了我们只需要注册MainWindow的这个时间，来监听win32消息处理我们的0x004A消息。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 控制台代码，主要应用的FindWindow 这个win32方法查找我们的窗体，SendMessage发送我们的消息，和winform没有什么差别，对于win32的使用你可以参考<a href="http://www.cnblogs.com/speeding/">毒龙的程序人生</a> 的<a href="http://www.cnblogs.com/speeding/archive/2004/10/24/56033.html">关于C#中实现两个应用程序消息通讯的问题</a>。难得查win32 Api直接copy，借来用用。</p>
+
+<p>程序：</p>
+
+<pre><code>using System; 
+using System.Collections.Generic; 
+using System.Linq; 
+using System.Text; 
+using System.Runtime.InteropServices; 
+
+namespace ConsoleApplication1 
+{ 
+    class Program 
+    { 
+        static void Main(string[] args) 
+        { 
+            string ch = ""; 
+            while (ch.ToLower() != "q") 
+            { 
+
+                if (!SendMessage("Window1", @"Hello,I am from Console Program:" + ch)) 
+                { 
+                   Console.WriteLine("no window");
+
+                }; 
+                ch = Console.ReadLine(); 
+            } 
+        } 
+
+        public static bool SendMessage(string windowName, string strMsg) 
+        { 
+            if (strMsg == null) return true; 
+            IntPtr hwnd = (IntPtr)FindWindow(null, windowName   ); 
+            if (hwnd != IntPtr.Zero) 
+            { 
+                CopyDataStruct cds; 
+                cds.dwData = IntPtr.Zero; 
+                cds.lpData = strMsg; 
+                cds.cbData = System.Text.Encoding.Default.GetBytes(strMsg).Length + 1; 
+                int fromWindowHandler = 0; 
+                SendMessage(hwnd, 0x004A, fromWindowHandler, ref  cds); 
+                return true; 
+            } 
+            return false; 
+        } 
+
+        [DllImport("User32.dll", EntryPoint = "FindWindow")] 
+        private static extern int FindWindow(string lpClassName, string lpWindowName); 
+
+        [DllImport("User32.dll", EntryPoint = "SendMessage")] 
+
+        private static extern int SendMessage 
+
+        ( 
+
+        IntPtr hWnd, 
+
+        int Msg, 
+
+        int wParam, 
+
+        ref  CopyDataStruct lParam 
+
+        ); 
+
+    } 
+
+    [StructLayout(LayoutKind.Sequential)] 
+
+    public struct CopyDataStruct 
+    { 
+
+        public IntPtr dwData; 
+
+        public int cbData; 
+
+        [MarshalAs(UnmanagedType.LPStr)] 
+
+        public string lpData; 
+
+    } 
+
+}
+</code></pre>
+
+<p>&nbsp;wpf端程序：主要需要在MainWindow中loaded事件订阅消息监听：这里需要System.Windows.Interop.HwndSource的AddHock方法注册
+程序：</p>
+
+<pre><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+         { 
+
+             if (msg == 0x004A) 
+             { 
+
+                 CopyDataStruct cds = (CopyDataStruct)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(CopyDataStruct)); 
+
+                 MessageBox.Show(cds.lpData); 
+                 this.Visibility = Visibility.Visible; 
+             } 
+
+             return hwnd; 
+
+         } 
+
+         private void Window_Loaded(object sender, RoutedEventArgs e) 
+         {           
+
+             (PresentationSource.FromVisual(this) as System.Windows.Interop.HwndSource).AddHook(new System.Windows.Interop.HwndSourceHook(WndProc)); 
+         }
+</code></pre>
+
+<p>截个图：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248312846.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248334156.jpg" title="GDVCJ_1PZO7SU((~1}41XSG" alt="GDVCJ_1PZO7SU((~1}41XSG" /></a></p>
+
+<p>很简单的东西结果被MS封装的不知哪里去，让我查了半天（其实应该是我的无知吧，不管怎么解决了就是心情舒畅了）；</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1971300.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/02/html5-Canvas-hui-tu/">html5-Canvas绘图</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-02T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/02/html5-Canvas-hui-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/02/html5-Canvas-hui-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在html5中我觉得最重要的就是引入了Canvas，使得我们可以在web中绘制各种图形。给人感觉单在这点上有点模糊我们web和桌面程序的感觉。在html5外web中也有基于xml的绘图如：VML、SVG。而Canvas为基于像素的绘图。Canvas是一个相当于画板的html节点，我们必须以js操作绘图。</p>
+
+<p>如下：</p>
+
+<p>&lt;canvas id=&ldquo;myCanvas&rdquo; width=&ldquo;600&rdquo; height=&ldquo;300&rdquo;&gt;你的浏览器还不支持哦&lt;/canvas&gt;定义。</p>
+
+<p>我们可以获取canvas对象为var c=document.getElementById(&ldquo;myCanvas&rdquo;);其应有js属性方法如下列举：</p>
+
+<p>1：绘制渲染对象，c.getContext(&ldquo;2d&rdquo;),获取2d绘图对象，无论我们调用多少次获取的对象都将是相同的对象。</p>
+
+<p>2：绘制方法：</p>
+
+<p>clecrRect(left,top,width,height)清除制定矩形区域，</p>
+
+<p>fillRect(left,top,width,height)绘制矩形，并以fillStyle填充。</p>
+
+<p>fillText（text,x,y）绘制文字；</p>
+
+<p>strokeRect(left,top,width,height)绘制矩形，以strokeStyle绘制边界。</p>
+
+<p>beginPath():开启路径的绘制,重置path为初始状态；</p>
+
+<p>closePath():绘制路径path结束，它会绘制一个闭合的区间，添加一条起始位置到当前坐标的闭合曲线；</p>
+
+<p>moveTo（x，y）：设置绘图其实坐标。</p>
+
+<p>lineTo(x，y);绘制从当前其实位置到x，y直线。</p>
+
+<p>fill（），stroke（），clip（）：在完成绘制的最后的填充和边界轮廓，剪辑区域。</p>
+
+<p>arc（）：绘制弧,圆心位置、起始弧度、终止弧度来指定圆弧的位置和大小；</p>
+
+<p>rect():矩形路径;</p>
+
+<p>drawImage（Imag img）：绘制图片；</p>
+
+<p>quadraticCurveTo():二次样条曲线路径,参数两个控制点；</p>
+
+<p>bezierCurveTo（）：贝塞尔曲线，参数三个控制点；</p>
+
+<p>createImageData,getImageData，putImageData:为Canvas中像素数据。ImageData为记录width、height、和数据 data，其中data为我们色素的记录为</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; argb，所以数组大小长度为width<em>height</em>4，顺序分别为rgba。getImageData为获取矩形区域像素，而putImageData则为设置矩形区域像素；</p>
+
+<p>&#8230; and so on！</p>
+
+<p>3：坐标变换：</p>
+
+<p>translate（x,y）：平移变换，原点移动到坐标（x，y）；</p>
+
+<p>rotate（a）：旋转变换，旋转a度角；</p>
+
+<p>scale（x，y）：伸缩变换；</p>
+
+<p>save（），restore（）：提供和一个堆栈，保存和恢复绘图状态，save将当前绘图状态压入堆栈，restore出栈，恢复绘图状态；</p>
+
+<p>&#8230; and so on！</p>
+
+<p>好了，也晚了。附我的测试代码，：</p>
+
+<pre><code>&lt;html&gt; 
+  &lt;head&gt; 
+  &lt;/head&gt; 
+  &lt;body&gt; 
+  &lt;canvas id="myCanvas" width="600" height="300"&gt;你的浏览器还不支持哦&lt;/canvas&gt; 
+  &lt;script type="text/javascript"&gt; 
+
+  var width,height,top,left; 
+  width=height=100; 
+  top=left=5; 
+  var x=10; 
+  var y=10; 
+
+  var c=document.getElementById("myCanvas"); 
+
+  var maxwidth=c.width-5; 
+  var maxheight=c.height-5; 
+  var cxt=c.getContext("2d"); 
+  cxt.strokeStyle="#00f"; 
+  cxt.strokeRect(0,0,c.width,c.height); 
+
+  var img=new Image(); 
+  img.src="1.gif"; 
+  var MyInterval=null; 
+  start(); 
+  function Refresh(){ 
+  cxt.clearRect(left,top,width,height); 
+  if((left+x)&gt;(maxwidth-width)||left+x&lt;0){ 
+  x=-x; 
+  } 
+
+  if((top+y)&gt;(maxheight-height)||top+y&lt;0){ 
+  y=-y; 
+  } 
+
+  left=left+x;    
+  top=top+y; 
+  cxt.drawImage(img,left,top,width,height); 
+  cxt.font="20pt 宋体"; 
+  cxt.fillText("破狼",left,top+25); 
+
+  } 
+
+  function start(){ 
+  if(MyInterval==null){ 
+  MyInterval=setInterval("Refresh()",100); 
+  } 
+  } 
+
+  function stop(){ 
+  if(MyInterval!=null){ 
+  clearInterval(MyInterval); 
+  MyInterval=null; 
+  } 
+  } 
+  function InRectangle(x,y,rectx,recty,rwidth,rheight){ 
+  return (x&gt;=rectx&amp;&amp;x&lt;=rectx+rwidth)&amp;&amp;(y&gt;=recty&amp;&amp;y&lt;=recty+rheight) 
+  } 
+  c.onmouseover=function(e){ 
+  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
+  stop(); 
+  } 
+
+  c.onmouseout=function(e){ 
+  start(); 
+  } 
+
+  c.onmousemove=function(e){ 
+  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
+  if(MyInterval!=null){ 
+  stop(); 
+  } 
+  }else{ 
+  start(); 
+  } 
+  } 
+
+  } 
+  &lt;/script&gt; 
+  &lt;/body&gt; 
+  &lt;/html&gt;
+</code></pre>
+
+<p>参考火狐html文档：<a href="https://developer.mozilla.org/en/HTML/HTML5" title="https://developer.mozilla.org/en/HTML/HTML5">https://developer.mozilla.org/en/HTML/HTML5</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 我的html5系列：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1968512.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/02/26/win7-xia-cheng-xu-yun-hang-quan-xian-wen-ti-jie-jue-fang-an/">Win7下程序运行权限问题解决方案</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/02/26/win7-xia-cheng-xu-yun-hang-quan-xian-wen-ti-jie-jue-fang-an/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/02/26/win7-xia-cheng-xu-yun-hang-quan-xian-wen-ti-jie-jue-fang-an/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天遇见一个win7下程序运行权限问题(需要对目录下文件有读写权限)：网上google下得到解决方案有,现记录下：</p>
+
+<h2>一：</h2>
+
+<p>&nbsp;&nbsp; windows 7和vista提高的系统的安全性，同时需要明确指定&#8220;以管理员身份运行&#8221;才可赋予被运行软件比较高级的权限，比如访问注册表等。否则，当以普通身份运行的程序需要访问较高级的系统资源时，将会抛出异常。</p>
+
+<p>　　如何让程序在启动时，自动要求&#8220;管理员&#8221;权限了，我们只需要修改app.manifest文件中的配置项即可。</p>
+
+<p>　　app.manifest文件默认是不存在的，我们可以通过以下操作来自动添加该文件。</p>
+
+<p>（1）进入项目属性页。</p>
+
+<p>（2）选择&#8220;安全性&#8221;栏目。</p>
+
+<p>（3）将&#8220;启用ClickOnce安全设置&#8221;勾选上。</p>
+
+<p>　　现在，在Properties目录下就自动生成了app.manifest文件，打开该文件，将trustInfo/security/requestedPrivileges节点的requestedExecutionLevel的level的值修改为requireAdministrator即可。如下所示：</p>
+
+<div class="cnblogs_code" onclick="cnblogs_code_show('196faf80-6c73-421d-a3a0-d3e648f2ca9c')">
+<div id="cnblogs_code_open_196faf80-6c73-421d-a3a0-d3e648f2ca9c">
+<div><!--
+
+Code highlighting produced by Actipro CodeHighlighter (freeware)
+
+http://www.CodeHighlighter.com/
+
+--><span style="color: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;</span><span style="color: #000000">requestedPrivileges&nbsp;xmlns</span><span style="color: #000000">=</span><span style="color: #800000">&#8221;</span><span style="color: #800000">urn:schemas-microsoft-com:asm.v3</span><span style="color: #800000">&#8221;</span><span style="color: #000000">&gt;</span><span style="color: #000000">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color: #000000">&lt;</span><span style="color: #000000">requestedExecutionLevel&nbsp;level</span><span style="color: #000000">=</span><span style="color: #800000">&#8221;</span><span style="color: red">**requireAdministrator**</span><span style="color: #800000">&#8221;</span><span style="color: #000000">&nbsp;uiAccess</span><span style="color: #000000">=</span><span style="color: #800000">&#8221;</span><span style="color: #800000">false</span><span style="color: #800000">&#8221;</span><span style="color: #000000">&nbsp;</span><span style="color: #000000">/&gt;</span><span style="color: #000000">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color: #000000">&lt;/</span><span style="color: #000000">requestedPrivileges</span><span style="color: #000000">&gt;</span></div></div></div>
+
+
+<p>&nbsp;</p>
+
+<p>　　记住，如果不需要ClickOnce，可以回到项目属性页将&#8220;启用ClickOnce安全设置&#8221;不勾选。&nbsp;　　</p>
+
+<p>　　接下来，重新编译你的程序就OK了。</p>
+
+<p>&nbsp;</p>
+
+<h2>二：</h2>
+
+<p>&nbsp; 可以把文件的安装路径默认在非系统目录下，如d:\sorftwarename\等。或者酱程序和读写数据分开，读写数据文件放在我的文档下等，避开文件访问读写权限，避开program files目录。像google德Chrome就是文件直接默认（不能改动）安装在AppData下。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/02/26/1965824.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/">The &#x27;Microsoft.Jet.OLEDB.4.0&#x27; Provider Is Not Registered on the Local machine-Excel2003</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在操作Excel2003时候在我的win7英文操作系统发生错误，（在此记录下来）：</p>
+
+<p>The &lsquo;Microsoft.Jet.OLEDB.4.0&rsquo; provider is not registered on the local machine.</p>
+
+<p>在网上google了一下，错误原因是我的机子是64编译的，需要改为32位，在vs中设置将编译Any CPU改为x86，就ok。</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/QQ%E6%88%AA%E5%9B%BE%E6%9C%AA%E5%91%BD%E5%90%8D.png" alt="The " /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/01/01/1923744.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/">代码生成技术&#8211;CodeDom vs T4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-23T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在微软的自家代码生成方案中我们有两种选择方式:CodeDom 和Text Template Transformation Toolkit（T4）模板。同样我们可以利用简单的String或者StringBuilder来拼接字符串，但是那对于简单的还可以，但是对于复杂的问题就<img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201012/201012231245237287.png" alt="悲伤" />。其实在ASP.NET MVC 3.0中有多处了一个更简洁语法的模板-Razor，我们同样可以运用于我们自己的代码生成中，我随便有一篇简单的介绍<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html">Razor Templating Engine</a>，在以后有机会了会写Razor Demo。今天的主题不在这里，所以不多说了。</p>
+
+<h3>一：简介：</h3>
+
+<p>CodeDom：这 个类库出现在我们的.NET Framework 2.0，并且被深深的用于我们的ASP.NET项目中。CodeDom关注于一个语言独立性，以至于我们可以利用我们熟悉的语言（c#，vb等）构建一个CodeDom Model Tree,就可以生成我们在.NET平台所支持的语言代码。对于我们的ASP.NET要求语言的独立。</p>
+
+<p>T4：T4模板作为VS2008的一部分出现，他以&lt;# #&gt; 、&lt;#= #&gt;接近于ASP.NET的语言在模板中插入一段段的动态代码块，可以像asp或者ASP.NET一样简单的更让人贴切，相对于CodeDom就更简洁，但是没有了语言层次的抽象，不具有语言独立性，我们必须为同一个功能的模板在不同的语言上写不同的模板，但是在开发中往往c#模板就足够了，以及更简单化所以得到了更多人的青睐。</p>
+
+<p>二：Code Demo：</p>
+
+<p>下面我们将用CodeDom和t4分别生成一个简单的Code，根据时间输出不同的问候，如下：</p>
+
+<p>1：CodeDom Code:</p>
+
+<pre><code>using System; 
+using System.Text; 
+using System.CodeDom; 
+using System.IO;
+
+namespace RazorDemo 
+{ 
+    public class CodedomDemo 
+    { 
+        public CodeCompileUnit CrateCodeCompileUnit() 
+        { 
+            var testClass = new CodeTypeDeclaration("Test"); 
+            var testMeth = new CodeMemberMethod() 
+            { 
+                Attributes = MemberAttributes.Public| MemberAttributes.Final, 
+                Name = "SayHello", 
+            }; 
+            var param = new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "name"); 
+            testMeth.Parameters.Add(param); 
+            testClass.Members.Add(testMeth);
+
+            var nowExpression = new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(DateTime)), "Now"), "Hour"); 
+            var assmon = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("早上好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name") ); 
+            var asslunch = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("中午好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name")); 
+            var assAfternoon = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("下午好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name")); 
+            var codecondition = new CodeConditionStatement(new CodeBinaryOperatorExpression( 
+                nowExpression, CodeBinaryOperatorType.LessThanOrEqual, new CodePrimitiveExpression(10)), 
+                new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine", assmon)) },           //true:if(DateTime.Now&lt;=10) 
+                //else 
+                new CodeStatement[] 
+                { 
+                   new CodeConditionStatement(new CodeBinaryOperatorExpression(nowExpression, CodeBinaryOperatorType.LessThanOrEqual,new CodePrimitiveExpression(14) ),  // else if(DateTime.Now&lt;=14) 
+                     new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine",asslunch))},    //true 
+                     new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine",assAfternoon))}) //fasle 
+                } 
+               );
+
+            testMeth.Statements.AddRange(new CodeStatement[] {             
+            codecondition 
+            });
+
+            var ns = new CodeNamespace("Wolf"); 
+            ns.Imports.Add(new CodeNamespaceImport("System")); 
+            ns.Types.Add(testClass); 
+            var util = new CodeCompileUnit(); 
+            util.Namespaces.Add(ns); 
+            return util; 
+        }
+
+        public string Genertor(string language) 
+        { 
+            StringBuilder sb = new StringBuilder(); 
+            StringWriter sw = new StringWriter(sb); 
+            System.CodeDom.Compiler.CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit( 
+                this.CrateCodeCompileUnit(), sw, new System.CodeDom.Compiler.CodeGeneratorOptions() 
+                { 
+                    ElseOnClosing = true, 
+                    IndentString = "    " 
+                }); 
+            sw.Close(); 
+            return sb.ToString();
+
+        } 
+    } 
+}
+</code></pre>
+
+<p>2:T4 Code：</p>
+
+<pre><code>&lt;#@ template language="C#" #&gt;
+
+using System; 
+namespace WolfT4 {   
+    public class Test {
+
+        public void SayHello(string name) { 
+            &lt;# if(System.DateTime.Now.Hour&lt;=10){#&gt; 
+            System.Console.WriteLine(("早上好:" + name)); 
+            &lt;#} else if(System.DateTime.Now.Hour&lt;=14){#&gt; 
+            System.Console.WriteLine(("中午好:" + name)); 
+            &lt;#} else{ #&gt; 
+            System.Console.WriteLine(("下午好:" + name)); 
+            &lt;#}#&gt;            
+        } 
+    } 
+}
+</code></pre>
+
+<p>&nbsp;三：总结：</p>
+
+<p>CodeDom的优势：</p>
+
+<p>1：具有语言层次抽象，独立性：是一个单语言开发，多语言生成的方式。</p>
+
+<p>2：<strong>Framework </strong>的支持：作为我们的.NET Framework 一部分出现的，位于System.CodeDom命名空间下。不需要想T4 模板一样引用Microsoft.VisualStudio.TextTemplating.dll</p>
+
+<p>T4优势：</p>
+
+<p>1：更加贴切：采用的是类似于ASP、ASP.NET的语言块，是的我们的开发更贴切，采用模板方式更加简洁，快速。</p>
+
+<p>2：可维护性：由于是基于文件，不像codedom编译成为dll方式，我们可以随时修改Template文件、重构。</p>
+
+<p>&nbsp;</p>
+
+<p>其实我觉得只要是不要求语言独立性，多语言生成的话，就采用T4或者Razor等模板。</p>
+
+<p>代码生成技术（目前完成，还在继续，好久没写了&hellip;）：</p>
+
+<p>1：<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html"><font color="#6699cc">CodeDom系列目录</font></a></p>
+
+<p>2：<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html"><font color="#6699cc">CodeSmith模板引擎系列-目录</font></a></p>
+
+<p>3：<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html"><font color="#6699cc">Razor Templating Engine</font></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/10/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/8/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

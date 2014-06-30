@@ -1,1 +1,1042 @@
-My Octopress Page is coming soon &hellip;
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。 这是angularjs源码中单元测试的使用browserTrigger的实例： it(' &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-24T20:42:33+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/06/24/angularjs-browsertrigger/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/06/24/angularjs-browsertrigger/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。</p>
+
+<p>这是angularjs源码中单元测试的使用browserTrigger的实例：</p>
+
+<pre><code>it('should set the model to empty string when empty option is selected', function() {
+    scope.robot = 'x';
+    compile('&lt;select ng-model="robot"&gt;' +
+              '&lt;option value=""&gt;--select--&lt;/option&gt;' +
+              '&lt;option value="x"&gt;robot x&lt;/option&gt;' +
+              '&lt;option value="y"&gt;robot y&lt;/option&gt;' +
+            '&lt;/select&gt;');
+    expect(element).toEqualSelect('', ['x'], 'y');
+
+    browserTrigger(element.find('option').eq(0));
+    expect(element).toEqualSelect([''], 'x', 'y');
+    expect(scope.robot).toBe('');
+  });
+</code></pre>
+
+<p>在这段代码中给browserTrigger传入你希望选择的select option，则它会帮助你tigger change，选中当前option，更触发更新ng select的viewmodel。</p>
+
+<p>在browserTrigger中还为我们做了很多其他输入框或者html控件的触发接口，同时也加入了浏览器的兼容性。使得我们的测试更加方便不用考虑浏览器兼容性或者不同的html控件trigger不同的事件去更新scope的值。</p>
+
+<p>具体更多信息请参考<a href="https://github.com/angular/angular.js/blob/accd35b7471bbf58cd5b569a004824fa60fa640a/test/ng/directive/selectSpec.js">ng的官方测试</a>和<a href="https://raw.githubusercontent.com/angular/angular.js/dafb8a3cd12e7c3247838f536c25eb796331658d/src/ngScenario/browserTrigger.js">browserTrigger源码</a>。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-12T10:52:29+08:00" pubdate data-updated="true">Jun 12<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T19:07:08+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/18/ddd-practice/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/18/ddd-practice/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在软件开发设计中我们经常会面对业务分析，提取领域问题，从而实现软件架构设计。关于
+软件架构设计Martin Fowler在2004出版的<a href="http://book.douban.com/subject/4826290/">《企业应用架构模式》</a>中
+概括了四种方式的架构模式。它们分别为事务性脚本，表驱动模式，活动记录模式，领域驱动设计。前两者事务性脚本，表驱动模式作为
+面向过程方式架构设计，后两者为面向对象架构设计。它们适合于不同的业务场景，它们也各有长短。</p>
+
+<h4>事务脚本模式</h4>
+
+<p>事务脚本模式是架构设计中最简单的架构模式，面向过程模式。该模式以用户的操作，UI表现为起点，设计业务组件，
+即业务逻辑将直接映射到用户界面的操作。这通常是从表现层逻辑出发，表现层需要什么那么业务层就提供什么，
+直到数据层。针对每一个用户的新功能都需要新增一个从UI到关系数据库的分支流程。其适用于逻辑不是
+很复杂或者变化不会太大的稳定的应用系统开发。其不需要付出与业务无关的额外代价，并且在现代可见即可得的IDE
+结合，能够很快的进行快速应用开发（RAD）。但是这种优势，也是其最大的劣势，程序中充满了IF-else，
+switch-case之类的逻辑或者大量的static的方法，每个功能都是一个程序分支，这对代码无法重用。
+编码不易于维护，对复杂项目和变化需求不适应。</p>
+
+<h4>表驱动模式</h4>
+
+<p>表驱动模式为每个数据库表定义一个表模块类，包含操作该数据的所有行为方法。作为一个容器，将数据
+和行为组织在一起。其对数据的粒度针对于数据表，而非数据行，因此需要以集合或者表(DataTable)传递数据信息。
+表驱动模式基于对象但是完全由数据库驱动开发，在业务模型和数据库关系模型显著差异的情况下，应对需求，
+并不是那么适合。但是在.net中提供的一些列如强类型DataSet等IDE的辅助下自动生成大量的代码，
+也是一个不错的选择，因为部分数据库的操作趋于自动化。表驱动模式没有太过于关注业务逻辑，而是关注数据库
+表结构。而业务逻辑和领域问题才是软件核心，所以对于复杂的场景也存在不能很好的胜任。</p>
+
+<h4>活动记录模式</h4>
+
+<p>活动记录模式是一个以数据库表一行Row为对象，并且对象中包含行为和数据的模式方法。其数据对象
+很大程度的接近数据库表结构。在活动记录模式中对象通常也包含架构设计和扩展对象的CRUD(增删改查)的行为，以及数据验证等业
+务规则。对于业务不是很复杂，对象关系与关系模型映射不具有很大差异情况，活动记录模式会运用的
+很好。活动模式比较简单化设计，在现行的如Linq to sql，ActiveRecord框架，
+spring JDBC(Active Record),Ruby On Rails之类的框架之下，
+将针对问题领域不是太过复杂的中小型项目十分有用，而且能做到快速，并且有较好设计的架构设计和扩展。
+但是其模式和数据库表结构的过度的相互依赖，导致若你修改
+数据库结构，你不得不同时修改对象以及相关逻辑。如果不能保证数据库关系模型和对象模式的很大程度
+的相似这就进入的困境，无法解决对象和数据库结构的映射。</p>
+
+<h4>领域驱动设计(DDD)</h4>
+
+<p>在我们所述前面的几种架构模式都是在项目开始站在了以数据为中心的角度，而不是业务本身的问题领域。
+而领域驱动设计模式是着重关注于系统的业务问题领域，首先开始为领域对象设计。与活动记录模式来说，
+领域模型完全反映于问题领域业务概念模型逻辑，与数据库，持久化机制完成独立，其推崇持久化透明（POCO）。
+其可以充分利用面向对象设计，不受持久化机制的任何约束。其为完全由业务驱动出来的。但是其最大的优势如上
+各个模式一样也是其最大的劣势领域对象模型与关系模型具有天然的阻抗，领域实体对象早晚会需要映射到
+持久化机制，有时我们必须等为了这种阻抗而让步。在当前有NHibearnate,EF,Fluent NHibearnate这类
+ORM(Object Relation Mapping)框架辅助。</p>
+
+<p>领域驱动设计是Eric Evans于2004年在<a href="http://book.douban.com/subject/5344973/">《领域驱动设计：软件核心复杂性应对之道》</a>
+首先提出的，简称DDD.其实际为面向对象分析设计(OOAD)的延伸，利用面向对象思想进行分析设计，对系统逻辑严格
+分层，对领域对象的的职责划分。领域逻辑按照职责和内聚的划分在不同的领域对象上，对象不再是单纯的数据载体，而应该
+是一个具有行为，逻辑的富对象。</p>
+
+<p>同时领域驱动设计中分层架构也是很重要的一部分，这是分离关注点(SOC)的体现。按照职责对每一层次划分。大体分为
+表现层，业务逻辑层，仓储层，领域层，以及基本出设施层。以及后来所倡导的CQRS(读写分离).在层次之间为了应对面向对象设计
+所有存在领域模型(DO)，然而我们常用的存储却是关系类型(PO),所以还存在ORM(Object Relation Mapping).以及为了更好的
+适应UI的表现存在视图对象(VO，有时我们简单VO的存在直接用数据传输对象(DTO)代替)，所以存在DTO Mapping，在这里的VO或者DTO，往往
+都是一层简单getter,setter的数据载体。</p>
+
+<p>在领域驱动设计中还包含工作单元(UOW))，仓储，值类型,实体，聚合根，领域事件，领域边界，以及领域跟踪一类的概念，关于这些更多的知识
+请参考<a href="http://book.douban.com/subject/4826290/">《企业应用架构模式》</a>，以及<a href="http://book.douban.com/subject/25844633/">实现领域驱动设计</a></p>
+
+<p>最后推荐最新的领域驱动设计书籍资料：此书被DDD鼻祖Eric Evans誉为继其开山之作后，近十年内第一本将DDD落到具体(接地气)的经典书籍。</p>
+
+<p><img src="http://img5.douban.com/lpic/s27236377.jpg" alt="实现领域驱动设计" /></p>
+
+<ul>
+<li><a href="http://www.amazon.cn/%E5%AE%9E%E7%8E%B0%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1-%E6%B2%83%E6%81%A9%E2%80%A2%E5%BC%97%E5%86%9C/dp/B00IYTVWA6/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1395749901&amp;sr=1-1">亚马逊</a></li>
+<li><a href="http://product.dangdang.com/23439300.html#ddclick?act=click&amp;pos=23439300_0_1_p&amp;cat=01.00.00.00.00.00&amp;key=%CE%D6%B6%F7.%B8%A5%C5%A9&amp;qinfo=&amp;pinfo=1_1_72&amp;minfo=&amp;ninfo=&amp;custid=&amp;permid=20140309205553118327545287259908607&amp;ref=http%3A%2F%2Fproduct.dangdang.com%2F23439300.html&amp;rcount=&amp;type=&amp;t=1395231961000">当当</a></li>
+<li><a href="http://item.jd.com/1100303441.html">京东</a></li>
+<li><a href="http://book.douban.com/subject/25844633/">豆瓣</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T05:01:09+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Docker是一个开源的Linux容器，其被业界所接受，很快成为了一个产业标准。Docker可以减少应用程序启动
+时候的大量资源的筹备。docker很快的成为了新兴的应用程序容器标准。现在有很多项目正围绕着它处于开发中。
+下面将是Mindmap出我所知道的一些项目。你可以在这里访问<a href="http://www.mindmeister.com/389671722/docker-ecosystem">Mindmap</a>.</p>
+
+<p><a href="http://www.mindmeister.com/389671722/docker-ecosystem"><img src="http://i0.wp.com/allthingsplatforms.com/wp-content/uploads/2014/03/Docker-Ecosystem-v0.1.png?resize=717%2C432" alt="docker mindmap" /></a></p>
+
+<p>英语原文链接<a href="http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/">http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-17T05:14:21+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/17/create-yourself-archetypes-plugin/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上篇<a href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+中我们已经简单介绍了关于archetype的作用。</p>
+
+<p>简单来说maven archetype插件就是创建项目的脚手架,通过命令行或者IDE集成简化项目创建的工作。例如：</p>
+
+<ul>
+<li>org.apache.maven.archetypes:maven-archetype-quickstart</li>
+<li>org.apache.maven.archetypes:maven-archetype-site</li>
+<li>org.apache.maven.archetypes:maven-archetype-webapp</li>
+<li>以及spring或者第三方提供了一些archetype plugin。</li>
+</ul>
+
+
+<p>同时maven archetype插件也是一个简单的maven artifact，它包含了创建项目所需要的所有资源。
+主要分为几类原型信息：</p>
+
+<ul>
+<li>archetype描述文件(src/main/resources/META-INF/maven/archetype.xml),这为<a href="http://maven.apache.org/plugins/maven-archetype-plugin-1.0-alpha-7/">archetype 1.0</a>,
+包含所有创建项目的文件信息和路径信息。在(archetype 2.0)[<a href="http://maven.apache.org/archetype/maven-archetype-plugin/">http://maven.apache.org/archetype/maven-archetype-plugin/</a>]增加了更灵活的archetype-metadata.xml(src/main/resources/META-INF/maven/下),
+archetype元数据信息，并且完全支持1.0.</li>
+<li>项目的原型文件(src/main/resources/archetype-resources/之下)，将会被archetype插件
+copy到项目目录结构去。</li>
+<li>创建项目的pom文件(src/main/resources/archetype-resources下)</li>
+<li>archetype pom文件，在archetype项目根目录下。</li>
+</ul>
+
+
+<h4>创建archetype插件</h4>
+
+<ol>
+<li><p>首先在archetype中加入一个pom文件，如下：</p>
+
+<pre><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+      &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
+      &lt;artifactId&gt;component&lt;/artifactId&gt;
+      &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+      &lt;packaging&gt;jar&lt;/packaging&gt;
+
+      &lt;name&gt;component&lt;/name&gt;
+      &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+
+      &lt;properties&gt;
+          &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+      &lt;/properties&gt;
+
+      &lt;dependencies&gt;
+      &lt;/dependencies&gt;
+&lt;/project&gt;
+</code></pre></li>
+<li><p>创建archetype-metadata.xml,位于src/main/resources/META-INF/maven/目录下，例如：</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;archetype-descriptor name="app-server"&gt;
+    &lt;fileSets&gt;
+        &lt;fileSet filtered="true" encoding="UTF-8"&gt;
+            &lt;directory&gt;src/main/java&lt;/directory&gt;
+            &lt;includes&gt;
+                &lt;include&gt;**/*.**&lt;/include&gt;
+            &lt;/includes&gt;
+        &lt;/fileSet&gt;
+        &lt;fileSet filtered="true" encoding="UTF-8"&gt;
+            &lt;directory&gt;src/test/java&lt;/directory&gt;
+            &lt;includes&gt;
+                &lt;include&gt;**/*.**&lt;/include&gt;
+            &lt;/includes&gt;
+        &lt;/fileSet&gt;
+    &lt;/fileSets&gt;
+&lt;/archetype-descriptor&gt;
+</code></pre></li>
+</ol>
+
+
+<p>更多配置信息参考<a href="https://maven.apache.org/archetype/archetype-common/archetype-descriptor.html">archetype-descriptor</a>.</p>
+
+<ol>
+<li><p>为将创建的项目增加pom.xml文件，以${artifactId} / ${groupId} 变量作为占位符，例如：</p>
+
+<pre><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+      &lt;groupId&gt;${groupId}&lt;/groupId&gt;
+      &lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;
+      &lt;version&gt;${version}&lt;/version&gt;
+      &lt;packaging&gt;jar&lt;/packaging&gt;
+
+      &lt;name&gt;${artifactId}&lt;/name&gt;
+
+      &lt;properties&gt;
+          &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+      &lt;/properties&gt;
+
+      &lt;dependencies&gt;
+          &lt;dependency&gt;
+              &lt;groupId&gt;junit&lt;/groupId&gt;
+              &lt;artifactId&gt;junit&lt;/artifactId&gt;
+              &lt;version&gt;4.11&lt;/version&gt;
+              &lt;scope&gt;test&lt;/scope&gt;
+          &lt;/dependency&gt;
+      &lt;/dependencies&gt;
+
+      &lt;build&gt;
+          &lt;pluginManagement&gt;
+              &lt;plugins&gt;
+                  &lt;plugin&gt;
+                      &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                      &lt;configuration&gt;
+                          &lt;source&gt;1.6&lt;/source&gt;
+                          &lt;target&gt;1.6&lt;/target&gt;
+                      &lt;/configuration&gt;
+                  &lt;/plugin&gt;
+              &lt;/plugins&gt;
+          &lt;/pluginManagement&gt;
+      &lt;/build&gt;
+  &lt;/project&gt;
+</code></pre></li>
+<li><p>接下来在archetype项目下install plugin：mvn clean install.</p></li>
+<li><p>利用已有archetype plugin创建项目：</p>
+
+<p>命令行：</p>
+
+<pre><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
+</code></pre></li>
+</ol>
+
+
+<p>  intellij选择增加archetype plugin：
+  <img src="/images/blog_img/Intellij-archetype-plugin.png" alt="/images/blog_img/Intellij-archetype-plugin.png" /></p>
+
+<p>对于删除intellij测试archetype信息，请参见<a href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>.</p>
+
+<p>注意：</p>
+
+<ul>
+<li><p>如果你也需要文件名字或者目录名字，则需要用特殊变量__artifactId__(双下划线)作为占位符。</p>
+
+<p> 本文demo,请移到到github <a href="https://github.com/greengerong/maven-archetypes-demo">maven-archetypes-demo</a>.</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-16T07:51:08+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Maven archetype plugin为我们提供了方便的创建
+project功能,Archtype指我们项目的骨架，作为项目的脚手架。
+如fornt end的yo之类。我们能够通过简单的一行控制台command
+line创建你所需要的项目结构：</p>
+
+<pre><code>mvn archetype:generate
+  -DarchetypeGroupId=&lt;archetype-groupId&gt;
+  -DarchetypeArtifactId=&lt;archetype-artifactId&gt;
+  -DarchetypeVersion=&lt;archetype-version&gt;
+  -DgroupId=&lt;my.groupid&gt;
+  -DartifactId=&lt;my-artifactId&gt;
+</code></pre>
+
+<p>常用的Maven archetype plugin有：</p>
+
+<ul>
+<li>org.apache.maven.archetypes:maven-archetype-quickstart</li>
+<li>org.apache.maven.archetypes:maven-archetype-site</li>
+<li>org.apache.maven.archetypes:maven-archetype-webapp</li>
+<li>以及spring或者第三方提供了一些archetype plugin。</li>
+</ul>
+
+
+<p>同时在java世界强大的IDE Intellij也支持按照maven archetype
+创建java项目。你只需要选择maven 创建项目，在最后选择你希望的
+archetype plugin，然后就可以喝杯coffe等待build success。</p>
+
+<p>关于如何自定义项目的Maven archetype plugin，博主将会
+在后续的文章介绍。在此次博文将是记录如果去掉你手动在intellij中添加
+的archetype plugin。</p>
+
+<p>mac版本，你可以找到文件：</p>
+
+<pre><code>~/Library/Caches/IntelliJIdea&lt;version&gt;/Maven/Indices/UserArchetypes.xml
+</code></pre>
+
+<p>然后用你喜欢的编辑器打开它(例如博主当前使用的Atom)：</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;archetypes&gt;
+&lt;archetype groupId="com.github.greengerong" artifactId="components-archetype" version="1.0.0" /&gt;
+&lt;/archetypes&gt;
+</code></pre>
+
+<p>你可以在xml的archetypes节点增加或者删除修改配置，然后重新启动你的Intellij。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-15T13:14:55+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>如果你是一个angular的开发者的话，对于ng-html2js你应该
+很熟悉。对于angular的指令，我们经常需要定义模板(
+directive template/templateUrl),你可以选择讲html page
+放在真正的的web容器中寄宿，也可以选择angular的ng-template
+放在view的page之上，抑或也可以讲html打成一个js文件和directive
+的js文件合并在一起发布。</p>
+
+<ul>
+<li><p>对于直接寄宿在web容器.</p>
+
+<p>这很简单，直接放在jetty，tomcat，iis，
+抑或node express public目录下。这里没什么可以多说的，所以我们跳过。</p></li>
+<li><p>angular ng-template模板:</p>
+
+<p>代码如下：</p>
+
+<pre><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
+
+      Content of the template.
+
+    &lt;/script&gt;
+</code></pre>
+
+<p>这将会在angular的compile时候解析，angular将会把它放在angular的$templateCache
+中。</p>
+
+<p>对于<a href="http://docs.angularjs.org/api/ng/service/$templateCache">$templateCache</a>，如其名
+这是angular对模板的缓存的service。在启用了$templateCache的$http ajax请求，
+angular将会首先在$templateCache中查找是否有对此url的缓存：</p>
+
+<pre><code>      $templateCache.get('templateId.html')
+</code></pre>
+
+<p>如果存在缓存，着angular将会直接用缓存中获取，并不会在发送一次ajax。
+对于所有的指令和模板angular默认启用了templateCache。</p>
+
+<p>这在于angular所处理的模式开发很有关系的。我们经常提到的SPA(single page application)
+我们把view的显示处理等表现逻辑推到了前段，而后端提供只与数据有关的soap/restful service
+这样对于一个应用程序业务逻辑来说不变的是处理数据的业务逻辑，这份逻辑你可以共享在不管前端是mobile
+app 或者是浏览器，或者winform gui的图形化程序，因为对于同一个业务这是不变的。将view的分离推到各自的客户端
+将是更好的解决方案。</p>
+
+<p>回到angular $templateCahce，对于一个应用程序view的分离，之后在对于当前的应用程序平台，html/js/css
+这类资源是静态的，最好是不变的，那么你可以自由的缓存在客户端，减少服务器的交互，以及为了更大的性能追求，我们
+可以把这类静态资源放在Nginx这里反向代理或者CDN上，让我们的程序获取更大的性能和扩展空间。</p></li>
+<li><p>回到angular的ng-html2js：</p>
+
+<p>有了上边对于$templateCache的理解，那你应该很容易理解html2js的方式了，与ng-template不同的
+是ng-template是angular在compile的时候自动加入$templateCache的，html2js是我们在开发
+时候利用build自己放入$templateCache。</p>
+
+<pre><code>  angular.module('myApp', [])
+  .run(function($templateCache) {
+      $templateCache.put('templateId.html',
+          'This is the content of the template'
+      );
+  });
+</code></pre></li>
+</ul>
+
+
+<p>形如上面的输出，将html文件打成一个js文件。</p>
+
+<p>这你也许在angular的单元测试karma unit test中看见过，<a href="https://github.com/karma-runner/karma-ng-html2js-preprocessor"> karma-ng-html2js-preprocessor</a>
+，还有如果你也希望在build时候做到如此，那么你可以使用grunt plugin <a href="https://github.com/karlgoldstein/grunt-html2js"> grunt-html2js</a>.</p>
+
+<p>但使用grunt plugin的前提是你在你的项目中引入的grunt build的work flow，那么你可以在gruntfile.js中几行代码轻松的搞定。但是如果
+你和我一样使用的是java的maven或者是gradle 作为build，那么你可以尝试博主的maven plugin<a href="https://github.com/greengerong/nghtml2js">nghtml2js</a>.
+使用方式如下：</p>
+
+<pre><code>&lt;plugin&gt;
+    &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
+    &lt;artifactId&gt;nghtml2js&lt;/artifactId&gt;
+    &lt;version&gt;0.0.3&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;module&gt;demo.template&lt;/module&gt;
+        &lt;html&gt;${project.basedir}&lt;/html&gt;
+        &lt;extensions&gt;
+            &lt;param&gt;tpl&lt;/param&gt;
+            &lt;param&gt;html&lt;/param&gt;
+        &lt;/extensions&gt;
+    &lt;/configuration&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;id&gt;nghtml2js&lt;/id&gt;
+            &lt;phase&gt;generate-resources&lt;/phase&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;run&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-28T22:11:34+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/28/ci-tools-go-open-source/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0" alt="go" /></p>
+
+<p>ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。</p>
+
+<p>Go下载地址为<a href="http://www.go.cd/download/">http://www.go.cd/download/</a>.</p>
+
+<p>下面是几张来自官方的视图：</p>
+
+<p>GO流程图：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" /></p>
+
+<p>GO截面图：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" /></p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" /></p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" /></p>
+
+<p>GO的版本：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" /></p>
+
+<ul>
+<li> <a href="http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c">Thoughtworks官方的宣布文章</a></li>
+<li> 你也可以在ThoughtWorks中国微信雷小达看到:<a href="http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&amp;mid=200062098&amp;idx=1&amp;sn=25198a84122904cd113ef010637d27ed&amp;uin=MjA0MjY0NDk0MA%3D%3D">GO！我们开源了！</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-28T12:25:25+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://referencesource.microsoft.com/">.NET Reference Source</a>发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，<a href="http://referencesource-beta.microsoft.com/setup.html">在Visual Studio 2013中调试.NET Framework</a>。</p>
+
+<p>.NET Framework团队的项目经理Alok Shriram在<a href="http://blogs.msdn.com/b/dotnet/archive/2014/02/24/a-new-look-for-net-reference-source.aspx">.NET Framework的博客</a>中撰文介绍了最新的.NET Reference Source。它不仅可以用来浏览最新的.NET代码，而且通过强大的<a href="http://msdn.com/roslyn">Roslyn</a>，改善了“Go to Defination”和“Finding Reference”的在线体验。此外，开发者还可以下载整个源代码包，在Visual Studio中打开并浏览。使用Schabse Laks编写的<a href="http://visualstudiogallery.msdn.microsoft.com/f89b27c5-7d7b-4059-adde-7ccc709fa86e">插件</a>，可以在VS中直接导航到该网站。</p>
+
+<p>通过简单的配置，开发者可以在Visual Studio中单步调试.NET Framework 4.5.1及其后续补丁和更新。这无疑是广大开发者<a href="http://visualstudio.uservoice.com/forums/121579-visual-studio/suggestions/4083118-allow-developers-to-step-through-net-framework-so">翘首以盼的功能</a>。启动Visual Studio 2013，打开Tools &ndash;> Options &ndash;> Debugging &ndash;> General菜单，进行如下配置：</p>
+
+<ul>
+<li>   禁用Just My Code</li>
+<li>   禁用Step over properties and operators</li>
+<li>   禁用Require source files to exactly match the original version</li>
+<li>   选中Enable .NET Framework source stepping</li>
+<li>   选中Enable source server support</li>
+</ul>
+
+
+<p>这样，开发者在调试代码时，就可以通过F11直接进入.NET代码。</p>
+
+<p>这并不是微软第一次开放.NET Framework的源代码。早在2007年，他们就第一次公布了<a href="http://weblogs.asp.net/scottgu/archive/2007/10/03/releasing-the-source-code-for-the-net-framework-libraries.aspx">.NET 3.5的源代码</a>并支持Visual Studio调试。并且对于后续的4.0和4.5，也都提供了相应的源代码包。但当框架升级时，这些旧的包就变得毫无价值了。从4.5.1开始，.NET Framework团队彻底改变了符号索引和发布的过程，使其与构建过程同步，这样在新版本发布时，相应的PDB文件也会从Reference Source网站进行更新。</p>
+
+<p>目前的beta站点只是临时的，届时将会取代现在的旧站点。后续微软也会将还未公布源代码的程序集逐步添加进来。新的.NET Reference Source许可协议回归到了<a href="http://referencesource-beta.microsoft.com/license.html">MS-RSL</a>，这也使得像Mono这样的团队可以放心大胆地使用。</p>
+
+<p>正如Scott Hanselman所说：微软可能并不是开源的，但却绝对是源代码开放的。</p>
+
+<p>Infoq原文链接:<a href="http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly">http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-28T00:27:22+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/28/nodejs-get-client-ip/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
+
+<pre><code>    function getClientIp(req) {
+        return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    };
+</code></pre>
+
+<p>代码，第一段判断是否有反向代理IP(头信息：x-forwarded-for)，在判断connection的远程IP，以及后端的socket的IP。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

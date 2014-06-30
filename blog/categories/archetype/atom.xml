@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Archetype | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/archetype/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2014-06-30T15:01:39+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Intellij修改archetype Plugin配置]]></title>
+    <link href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/"/>
+    <updated>2014-03-16T07:51:08+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin</id>
+    <content type="html"><![CDATA[<p>Maven archetype plugin为我们提供了方便的创建
+project功能,Archtype指我们项目的骨架，作为项目的脚手架。
+如fornt end的yo之类。我们能够通过简单的一行控制台command
+line创建你所需要的项目结构：</p>
+
+<pre><code>mvn archetype:generate
+  -DarchetypeGroupId=&lt;archetype-groupId&gt;
+  -DarchetypeArtifactId=&lt;archetype-artifactId&gt;
+  -DarchetypeVersion=&lt;archetype-version&gt;
+  -DgroupId=&lt;my.groupid&gt;
+  -DartifactId=&lt;my-artifactId&gt;
+</code></pre>
+
+<p>常用的Maven archetype plugin有：</p>
+
+<ul>
+<li>org.apache.maven.archetypes:maven-archetype-quickstart</li>
+<li>org.apache.maven.archetypes:maven-archetype-site</li>
+<li>org.apache.maven.archetypes:maven-archetype-webapp</li>
+<li>以及spring或者第三方提供了一些archetype plugin。</li>
+</ul>
+
+
+<p>同时在java世界强大的IDE Intellij也支持按照maven archetype
+创建java项目。你只需要选择maven 创建项目，在最后选择你希望的
+archetype plugin，然后就可以喝杯coffe等待build success。</p>
+
+<p>关于如何自定义项目的Maven archetype plugin，博主将会
+在后续的文章介绍。在此次博文将是记录如果去掉你手动在intellij中添加
+的archetype plugin。</p>
+
+<p>mac版本，你可以找到文件：</p>
+
+<pre><code>~/Library/Caches/IntelliJIdea&lt;version&gt;/Maven/Indices/UserArchetypes.xml
+</code></pre>
+
+<p>然后用你喜欢的编辑器打开它(例如博主当前使用的Atom)：</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;archetypes&gt;
+&lt;archetype groupId="com.github.greengerong" artifactId="components-archetype" version="1.0.0" /&gt;
+&lt;/archetypes&gt;
+</code></pre>
+
+<p>你可以在xml的archetypes节点增加或者删除修改配置，然后重新启动你的Intellij。</p>
+]]></content>
+  </entry>
+  
+</feed>

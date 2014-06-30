@@ -1,0 +1,853 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>jQuery之筛选函数 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="jQuery之筛选函数">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">jQuery之筛选函数</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>&nbsp; jQuery的筛选函数提供了串联、查找和过滤函数，为我们的jQuery对象操作带来了很多的方便，今天我们就来温习下jQuery带来的这些筛选函数。</p>
+
+<hr />
+
+<h2>1：串联函数：</h2>
+
+<hr />
+
+<p>（1）：andSelf()</p>
+
+<p>return：jQuery；</p>
+
+<p>explain：</p>
+
+<p>加入先前所选的加入当前元素中</p>
+
+<p>对于筛选或查找后的元素，要加入先前所选元素时将会很有用。</p>
+
+<p>test：</p>
+
+<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example：</p>
+
+<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).andSelf().addClass(&#8220;class1&#8221;);</p>
+
+<p>result：</p>
+
+<p>&lt;div&gt;&lt;p class=&#8221;class1&#8221;&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<hr />
+
+<p>(2):end()</p>
+
+<p>return :jQuery;</p>
+
+<p>explain:</p>
+
+<p>回到最近的一个&#8221;破坏性&#8221;操作之前。即，将匹配的元素列表变为前一次的状态。</p>
+
+<p>如果之前没有破坏性操作，则返回一个空集。所谓的&#8221;破坏性&#8221;就是指任何改变所匹配的jQuery元素的操作。这包括在 Traversing 中任何返回一个jQuery对象的函数&mdash;&lsquo;add&rsquo;, &lsquo;andSelf&rsquo;, &lsquo;children&rsquo;, &lsquo;filter&rsquo;, &lsquo;find&rsquo;, &lsquo;map&rsquo;, &lsquo;next&rsquo;, &lsquo;nextAll&rsquo;, &lsquo;not&rsquo;, &lsquo;parent&rsquo;, &lsquo;parents&rsquo;, &lsquo;prev&rsquo;, &lsquo;prevAll&rsquo;, &lsquo;siblings&rsquo; and &lsquo;slice&rsquo;&mdash;再加上 Manipulation 中的 &lsquo;clone&#8217;。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).end();</p>
+
+<p>//$(&#8220;div&#8221;).find(&#8220;p&#8221;)：&lt;p&gt;test&lt;/p&gt;</p>
+
+<p>result:&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
+
+<hr />
+
+<h2>2:查找函数:</h2>
+
+<hr />
+
+<p>(1):add(exp);</p>
+
+<p>return :jQuery;</p>
+
+<p>explain:</p>
+
+<p>把与表达式匹配的元素添加到jQuery对象中。这个函数可以用于连接分别与两个表达式匹配的元素结果集。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;test1&lt;/p&gt;&lt;a&gt;test2&lt;/a&gt;</p>
+
+<p>example：</p>
+
+<p>$(&#8220;p&#8221;).add(&#8220;a&#8221;);</p>
+
+<p>result:</p>
+
+<p>[&lt;p&gt;test1&lt;/p&gt;,&lt;a&gt;test2&lt;/a&gt;]//数组</p>
+
+<hr />
+
+<p>(2):children([expr]);</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素的所有子元素的元素集合。</p>
+
+<p>可以通过可选的表达式来过滤所匹配的子元素。注意：parents()将查找所有祖辈元素，而children()之考虑子元素而不考虑所有后代元素。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).children();</p>
+
+<p>result:&lt;span&gt;Hello Again&lt;/span&gt;</p>
+
+<hr />
+
+<p>(3):find(expr)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>搜索所有与指定表达式匹配的元素。这个函数是找出正在处理的元素的后代元素的好方法。</p>
+
+<p>所有搜索都依靠jQuery表达式来完成。这个表达式可以使用CSS1-3的选择器语法来写。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;, how are you?&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).find(&ldquo;span&rdquo;);</p>
+
+<p>result:&lt;span&gt;Hello&lt;/span&gt;</p>
+
+<hr />
+
+<p>(4):next([expr])</p>
+
+<p>return :jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素紧邻的后面同辈元素的元素集合。</p>
+
+<p>这个函数只返回后面那个紧邻的同辈元素，而不是后面所有的同辈元素（可以使用nextAll）。可以用一个可选的表达式进行筛选。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;a&gt;h1&lt;/a&gt;&lt;/p&gt;;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;span&#8221;).next();</p>
+
+<p>result:&lt;a&gt;h1&lt;/a&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(5):nextAll([expr])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:查找当前元素之后所有的同辈元素。</p>
+
+<p>test:&lt;div&gt;h1&lt;/div&gt;&lt;div&gt;h2&lt;/div&gt;&lt;div&gt;h3&lt;/div&gt;;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div:first&#8221;).nextAll();</p>
+
+<p>result:&lt;div&gt;h2&lt;div&gt;,&lt;div&gt;h3&lt;/div&gt;;:</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(6):offsetParent()</p>
+
+<p>&nbsp;</p>
+
+<p>return :jQuery</p>
+
+<p>explain:</p>
+
+<p>返回第一个匹配元素用于定位的父节点。</p>
+
+<p>这返回父元素中第一个其position设为relative或者absolute的元素。此方法仅对可见元素有效。</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(7):parent([expr])</p>
+
+<p>&nbsp;</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含着所有匹配元素的唯一父元素的元素集合。</p>
+
+<p>你可以使用可选的表达式来筛选。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;p&#8221;).parent();</p>
+
+<p>result:&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>(8):parents([expr])</p>
+
+<p>&nbsp;</p>
+
+<p>return:jquery;</p>
+
+<p>explain:取得一个包含着所有匹配元素的祖先元素的元素集合（不包含根元素）。</p>
+
+<p>test:</p>
+
+<p>&lt;body&gt;&lt;div&gt;&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;/p&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;/body&gt;</p>
+
+<p>example:$(&#8220;span&#8221;).parents(&#8220;p&#8221;);</p>
+
+<p>result:&lt;p&gt;&lt;span&gt;&lt;Hello&gt;&lt;/span&gt;&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(9):prev([expr])</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素紧邻的前一个同辈元素的元素集合。</p>
+
+<p>可以用一个可选的表达式进行筛选。只有紧邻的同辈元素会被匹配到，而不是前面所有的同辈元素。</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;p&#8221;).prev();</p>
+
+<p>result:&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(9):prevAll([expr])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>查找当前元素之前所有的同辈元素;</p>
+
+<p>test:</p>
+
+<p>&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div:last&#8221;).prevAll();</p>
+
+<p>result:&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(10):siblings([expr])</p>
+
+<p>return :jquery</p>
+
+<p>explain:</p>
+
+<p>取得一个包含匹配的元素集合中每一个元素的所有唯一同辈元素的元素集合。</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
+
+<p>example:$(&ldquo;div&rdquo;).siblings()</p>
+
+<p>result:</p>
+
+<p>[ &lt;p&gt;Hello&lt;/p&gt;, &lt;p&gt;And Again&lt;/p&gt; ]</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<h2>3:过滤函数：</h2>
+
+<hr />
+
+<p>(1):eq(insex);</p>
+
+<p>return:jQuery</p>
+
+<p>explain:获取第N个元素.这个元素的位置是从0算起。</p>
+
+<p>test:&lt;p&gt; This is just a test.&lt;/p&gt; &lt;p&gt; So is this&lt;/p&gt;</p>
+
+<p>example:$(&#8220;p&#8221;).eq(1);</p>
+
+<p>result:&lt;p&gt; So is this&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(2):filter(expr)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>筛选出与指定表达式匹配的元素集合。</p>
+
+<p>这个方法用于缩小匹配的范围。用逗号分隔多个表达式</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello Again&lt;/p&gt;&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).filter(&ldquo;.selected&rdquo;);</p>
+
+<p>result:</p>
+
+<p>&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(3):filter(fn)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>筛选出与指定函数返回值匹配的元素集合</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;ol&gt;&lt;li&gt;Hello&lt;/li&gt;&lt;/ol&gt;&lt;/p&gt;&lt;p&gt;How are you?&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).filter(function(index) {
+&nbsp; return $(&ldquo;ol&rdquo;, this).length == 0;
+});</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;How are you?&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(4):hasClass(class)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>检查当前的元素是否含有某个特定的类，如果有，则返回true。这其实就是 is(&ldquo;.&rdquo; + class)。</p>
+
+<p>test:</p>
+
+<p>&lt;div class=&ldquo;protected&rdquo;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
+
+<p>example:</p>
+
+<p>$(&#8220;div&#8221;).hasClass(&ldquo;protected&rdquo;)</p>
+
+<p>result:</p>
+
+<p>true</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(5):is(expr)</p>
+
+<p>return:jquery</p>
+
+<p>explain:</p>
+
+<p>用一个表达式来检查当前选择的元素集合，如果其中至少有一个元素符合这个给定的表达式就返回true。</p>
+
+<p>test:</p>
+
+<p>&lt;form&gt;&lt;input type=&ldquo;checkbox&rdquo; /&gt;&lt;/form&gt;</p>
+
+<p>explam:</p>
+
+<p>$(&ldquo;input[type=&lsquo;checkbox&rsquo;]&rdquo;).parent().is(&ldquo;form&rdquo;)</p>
+
+<p>result:</p>
+
+<p>true;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(6):map(callback)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>将一组元素转换成其他数组（不论是否是元素数组);</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;&lt;b&gt;Values: &lt;/b&gt;&lt;/p&gt;
+&lt;form&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;name&rdquo; value=&ldquo;John&rdquo;/&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;password&rdquo; value=&ldquo;password&rdquo;/&gt;
+&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;url&rdquo; value=&ldquo;<a href="http://ejohn.org/">http://ejohn.org/</a>&rdquo;/&gt;
+&lt;/form&gt;</p>
+
+<p>explam:</p>
+
+<p>$(&ldquo;p&rdquo;).append( $(&ldquo;input&rdquo;).map(function(){
+&nbsp; return $(this).val();
+}).get().join(&ldquo;, &rdquo;) );</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;John, password, <a href="http://ejohn.org/&amp;lt;/p&amp;gt;">http://ejohn.org/&amp;lt;/p&amp;gt;</a></p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(7):not(expr)</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>删除与指定表达式匹配的元素</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p id=&ldquo;selected&rdquo;&gt;Hello Again&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).not( $(&ldquo;#selected&rdquo;)[0] )</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;</p>
+
+<p>(8):slice(start,[end])</p>
+
+<p>return:jQuery</p>
+
+<p>explain:</p>
+
+<p>选取一个匹配的子集;</p>
+
+<p>test:</p>
+
+<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;cruel&lt;/p&gt;&lt;p&gt;World&lt;/p&gt;</p>
+
+<p>example:</p>
+
+<p>$(&ldquo;p&rdquo;).slice(0, 1).wrapInner(&ldquo;&lt;b&gt;&lt;/b&gt;&rdquo;);</p>
+
+<p>result:</p>
+
+<p>&lt;p&gt;&lt;b&gt;Hello&lt;/b&gt;&lt;/p&gt;</p>
+
+<p>&nbsp;</p>
+
+<hr />
+
+<p>&nbsp;本博客中同类文章还有，请见：<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html"><font color="#6699cc">我jQuery系列之目录汇总</font></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/01/1725700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-01T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cnblogs/'>cnblogs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/04/27/shi-pin-xiang-zuo-ni-di-Code/" title="Previous Post: [视频]想做你的Code">&laquo; [视频]想做你的Code</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/05/09/jQuery-Alert-Dialogs-Alert-Confirm-Prompt-Replacements-fan-yi/" title="Next Post: jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译)">jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
