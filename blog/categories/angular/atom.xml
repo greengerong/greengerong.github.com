@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-06-30T15:03:37+08:00</updated>
+  <updated>2014-06-30T15:45:34+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,15 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[AngularJS - 1.2.17 发布]]></title>
-    <link href="http://greengerong.github.io/blog/2014/06/12/angularjs-1-dot-2-17-is-out/"/>
-    <updated>2014-06-12T10:52:29+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/06/12/angularjs-1-dot-2-17-is-out</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ng-template寄宿方式]]></title>

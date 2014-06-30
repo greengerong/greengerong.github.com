@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 最近遇到html模板解析，我完全可以用MS的T4模板或者是StringTemplate等其他的模板来做，但是出于尝试和对Razor语发的感兴趣，便翻了翻Razor模板的资料，其CodePlex主页http:// &hellip;">
+  <meta name="description" content="如果您需要编辑模板页，默认的FCK设置是会去掉&lt;HTML&gt;&lt;/HTML&gt;&lt;BODY&gt; &lt;/BODY&gt;标签，而且会给你加上&lt;P&gt;&lt;/P&gt;标签的，怎么办呢，只要设置一个小的 地方就可以了。在fckconfig里面有 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,126 +71,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/22/Razor-Templating-Engine/">Razor Templating Engine</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-12-22T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/12/22/Razor-Templating-Engine/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/12/22/Razor-Templating-Engine/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 最近遇到html模板解析，我完全可以用MS的T4模板或者是StringTemplate等其他的模板来做，但是出于尝试和对Razor语发的感兴趣，便翻了翻Razor模板的资料，其CodePlex主页<a href="http://razorengine.codeplex.com/" title="http://razorengine.codeplex.com/">http://razorengine.codeplex.com/</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面讲的都是一些其主页上面的例子，所以请大家别拍砖。别后面想到有些实际意义的例子在写个具体的运用例子吧。</p>
-
-<pre><code>     public static class Razor 
-    { 
-        public static string Parse(string template, string name = null); 
-        public static string Parse&lt;T&gt;(string template, T model, string name = null); 
-        public static void SetLanguageProvider(ILanguageProvider provider); 
-        public static void SetMarkupParser(MarkupParser parser); 
-        public static void SetTemplateBaseType(Type type); 
-    }
-</code></pre>
-
-<p>在Razor这个静态类中最重要的方法当然是我们的Parse方法了，其有两个重载，在第二个重载在我们可以传入Template的Model，了解asp.net mvc都会知道这个Model。同时我们可以用SetLanguageProvider方法传入LanguageProvider（C#、VB）等，SetTemplateBaseType传入模板BaseType（可能是我们的自定义类型）。</p>
-
-<p>1：先来个简单的Template：</p>
-
-<pre><code>static void Main(string[] args) 
-           { 
-               string template = "Hello @Model.Name! Welcome to Razor!"; 
-               string result = Razor.Parse(template, new { Name = "World" });         
-               Console.WriteLine(result); 
-               Console.Read(); 
-           }
-</code></pre>
-
-<p>输出结果：</p>
-
-<p>Hello World! Welcome to Razor!</p>
-
-<p>在这里我们传入的是new { Name = &ldquo;World&rdquo; }的匿名对象的Model。</p>
-
-<p>2：内部嵌套方法：</p>
-
-<pre><code>string template = @"@helper MyMethod(string name) {
-
-    Hello @name
-
-}
-
-@MyMethod(Model.Name)! Welcome to Razor!"; 
-
-string result = Razor.Parse(template, new { Name = "World" });
-</code></pre>
-
-<p> 输出同样是上边的结果，但是注意这里的与上面不同的是在{}中间的空格等是不会忽略的。我的理解是同样是一个模板的形式吧。</p>
-
-<p>3：传递模板参数：</p>
-
-<p>在传递参数的情况下我们可以采用自定义类，继承至TemplateBase 或者TemplateBase&lt;T&gt;，后者是带Model的情形。</p>
-
-<p>还是官方的例子来看看，</p>
-
-<pre><code>static void Main(string[] args) 
-    { 
-        Razor.SetTemplateBaseType(typeof(MyCustomTemplateBase&lt;&gt;));
-
-        string template = "My name in UPPER CASE is: @ToUpperCase(Model.Name)"; 
-        string result = Razor.Parse(template, new { Name = "Matt" });
-
-        Console.WriteLine(result); 
-        Console.Read(); 
-    } 
-} 
-public abstract class MyCustomTemplateBase&lt;T&gt; : TemplateBase&lt;T&gt; 
-{ 
-    public string ToUpperCase(string name) 
-    { 
-        return name.ToUpper(); 
-    } 
-}
-</code></pre>
-
-<p>输出结果为：My name in UPPER CASE is: MATT。</p>
-
-<p>在我们的MyCustomTemplateBase&lt;T&gt;抽象类中我们可以像MVC一样定义一些辅助属性和方法，像html、Request、Response等辅助类等</p>
-
-<p>有事我们需要自定义一些非modle的非static property给Template，我的考虑是在TemplateService 中的重写Parse方法中初始化Action：
-public string Parse&lt;T&gt;(string template, T model, string name = null，Action&lt;ITemplate&lt;dynamic&gt;&gt; initAction);</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -2048,6 +1928,98 @@ namespace Wolf.Message
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/">Linq多表查询条件批量删除</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 前阵写了Linq的单表生成相对Sql执行的批量删除，总觉得删除条件太局限了，并且又不能屏蔽linq的级联条件，这很容易误导一些人。所以想了应该还是要支持才好。呵呵。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 其实思路和上次一样，就是生成Sql，用Linq自身条件组合sql应用，没有什么好说的。组合sql用 EXISTS关键字，组合一个子查询。</p>
+
+<pre><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>直接上Code：</p>
+
+<pre><code>/// EXISTS
+/// &amp;lt;/summary&amp;gt;
+/// &amp;lt;typeparam name="T"&amp;gt;&amp;lt;/typeparam&amp;gt;
+/// &amp;lt;param name="source"&amp;gt;&amp;lt;/param&amp;gt;
+/// &amp;lt;param name="query"&amp;gt;&amp;lt;/param&amp;gt;
+/// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
+public static int Delete&amp;lt;T&amp;gt;(this System.Data.Linq.Table&amp;lt;T&amp;gt; source, Expression&amp;lt;Func&amp;lt;T, bool&amp;gt;&amp;gt; query)
+where T : class
+{
+if (source == null)
+throw new ArgumentException("source");
+if (query == null)
+throw new ArgumentException("query");
+//query = t =&amp;gt; true;
+//为空DELETE  FROM [dbo].[test] 全删除；个人觉得为空全删除，很不人道，所以还是抛异常
+System.Data.Linq.DataContext db = source.Context;
+DbCommand cmd= db.GetCommand(source.Where(query));
+string queryStr = cmd.CommandText;
+string sql = "DELETE FROM " + source.Context.Mapping.GetTable(typeof(T)).TableName + " WHERE   EXISTS(" + queryStr+")";
+List&amp;lt;object&amp;gt; dbparams = new List&amp;lt;object&amp;gt;();
+foreach (SqlParameter item in cmd.Parameters)
+{
+SqlParameter p = new SqlParameter(item.ParameterName, item.SqlDbType, item.Size);
+p.Value = item.Value;
+dbparams.Add(item.Value);
+}
+cmd = null;
+return db.ExecuteCommand(sql, dbparams.ToArray());
+}
+</code></pre>
+
+<p>&nbsp; 调用方式就很简单了，一个Lamdam表达式，就搞定。比如</p>
+
+<pre><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
+</code></pre>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_thumb.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 例子没有从重写Linq或者扩展Linq表达式出发，因为从这里出发我能力估计还差一筹，呵呵还是我觉得没有必要，这样的实现是否更简单，实现的功能更多些，为何不重用人家MS的东西呢，个人观点而已</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/15/1826624.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -2092,10 +2064,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       </li>
     
       <li class="post">
-        <a href="/blog/2014/06/12/angularjs-1-dot-2-17-is-out/">AngularJS - 1.2.17 发布</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
       </li>
     
@@ -2117,6 +2085,10 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a>
       </li>
     
   </ul>

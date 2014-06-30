@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-06-30T15:03:37+08:00</updated>
+  <updated>2014-06-30T15:45:34+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -42,15 +42,6 @@
 <p>在browserTrigger中还为我们做了很多其他输入框或者html控件的触发接口，同时也加入了浏览器的兼容性。使得我们的测试更加方便不用考虑浏览器兼容性或者不同的html控件trigger不同的事件去更新scope的值。</p>
 
 <p>具体更多信息请参考<a href="https://github.com/angular/angular.js/blob/accd35b7471bbf58cd5b569a004824fa60fa640a/test/ng/directive/selectSpec.js">ng的官方测试</a>和<a href="https://raw.githubusercontent.com/angular/angular.js/dafb8a3cd12e7c3247838f536c25eb796331658d/src/ngScenario/browserTrigger.js">browserTrigger源码</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[AngularJS - 1.2.17 发布]]></title>
-    <link href="http://greengerong.github.io/blog/2014/06/12/angularjs-1-dot-2-17-is-out/"/>
-    <updated>2014-06-12T10:52:29+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/06/12/angularjs-1-dot-2-17-is-out</id>
-    <content type="html"><![CDATA[
 ]]></content>
   </entry>
   
