@@ -26,7 +26,7 @@ angular作为Single Page Application推荐的交互方式当然是基于json的a
 
 	id=1&name=greengerong
 
-online [demo](http://plnkr.co/edit/tpl:FrTqqTNoY8BEfHs9bB0f);
+online [demo](http://plnkr.co/edit/hxAb2V);
 
 ***对于整个app的http request设置：
 
