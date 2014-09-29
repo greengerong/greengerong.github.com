@@ -100,7 +100,7 @@ disqus_show_comment_count: true
 google_analytics_tracking_id:
 
 # Baidu Analytics
-baidu_analytics_tracking: true
+baidu_analytics_tracking: false
 
 # Facebook Like
 facebook_like: false
