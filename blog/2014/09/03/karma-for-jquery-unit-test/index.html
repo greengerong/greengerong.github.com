@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Karma for jQuery Unit Test - 破狼 Blog</title>
+  <title>karma作为jQuery单元测试Runner - 破狼 Blog</title>
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -32,12 +31,6 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
-
-
-<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
-</script>
 
 </head>
 
@@ -75,7 +68,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
   <header>
     
-      <h1 class="entry-title">Karma for jQuery Unit Test</h1>
+      <h1 class="entry-title">karma作为jQuery单元测试Runner</h1>
     
     
       <p class="meta">
@@ -91,7 +84,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2014-09-03T13:37:33+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
+<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://greengerong.github.io">Comments</a>
@@ -101,7 +94,184 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
+
+<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
+
+<h4>jasmime测试套件</h4>
+
+<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
+
+<h4>jasmine-jquery</h4>
+
+<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
+
+<pre><code>jasmine.getFixtures().fixturesPath = 'base path';
+loadFixtures('myfixture.html');
+jasmine.getFixtures().load(...);
+</code></pre>
+
+<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
+
+<h4>jasmine-ajax</h4>
+
+<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
+
+<pre><code> beforeEach(function() {
+    jasmine.Ajax.requests.when = function (url) {
+      return this.filter("/jquery/ajax")[0];
+    };
+    jasmine.Ajax.install();
+});
+
+it("jquery ajax success with getResponse", function() {
+    var result;
+
+    $.get("/jquery/ajax").success(function(data) {
+        result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+});
+
+
+afterEach(function() {
+    jasmine.Ajax.uninstall();
+});
+</code></pre>
+
+<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
+
+<h4>运用karma runner</h4>
+
+<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
+
+<p>所以分为以下几步：
+1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
+2：host 测试的html fixtures。
+3：加载html fixtures 与install ajax之前。</p>
+
+<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
+
+<pre><code>files: [
+    {
+      pattern: 'view/**/*.html',
+      watched: true,
+      included: false,
+      served: true
+    },
+    'bower_components/jquery/dist/jquery.js',
+    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+    'bower_components/jasmine-ajax/lib/mock-ajax.js',
+    'src/*.js',
+    'test/*.js'
+],
+</code></pre>
+
+<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
+
+<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+
+<p>测试html fixtures加载：</p>
+
+<pre><code>describe('console html content', function() {
+
+  beforeEach(function() {
+    jasmine.getFixtures().fixturesPath = 'base/view/';
+    loadFixtures("index.html");
+  });
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+})
+</code></pre>
+
+<p>测试mock ajax：</p>
+
+<pre><code>describe('console html content', function() {
+
+  beforeEach(function() {
+     jasmine.Ajax.requests.when = function(url) {
+         return this.filter("/jquery/ajax")[0];
+     };
+     jasmine.Ajax.install();
+ });
+
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+  it("ajax mock", function() {
+    var doneFn = jasmine.createSpy("success");
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(args) {
+      if (this.readyState == this.DONE) {
+        doneFn(this.responseText);
+      }
+    };
+
+    xhr.open("GET", "/some/cool/url");
+    xhr.send();
+
+    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
+    expect(doneFn).not.toHaveBeenCalled();
+
+    jasmine.Ajax.requests.mostRecent().response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'awesome response'
+    });
+
+    expect(doneFn).toHaveBeenCalledWith('awesome response');
+  });
+
+  it("jquery ajax success with getResponse", function() {
+    var result;
+    getResponse().then(function(data){
+      result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+  });
+
+  it("jquery ajax error", function() {
+    var status;
+    $.get("/jquery/ajax").error(function(response) {
+      status = response.status;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 400
+    });
+
+    expect(status).toEqual(400);
+  });
+
+  afterEach(function() {
+    jasmine.Ajax.uninstall();
+  });
+})      
+</code></pre>
+
+<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
 </div>
 
 
@@ -124,8 +294,14 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2014-09-03T13:37:33+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
+<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/karma/'>karma</a>, <a class='category' href='/blog/categories/unit-test/'>unit test</a>
+  
+</span>
 
 
     </p>
@@ -191,13 +367,6 @@ dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
 </section>
 <section>
   <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
-  <div style="display: none;">
-    <script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-  </div>
 </section>
 <section>
 <h1>博客友情链接</h1>
@@ -213,11 +382,15 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
       </li>
     
       <li class="post">
@@ -238,10 +411,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
       </li>
     
   </ul>

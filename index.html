@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。 今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。 &hellip;">
+  <meta name="description" content="jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子： angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -31,12 +31,6 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
-
-
-<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
-</script>
 
 </head>
 
@@ -71,6 +65,133 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T15:53:45+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
+
+<pre><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+      StoreService.listStores().then(function(branches) {
+        Contact.retrieveContactInfo().then(function(userInfo) {
+            //more code here crossing user and stores data
+        });  
+      });
+    });
+</code></pre>
+
+<p>下面让我们来尝试如何用angular提供的$provide创建一个依赖的实现，以及利用jasmine帮助我们fake方法的返回值：</p>
+
+<p>代码如下，有详细注释帮助你去理解这段代码：</p>
+
+<pre><code>    describe("Store Controller", function() {
+      var $controller, Contact, StoreService, createController, scope;
+
+      beforeEach(function() {
+        module('myApp.store');
+
+        // Provide will help us create fake implementations for our dependencies
+        module(function($provide) {
+
+          // Fake StoreService Implementation returning a promise
+          $provide.value('StoreService', {
+            listStores: function() {
+              return { 
+                then: function(callback) {return callback([{ some: "thing", hoursInfo: {isOpen: true}}]);}
+              };
+            },
+            chooseStore: function() { return null;}
+          });
+
+          // Fake Contact Implementation return an empty object 
+          $provide.value('Contact', {
+            retrieveContactInfo: function() {
+              return {
+                then: function(callback) { return callback({});}
+              };
+            }
+          });
+
+          return null;
+        });
+      });
+
+      beforeEach(function() {
+
+        // When Angular Injects the StoreService and Contact dependencies, 
+        // it will use the implementation we provided above
+        inject(function($controller, $rootScope, _StoreService_, _Contact_) {
+          scope = $rootScope.$new();
+          StoreService = _StoreService_;
+          Contact = _Contact_;
+          createController = function(params) {
+            return $controller("StoresCtrl", {
+              $scope: scope,
+              $stateParams: params || {}
+            });
+          };
+        });
+      });
+
+      it("should call the store service to retrieve the store list", function() {
+        var user = { address: {street: 1}};
+
+        // Jasmine spy over the listStores service. 
+        // Since we provided a fake response already we can just call through. 
+        spyOn(StoreService, 'listStores').and.callThrough();
+
+        // Jasmine spy also allows to call Fake implementations via the callFake function 
+        // or we can return our own response via 'and.returnValue
+        // Here we can override the response we previously defined and return a promise with a user object
+        spyOn(Contact, 'retrieveContactInfo').and.callFake(function() {
+          return {
+            then: function(callback) { return callback(user); }
+          };
+        });
+
+        createController();
+        // Since we setup a spy we can now expect that spied function to have been called 
+        // or to have been called with certain parameters..etc
+        expect(StoreService.listStores).toHaveBeenCalled();
+      });
+    });
+</code></pre>
+
+<p>原文地址:<a href="http://ng-learn.org/2014/08/Testing_Promises_with_Jasmine_Provide_Spy/">Testing Promises with Jasmine &ndash; Provide and Spy</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -141,7 +262,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a></h1>
     
     
       <p class="meta">
@@ -157,7 +278,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   
 
 
-<time datetime="2014-09-03T13:37:33+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
+<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
         
            | <a href="/blog/2014/09/03/karma-for-jquery-unit-test/#disqus_thread"
              data-disqus-identifier="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/">Comments</a>
@@ -167,7 +288,184 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
+
+<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
+
+<h4>jasmime测试套件</h4>
+
+<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
+
+<h4>jasmine-jquery</h4>
+
+<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
+
+<pre><code>jasmine.getFixtures().fixturesPath = 'base path';
+loadFixtures('myfixture.html');
+jasmine.getFixtures().load(...);
+</code></pre>
+
+<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
+
+<h4>jasmine-ajax</h4>
+
+<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
+
+<pre><code> beforeEach(function() {
+    jasmine.Ajax.requests.when = function (url) {
+      return this.filter("/jquery/ajax")[0];
+    };
+    jasmine.Ajax.install();
+});
+
+it("jquery ajax success with getResponse", function() {
+    var result;
+
+    $.get("/jquery/ajax").success(function(data) {
+        result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+});
+
+
+afterEach(function() {
+    jasmine.Ajax.uninstall();
+});
+</code></pre>
+
+<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
+
+<h4>运用karma runner</h4>
+
+<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
+
+<p>所以分为以下几步：
+1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
+2：host 测试的html fixtures。
+3：加载html fixtures 与install ajax之前。</p>
+
+<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
+
+<pre><code>files: [
+    {
+      pattern: 'view/**/*.html',
+      watched: true,
+      included: false,
+      served: true
+    },
+    'bower_components/jquery/dist/jquery.js',
+    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+    'bower_components/jasmine-ajax/lib/mock-ajax.js',
+    'src/*.js',
+    'test/*.js'
+],
+</code></pre>
+
+<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
+
+<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+
+<p>测试html fixtures加载：</p>
+
+<pre><code>describe('console html content', function() {
+
+  beforeEach(function() {
+    jasmine.getFixtures().fixturesPath = 'base/view/';
+    loadFixtures("index.html");
+  });
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+})
+</code></pre>
+
+<p>测试mock ajax：</p>
+
+<pre><code>describe('console html content', function() {
+
+  beforeEach(function() {
+     jasmine.Ajax.requests.when = function(url) {
+         return this.filter("/jquery/ajax")[0];
+     };
+     jasmine.Ajax.install();
+ });
+
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+  it("ajax mock", function() {
+    var doneFn = jasmine.createSpy("success");
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(args) {
+      if (this.readyState == this.DONE) {
+        doneFn(this.responseText);
+      }
+    };
+
+    xhr.open("GET", "/some/cool/url");
+    xhr.send();
+
+    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
+    expect(doneFn).not.toHaveBeenCalled();
+
+    jasmine.Ajax.requests.mostRecent().response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'awesome response'
+    });
+
+    expect(doneFn).toHaveBeenCalledWith('awesome response');
+  });
+
+  it("jquery ajax success with getResponse", function() {
+    var result;
+    getResponse().then(function(data){
+      result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+  });
+
+  it("jquery ajax error", function() {
+    var status;
+    $.get("/jquery/ajax").error(function(response) {
+      status = response.status;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 400
+    });
+
+    expect(status).toEqual(400);
+  });
+
+  afterEach(function() {
+    jasmine.Ajax.uninstall();
+  });
+})      
+</code></pre>
+
+<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
 </div>
   
   
@@ -864,73 +1162,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-28T22:11:34+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/28/ci-tools-go-open-source/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0" alt="go" /></p>
-
-<p>ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。</p>
-
-<p>Go下载地址为<a href="http://www.go.cd/download/">http://www.go.cd/download/</a>.</p>
-
-<p>下面是几张来自官方的视图：</p>
-
-<p>GO流程图：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" /></p>
-
-<p>GO截面图：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" /></p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" /></p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" /></p>
-
-<p>GO的版本：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" /></p>
-
-<ul>
-<li> <a href="http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c">Thoughtworks官方的宣布文章</a></li>
-<li> 你也可以在ThoughtWorks中国微信雷小达看到:<a href="http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&amp;mid=200062098&amp;idx=1&amp;sn=25198a84122904cd113ef010637d27ed&amp;uin=MjA0MjY0NDk0MA%3D%3D">GO！我们开源了！</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -947,13 +1178,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 </section>
 <section>
   <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
-  <div style="display: none;">
-    <script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-  </div>
 </section>
 <section>
 <h1>博客友情链接</h1>
@@ -969,11 +1193,15 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
       </li>
     
       <li class="post">
@@ -994,10 +1222,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
       </li>
     
   </ul>

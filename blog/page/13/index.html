@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="前言 在需要录入数据的字段比较多的表单应用程序中，为了给用户更好的体验，我们通常会将[Enter]键转为[TAB]将输入焦点移到下一个控件，或是将获得焦点的输入控件背景经一个醒目的背景颜色显示等等。以往的做法通常是从TextBox、ComboBox等标准输入控件派生一个新的控件， &hellip;">
+  <meta name="description" content="窗体的几种出现方式： public const Int32 AW_HOR_POSITIVE = 0x00000001; public const Int32 AW_HOR_NEGATIVE = 0x00000002; public const Int32 AW_VER_POSITIVE = &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -31,12 +31,6 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
-
-
-<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
-</script>
 
 </head>
 
@@ -71,6 +65,114 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/04/ji-lu-ji-zhong-chuang-ti-chu-xian-fang-shi-win32API/">记录几种窗体出现方式（win32API）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/12/04/ji-lu-ji-zhong-chuang-ti-chu-xian-fang-shi-win32API/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/12/04/ji-lu-ji-zhong-chuang-ti-chu-xian-fang-shi-win32API/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>窗体的几种出现方式：</p>
+
+<p>public const Int32 AW_HOR_POSITIVE = 0x00000001;</p>
+
+<pre><code>                public const Int32 AW_HOR_NEGATIVE = 0x00000002;
+
+                public const Int32 AW_VER_POSITIVE = 0x00000004;
+
+                public const Int32 AW_VER_NEGATIVE = 0x00000008;
+
+                public const Int32 AW_CENTER = 0x00000010;
+
+                public const Int32 AW_HIDE = 0x00010000;
+
+                public const Int32 AW_ACTIVATE = 0x00020000;
+
+                public const Int32 AW_SLIDE = 0x00040000;
+
+                public const Int32 AW_BLEND = 0x00080000;
+
+                [DllImport("user32.dll", CharSet = CharSet.Auto)]
+
+                public static extern bool AnimateWindow(
+
+                    IntPtr hwnd,  // handle to window   
+
+                    int dwTime, // duration of animation   
+
+                    int dwFlags // animation type   
+
+                );
+
+
+
+    AW_ACTIVATE = 0x00020000; //平常窗体出的方式,即突发式
+
+
+
+    AW_BLEND = 0x00080000; //渐入式，由透明逐渐出现
+
+
+
+    AW_CENTER = 0x00000010; //由中心逐渐出现
+
+
+
+    AW_HIDE = 0x00010000；//没有发现有什么特别的地方，好像也是突发出现
+
+
+
+    AW_HOR_NEGATIVE = 0x00000002;//由右至左渐出
+
+
+
+    AW_HOR_POSITIVE = 0x00000001;//由左至右渐出
+
+
+
+    AW_SLIDE = 0x00040000;//未发现特殊效果，只看到是突发式
+
+
+
+    AW_VER_NEGATIVE = 0x00000008//由下到上渐出
+
+
+
+    AW_VER_POSITIVE = 0x00000004;//出上到下渐出
+</code></pre>
+
+<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/12/04/1617257.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1491,13 +1593,6 @@ public int MyProperty { get; set; },</p></li>
 </section>
 <section>
   <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
-  <div style="display: none;">
-    <script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-  </div>
 </section>
 <section>
 <h1>博客友情链接</h1>
@@ -1513,11 +1608,15 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
       </li>
     
       <li class="post">
@@ -1538,10 +1637,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
       </li>
     
   </ul>
