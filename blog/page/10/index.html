@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="如果您需要编辑模板页，默认的FCK设置是会去掉&lt;HTML&gt;&lt;/HTML&gt;&lt;BODY&gt; &lt;/BODY&gt;标签，而且会给你加上&lt;P&gt;&lt;/P&gt;标签的，怎么办呢，只要设置一个小的 地方就可以了。在fckconfig里面有 &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; 今天在操作Excel2003时候在我的win7英文操作系统发生错误，（在此记录下来）： The &lsquo;Microsoft.Jet.OLEDB.4.0&rsquo; provider is not registered on the local &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,348 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/">The &#x27;Microsoft.Jet.OLEDB.4.0&#x27; Provider Is Not Registered on the Local machine-Excel2003</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在操作Excel2003时候在我的win7英文操作系统发生错误，（在此记录下来）：</p>
+
+<p>The &lsquo;Microsoft.Jet.OLEDB.4.0&rsquo; provider is not registered on the local machine.</p>
+
+<p>在网上google了一下，错误原因是我的机子是64编译的，需要改为32位，在vs中设置将编译Any CPU改为x86，就ok。</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/QQ%E6%88%AA%E5%9B%BE%E6%9C%AA%E5%91%BD%E5%90%8D.png" alt="The " /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/01/01/1923744.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/">代码生成技术&#8211;CodeDom vs T4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-23T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/12/23/dai-ma-sheng-cheng-ji-shu-CodeDom-VS-T4/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在微软的自家代码生成方案中我们有两种选择方式:CodeDom 和Text Template Transformation Toolkit（T4）模板。同样我们可以利用简单的String或者StringBuilder来拼接字符串，但是那对于简单的还可以，但是对于复杂的问题就<img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201012/201012231245237287.png" alt="悲伤" />。其实在ASP.NET MVC 3.0中有多处了一个更简洁语法的模板-Razor，我们同样可以运用于我们自己的代码生成中，我随便有一篇简单的介绍<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html">Razor Templating Engine</a>，在以后有机会了会写Razor Demo。今天的主题不在这里，所以不多说了。</p>
+
+<h3>一：简介：</h3>
+
+<p>CodeDom：这 个类库出现在我们的.NET Framework 2.0，并且被深深的用于我们的ASP.NET项目中。CodeDom关注于一个语言独立性，以至于我们可以利用我们熟悉的语言（c#，vb等）构建一个CodeDom Model Tree,就可以生成我们在.NET平台所支持的语言代码。对于我们的ASP.NET要求语言的独立。</p>
+
+<p>T4：T4模板作为VS2008的一部分出现，他以&lt;# #&gt; 、&lt;#= #&gt;接近于ASP.NET的语言在模板中插入一段段的动态代码块，可以像asp或者ASP.NET一样简单的更让人贴切，相对于CodeDom就更简洁，但是没有了语言层次的抽象，不具有语言独立性，我们必须为同一个功能的模板在不同的语言上写不同的模板，但是在开发中往往c#模板就足够了，以及更简单化所以得到了更多人的青睐。</p>
+
+<p>二：Code Demo：</p>
+
+<p>下面我们将用CodeDom和t4分别生成一个简单的Code，根据时间输出不同的问候，如下：</p>
+
+<p>1：CodeDom Code:</p>
+
+<pre><code>using System; 
+using System.Text; 
+using System.CodeDom; 
+using System.IO;
+
+namespace RazorDemo 
+{ 
+    public class CodedomDemo 
+    { 
+        public CodeCompileUnit CrateCodeCompileUnit() 
+        { 
+            var testClass = new CodeTypeDeclaration("Test"); 
+            var testMeth = new CodeMemberMethod() 
+            { 
+                Attributes = MemberAttributes.Public| MemberAttributes.Final, 
+                Name = "SayHello", 
+            }; 
+            var param = new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "name"); 
+            testMeth.Parameters.Add(param); 
+            testClass.Members.Add(testMeth);
+
+            var nowExpression = new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(DateTime)), "Now"), "Hour"); 
+            var assmon = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("早上好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name") ); 
+            var asslunch = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("中午好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name")); 
+            var assAfternoon = new CodeBinaryOperatorExpression(new CodePrimitiveExpression("下午好:"), CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression("name")); 
+            var codecondition = new CodeConditionStatement(new CodeBinaryOperatorExpression( 
+                nowExpression, CodeBinaryOperatorType.LessThanOrEqual, new CodePrimitiveExpression(10)), 
+                new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine", assmon)) },           //true:if(DateTime.Now&lt;=10) 
+                //else 
+                new CodeStatement[] 
+                { 
+                   new CodeConditionStatement(new CodeBinaryOperatorExpression(nowExpression, CodeBinaryOperatorType.LessThanOrEqual,new CodePrimitiveExpression(14) ),  // else if(DateTime.Now&lt;=14) 
+                     new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine",asslunch))},    //true 
+                     new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Console)), "WriteLine",assAfternoon))}) //fasle 
+                } 
+               );
+
+            testMeth.Statements.AddRange(new CodeStatement[] {             
+            codecondition 
+            });
+
+            var ns = new CodeNamespace("Wolf"); 
+            ns.Imports.Add(new CodeNamespaceImport("System")); 
+            ns.Types.Add(testClass); 
+            var util = new CodeCompileUnit(); 
+            util.Namespaces.Add(ns); 
+            return util; 
+        }
+
+        public string Genertor(string language) 
+        { 
+            StringBuilder sb = new StringBuilder(); 
+            StringWriter sw = new StringWriter(sb); 
+            System.CodeDom.Compiler.CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit( 
+                this.CrateCodeCompileUnit(), sw, new System.CodeDom.Compiler.CodeGeneratorOptions() 
+                { 
+                    ElseOnClosing = true, 
+                    IndentString = "    " 
+                }); 
+            sw.Close(); 
+            return sb.ToString();
+
+        } 
+    } 
+}
+</code></pre>
+
+<p>2:T4 Code：</p>
+
+<pre><code>&lt;#@ template language="C#" #&gt;
+
+using System; 
+namespace WolfT4 {   
+    public class Test {
+
+        public void SayHello(string name) { 
+            &lt;# if(System.DateTime.Now.Hour&lt;=10){#&gt; 
+            System.Console.WriteLine(("早上好:" + name)); 
+            &lt;#} else if(System.DateTime.Now.Hour&lt;=14){#&gt; 
+            System.Console.WriteLine(("中午好:" + name)); 
+            &lt;#} else{ #&gt; 
+            System.Console.WriteLine(("下午好:" + name)); 
+            &lt;#}#&gt;            
+        } 
+    } 
+}
+</code></pre>
+
+<p>&nbsp;三：总结：</p>
+
+<p>CodeDom的优势：</p>
+
+<p>1：具有语言层次抽象，独立性：是一个单语言开发，多语言生成的方式。</p>
+
+<p>2：<strong>Framework </strong>的支持：作为我们的.NET Framework 一部分出现的，位于System.CodeDom命名空间下。不需要想T4 模板一样引用Microsoft.VisualStudio.TextTemplating.dll</p>
+
+<p>T4优势：</p>
+
+<p>1：更加贴切：采用的是类似于ASP、ASP.NET的语言块，是的我们的开发更贴切，采用模板方式更加简洁，快速。</p>
+
+<p>2：可维护性：由于是基于文件，不像codedom编译成为dll方式，我们可以随时修改Template文件、重构。</p>
+
+<p>&nbsp;</p>
+
+<p>其实我觉得只要是不要求语言独立性，多语言生成的话，就采用T4或者Razor等模板。</p>
+
+<p>代码生成技术（目前完成，还在继续，好久没写了&hellip;）：</p>
+
+<p>1：<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html"><font color="#6699cc">CodeDom系列目录</font></a></p>
+
+<p>2：<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html"><font color="#6699cc">CodeSmith模板引擎系列-目录</font></a></p>
+
+<p>3：<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html"><font color="#6699cc">Razor Templating Engine</font></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/23/1914700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/12/22/Razor-Templating-Engine/">Razor Templating Engine</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-22T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/12/22/Razor-Templating-Engine/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/12/22/Razor-Templating-Engine/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 最近遇到html模板解析，我完全可以用MS的T4模板或者是StringTemplate等其他的模板来做，但是出于尝试和对Razor语发的感兴趣，便翻了翻Razor模板的资料，其CodePlex主页<a href="http://razorengine.codeplex.com/" title="http://razorengine.codeplex.com/">http://razorengine.codeplex.com/</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面讲的都是一些其主页上面的例子，所以请大家别拍砖。别后面想到有些实际意义的例子在写个具体的运用例子吧。</p>
+
+<pre><code>     public static class Razor 
+    { 
+        public static string Parse(string template, string name = null); 
+        public static string Parse&lt;T&gt;(string template, T model, string name = null); 
+        public static void SetLanguageProvider(ILanguageProvider provider); 
+        public static void SetMarkupParser(MarkupParser parser); 
+        public static void SetTemplateBaseType(Type type); 
+    }
+</code></pre>
+
+<p>在Razor这个静态类中最重要的方法当然是我们的Parse方法了，其有两个重载，在第二个重载在我们可以传入Template的Model，了解asp.net mvc都会知道这个Model。同时我们可以用SetLanguageProvider方法传入LanguageProvider（C#、VB）等，SetTemplateBaseType传入模板BaseType（可能是我们的自定义类型）。</p>
+
+<p>1：先来个简单的Template：</p>
+
+<pre><code>static void Main(string[] args) 
+           { 
+               string template = "Hello @Model.Name! Welcome to Razor!"; 
+               string result = Razor.Parse(template, new { Name = "World" });         
+               Console.WriteLine(result); 
+               Console.Read(); 
+           }
+</code></pre>
+
+<p>输出结果：</p>
+
+<p>Hello World! Welcome to Razor!</p>
+
+<p>在这里我们传入的是new { Name = &ldquo;World&rdquo; }的匿名对象的Model。</p>
+
+<p>2：内部嵌套方法：</p>
+
+<pre><code>string template = @"@helper MyMethod(string name) {
+
+    Hello @name
+
+}
+
+@MyMethod(Model.Name)! Welcome to Razor!"; 
+
+string result = Razor.Parse(template, new { Name = "World" });
+</code></pre>
+
+<p> 输出同样是上边的结果，但是注意这里的与上面不同的是在{}中间的空格等是不会忽略的。我的理解是同样是一个模板的形式吧。</p>
+
+<p>3：传递模板参数：</p>
+
+<p>在传递参数的情况下我们可以采用自定义类，继承至TemplateBase 或者TemplateBase&lt;T&gt;，后者是带Model的情形。</p>
+
+<p>还是官方的例子来看看，</p>
+
+<pre><code>static void Main(string[] args) 
+    { 
+        Razor.SetTemplateBaseType(typeof(MyCustomTemplateBase&lt;&gt;));
+
+        string template = "My name in UPPER CASE is: @ToUpperCase(Model.Name)"; 
+        string result = Razor.Parse(template, new { Name = "Matt" });
+
+        Console.WriteLine(result); 
+        Console.Read(); 
+    } 
+} 
+public abstract class MyCustomTemplateBase&lt;T&gt; : TemplateBase&lt;T&gt; 
+{ 
+    public string ToUpperCase(string name) 
+    { 
+        return name.ToUpper(); 
+    } 
+}
+</code></pre>
+
+<p>输出结果为：My name in UPPER CASE is: MATT。</p>
+
+<p>在我们的MyCustomTemplateBase&lt;T&gt;抽象类中我们可以像MVC一样定义一些辅助属性和方法，像html、Request、Response等辅助类等</p>
+
+<p>有事我们需要自定义一些非modle的非static property给Template，我的考虑是在TemplateService 中的重写Parse方法中初始化Action：
+public string Parse&lt;T&gt;(string template, T model, string name = null，Action&lt;ITemplate&lt;dynamic&gt;&gt; initAction);</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1604,422 +1946,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/09/27/CodeSmith-mo-ban-yin-qing-xi-lie-mu-lu/">CodeSmith模板引擎系列-目录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-09-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/09/27/CodeSmith-mo-ban-yin-qing-xi-lie-mu-lu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/27/CodeSmith-mo-ban-yin-qing-xi-lie-mu-lu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeSmith是一个基于模板的代码生成器，它可以生成任何基于ASCII的编程语言代码。生成的代码可以使用属性进行定制。属性可以是任何具有设计器的.NET对象（大多数.NET内置类型已经有设计器），也可以是一个允许你从结果中有条件地添加或移除代码的简单的boolean 属性，或是一个对象，例如能够访问数据库表信息的TableSchema对象（包括在SchemaExplorer中）。CodeSmith完全可扩展，它允许用户创建定制属性类型。CodeSmith中包括多个定制属性类型的例子，例如，定制一个允许选择XML文件（使用XmlSerializer可将其反序列化到对象中）的属性类型。CodeSmith还允许用户在模板中引用和调用指定的外部程序集并且允许从外部程序集的类生成模板。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeSmith的语法与ASP.NET几乎相同。因此如果你熟悉ASP.NET ，那么应该会很快理解模板语法。你可以在模板中使用C#、VB.NET或JScript.NET语言，并且模板可以输出任何基于ASCII的语言。CodeSmith还包括一个名为SchemaExplorer的程序集，利用它可以访问几乎所有的数据库概要（schema）细节。访问这种信息让你能够生成各种代码，例如存储过程、类型DataSet、业务对象、表示层代码或任何其它基于数据库概要信息的代码。（来自:<a href="http://msdn.microsoft.com/msdnmag/issues/04/07/MustHaveTools/default.aspx">http://msdn.microsoft.com/msdnmag/issues/04/07/MustHaveTools/default.aspx</a>）</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/13/1776379.html">CodeSmith模板引擎系列一</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/14/1777088.html">CodeSmith模板引擎系列二&mdash;文件目录树</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html">通过代码生成机制实现强类型编程-CodeSimth版</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836731.html"><font color="#6699cc">Dbml文件提取建表TSql-CodeSmith</font></a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 打算写一些代码生成编译技术的系列，包括<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">CodeDom（CodeDom的代码生成技术目录</a>），<a href="#">CodeSmith模板</a>、T4模板、StringTemplate,以及Expression Tree的系列随笔。如果可能的话再加上Emit系列。欢迎大家多多指教和交流。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban/">通过代码生成机制实现强类型编程-CodeSimth版</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-09-25T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一直想写一个Code生成系列，但写到CodeSimth，发觉在<a href="http://terrylee.cnblogs.com/archive/2005/12/28/306254.aspx">TerryLee</a> 和<a href="http://www.cnblogs.com/Bear-Study-Hard/category/43725.html">努力学习的小熊</a> 两位大牛的博客里讲很详尽，所以就像写些示例方面的，但是苦于没有想到写些什么。最近<a href="http://www.cnblogs.com/artech/">Artech</a>写了两篇<a href="http://www.cnblogs.com/artech/archive/2010/09/16/1827499.html">从数据到代码&#8212;&#8212;通过代码生成机制实现强类型编程&mdash;上篇和下篇</a>，大牛写得是CodeDom的，今天我就想借借大牛的示例写个CodeSimth版的，希望<a href="http://www.cnblogs.com/artech/">Artech</a>不要怪我，呵呵。我的Code生成技术已经写了CodeDom的见<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">CodeDom系列目录</a>，欢迎各位园友指教。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好直接到主题。首先是数据实体MessageEntry（我到老A的基础上添加了description属性作为代码字段描述）：</p>
-
-<pre><code>       public class MessageEntry 
-        { 
-            public string Id { get; private set; } 
-            public string Value { get; private set; }        
-            public string Description { get; private set; } 
-            public MessageEntry(string id, string value) 
-            { 
-                this.Id = id; 
-                this.Value = value;         
-            } 
-
-            public MessageEntry(string id, string value, string description) 
-            { 
-                this.Id = id; 
-                this.Value = value; 
-                this.Description = description; 
-            } 
-
-            public string Format(params object[] args) 
-            { 
-                return string.Format(this.Value, args); 
-            } 
-        } 
-</code></pre>
-
-<p>在我的机子上的CodeSimth是2..0版本的所以不能使用Linq命名空间，我又想利用这个空间，比较快捷，所以我就在先3.0转化为</p>
-
-<p>Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;实体再传入模板：</p>
-
-<p>Code：</p>
-
-<pre><code>     using System.Collections.Generic; 
-    using System.Linq; 
-    using System.Text; 
-    using System.Xml; 
-    using System.Xml.Linq; 
-
-    namespace Wolf 
-    { 
-        public class MessageCodeGenerator 
-        { 
-            public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; GeneratorCode(string  path) 
-            { 
-                return GeneratorCode(XElement.Load(path)); 
-            } 
-            public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; GeneratorCode(XElement root) 
-            { 
-
-                var elemts = root.Elements("message").GroupBy(e =&gt; ((XAttribute)e.Attribute("category")).Value); 
-                Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;  dict = new Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;(); 
-                foreach (var item in elemts) 
-                { 
-                    List&lt;MessageEntry&gt; list = new List&lt;MessageEntry&gt;(); 
-                    foreach (var g in item) 
-                    { 
-                        if (g.Attribute("description") != null) 
-                        { 
-                            list.Add(new MessageEntry(((XAttribute)g.Attribute("id")).Value, ((XAttribute)g.Attribute("value")).Value, ((XAttribute)g.Attribute("description")).Value)); 
-                        } 
-                        else 
-                        { 
-                            list.Add(new MessageEntry(((XAttribute)g.Attribute("id")).Value, ((XAttribute)g.Attribute("value")).Value)); 
-                        } 
-
-                    } 
-                    dict.Add(item.Key.ToString(), list); 
-                } 
-                return dict; 
-
-            } 
-        } 
-    }
-</code></pre>
-
-<p> 这下就可以开始写模板了，见下Code：</p>
-
-<pre><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
-
-    &lt;%@ Import NameSpace="System" %&gt; 
-    &lt;%@ Import NameSpace="System.Xml" %&gt; 
-    &lt;%@ Import NameSpace="System.Text" %&gt; 
-    &lt;%@ Import NameSpace="System.Collections.Generic" %&gt; 
-    &lt;%@ Import NameSpace="Wolf" %&gt; 
-    &lt;%@ Assembly Name="Wolf" %&gt; 
-
-    &lt;script runat="template"&gt; 
-
-    private Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; dict; 
-    public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; Generator 
-    { 
-        get 
-        { 
-            return dict; 
-        } 
-        set 
-        { 
-            dict=value; 
-        } 
-    } 
-
-    public string GeneratorCode() 
-            {            
-                string str = "using Wolf;\r\nusing System;\r\nusing System.Collections.Generic;\r\nnamespace Wolf.Message\r\n{ \r\n   public class Messages\r\n    {\r\n"; 
-                foreach (string catage in Generator.Keys) 
-                { 
-                    str += "        public class  "+catage + "\r\n        {        \r\n"; 
-                    foreach (Wolf.MessageEntry entry in Generator[catage]) 
-                    { 
-                        str += "\r\n            /// &lt;summary&gt;" + 
-                        "\r\n            ///" + entry.Description + 
-                        "\r\n            /// &lt;/summary&gt;" + 
-                        "\r\n            public static Wolf.MessageEntry " + entry.Id + " = new MessageEntry(\"" + entry.Id + "\", \"" + entry.Value +"\", \"" + entry.Value +"\");\r\n"; 
-                    } 
-                    str += "\r\n        }\r\n\r\n"; 
-
-                } 
-                str += "\r\n    }\r\n}"; 
-                return str; 
-            } 
-
-    &lt;/script&gt; 
-    //Copyright (C) Wolf.  All rights reserved. 
-    &lt;%=  GeneratorCode()%&gt;
-</code></pre>
-
-<p>很简单，就不说了，如果有问题请留言，其中命名空间完全可以以属性方式传入。</p>
-
-<p>XMl实体用的是老A的：</p>
-
-<pre><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
-    &lt;messages&gt;   
-    &lt;message id="MandatoryField" value="The {0} is mandatory."  category="Validation"  description="description" /&gt;   
-    &lt;message id="GreaterThan" value="The {0} must be greater than {1}."  category="Validation" description="description" /&gt;   
-    &lt;message id="ReallyDelete" value="Do you really want to delete the {0}."  category="Confirmation" description="description" /&gt;  
-&lt;/messages&gt;
-</code></pre>
-
-<p>我想脱离CodeSimth工具，所以在建立了一个控制台程序，引用CodeSmith.Engine.dll程序集。</p>
-
-<p>Code：</p>
-
-<pre><code> public static void Main(string[] args) 
-       { 
-          //    Wolf.Message.Messages.Confirmation.ReallyDelete.Value 
-           // test(); 
-           CodeTemplate template = CompileTemplate(@"E:\MyApp\LinqTest\ConsoleApplication1\MessageCodeGenerator.cst",s=&gt;Console.WriteLine(s)); 
-           if (template != null) 
-           { 
-               template.SetProperty("_MessageFilePath", ""); 
-               Wolf.MessageCodeGenerator gen = new MessageCodeGenerator(); 
-      Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; dict = gen.GeneratorCode(@"E:\MyApp\LinqTest\ConsoleApplication1\Sample.xml"); 
-               template.SetProperty("Generator", dict); 
-               template.RenderToFile("gen.cs", true); 
-              // System.Diagnostics.Process.Start("gen.cs"); 
-           } 
-          // Console.Read(); 
-
-       }
-
-       public static CodeTemplate CompileTemplate(string templateName,Action&lt;string&gt; errorWriter) 
-       { 
-           CodeTemplateCompiler compiler = new CodeTemplateCompiler(templateName); 
-           compiler.Compile(); 
-
-           if (compiler.Errors.Count == 0) 
-           { 
-               return compiler.CreateInstance(); 
-           } 
-           else 
-           { 
-               for (int i = 0; i &lt; compiler.Errors.Count; i++) 
-               { 
-                   errorWriter(compiler.Errors[i].ToString()); 
-               } 
-               return null; 
-           } 
-
-       }
-</code></pre>
-
-<p>生成后的代码：</p>
-
-<p>&nbsp;</p>
-
-<pre><code> using Wolf; 
-using System; 
-using System.Collections.Generic; 
-namespace Wolf.Message 
-{ 
-    public class Messages 
-    { 
-        public class Validation 
-        { 
-
-            /// &lt;summary&gt; 
-            ///description 
-            /// &lt;/summary&gt; 
-            public static Wolf.MessageEntry MandatoryField = new MessageEntry("MandatoryField", 
-
-"The {0} is mandatory.", "The {0} is mandatory."); 
-
-            /// &lt;summary&gt; 
-            ///description 
-            /// &lt;/summary&gt; 
-            public static Wolf.MessageEntry GreaterThan = new MessageEntry("GreaterThan", 
-
-"The {0} must be greater than {1}.", "The {0} must be greater than {1}."); 
-
-        } 
-
-        public class Confirmation 
-        { 
-
-            /// &lt;summary&gt; 
-            ///description 
-            /// &lt;/summary&gt; 
-            public static Wolf.MessageEntry ReallyDelete = new MessageEntry("ReallyDelete", 
-
-"Do you really want to delete the {0}.", "Do you really want to delete the {0}."); 
-
-        } 
-
-    } 
-}
-</code></pre>
-
-<p>ok，全部完成。同时你也可以完全集成与VS中利用VSX Vs扩展，可以参考<a href="http://www.cnblogs.com/default/archive/2010/02/26/1674582.html">明年我18 的VSX系列</a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/">Linq多表查询条件批量删除</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-09-15T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/15/Linq-duo-biao-cha-xun-tiao-jian-pi-liang-shan-chu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 前阵写了Linq的单表生成相对Sql执行的批量删除，总觉得删除条件太局限了，并且又不能屏蔽linq的级联条件，这很容易误导一些人。所以想了应该还是要支持才好。呵呵。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 其实思路和上次一样，就是生成Sql，用Linq自身条件组合sql应用，没有什么好说的。组合sql用 EXISTS关键字，组合一个子查询。</p>
-
-<pre><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
-</code></pre>
-
-<p>&nbsp;</p>
-
-<p>直接上Code：</p>
-
-<pre><code>/// EXISTS
-/// &amp;lt;/summary&amp;gt;
-/// &amp;lt;typeparam name="T"&amp;gt;&amp;lt;/typeparam&amp;gt;
-/// &amp;lt;param name="source"&amp;gt;&amp;lt;/param&amp;gt;
-/// &amp;lt;param name="query"&amp;gt;&amp;lt;/param&amp;gt;
-/// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
-public static int Delete&amp;lt;T&amp;gt;(this System.Data.Linq.Table&amp;lt;T&amp;gt; source, Expression&amp;lt;Func&amp;lt;T, bool&amp;gt;&amp;gt; query)
-where T : class
-{
-if (source == null)
-throw new ArgumentException("source");
-if (query == null)
-throw new ArgumentException("query");
-//query = t =&amp;gt; true;
-//为空DELETE  FROM [dbo].[test] 全删除；个人觉得为空全删除，很不人道，所以还是抛异常
-System.Data.Linq.DataContext db = source.Context;
-DbCommand cmd= db.GetCommand(source.Where(query));
-string queryStr = cmd.CommandText;
-string sql = "DELETE FROM " + source.Context.Mapping.GetTable(typeof(T)).TableName + " WHERE   EXISTS(" + queryStr+")";
-List&amp;lt;object&amp;gt; dbparams = new List&amp;lt;object&amp;gt;();
-foreach (SqlParameter item in cmd.Parameters)
-{
-SqlParameter p = new SqlParameter(item.ParameterName, item.SqlDbType, item.Size);
-p.Value = item.Value;
-dbparams.Add(item.Value);
-}
-cmd = null;
-return db.ExecuteCommand(sql, dbparams.ToArray());
-}
-</code></pre>
-
-<p>&nbsp; 调用方式就很简单了，一个Lamdam表达式，就搞定。比如</p>
-
-<pre><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
-</code></pre>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_thumb.png" title="image" alt="image" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 例子没有从重写Linq或者扩展Linq表达式出发，因为从这里出发我能力估计还差一筹，呵呵还是我觉得没有必要，这样的实现是否更简单，实现的功能更多些，为何不重用人家MS的东西呢，个人观点而已</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/15/1826624.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -2060,6 +1986,18 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
       </li>
     
@@ -2077,18 +2015,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a>
       </li>
     
   </ul>

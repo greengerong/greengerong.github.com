@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忙碌了一年了项目又到了交付了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,193 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/">闲谈简单设计(KISS)疑惑</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-07T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/07/xian-tan-jian-dan-she-ji-KISS-yi-huo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忙碌了一年了项目又到了交付了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到&rdquo;合适&rdquo;的&rdquo;完美&rdquo;的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人统一规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
+
+<p>&nbsp;&nbsp;&nbsp; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为&rdquo;简约&rdquo;，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说&ldquo;拥抱变化&rdquo;，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，减少类数量的庞大，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的&ldquo;简单设计&rdquo;，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是&rdquo;简单设计&ldquo;却没有足够的重构力度，抑或完全的优先设计，不进行不断的持续改进，逐步细化，做到&ldquo;简约而不简单&rdquo;记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/07/3063984.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">闲谈简单设计(KISS)疑惑</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#160;&#160;&#160;&#160;&#160;&#160; 忙碌了一年了项目又到了交互了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到”合适”的”完美”的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人同意规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
+
+<p>&#160;&#160;&#160; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为”简约”，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说“拥抱变化”，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
+
+<p>&#160;&#160;&#160;&#160;&#160; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
+
+<p>&#160;&#160;&#160;&#160; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的“简单设计”，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是”简单设计“却没有足够的重构力度，抑或完全的优先设计，不不断的持续改进，逐步细化，做到“简约而不简单”记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/27/3048250.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/">Angularjs Controller 间通信机制</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-16T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/16/Angularjs-Controller-jian-tong-xin-ji-zhi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><span style="font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html">Angularjs开发一些经验总结</a>随笔中提到我们需要按照业务却分angular controller，避免过大无所不能的上帝controller，我们把controller分离开了，但是有时候我们需要在controller中通信，一般为比较简单的通信机制，告诉同伴controller我的某个你所关心的东西改变了，怎么办？如果你是一个javascript程序员你会很自然的想到异步回调响应式通信&mdash;事件机制(或消息机制)。对，这就是angularjs解决controller之间通信的机制，所推荐的唯一方式，简而言之这就是angular way。</span></p>
+
+<h2><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs为在scope中为我们提供了冒泡和隧道机制，$broadcast会把事件广播给所有子controller，而$emit则会将事件冒泡传递给父controller，$on则是angularjs的事件注册函数，有了这一些我们就能很快的以angularjs的方式去解决angularjs controller之间的通信，代码如下：</span></h2>
+
+<h2><span style="font-size: 16px; font-family: 楷体;">View:</span></h2>
+
+<div class="cnblogs_code">
+<pre><span style="color: #008080;">1</span> <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-app</span><span style="color: #0000ff;">="app"</span><span style="color: #ff0000;"> ng-controller</span><span style="color: #0000ff;">="parentCtr"</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #008080;">2</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr1"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">name :
+</span><span style="color: #008080;">3</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="name"</span><span style="color: #ff0000;"> type</span><span style="color: #0000ff;">="text"</span><span style="color: #ff0000;"> ng-change</span><span style="color: #0000ff;">="change(name);"</span> <span style="color: #0000ff;">/&gt;</span>
+<span style="color: #008080;">4</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #008080;">5</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr2"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">Ctr1 name:
+</span><span style="color: #008080;">6</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="ctr1Name"</span> <span style="color: #0000ff;">/&gt;</span>
+<span style="color: #008080;">7</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #008080;">8</span> <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p><span style="font-size: 16px; font-family: 楷体;">Controller:</span></p>
+
+<div class="cnblogs_code">
+<pre><span style="color: #008080;"> 1</span> angular.module("app", []).controller("parentCtr"<span style="color: #000000;">,
+</span><span style="color: #008080;"> 2</span> <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
+</span><span style="color: #008080;"> 3</span>     $scope.$on("Ctr1NameChange"<span style="color: #000000;">,
+</span><span style="color: #008080;"> 4</span>  
+<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
+</span><span style="color: #008080;"> 6</span>         console.log("parent"<span style="color: #000000;">, msg);
+</span><span style="color: #008080;"> 7</span>         $scope.$broadcast("Ctr1NameChangeFromParrent"<span style="color: #000000;">, msg);
+</span><span style="color: #008080;"> 8</span> <span style="color: #000000;">    });
+</span><span style="color: #008080;"> 9</span> }).controller("childCtr1", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
+</span><span style="color: #008080;">10</span>     $scope.change = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (name) {
+</span><span style="color: #008080;">11</span>         console.log("childCtr1"<span style="color: #000000;">, name);
+</span><span style="color: #008080;">12</span>         $scope.$emit("Ctr1NameChange"<span style="color: #000000;">, name);
+</span><span style="color: #008080;">13</span> <span style="color: #000000;">    };
+</span><span style="color: #008080;">14</span> }).controller("childCtr2", <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
+</span><span style="color: #008080;">15</span>     $scope.$on("Ctr1NameChangeFromParrent"<span style="color: #000000;">,
+</span><span style="color: #008080;">16</span>  
+<span style="color: #008080;">17</span>     <span style="color: #0000ff;">function</span><span style="color: #000000;"> (event, msg) {
+</span><span style="color: #008080;">18</span>         console.log("childCtr2"<span style="color: #000000;">, msg);
+</span><span style="color: #008080;">19</span>         $scope.ctr1Name =<span style="color: #000000;"> msg;
+</span><span style="color: #008080;">20</span> <span style="color: #000000;">    });
+</span><span style="color: #008080;">21</span> });</pre>
+</div>
+
+
+<p><span style="font-size: 16px; font-family: 楷体;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这里childCtr1的name改变会以冒泡传递给父controller，而父controller会对事件包装在广播给所有子controller，而childCtr2则注册了change事件，并改变自己。注意父controller在广播时候一定要改变事件name。</span></p>
+
+<p><span style="font-size: 16px;">jsfiddle链接：<a href="http://jsfiddle.net/whitewolf/5JBA7/15/">http://jsfiddle.net/whitewolf/5JBA7/15/</a></span></p>
+
+<p>&nbsp;</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/whitewolf/5JBA7/15/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -966,685 +1153,6 @@ console.log(result);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/27/nodejs-shang-HTML-fen-xi-li-qi-node-jquery/">nodejs上HTML分析利器node-jquery</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/02/27/nodejs-shang-HTML-fen-xi-li-qi-node-jquery/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/02/27/nodejs-shang-HTML-fen-xi-li-qi-node-jquery/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;首先描述产生这篇随笔的场景：我需要获取项目在jenkins构建的最新Javascript Coverage显示在供管理层次查看的项目情况Report上，但是由于jenkins没有直接的API取得数据所需数据，所以我们只能从自建的容器发布Javascript Coverage数据API，供Report项目使用。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 由于采用简单的数据分析，只是Host一个简单的web Server,所以本人不喜欢Tomcat，IIS这类大型工具，显得有点杀鸡用牛刀，班门弄斧。我更喜欢node.js这类简易的web容器。所以项目采用node.js，并node.js天然的javascript与html操作的天然一体，借助DOM结构使得解析Html更容易，简洁。</p>
-
-<p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Node.js解析HTML DOM的当然是htmlpaser，jsdom。然而个人更喜欢jQuery的风格，与web jQuery的统一API,所以选择了node-jquery.其代码部署在Github的<a href="https://github.com/coolaj86/node-jquery">https://github.com/coolaj86/node-jquery</a>.</p>
-
-<p>&nbsp; &nbsp;&nbsp;&nbsp;下面是本人写个一个简单demo：&nbsp; 抓取Github Popular project打印在控制台输出。</p>
-
-<div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> $ = require('jquery'<span style="color: #000000;">);
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span>  
-<span style="color: #008080;"> 4</span> 
-<span style="color: #008080;"> 5</span> String.format = <span style="color: #0000ff;">function</span><span style="color: #000000;">() {
-</span><span style="color: #008080;"> 6</span> 
-<span style="color: #008080;"> 7</span>     <span style="color: #0000ff;">var</span> s = arguments[0<span style="color: #000000;">];
-</span><span style="color: #008080;"> 8</span> 
-<span style="color: #008080;"> 9</span>     <span style="color: #0000ff;">for</span> (<span style="color: #0000ff;">var</span> i = 0; i &lt; arguments.length - 1; i++<span style="color: #000000;">) {
-</span><span style="color: #008080;">10</span> 
-<span style="color: #008080;">11</span>         <span style="color: #0000ff;">var</span> reg = <span style="color: #0000ff;">new</span> RegExp("\\{" + i + "\\}", "gm"<span style="color: #000000;">);
-</span><span style="color: #008080;">12</span> 
-<span style="color: #008080;">13</span>         s = s.replace(reg, arguments[i + 1<span style="color: #000000;">]);
-</span><span style="color: #008080;">14</span> 
-<span style="color: #008080;">15</span> <span style="color: #000000;">    }
-</span><span style="color: #008080;">16</span> 
-<span style="color: #008080;">17</span>  
-<span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> s;
-</span><span style="color: #008080;">20</span> 
-<span style="color: #008080;">21</span> <span style="color: #000000;">};
-</span><span style="color: #008080;">22</span> 
-<span style="color: #008080;">23</span>  
-<span style="color: #008080;">24</span> 
-<span style="color: #008080;">25</span>  $.get("https://github.com/popular/forked",<span style="color: #0000ff;">function</span><span style="color: #000000;">(html){
-</span><span style="color: #008080;">26</span> 
-<span style="color: #008080;">27</span>  
-<span style="color: #008080;">28</span> 
-<span style="color: #008080;">29</span>         <span style="color: #0000ff;">var</span> $doc =<span style="color: #000000;"> $(html);
-</span><span style="color: #008080;">30</span> 
-<span style="color: #008080;">31</span>     console.log("No.  name  language  star   forks  "<span style="color: #000000;">)
-</span><span style="color: #008080;">32</span> 
-<span style="color: #008080;">33</span>         $doc.find("ul.repolist li.source").each(<span style="color: #0000ff;">function</span><span style="color: #000000;">(i,project){
-</span><span style="color: #008080;">34</span> 
-<span style="color: #008080;">35</span>  
-<span style="color: #008080;">36</span> 
-<span style="color: #008080;">37</span>         <span style="color: #0000ff;">var</span> $project =<span style="color: #000000;"> $(project);
-</span><span style="color: #008080;">38</span> 
-<span style="color: #008080;">39</span>                <span style="color: #0000ff;">var</span> name = $project.find("h3"<span style="color: #000000;">).text().trim();
-</span><span style="color: #008080;">40</span> 
-<span style="color: #008080;">41</span>                <span style="color: #0000ff;">var</span> language = $project.find("li:eq(0)"<span style="color: #000000;">).text().trim();
-</span><span style="color: #008080;">42</span> 
-<span style="color: #008080;">43</span>                <span style="color: #0000ff;">var</span> star = $project.find("li.stargazers"<span style="color: #000000;">).text().trim();
-</span><span style="color: #008080;">44</span> 
-<span style="color: #008080;">45</span>                <span style="color: #0000ff;">var</span> forks = $project.find("li.forks"<span style="color: #000000;">).text().trim();
-</span><span style="color: #008080;">46</span> 
-<span style="color: #008080;">47</span>                <span style="color: #0000ff;">var</span> row =String.format("{4} {0}  {1}  {2}  {3}"<span style="color: #000000;">,name,
-</span><span style="color: #008080;">48</span> 
-<span style="color: #008080;">49</span>                        language,star,forks,i + 1<span style="color: #000000;"> );
-</span><span style="color: #008080;">50</span> 
-<span style="color: #008080;">51</span>               
-<span style="color: #008080;">52</span> 
-<span style="color: #008080;">53</span> <span style="color: #000000;">               console.log(row);
-</span><span style="color: #008080;">54</span> 
-<span style="color: #008080;">55</span> <span style="color: #000000;">        });
-</span><span style="color: #008080;">56</span> 
-<span style="color: #008080;">57</span>  });</pre>
-</div>
-
-
-<p>此项目寄宿在我Github <a href="https://github.com/greengerong/node-jquery-demo">https://github.com/greengerong/node-jquery-demo</a>。仅供了解node-jquery学习demo，欢迎指教。</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/02/27/2935618.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/23/li-yong-Node-js-ben-di-gou-jian/">利用Node.js本地构建</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-23T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/02/23/li-yong-Node-js-ben-di-gou-jian/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/02/23/li-yong-Node-js-ben-di-gou-jian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; Node.js是一个基于Google Chrome浏览器v8 javascript执行引擎的异步I/O事件驱动的运行平台。直从2009年诞生开始，已经在业界得到了很多的关注，在这里也必要多说，如果你还不清楚的，请移步到<a href="http://nodejs.org/">Node官网</a>。</p>
-
-<p>在这里我们要讲的是用Node.js来构建本地Build。构建本地Build，我们已经有很多选择，如Ant，Maven，Gradle等。为什么我们还需要Node.js？对于我们的开发中会有一些小的基本自动化构建，如文件的监控(Less编译)，javascript的压缩，不稳定集成服务代理，快速的集成反馈，文件的迁移&hellip;而对于项目来说我并不像引入太多的技术债, Node.js所使用的javascript是做web项目开发的一门必备技能，javascript作为一门比较容易入门语言，直从第一次接触Node.js，我爱不释手，由于我对Javascript基础，能够快速使用它，并不需要付出更多的学习成本，而且我感觉在服务端和客户端用同一种语言，在能一定代码重用妙不可言。而且Node.js提供了内置的web服务器，简单的文件监听，事件机制等也为做本地Build提供了很好的条件。</p>
-
-<p>1：文件监听</p>
-
-<div class="cnblogs_code" onclick="cnblogs_code_show('cbcdb5ce-a6b4-490b-b6ad-fb4a4bf03481')">
-<div id="cnblogs_code_open_cbcdb5ce-a6b4-490b-b6ad-fb4a4bf03481" class="cnblogs_code_hide">
-<pre><span style="color: #008080;">  1</span> <span style="color: #0000ff;">var</span> fs = require("fs"<span style="color: #000000;">);
-</span><span style="color: #008080;">  2</span> 
-<span style="color: #008080;">  3</span> <span style="color: #0000ff;">var</span> exec = require('child_process'<span style="color: #000000;">).exec
-</span><span style="color: #008080;">  4</span> 
-<span style="color: #008080;">  5</span> <span style="color: #0000ff;">var</span> underscore = require("underscore"<span style="color: #000000;">);
-</span><span style="color: #008080;">  6</span> 
-<span style="color: #008080;">  7</span> <span style="color: #0000ff;">var</span> configs =<span style="color: #000000;"> [
-</span><span style="color: #008080;">  8</span> 
-<span style="color: #008080;">  9</span>     {file:/.*\.less/g, command:" dotless.Compiler.exe style.less style.css"<span style="color: #000000;">}
-</span><span style="color: #008080;"> 10</span> 
-<span style="color: #008080;"> 11</span> <span style="color: #000000;">];
-</span><span style="color: #008080;"> 12</span> 
-<span style="color: #008080;"> 13</span> <span style="color: #0000ff;">var</span> source = "E:\\Project\\xxx\\style"<span style="color: #000000;">;
-</span><span style="color: #008080;"> 14</span> 
-<span style="color: #008080;"> 15</span>  
-<span style="color: #008080;"> 16</span> 
-<span style="color: #008080;"> 17</span> String.format = <span style="color: #0000ff;">function</span><span style="color: #000000;"> () {
-</span><span style="color: #008080;"> 18</span> 
-<span style="color: #008080;"> 19</span>     <span style="color: #0000ff;">var</span> s = arguments[0<span style="color: #000000;">];
-</span><span style="color: #008080;"> 20</span> 
-<span style="color: #008080;"> 21</span>     <span style="color: #0000ff;">for</span> (<span style="color: #0000ff;">var</span> i = 0; i &lt; arguments.length - 1; i++<span style="color: #000000;">) {
-</span><span style="color: #008080;"> 22</span> 
-<span style="color: #008080;"> 23</span>         <span style="color: #0000ff;">var</span> reg = <span style="color: #0000ff;">new</span> RegExp("\\{" + i + "\\}", "gm"<span style="color: #000000;">);
-</span><span style="color: #008080;"> 24</span> 
-<span style="color: #008080;"> 25</span>         s = s.replace(reg, arguments[i + 1<span style="color: #000000;">]);
-</span><span style="color: #008080;"> 26</span> 
-<span style="color: #008080;"> 27</span> <span style="color: #000000;">    }
-</span><span style="color: #008080;"> 28</span> 
-<span style="color: #008080;"> 29</span>  
-<span style="color: #008080;"> 30</span> 
-<span style="color: #008080;"> 31</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> s;
-</span><span style="color: #008080;"> 32</span> 
-<span style="color: #008080;"> 33</span> <span style="color: #000000;">};
-</span><span style="color: #008080;"> 34</span> 
-<span style="color: #008080;"> 35</span>  
-<span style="color: #008080;"> 36</span> 
-<span style="color: #008080;"> 37</span> (<span style="color: #0000ff;">function</span><span style="color: #000000;"> (fs, exec, underscore) {
-</span><span style="color: #008080;"> 38</span> 
-<span style="color: #008080;"> 39</span>     <span style="color: #0000ff;">var</span> readFiles = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (dir, done) {
-</span><span style="color: #008080;"> 40</span> 
-<span style="color: #008080;"> 41</span>         <span style="color: #0000ff;">var</span> results =<span style="color: #000000;"> [];
-</span><span style="color: #008080;"> 42</span> 
-<span style="color: #008080;"> 43</span>         fs.readdir(dir, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, list) {
-</span><span style="color: #008080;"> 44</span> 
-<span style="color: #008080;"> 45</span>             <span style="color: #0000ff;">if</span> (err) <span style="color: #0000ff;">return</span><span style="color: #000000;"> done(err);
-</span><span style="color: #008080;"> 46</span> 
-<span style="color: #008080;"> 47</span>             <span style="color: #0000ff;">var</span> pending =<span style="color: #000000;"> list.length;
-</span><span style="color: #008080;"> 48</span> 
-<span style="color: #008080;"> 49</span>             <span style="color: #0000ff;">if</span> (!pending) <span style="color: #0000ff;">return</span> done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
-</span><span style="color: #008080;"> 50</span> 
-<span style="color: #008080;"> 51</span>             list.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (file) {
-</span><span style="color: #008080;"> 52</span> 
-<span style="color: #008080;"> 53</span>                 file = dir + '/' +<span style="color: #000000;"> file;
-</span><span style="color: #008080;"> 54</span> 
-<span style="color: #008080;"> 55</span>                 fs.stat(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, stat) {
-</span><span style="color: #008080;"> 56</span> 
-<span style="color: #008080;"> 57</span>                     <span style="color: #0000ff;">if</span> (stat &amp;&amp;<span style="color: #000000;"> stat.isDirectory()) {
-</span><span style="color: #008080;"> 58</span> 
-<span style="color: #008080;"> 59</span>                         readFiles(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, res) {
-</span><span style="color: #008080;"> 60</span> 
-<span style="color: #008080;"> 61</span>                             results =<span style="color: #000000;"> results.concat(res);
-</span><span style="color: #008080;"> 62</span> 
-<span style="color: #008080;"> 63</span>                             <span style="color: #0000ff;">if</span> (!--pending) done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
-</span><span style="color: #008080;"> 64</span> 
-<span style="color: #008080;"> 65</span> <span style="color: #000000;">                        });
-</span><span style="color: #008080;"> 66</span> 
-<span style="color: #008080;"> 67</span>                     } <span style="color: #0000ff;">else</span><span style="color: #000000;"> {
-</span><span style="color: #008080;"> 68</span> 
-<span style="color: #008080;"> 69</span> <span style="color: #000000;">                        results.push(file);
-</span><span style="color: #008080;"> 70</span> 
-<span style="color: #008080;"> 71</span>                         <span style="color: #0000ff;">if</span> (!--pending) done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
-</span><span style="color: #008080;"> 72</span> 
-<span style="color: #008080;"> 73</span> <span style="color: #000000;">                    }
-</span><span style="color: #008080;"> 74</span> 
-<span style="color: #008080;"> 75</span> <span style="color: #000000;">                });
-</span><span style="color: #008080;"> 76</span> 
-<span style="color: #008080;"> 77</span> <span style="color: #000000;">            });
-</span><span style="color: #008080;"> 78</span> 
-<span style="color: #008080;"> 79</span> <span style="color: #000000;">        });
-</span><span style="color: #008080;"> 80</span> 
-<span style="color: #008080;"> 81</span> <span style="color: #000000;">    };
-</span><span style="color: #008080;"> 82</span> 
-<span style="color: #008080;"> 83</span>     <span style="color: #0000ff;">var</span> start = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (source, configs) {
-</span><span style="color: #008080;"> 84</span> 
-<span style="color: #008080;"> 85</span>         <span style="color: #0000ff;">var</span> watch = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, list) {
-</span><span style="color: #008080;"> 86</span> 
-<span style="color: #008080;"> 87</span>             configs.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (cmd) {
-</span><span style="color: #008080;"> 88</span> 
-<span style="color: #008080;"> 89</span>                 <span style="color: #0000ff;">var</span> files = underscore.filter(list, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (n) {
-</span><span style="color: #008080;"> 90</span> 
-<span style="color: #008080;"> 91</span>                     <span style="color: #0000ff;">return</span><span style="color: #000000;"> n.match(cmd.file);
-</span><span style="color: #008080;"> 92</span> 
-<span style="color: #008080;"> 93</span> <span style="color: #000000;">                });
-</span><span style="color: #008080;"> 94</span> 
-<span style="color: #008080;"> 95</span>                 files.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (file) {
-</span><span style="color: #008080;"> 96</span> 
-<span style="color: #008080;"> 97</span>                     fs.watch(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (oper, f) {
-</span><span style="color: #008080;"> 98</span> 
-<span style="color: #008080;"> 99</span>                         <span style="color: #0000ff;">var</span> changeCommand =<span style="color: #000000;"> String.format(cmd.command, f);
-</span><span style="color: #008080;">100</span> 
-<span style="color: #008080;">101</span>                         console.log(String.format("{0} changed,command '{1}' execute..."<span style="color: #000000;">, f, changeCommand));
-</span><span style="color: #008080;">102</span> 
-<span style="color: #008080;">103</span>                         exec(changeCommand, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, stdout, stderr) {
-</span><span style="color: #008080;">104</span> 
-<span style="color: #008080;">105</span>                             console.log(err ?<span style="color: #000000;"> stderr : stdout);
-</span><span style="color: #008080;">106</span> 
-<span style="color: #008080;">107</span> <span style="color: #000000;">                        });
-</span><span style="color: #008080;">108</span> 
-<span style="color: #008080;">109</span> <span style="color: #000000;">                    });
-</span><span style="color: #008080;">110</span> 
-<span style="color: #008080;">111</span> <span style="color: #000000;">                });
-</span><span style="color: #008080;">112</span> 
-<span style="color: #008080;">113</span>  
-<span style="color: #008080;">114</span> 
-<span style="color: #008080;">115</span> <span style="color: #000000;">            });
-</span><span style="color: #008080;">116</span> 
-<span style="color: #008080;">117</span> <span style="color: #000000;">        };
-</span><span style="color: #008080;">118</span> 
-<span style="color: #008080;">119</span> <span style="color: #000000;">        readFiles(source, watch);
-</span><span style="color: #008080;">120</span> 
-<span style="color: #008080;">121</span> <span style="color: #000000;">    };
-</span><span style="color: #008080;">122</span> 
-<span style="color: #008080;">123</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> {start:start};
-</span><span style="color: #008080;">124</span> 
-<span style="color: #008080;">125</span> })(fs, exec, underscore).start(source, configs);</pre>
-</div>
-</div>
-
-
-<p>在这里提供的示例是Less的编译，虽然Less本也提供了Node的编译工具和<a href="https://github.com/mynyml/watchr">watchr</a>监听工具,但是在项目中我会监听Less文件，却只有编译几个固定的Less引导文件。同样我们可以根据不同的文件执行不同的命令实现一些自动化。如：.js文件的同步到测试目录。</p>
-
-<p>2：文件的合并</p>
-
-<p>如果你用jasmine运行你的Javascript测试，你需要吧js文件的测试文件引入到runner head中，我一直很懒，喜欢一键搞定的感觉。利用node.js的模板引擎。</p>
-
-<p>&nbsp;&nbsp; 3：javascript 产品包压缩</p>
-
-<div class="cnblogs_code" onclick="cnblogs_code_show('ce19c67c-3081-44fa-8bb8-7296297268c8')">
-<div id="cnblogs_code_open_ce19c67c-3081-44fa-8bb8-7296297268c8" class="cnblogs_code_hide">
-<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> FILE_ENCODING = <span style="color: #800000;">'</span><span style="color: #800000;">utf-8</span><span style="color: #800000;">'</span><span style="color: #000000;">;
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span> <span style="color: #000000;">function uglify(srcPath, jsMinPath) {
-</span><span style="color: #008080;"> 4</span> 
-<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">var</span> uglyfyJS = require(<span style="color: #800000;">'</span><span style="color: #800000;">uglify-js</span><span style="color: #800000;">'</span><span style="color: #000000;">),
-</span><span style="color: #008080;"> 6</span> 
-<span style="color: #008080;"> 7</span>        jsp =<span style="color: #000000;"> uglyfyJS.parser,
-</span><span style="color: #008080;"> 8</span> 
-<span style="color: #008080;"> 9</span>        pro =<span style="color: #000000;"> uglyfyJS.uglify,
-</span><span style="color: #008080;">10</span> 
-<span style="color: #008080;">11</span>        ast =<span style="color: #000000;"> jsp.parse( _fs.readFileSync(srcPath, FILE_ENCODING) );
-</span><span style="color: #008080;">12</span> 
-<span style="color: #008080;">13</span>  
-<span style="color: #008080;">14</span> 
-<span style="color: #008080;">15</span>       ast =<span style="color: #000000;"> pro.ast_mangle(ast);
-</span><span style="color: #008080;">16</span> 
-<span style="color: #008080;">17</span>       ast =<span style="color: #000000;"> pro.ast_a squeeze(ast);
-</span><span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span> <span style="color: #000000;">      _fs.writeFileSync(jsMinPath, pro.gen_code(ast), FILE_ENCODING);
-</span><span style="color: #008080;">20</span> 
-<span style="color: #008080;">21</span>     console.log(<span style="color: #800000;">'</span> <span style="color: #800000;">'</span>+ jsMinPath +<span style="color: #800000;">'</span><span style="color: #800000;">完成.</span><span style="color: #800000;">'</span><span style="color: #000000;">);
-</span><span style="color: #008080;">22</span> 
-<span style="color: #008080;">23</span> <span style="color: #000000;">}
-</span><span style="color: #008080;">24</span> 
-<span style="color: #008080;">25</span> uglify(js/test.js<span style="color: #800000;">'</span><span style="color: #800000;">, js/test.min.js</span><span style="color: #800000;">'</span>);</pre>
-</div>
-</div>
-
-
-<p>我们可以尽力发挥自己的想象，如本地Build自动运行，快速集成快速反馈；代理服务器，处理不稳定服务的集成，带来稳定的开发，比如testacluar就是根据node.js能够很容易的构建web服务器，从jstd转过来的javascript test和coverage插件。。。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/02/23/2923862.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/">开源：Angularjs示例&#8211;Sonar中项目使用语言分布图(CoffeeScript版)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-20T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 关于<strong><a href="https://github.com/greengerong/SonarLanguage">SonarLanguage</a></strong>是什么东东，这里就不在描述了，如果你对它感兴趣的话，请移步到上篇随笔<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/02/2798001.html">开源：Angularjs示例&mdash;Sonar中项目使用语言分布图</a>。这里是最近学习CoffeeScript的练习版。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://coffeescript.org/">CoffeeScript</a>是一门简洁的，构架于JavaScript之上的预处理器语言，可以静态编译成JavaScript，语法主要受ruby和python影响，目前已经为众多rails和node项目采用。CoffeeScript不是JavaScript的超集，也不是完全替代品。CoffeeScript有点在于：</p>
-
-<ol>
-<li>更少，更紧凑，和更清晰的代码</li>
-<li>通过规避和改变对JavaScript中不良部分的使用，只留下精华，让代码减少出错率，更容易维护</li>
-<li>在很多常用模式的实现上采用了JavaScript中的最佳实践</li>
-<li>CoffeeScript生成的JavaScript代码都可以完全通过<a href="http://www.javascriptlint.com/">JSLint</a>的检测</li>
-</ol>
-
-
-<p>&nbsp;&nbsp; 多的也不想说那么多了，这里主要是个简介，CoffeeScript的练笔示例。</p>
-
-<p>代码如下：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;collapse:true;;gutter:true;">app = angular.module('app', [])
-
-    .value("$host", "http://nemo.sonarsource.org")
-
-    .factory("$requestUrl", ($host) -&gt; "#{$host}/api/resources")
-
-    .factory("$dynamicColor", ($host) -&gt;
-
-        [r,g,b] = [10,10,0]
-
-        {
-
-          getColor: -&gt;
-
-               [r,g,b] = [(r+100), (g+400), (b + 200)]
-
-               "##{(r + 256 * g + 65536 * b).toString 16 }"
-
-          ,
-
-          reset: -&gt; 
-
-               [r,g,b] = [10,10,0] 
-
-        };
-
-    ).directive('chartData', -&gt; 
-
-            drawChart = (elementId, data) -&gt; 
-
-               chart = new AmCharts.AmPieChart() 
-
-               chart.dataProvider = data
-
-               chart.titleField = "name"
-
-               chart.valueField = "percentage"
-
-               chart.colorField = "color"
-
-               chart.labelsEnabled = false
-
-               chart.pullOutRadius = 0
-
-               chart.depth3D = 20
-
-               chart.angle = 45
-
-               legend = new AmCharts.AmLegend()
-
-               legend.makerType = "square"
-
-               legend.align = "center"
-
-               chart.addLegend legend
-
-               chart.write elementId
-
-               chart;
-
-            (scope, element, attr) -&gt; 
-
-                  scope.already.push( -&gt; 
-
-                     data = scope.$eval(attr.chartData);
-
-                     drawChart(element[0].id, data); 
-
-                  ) if element[0].id 
-
-    )
-
-report = ($scope, $window, $http, $requestUrl, $dynamicColor) -&gt;
-
-    $scope.already = []
-
-    $window.angularJsonpCallBack = (data) -&gt;
-
-         @data = data
-
-         getObjectByKey = (msr , key) -&gt;
-
-            m for m in msr when m.key == key 
-
-         $scope.gridSource = $scope.projects = data
-
-         ready = (queues) -&gt; angular.forEach(queues, (q) -&gt; q() ) 
-
-         ready $scope.already 
-
-    $scope.getLanguageChartData = -&gt; 
-
-         data = _.groupBy $scope.projects , (project) -&gt; project.lang 
-
-         $dynamicColor.reset()
-
-         chartData = _.map(data, (array, key) -&gt; 
-
-                      "name":key
-
-                      "percentage":array.length,
-
-                      "color":$dynamicColor.getColor())
-
-         _.sortBy(chartData, (num) -&gt; num.percentage )
-
-    $scope.search = -&gt;
-
-        source = []
-
-        if not this.searchName
-
-            source = @projects
-
-        else 
-
-            source = _.filter @projects, (p) -&gt; 
-
-                       p.name.toLowerCase().indexOf $scope.searchName.toLowerCase() != -1 
-
-        source = _.sortBy(source, (p) -&gt; p[$scope.sortCondition.key].toLowerCase()) if @sortCondition and @sortCondition.key
-
-        source.reverse() if @sortCondition.sort and not @sortCondition.sort[$scope.sortCondition.key] 
-
-        @gridSource = source
-
-    $scope.sort = (name) -&gt;
-
-        @sortCondition ?= {}
-
-        @sortCondition.sort ?= {}
-
-        @sortCondition.key = name
-
-        @sortCondition.sort[name] = not @sortCondition.sort[name]
-
-        @search();
-
-    $scope.init = -&gt;
-
-        $http.jsonp "#{$requestUrl}?callback=angularJsonpCallBack"
-
-app.controller "report", report
-</pre>
-</div>
-
-
-<p>最终编译的JavaScript为：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;collapse:true;;gutter:true;">var app, report;
-
-app = angular.module('app', []).value("$host", "http://nemo.sonarsource.org").factory("$requestUrl", function($host) {
-  return "" + $host + "/api/resources";
-}).factory("$dynamicColor", function($host) {
-  var b, g, r, _ref;
-  _ref = [10, 10, 0], r = _ref[0], g = _ref[1], b = _ref[2];
-  return {
-    getColor: function() {
-      var _ref1;
-      _ref1 = [r + 100, g + 400, b + 200], r = _ref1[0], g = _ref1[1], b = _ref1[2];
-      return "#" + ((r + 256 * g + 65536 * b).toString(16));
-    },
-    reset: function() {
-      var _ref1;
-      return _ref1 = [10, 10, 0], r = _ref1[0], g = _ref1[1], b = _ref1[2], _ref1;
-    }
-  };
-}).directive('chartData', function() {
-  var drawChart;
-  drawChart = function(elementId, data) {
-    var chart, legend;
-    chart = new AmCharts.AmPieChart();
-    chart.dataProvider = data;
-    chart.titleField = "name";
-    chart.valueField = "percentage";
-    chart.colorField = "color";
-    chart.labelsEnabled = false;
-    chart.pullOutRadius = 0;
-    chart.depth3D = 20;
-    chart.angle = 45;
-    legend = new AmCharts.AmLegend();
-    legend.makerType = "square";
-    legend.align = "center";
-    chart.addLegend(legend);
-    chart.write(elementId);
-    return chart;
-  };
-  return function(scope, element, attr) {
-    if (element[0].id) {
-      return scope.already.push(function() {
-        var data;
-        data = scope.$eval(attr.chartData);
-        return drawChart(element[0].id, data);
-      });
-    }
-  };
-});
-
-report = function($scope, $window, $http, $requestUrl, $dynamicColor) {
-  $scope.already = [];
-  $window.angularJsonpCallBack = function(data) {
-    var getObjectByKey, ready;
-    this.data = data;
-    getObjectByKey = function(msr, key) {
-      var m, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = msr.length; _i &lt; _len; _i++) {
-        m = msr[_i];
-        if (m.key === key) {
-          _results.push(m);
-        }
-      }
-      return _results;
-    };
-    $scope.gridSource = $scope.projects = data;
-    ready = function(queues) {
-      return angular.forEach(queues, function(q) {
-        return q();
-      });
-    };
-    return ready($scope.already);
-  };
-  $scope.getLanguageChartData = function() {
-    var chartData, data;
-    data = _.groupBy($scope.projects, function(project) {
-      return project.lang;
-    });
-    $dynamicColor.reset();
-    chartData = _.map(data, function(array, key) {
-      return {
-        "name": key,
-        "percentage": array.length,
-        "color": $dynamicColor.getColor()
-      };
-    });
-    return _.sortBy(chartData, function(num) {
-      return num.percentage;
-    });
-  };
-  $scope.search = function() {
-    var source;
-    source = [];
-    if (!this.searchName) {
-      source = this.projects;
-    } else {
-      source = _.filter(this.projects, function(p) {
-        return p.name.toLowerCase().indexOf($scope.searchName.toLowerCase() !== -1);
-      });
-    }
-    if (this.sortCondition &amp;&amp; this.sortCondition.key) {
-      source = _.sortBy(source, function(p) {
-        return p[$scope.sortCondition.key].toLowerCase();
-      });
-    }
-    if (this.sortCondition.sort &amp;&amp; !this.sortCondition.sort[$scope.sortCondition.key]) {
-      source.reverse();
-    }
-    return this.gridSource = source;
-  };
-  $scope.sort = function(name) {
-    var _base, _ref, _ref1;
-    if ((_ref = this.sortCondition) == null) {
-      this.sortCondition = {};
-    }
-    if ((_ref1 = (_base = this.sortCondition).sort) == null) {
-      _base.sort = {};
-    }
-    this.sortCondition.key = name;
-    this.sortCondition.sort[name] = !this.sortCondition.sort[name];
-    return this.search();
-  };
-  return $scope.init = function() {
-    return $http.jsonp("" + $requestUrl + "?callback=angularJsonpCallBack");
-  };
-};
-
-app.controller("report", report);
-</pre>
-</div>
-
-
-<blockquote><p>就这么多了，关于CoffeeScript请参考</p>
-
-<ol>
-<li><a href="http://coffeescript.org/">CoffeeScript</a></li>
-<li><a href="http://ruby-china.org/topics/4789">CoffeeScript详解</a></li>
-<li><a href="http://amix.dk/blog/post/19612">CoffeeScript: The beautiful way to write JavaScript</a></li>
-<li><a href="http://developer.51cto.com/art/201109/292065.htm">当jQuery遭遇CoffeeScript&mdash;&mdash;妙不可言</a>></li>
-</ol>
-
-
-<p>本人也会在随后的随笔中继续更新CoffeeScript，请持续关注。</p></blockquote>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/20/2827141.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1685,6 +1193,18 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
       </li>
     
@@ -1702,18 +1222,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a>
       </li>
     
   </ul>

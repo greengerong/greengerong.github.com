@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。 这是angularjs源码中单元测试的使用browserTrigger的实例： it(' &hellip;">
+  <meta name="description" content="android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。 今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,190 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T10:22:25+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/29/android-settag-key/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/android-settag-key/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。</p>
+
+<p>今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。但有时我们需要存储多个数据，所以这个时候我们就需要使用带key的重载。</p>
+
+<p>文档是描述：“ The specified key should be an id declared in the resources of the application to ensure it is unique (see the ID resource type). Keys identified as belonging to the Android framework or not associated with any package will cause an IllegalArgumentExceptionto be thrown.”</p>
+
+<p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
+
+<pre><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+</code></pre>
+
+<p>正确的解决方案是：</p>
+
+<p>在res/values/strings.xml中定义这个key常量，如下：</p>
+
+<pre><code>    &lt;resources&gt;
+        &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
+        &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
+    &lt;/resources&gt;
+</code></pre>
+
+<p>使用如下：</p>
+
+<pre><code>    imageView.setTag(R.id.tag_first, "Hello");
+    imageView.setTag(R.id.tag_second, "Success");
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-03T13:37:33+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/03/karma-for-jquery-unit-test/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-02T22:59:05+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/02/ng-http-transformrequest/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$http默认request/response格式转化方式。</p>
+
+<p>所幸的是ng $http给我们提供了多种可用方式转化数据格式(下面demo将以form提交方式为例):</p>
+
+<p>***对于部分单独的http request设置：</p>
+
+<p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
+
+<pre><code>$http.post("/url", {
+      id: 1,
+      name: "greengerong"
+    }, {
+      transformRequest: function(request) {
+        return $.param(request);
+    }
+});
+</code></pre>
+
+<p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
+
+<pre><code>id=1&amp;name=greengerong
+</code></pre>
+
+<p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
+
+<p>***对于整个app的http request设置：</p>
+
+<p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
+
+<pre><code>angular.module("app", [])
+.config(["$httpProvider", function($httpProvider) {
+      $httpProvider.defaults.transformRequest = [
+        function(request) {
+          return $.param(request);
+        }
+      ];
+    }
+]);
+</code></pre>
+
+<p>这样我们就可以轻易的转化为form提交方式。</p>
+
+<p>同样$http也为我们提供了transformResponse方式，我们也可以创建自己的response转化，比如json之前加入自定义前缀防止json array攻击等等。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -747,270 +931,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-28T12:25:25+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://referencesource.microsoft.com/">.NET Reference Source</a>发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，<a href="http://referencesource-beta.microsoft.com/setup.html">在Visual Studio 2013中调试.NET Framework</a>。</p>
-
-<p>.NET Framework团队的项目经理Alok Shriram在<a href="http://blogs.msdn.com/b/dotnet/archive/2014/02/24/a-new-look-for-net-reference-source.aspx">.NET Framework的博客</a>中撰文介绍了最新的.NET Reference Source。它不仅可以用来浏览最新的.NET代码，而且通过强大的<a href="http://msdn.com/roslyn">Roslyn</a>，改善了“Go to Defination”和“Finding Reference”的在线体验。此外，开发者还可以下载整个源代码包，在Visual Studio中打开并浏览。使用Schabse Laks编写的<a href="http://visualstudiogallery.msdn.microsoft.com/f89b27c5-7d7b-4059-adde-7ccc709fa86e">插件</a>，可以在VS中直接导航到该网站。</p>
-
-<p>通过简单的配置，开发者可以在Visual Studio中单步调试.NET Framework 4.5.1及其后续补丁和更新。这无疑是广大开发者<a href="http://visualstudio.uservoice.com/forums/121579-visual-studio/suggestions/4083118-allow-developers-to-step-through-net-framework-so">翘首以盼的功能</a>。启动Visual Studio 2013，打开Tools &ndash;> Options &ndash;> Debugging &ndash;> General菜单，进行如下配置：</p>
-
-<ul>
-<li>   禁用Just My Code</li>
-<li>   禁用Step over properties and operators</li>
-<li>   禁用Require source files to exactly match the original version</li>
-<li>   选中Enable .NET Framework source stepping</li>
-<li>   选中Enable source server support</li>
-</ul>
-
-
-<p>这样，开发者在调试代码时，就可以通过F11直接进入.NET代码。</p>
-
-<p>这并不是微软第一次开放.NET Framework的源代码。早在2007年，他们就第一次公布了<a href="http://weblogs.asp.net/scottgu/archive/2007/10/03/releasing-the-source-code-for-the-net-framework-libraries.aspx">.NET 3.5的源代码</a>并支持Visual Studio调试。并且对于后续的4.0和4.5，也都提供了相应的源代码包。但当框架升级时，这些旧的包就变得毫无价值了。从4.5.1开始，.NET Framework团队彻底改变了符号索引和发布的过程，使其与构建过程同步，这样在新版本发布时，相应的PDB文件也会从Reference Source网站进行更新。</p>
-
-<p>目前的beta站点只是临时的，届时将会取代现在的旧站点。后续微软也会将还未公布源代码的程序集逐步添加进来。新的.NET Reference Source许可协议回归到了<a href="http://referencesource-beta.microsoft.com/license.html">MS-RSL</a>，这也使得像Mono这样的团队可以放心大胆地使用。</p>
-
-<p>正如Scott Hanselman所说：微软可能并不是开源的，但却绝对是源代码开放的。</p>
-
-<p>Infoq原文链接:<a href="http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly">http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-28T00:27:22+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/28/nodejs-get-client-ip/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
-
-<pre><code>    function getClientIp(req) {
-        return req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
-    };
-</code></pre>
-
-<p>代码，第一段判断是否有反向代理IP(头信息：x-forwarded-for)，在判断connection的远程IP，以及后端的socket的IP。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/21/angular-form-addControl/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
-
-<p>下面且让我们先来从angular源码中看起如下：</p>
-
-<p>首先是ngModel：</p>
-
-<pre><code>    var ngModelDirective = function() {
-      return {
-        require: ['ngModel', '^?form'],
-        controller: NgModelController,
-        link: function(scope, element, attr, ctrls) {
-          // notify others, especially parent forms
-
-          var modelCtrl = ctrls[0],
-              formCtrl = ctrls[1] || nullFormCtrl;
-
-          formCtrl.$addControl(modelCtrl);
-
-          scope.$on('$destroy', function() {
-            formCtrl.$removeControl(modelCtrl);
-          });
-        }
-      };
-    };
-</code></pre>
-
-<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
-
-<p>在看看ngModel controller初始化代码：</p>
-
-<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-        function($scope, $exceptionHandler, $attr, $element, $parse) {
-     ....
-      this.$pristine = true;
-      this.$dirty = false;
-      this.$valid = true;
-      this.$invalid = false;
-      this.$name = $attr.name;
-</code></pre>
-
-<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
-
-<p>而FormController的addControl代码则是：</p>
-
-<pre><code>    /**
-     * @ngdoc function
-     * @name ng.directive:form.FormController#$addControl
-     * @methodOf ng.directive:form.FormController
-     *
-     * @description
-     * Register a control with the form.
-     *
-     * Input elements using ngModelController do this automatically when they are linked.
-     */
-    form.$addControl = function(control) {
-      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
-      // and not added to the scope.  Now we throw an error.
-      assertNotHasOwnProperty(control.$name, 'input');
-      controls.push(control);
-
-      if (control.$name) {
-        form[control.$name] = control;
-      }
-    };
-</code></pre>
-
-<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
-
-<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
-
-<h3>手动注册form controller</h3>
-
-<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
-
-<p>如下：</p>
-
-<pre><code>    .directive("dyName", [
-
-        function() {
-          return {
-            require: "ngModel",
-            link: function(scope, elm, iAttrs, ngModelCtr) {
-              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
-              var formController = elm.controller('form') || {
-                $addControl: angular.noop
-              };
-              formController.$addControl(ngModelCtr);
-
-              scope.$on('$destroy', function() {
-                formController.$removeControl(ngModelCtr);
-              });
-
-            }
-          };
-        }
-      ])
-</code></pre>
-
-<p>使用方式：</p>
-
-<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
-      &lt;div class="control-group"&gt;
-        &lt;label class="control-label"&gt; : &lt;/label&gt;
-        &lt;div class="controls"&gt;
-          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-</code></pre>
-
-<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
-
-<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
-
-<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1049,6 +969,18 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
       </li>
     
@@ -1066,18 +998,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a>
       </li>
     
   </ul>

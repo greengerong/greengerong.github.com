@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-06-30T15:45:34+08:00</updated>
+  <updated>2014-09-29T10:59:52+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,100 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android setTag方法的key问题]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/29/android-settag-key/"/>
+    <updated>2014-09-29T10:22:25+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/29/android-settag-key</id>
+    <content type="html"><![CDATA[<p>android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。</p>
+
+<p>今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。但有时我们需要存储多个数据，所以这个时候我们就需要使用带key的重载。</p>
+
+<p>文档是描述：“ The specified key should be an id declared in the resources of the application to ensure it is unique (see the ID resource type). Keys identified as belonging to the Android framework or not associated with any package will cause an IllegalArgumentExceptionto be thrown.”</p>
+
+<p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
+
+<pre><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+</code></pre>
+
+<p>正确的解决方案是：</p>
+
+<p>在res/values/strings.xml中定义这个key常量，如下：</p>
+
+<pre><code>    &lt;resources&gt;
+        &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
+        &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
+    &lt;/resources&gt;
+</code></pre>
+
+<p>使用如下：</p>
+
+<pre><code>    imageView.setTag(R.id.tag_first, "Hello");
+    imageView.setTag(R.id.tag_second, "Success");
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Karma for jQuery Unit Test]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/"/>
+    <updated>2014-09-03T13:37:33+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ng Http Request/response格式转换]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest/"/>
+    <updated>2014-09-02T22:59:05+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest</id>
+    <content type="html"><![CDATA[<p>angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$http默认request/response格式转化方式。</p>
+
+<p>所幸的是ng $http给我们提供了多种可用方式转化数据格式(下面demo将以form提交方式为例):</p>
+
+<p>***对于部分单独的http request设置：</p>
+
+<p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
+
+<pre><code>$http.post("/url", {
+      id: 1,
+      name: "greengerong"
+    }, {
+      transformRequest: function(request) {
+        return $.param(request);
+    }
+});
+</code></pre>
+
+<p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
+
+<pre><code>id=1&amp;name=greengerong
+</code></pre>
+
+<p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
+
+<p>***对于整个app的http request设置：</p>
+
+<p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
+
+<pre><code>angular.module("app", [])
+.config(["$httpProvider", function($httpProvider) {
+      $httpProvider.defaults.transformRequest = [
+        function(request) {
+          return $.param(request);
+        }
+      ];
+    }
+]);
+</code></pre>
+
+<p>这样我们就可以轻易的转化为form提交方式。</p>
+
+<p>同样$http也为我们提供了transformResponse方式，我们也可以创建自己的response转化，比如json之前加入自定义前缀防止json array攻击等等。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[angularjs之browserTrigger]]></title>
@@ -1110,179 +1204,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 <p>注意由于在jsbin拒绝引入github text/plain的文件 所以这里是直接把源码贴进去了的，如果使用的话最好是使用github上的，这里的代码是不会更新的。</p>
 
 <p>在jsbin demo上你能够很清楚的看见使用方式。那么我就不用在废话多说了，哈哈。有问题可以提交github issue。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Web组件化-angularjs实践]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/11/angularjs-web-component/"/>
-    <updated>2013-12-11T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/11/angularjs-web-component</id>
-    <content type="html"><![CDATA[<p>在过去的web标准经历了一个飞速的发展，随着时间的推移，用户对web的体验也越来越重视，从最初的简单静态页面到以ajax标志的web2.0，在这个时代我们所面临的问题是用户的体验和可恶的浏览器的兼容(IE成为了我们所唾弃的产物，IE6的葬礼之类的形式足以表明这点)，所以有了Prototype，Mootools，jQuery这类浏览器兼容和util的库，特别jQuery的出现以其独特的兼容性，一致性和优雅的选择器和链式风格影响了整个业界的发展,作为这个时代的产物jQuery是个很出色的库，正的如它所说，做到了&#8221;write less，do more&#8221;,成为这个时代的标志。然而随着互联网的突增，我们的JavaScript代码量也暴增，是的我们再度陷入到JavaScript的维护管理的困境。JavaScript本来是一门作为浏览器上的脚本语言出身，并不适合于大规模开发。所以在我们所能看见的MDV框架的出现，这个时候前段的JavaScript代码已得到我们越来越注重，MDV框架提出了我们也需要向对待后端系统(spring,web api)一样对前段逻辑进行统一管理，分层(表现逻辑，viewmodel，视图)。所以Backbone，AngularJS，Ember，Spine之类的数据绑定框架横空出世，力求给我们带来代码的模块管理，数据、视图的分离，他们以他们不同的方式解决共同的问题：</p>
-
-<p>1.如何更好地模块化开发</p>
-
-<p>2.业务数据如何组织</p>
-
-<p>3.界面和业务数据，业务逻辑的分离</p>
-
-<p>与此同时其实用户体验的要求html5，ECMAScript也在快速的推进。在这里我想说的是 Web组件化的也在蓬勃的发展起来，以Google额polymer为代表的框架，库也在悄无声息的到来，虽然这需要等到浏览器的大统一，但是我们相信在不久的将来将会到来。在这里我所激动和希望是组件的共享，假设我们能够一个想java maven repo，cdn之类的共有或者私有repo，在你需要的地方只需要import那将是多么美好的事情，这也许是意淫，但也未必不可。</p>
-
-<p>有希望总是好的，在过去一年我所尝试的就是基于angular这优秀的框架directive dsl和maven build去实现我所期望的组件化共享愿景。在基于node的<a href="http://component.io/">component</a>前端管理框架稍有相似之处。</p>
-
-<p>回到正题，在angularjs中如何去做到组件化：</p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/web-angular.jpg" alt="/images/blog_img/web-angular.jpg" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[生成PDF的新选择-Phantomjs]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/10/use-phantomjs-to-get-pdf/"/>
-    <updated>2013-12-10T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/10/use-phantomjs-to-get-pdf</id>
-    <content type="html"><![CDATA[<p>最近在node.js项目开发中，遇见生成PDF的需求，当然生成PDF不是一个新意的需求；我可以选择利用开源的pdfkit或者其他node pdf模块，或者通过edge.js调用.net/python下的pdf库去做生成pdf。但是在我看来对于这些东西不管如何也需要花费我们太多的时间(pdf报表的内容报表很复杂)，不如把所有的画图实现逻辑推向大家所熟悉的html+css来的简洁，快速，这样对于pdf格式变化和图形计算逻辑的变化推到ejs、jade之类的模板引擎，对于以后的修改维护扩展是个很不错的选择。所以选择phantomjs加载页面生成PDF对于我来说不是个不错的选择，同时对于html+css我所需要兼容的仅有webkit一种浏览器，没有厌恶的浏览器兼容性顾虑。所以说做就做，我在项目上花了半个小时配置phantomjs的自动化脚本（在各环境能够自动勾践），以及实现了一个简单页面的PDF转化。</p>
-
-<p>rasterize.js（来自官方pdf demo）：</p>
-
-<pre><code>var page = require('webpage').create(),
-        system = require('system'),
-        address, output, size;
-
-    if (system.args.length &lt; 3 || system.args.length &gt; 5) {
-        console.log('Usage: rasterize.js URL filename [paperwidth*paperheight|paperformat] [zoom]');
-        console.log('  paper (pdf output) examples: "5in*7.5in", "10cm*20cm", "A4", "Letter"');
-        phantom.exit(1);
-    } else {
-        address = system.args[1];
-        output = system.args[2];
-        page.viewportSize = { width: 600, height: 600 };
-        if (system.args.length &gt; 3 &amp;&amp; system.args[2].substr(-4) === ".pdf") {
-            size = system.args[3].split('*');
-            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '0px' }
-                : { format: system.args[3], orientation: 'portrait', margin: '1cm' };
-        }
-        if (system.args.length &gt; 4) {
-            page.zoomFactor = system.args[4];
-        }
-        page.open(address, function (status) {
-            if (status !== 'success') {
-                console.log('Unable to load the address!');
-                phantom.exit();
-            } else {
-                window.setTimeout(function () {
-                    page.render(output);
-                    phantom.exit();
-                });
-            }
-        });
-    }
-</code></pre>
-
-<p>在node调用端，使用exec调用命令行输入得到文件并返回到node response流：</p>
-
-<p>guid utils:</p>
-
-<pre><code>    'use strict';
-
-    var guid = function () {
-        var uid = 0;
-        this.newId = function () {
-            uid = uid % 1000;
-            var now = new Date();
-            var utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-            return utc.getTime() + uid++;
-        }
-    }
-
-    exports.utils = {
-        guid: new guid()
-    };
-</code></pre>
-
-<p>pdfutil:</p>
-
-<pre><code>    'use strict';
-
-    var exec = require('child_process').exec;
-    var utils = require('./utils').utils;
-    var nodeUtil = require('util');
-
-    var outPut = function (id, req, res) {
-        var path = nodeUtil.format("tmp/%s.pdf", utils.guid.newId());
-        var port = req.app.settings.port;
-        var pdfUrl = nodeUtil.format("%s://%s%s/pdf/%s", req.protocol, req.host, ( port == 80 || port == 443 ? '' : ':' + port ), id);
-
-        exec(nodeUtil.format("phantomjs tool/rasterize.js %s %s A4", pdfUrl, path), function (error, stdout, stderr) {
-            if (error || stderr) {
-                res.send(500, error || stderr);
-                return;
-            }
-            res.set('Content-Type', 'application/pdf');
-            res.download(path);
-        });
-
-    };
-
-    exports.pdfUtils = {
-        outPut: outPut
-    };
-</code></pre>
-
-<p>响应的代码也可以很好的转换为java/c#&hellip;的命令行调用来得到pdf并推送到response流中。一切都这么简单搞定。</p>
-
-<p>node也有node-phantom模块，但是用它生成的pdf样式有点怪，所以最后还是坚持采用了exec方式去做。</p>
-
-<p>还有就是phantomjs生成PDF不会把css的背景色和北京图片带进去，所以对于这块专门利用了纯色图片img标签，并position:relative或者absolute去定位文字.这点还好因为这个页面上用户不会看的，</p>
-
-<p>文章也到此结尾，希望多多交流，继续关注，谢谢大家。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[prerender-SPA程序的SEO优化策略]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/08/prerender-seo-for-single-page-application/"/>
-    <updated>2013-12-08T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/08/prerender-seo-for-single-page-application</id>
-    <content type="html"><![CDATA[<p>随着web2.0的兴起，ajax的时代已经成为了事实，更如今Knockout,backbone, angular,ember前端MDV(model driver view)框架强势而来，Single Page Application已经为大家所熟悉了。如今常见的SPA程序，restfull和前端MDV之类的框架能够实实在在的减少我们的代码开发量，让我更多的注意力关注在真正的业务逻辑上。在众多前端MDV框架从博客中可以看出来笔者还是钟爱于angular，然而服务端平台的选择的话：在.net平台笔者会首选webapi+oData,jvm平台spring restfull。</p>
-
-<p>但是相应带来的是搜索引擎优化(SEO)是个难题，因为爬虫不会去执行JavaScript。现在很幸运的是在Google推出angular之后，也给出了一些解决方案：<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">Google&rsquo;s ajax crawling protocol</a>.此协议现在已被Google和bing所实现。</p>
-
-<p>在协议中规定，搜索引擎会把带有#!someurl的链接转换为<em>escaped_fragment</em>=someurl访问解析，例如：</p>
-
-<pre><code>www.example.com/ajax.html#!key=value
-</code></pre>
-
-<p>将会变为</p>
-
-<pre><code>www.example.com/ajax.html?_escaped_fragment_=key=value
-</code></pre>
-
-<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原生支持对#！的解析。</p>
-
-<p>基于这个协议和phantomjs(headless的浏览器内核)我们的SPA SEO工具 <a href="http://prerender.io/">prerender(http://prerender.io/)</a>应运而生，在官方和社区的支持下，现在已经有node.js express,ruby on rails,java,asp.net,php,python主流框架和nginx之类的支持。</p>
-
-<p>prerender架构流程图如下：</p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/prerender.jpg" alt="/images/blog_img/prerender.jpg" /></p>
-
-<p>prerender分为两个部分一部分为后端云服务和应用程序客户端，客户端主要拦截来自爬虫的请求在转发到后端云服务处理返回处理后并且去掉多余script/css的html在返回给爬虫。</p>
-
-<p>后端云服务（nodejs项目），利用phantomjs这个无ui headless的浏览器内核加载页面地址，并等到页面解析后获取document html，并处理去掉无用的部分返回到前段客户端程序。</p>
-
-<p>而前段程序则为不同语言框架而实现的不同拦截器，如java的filter，asp.net mvc的HttpModule，主要任务为拦截请求并转发给后端云服务处理。其拦截规则为：</p>
-
-<ol>
-<li>检查url中是否带有<em>escaped_fragment</em>或者请求user-agent是已知或者配置的爬虫user-agent</li>
-<li>确认拦截的不是js,css之类的资源文件</li>
-<li>在确认url是在白名单中（可选如果配置的白名单的话）</li>
-<li>确认不应该在黑名单中(可选如果配置了黑名单的话)</li>
-</ol>
-
-
-<p>注：最好值配置黑名单或者白名单中的一种方式。</p>
-
-<p>有了prerender，因为SEO而放弃SPA不再是理由了，关于prerender的任何issue大家可以及时提出，让它更加完善。具体关于如何使用和测试请转向主页和各个client程序页面，<a href="http://prerender.io/">http://prerender.io/</a></p>
 ]]></content>
   </entry>
   

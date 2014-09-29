@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="方法有： 示例 if(e.KeyChar = &lsquo;\r&rsquo;) { SendKeys.Send(&ldquo;{TAB}&rdquo;); } 但是 也许是我程序里处理了太多的键盘事件，用它总是反映很慢，有时候还死机。 把Form的KeyPreView设为true， &hellip;">
+  <meta name="description" content="前言 在需要录入数据的字段比较多的表单应用程序中，为了给用户更好的体验，我们通常会将[Enter]键转为[TAB]将输入焦点移到下一个控件，或是将获得焦点的输入控件背景经一个醒目的背景颜色显示等等。以往的做法通常是从TextBox、ComboBox等标准输入控件派生一个新的控件， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,443 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/">IExtenderProvider - vs中的魔法师 [转]</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>前言</strong></p>
+
+<div class="postbody">
+
+在需要录入数据的字段比较多的表单应用程序中，为了给用户更好的体验，我们通常会将[Enter]键转为[TAB]将输入焦点移到下一个控件，或是将获得焦点的输入控件背景经一个醒目的背景颜色显示等等。以往的做法通常是从TextBox、ComboBox等标准输入控件派生一个新的控件，在新控件中改变击键和在获得/失去焦点时的动作，但此方法的不便之外就是到项目的最后，会增加了一系列的标准控件的小功能扩展控件，增大了后期的维护工作量。在DotNet中，对于类似的对标准控件的&#8220;小功能扩展&#8221;我们有了更好解决方案，那就是神奇的IExtenderProvider接口，它可以给任何控件&#8220;变&#8221;出一个属性来^_^
+
+#### **关于IExtenderProvider&nbsp;接口**
+
+IExtenderProvider位于System.ComponentModel命名空间，其声明如下：
+
+&nbsp;
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:4c9e8390-f491-48d8-8426-2ec247b1fbbf" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">interface</span><span style="color: #000000"> IExtenderProvider
+{
+</span><span style="color: #0000ff">bool</span><span style="color: #000000"> CanExtend(</span><span style="color: #0000ff">object</span><span style="color: #000000"> extendee);
+}
+</span></div>
+</pre></div>
+
+&nbsp;
+
+此接口只有一个方法`bool CanExtend(object)`，这个方法告诉VS.net设计器是否将扩展属性显示在给出控件的属性窗口中。实现了IExtenderProvider接口的组件称为&#8220;扩展程序提供程序&#8221;。DotNet 2.0中自带的ToolTips和ErrorProvider就是二个典型的扩展程序提供程序。如将ToolTips控件添加到窗体中后，TextBox1控件便多了个ToolTips on toolTips1的属性。
+
+&nbsp;![](http://images.cnblogs.com/cnblogs_com/wuchang/200701/01.png)
+
+我们在属性窗口中给此属性设置值时，VS.net设计器生成如下的代码：
+
+&nbsp;
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:0e1f80db-37d8-4ddd-ad48-19f0fe87b0c4" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">this</span><span style="color: #000000">.toolTip1.SetToolTip(</span><span style="color: #0000ff">this</span><span style="color: #000000">.textBox1, </span><span style="color: #000000">"</span><span style="color: #000000">some tooltips</span><span style="color: #000000">"</span><span style="color: #000000">);</span></div>
+</pre></div>
+可见，我们给ToolTips on toolTips1属性设置的文本是存储在toolTips1控件中，但是程序执行时是在textBox1上显示相应的提示信息而不是在toolTips1上。这样，我们无需对窗体上现有的控件做任何修改就可以让他们都有了toolTips提示功能! 
+
+&nbsp;
+
+接下来，我们来创建一个自己的扩展程序提供程序，给TextBox控件添加[ConverEnterToTAB]功能。
+
+**创建自己的IExtenderProvider&nbsp;组件**
+
+这时候我们注意到`IExtenderProvider接口`并没有提供任何有关扩展属性的消息，那vs.net设计器是如何知道扩展程序提供什么样的扩展属性给控件呢？是`ProvideProperty特性(Attribute)!设计器会在实现<code>IExtenderProvider`接口的组件中寻找所有的`ProvideProperty`特性，`ProvideProperty`特性标明了扩展程序给什么类型的控件提供什么扩展扩展属性的信息。`ProvideProperty特性的声明如下：
+`</code>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; width: 560px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:44eb2a50-3928-4807-80d0-29c1972446a0" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #000000">[AttributeUsageAttribute(AttributeTargets.Class, AllowMultiple</span><span style="color: #000000">=</span><span style="color: #0000ff">true</span><span style="color: #000000">)]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">sealed</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> ProvidePropertyAttribute : Attribute
+</span></div>
+</pre></div>
+此特性有二个构造方法：
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:9a867422-aad3-4771-be4d-e688aee09a71" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">public</span><span style="color: #000000"> ProvidePropertyAttribute (
+</span><span style="color: #0000ff">string</span><span style="color: #000000"> propertyName,   </span><span style="color: #008000">//</span><span style="color: #008000">扩展到指定类型对象的属性名称。</span><span style="color: #008000">
+</span><span style="color: #000000">    </span><span style="color: #0000ff">string</span><span style="color: #000000"> receiverTypeName   </span><span style="color: #008000">//</span><span style="color: #008000">此属性可以扩展的数据类型的名称。 </span><span style="color: #008000">
+</span><span style="color: #000000">)
+</span><span style="color: #000000">--------------------------------------------</span><span style="color: #000000">
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> ProvidePropertyAttribute (
+</span><span style="color: #0000ff">string</span><span style="color: #000000"> propertyName,   </span><span style="color: #008000">//</span><span style="color: #008000">扩展到指定类型对象的属性名称。 </span><span style="color: #008000">
+</span><span style="color: #000000">    Type receiverType   </span><span style="color: #008000">//</span><span style="color: #008000">可以接收此属性的对象的数据类型的 Type。</span><span style="color: #008000">
+</span><span style="color: #000000">)</span></div>
+</pre></div>
+`在ProvideProperty特性中指定提供的属性的名称和可接收属性的组件类型，如，下面代码给TextBox类型组件添加一个名为&lt;Name&gt;的属性：` 
+
+&nbsp;
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:cba84224-723a-4d26-a2e6-b0a81fb97525" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #000000">[ProvideProperty(</span><span style="color: #000000">"</span><span style="color: #000000">&lt;Name&gt;</span><span style="color: #000000">"</span><span style="color: #000000">, </span><span style="color: #0000ff">typeof</span><span style="color: #000000">(TextBox))]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> TextboxExtender : Component, IExtenderProvider
+{...</span></div>
+</pre></div>
+
+一旦在控件上声明了ProvideProperty特性，就需要在控件中提供名为Get&lt;Name&gt;和Set&lt;Name&gt;的二个Public方法。Get&lt;Name&gt;方法有一个参数，参数类型和ProvideProperty特性中定义的类型相同，返回此组件此属性的值。Set&lt;Name&gt;方法带两个参数，第一个参数是`ProvideProperty特性中指定的组件类型，第二个参数是要设置给扩展属性的数据，类型和Get&lt;Name&gt;方法返回的数据类型相同。`
+
+下列是给TextBox添加EnableConvertEnterToTab扩展属性的完整代码：
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:7e419b41-f1e2-49ce-9319-71be8d637011" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">namespace</span><span style="color: #000000"> wuChang.Controls
+{
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 将TextBox的回车键转换为TAB键
+</span><span style="color: #808080">///</span><span style="color: #008000"> wuChang@guet.edu.cn
+</span><span style="color: #808080">///</span><span style="color: #008000"> wuchang.cnblogs.com
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">    [ProvideProperty(</span><span style="color: #000000">"</span><span style="color: #000000">EnableConvertEnterToTab</span><span style="color: #000000">"</span><span style="color: #000000">, </span><span style="color: #0000ff">typeof</span><span style="color: #000000">(TextBox))]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> TextboxExtender : Component, IExtenderProvider
+{
+</span><span style="color: #0000ff">private</span><span style="color: #000000"> Hashtable htDate </span><span style="color: #000000">=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> Hashtable();
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 取得相应组件EnableConvertEnterToTab扩展属性的值
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="control"&gt;&lt;/param&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;returns&gt;&lt;/returns&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">        [DefaultValue(</span><span style="color: #0000ff">false</span><span style="color: #000000">)]
+[Description(</span><span style="color: #000000">"</span><span style="color: #000000">是否允许将回车键转换为TAB键</span><span style="color: #000000">"</span><span style="color: #000000">)]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">bool</span><span style="color: #000000"> GetEnableConvertEnterToTab(TextBox control)
+{
+</span><span style="color: #0000ff">return</span><span style="color: #000000"> </span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Contains(control);
+}
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 将需要转换Enter的控件保存到Hashtable中，前添加KeyDown事件。
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="control"&gt;&lt;/param&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="value"&gt;&lt;/param&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">        </span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">void</span><span style="color: #000000"> SetEnableConvertEnterToTab(TextBox control, </span><span style="color: #0000ff">bool</span><span style="color: #000000"> value)
+{
+</span><span style="color: #0000ff">if</span><span style="color: #000000"> (value)
+{
+</span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Add(control, value);
+control.KeyDown </span><span style="color: #000000">+=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> KeyEventHandler(control_KeyDown);
+}
+</span><span style="color: #0000ff">else</span><span style="color: #000000">
+{
+control.KeyDown </span><span style="color: #000000">-=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> KeyEventHandler(control_KeyDown);
+</span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Remove(control);
+}
+}
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 将目标控件的键盘事件{Enter}转为{TAB}
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="sender"&gt;&lt;/param&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="e"&gt;&lt;/param&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">        </span><span style="color: #0000ff">void</span><span style="color: #000000"> control_KeyDown(</span><span style="color: #0000ff">object</span><span style="color: #000000"> sender, KeyEventArgs e)
+{
+</span><span style="color: #0000ff">if</span><span style="color: #000000"> (e.KeyCode </span><span style="color: #000000">==</span><span style="color: #000000"> Keys.Enter)
+{
+e.Handled </span><span style="color: #000000">=</span><span style="color: #000000"> </span><span style="color: #0000ff">true</span><span style="color: #000000">;
+SendKeys.Send(</span><span style="color: #000000">"</span><span style="color: #000000">{TAB}</span><span style="color: #000000">"</span><span style="color: #000000">);
+}
+}
+</span><span style="color: #0000ff">#region</span><span style="color: #000000"> IExtenderProvider Members</span><span style="color: #000000">
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">bool</span><span style="color: #000000"> CanExtend(</span><span style="color: #0000ff">object</span><span style="color: #000000"> extendee)
+{
+</span><span style="color: #0000ff">return</span><span style="color: #000000"> extendee </span><span style="color: #0000ff">is</span><span style="color: #000000"> TextBox;
+}
+</span><span style="color: #0000ff">#endregion</span><span style="color: #000000">
+}
+}</span></div>
+</pre></div>
+
+注意这里给给GetEnableConvertEnterToTab方法添加[DefaultValue(false)]特性，这样如果给组件的GetEnableConvertEnterToTab扩展属性设计值为False时，设计器将不会生成设置代码。如设置扩展属性为true时会生成这样的代码：
+this.textboxExtender1.SetEnableConvertEnterToTab(this.textBox1, true);
+设置为Falsh时，设计器不会生成任何的代码。
+</div>
+
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/wuchang/200701/02.png" alt="img" /></p>
+
+<p>参考资料：</p>
+
+<ol>
+<li><a href="http://www.codeproject.com/dotnet/iextenderprovider.asp" title="http://www.codeproject.com/dotnet/iextenderprovider.asp">http://www.codeproject.com/dotnet/iextenderprovider.asp</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/admin/ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm" title="ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm">ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm</a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/21/1607678.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">WinForm控件查找奇思</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近做WinForm程序，尽搞些动态生成控件的，每次寻找某个空间时总要一大堆代码，简单但是写的多，烦啊。突然想起了Linq里的表达式方式，但是项目用的类库是2.0的。最后仿照Linq用范型写了一个遍历类:减少了一大堆不必要的代码。
+代码很简单，就不用解释了，直接贴↑。</p>
+
+<p>代码很简单，就不用解释了，直接贴&#8593;。</p>
+
+<pre><code>    public delegate bool SearchHandler(Control ctrFind);
+        public class WinSearch&lt;T&gt;
+        {
+    //ctr：查找起点控件。
+            public static T Search(Control ctr, SearchHandler handler)
+            {
+                if (handler == null)
+                    throw new Exception("Handler must be not null");
+                if (ctr == null)
+                    throw new Exception("Parent Control must be not null");
+                if (!(ctr is Control))
+                    throw new Exception("The fist parameter must be innert from Control");
+                return SearchProxy(ctr, handler);
+            }
+
+            protected static T SearchProxy(Control ctr,SearchHandler handler)
+            {
+                if (ctr.Controls.Count &lt; 1)
+                {
+                    return default(T);
+                }
+                else
+                {
+                    foreach (Control child in ctr.Controls)
+                    {
+                        if (child is T  &amp;&amp; handler(child))//注意返回范型类型应是如此才会返回。
+                        {
+                            return (T)(object)child;
+                        }
+                        else
+                        {
+                            foreach (Control ch in child.Controls)
+                            {
+                                object obj = SearchProxy(ch, handler);
+                                if (obj !=null)
+                                {
+                                    return (T)obj;
+                                }
+                            }
+                        }
+                    }
+                    return default(T);
+                }
+            }
+
+
+        }
+</code></pre>
+
+<p> 测试代码：</p>
+
+<pre><code>    private void button1_Click(object sender, EventArgs e)
+            {
+                Button btn = WinSearch&lt;Button&gt;
+                .Search(this, new SearchHandler(mehtod));
+                if (btn != null)
+                {
+                    MessageBox.Show(btn.Text);
+                }
+            }
+            public bool mehtod(Control ctr)
+            {
+                if (ctr.Text =="button2")
+                    return true;
+                return false;
+            }
+</code></pre>
+
+<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606587.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/">System.Diagnostics命名空间里的Debug类和Trace类的用途</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>&nbsp;</h1>
+
+<p>System.Diagnostics命名空间里的Debug类和Trace类的用途
+摘要
+在 .NET 类库中有一个 System.Diagnostics 命名空间，该命名空间提供了一些与系统进程、事件日志、和性能计数器进行交互的类库。当中包括了两个对开发人员而言十分有用的类——Debug类和Trace类。本文介绍了这两个类的一些基本用途，旨在提高广大开发人员的开发效率。
+目录
+使用Debug类来帮助调试
+Debug类和Trace类的区别
+使用Trace类来做程序日志
+小结
+参考资料
+使用Debug类来帮助调试
+调试程序对每个程序员来说是家常便饭。可是我们会经常遇到一些情况让我们头疼，例如：
+当我们在开发一个界面控件的时候，简单的设断点会增加Paint事件的响应次数，而造成的环境参数改变。
+断点设多了，程序常常停在正常运行的地方；这样一来，调试一个错误要花费大量时间去寻找错误。
+这时，我们就需要利用System.Diagnostics.Debug类来帮助我们调试。我们可以通过调用Debug.WriteLine(String message)函数，将我们所关心的信息打印在Visual Studio IDE的Output窗口中。也可以利用Debug.Assert(bool condition)来让程序停在错误的地方，并且显示Call stack。
+Debug类中所有函数的调用都不会在Release版本里有效。也就是说，我们通过这种方法所加的代码可以仅用于调试；在发布的时候无需删任何代码，就可以给用户一个没有调试指令的程序了。
+下面的这个例子演示了这两个函数来帮助调试的方法：
+1、 新建一个Visual Studio C# Project，采用默认的项目名。
+2、 往Form1上拖一个label，并采用其缺省ID。
+3、 在Form1.cs中的Form1类中添加下面的函数代码：</p>
+
+<pre><code>private int time=0;
+protected override void OnPaint(PaintEventArgs e)
+{
+    time++;
+    this.label1.Text="OnPain called "+time.ToString()+" Times.";
+}
+protected override void OnResize(EventArgs e)
+{
+    System.Diagnostics.Debug.Assert(this.Width&gt;200,"Width should be larger than 200.");
+    System.Diagnostics.Debug.WriteLine(Size.ToString());
+}
+</code></pre>
+
+<p>4、 编译并运行项目的Debug版本。
+5、 切换Visual Studio .NET IDE到Output窗口。
+6、 切换到刚才的程序，改变主窗口的大小，您可以在IDE中看到Form1窗口的实时大小，并在Form1上看到OnPaint被调用的次数。当窗口的宽度小于等于200个像素的时候，系统会弹出一个Assertion Fail的对话框。里面显示了当前程序的Call Stack。如果您在OnPaint中设置了断点，想要调试程序的话，那么您会进入一个死循环，直到您停止调试。</p>
+
+<p>Debug类和Trace类的区别
+您一定发现了在System.Diagnostics命名空间中还有一个名为Trace的类。它的函数功能和Debug非常相似。为什么要有这样两个功能类似的类呢？
+原因是这样的，Debug类里所提供的函数仅在编译时带#Debug宏参数才奏效，一旦到了Release版本中，这些函数都会被忽略。也就是说Debug类的功能仅在程序员开发的时候能用。而Trace则不同，它能在Release版本的程序中也被运行，这样程序员就可以在Release版本的程序中添加一些Debug类提供的功能了。
+使用Trace类来做程序日志
+接下来的问题就是：我们程序员能利用Trace类的功能做些什么呢？我们可以用它来做程序的日志。
+1、 打开刚刚的project。
+2、 用下面的代码覆盖刚才第2步的代码：</p>
+
+<pre><code>private void Calculate()
+    {
+    int a=1,b=1;
+    try
+    {
+    System.Random r = new Random();
+    while (true)
+    {
+    a=(int)(r.NextDouble()*10);
+    b=(int)(r.NextDouble()*10);
+    System.Diagnostics.Trace.WriteLine(System.DateTime.Now.ToString()+": "+
+    a.ToString()+"/"+b.ToString()+"="+(a/b).ToString());
+    }
+    }
+    catch (Exception ex)
+    {
+    System.Diagnostics.Trace.WriteLine(System.DateTime.Now.ToString()+": "+a.ToString()+
+    "/"+b.ToString()+"="+" ERROR: "+ex.Message);
+    MessageBox.Show(ex.Message);
+    }
+    }
+</code></pre>
+
+<p>3、 在构造函数Form1()的最后添加下面的代码，将Trace的输出重定向到app.log文件中：</p>
+
+<pre><code>System.Diagnostics.Trace.Listeners.Clear();
+System.Diagnostics.Trace.AutoFlush=true;
+System.Diagnostics.Trace.Listeners.Add(new  System.Diagnostics.TextWriterTraceListener("app.log"));
+</code></pre>
+
+<p>4、 拖一个按钮到该Form上，双击按钮，在button1_Click函数中添加如下代码：
+Calculate();
+Application.Exit();
+5、 运行该程序的Release版本，点击添加的按钮，程序便开始执行一位随机数除法。由于是随机数，可能会出现出数为0的情况，这样程序就会抛出Exception，这是程序会自动中止。
+6、 在该程序所在的目录里您可以发现出现了一个新的文件app.log，里面记录了各个时刻的运算纪录，并把Exception纪录在日志中</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606891.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1076,6 +1513,18 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">Karma for jQuery Unit Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
       </li>
     
@@ -1093,18 +1542,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     
       <li class="post">
         <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a>
       </li>
     
   </ul>

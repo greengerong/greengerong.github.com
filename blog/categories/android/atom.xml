@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Android | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/android/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2014-09-29T10:59:52+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Android setTag方法的key问题]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/29/android-settag-key/"/>
+    <updated>2014-09-29T10:22:25+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/29/android-settag-key</id>
+    <content type="html"><![CDATA[<p>android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。</p>
+
+<p>今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。但有时我们需要存储多个数据，所以这个时候我们就需要使用带key的重载。</p>
+
+<p>文档是描述：“ The specified key should be an id declared in the resources of the application to ensure it is unique (see the ID resource type). Keys identified as belonging to the Android framework or not associated with any package will cause an IllegalArgumentExceptionto be thrown.”</p>
+
+<p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
+
+<pre><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+</code></pre>
+
+<p>正确的解决方案是：</p>
+
+<p>在res/values/strings.xml中定义这个key常量，如下：</p>
+
+<pre><code>    &lt;resources&gt;
+        &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
+        &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
+    &lt;/resources&gt;
+</code></pre>
+
+<p>使用如下：</p>
+
+<pre><code>    imageView.setTag(R.id.tag_first, "Hello");
+    imageView.setTag(R.id.tag_second, "Success");
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

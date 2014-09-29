@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-06-30T15:45:34+08:00</updated>
+  <updated>2014-09-29T10:59:52+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ng Http Request/response格式转换]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest/"/>
+    <updated>2014-09-02T22:59:05+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest</id>
+    <content type="html"><![CDATA[<p>angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$http默认request/response格式转化方式。</p>
+
+<p>所幸的是ng $http给我们提供了多种可用方式转化数据格式(下面demo将以form提交方式为例):</p>
+
+<p>***对于部分单独的http request设置：</p>
+
+<p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
+
+<pre><code>$http.post("/url", {
+      id: 1,
+      name: "greengerong"
+    }, {
+      transformRequest: function(request) {
+        return $.param(request);
+    }
+});
+</code></pre>
+
+<p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
+
+<pre><code>id=1&amp;name=greengerong
+</code></pre>
+
+<p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
+
+<p>***对于整个app的http request设置：</p>
+
+<p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
+
+<pre><code>angular.module("app", [])
+.config(["$httpProvider", function($httpProvider) {
+      $httpProvider.defaults.transformRequest = [
+        function(request) {
+          return $.param(request);
+        }
+      ];
+    }
+]);
+</code></pre>
+
+<p>这样我们就可以轻易的转化为form提交方式。</p>
+
+<p>同样$http也为我们提供了transformResponse方式，我们也可以创建自己的response转化，比如json之前加入自定义前缀防止json array攻击等等。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ng-template寄宿方式]]></title>
