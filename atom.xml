@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-09-29T16:14:34+08:00</updated>
+  <updated>2014-09-29T17:02:40+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,63 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[解决ng界面长表达式(ui-set)]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/29/ng-ui-set-for-long-expression/"/>
+    <updated>2014-09-29T16:52:55+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/29/ng-ui-set-for-long-expression</id>
+    <content type="html"><![CDATA[<p>本文来自网友sun shine的问题，问题如下：</p>
+
+<pre><code>    您好, 我想求教一个问题.
+    在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢?
+    比如:
+    $scope.this.is.a.very.deep.obj = {
+    'name': 'xxx',
+    'state': 'active'};
+
+    在 模板中,
+
+
+
+    类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
+
+    但是我试了, 并没有成功. 求指点.
+    先谢了.
+</code></pre>
+
+<p>在这里首先需要说明的是ng界面的所有引用都需要在$scope这个viewmodel(ui和view的胶水层)，所以如果我们希望能够把表达式变得更可读，更友好，那么我们就必须在$scope上创建这个变量。</p>
+
+<p>再则对于ng其使用使用的一堆的$watch，实现脏检查，如果你理解这些了，那么我们就可以很容易的实现一套如spring的</p>
+
+<pre><code>&lt;c:set var="xxx" expression="xxx" /&gt;
+</code></pre>
+
+<p>的tag.</p>
+
+<p>对于实现这类tag，我们最好的方式则是利用ng的directive来实现，代码如下：</p>
+
+<pre><code>        angular.module("greengerong.ui.tag", [])
+          .directive("uiSet", [
+            function() {
+              return {
+                restrict: "EA",
+                link: function(scope, elm, iAttrs) {
+                  scope.$watch(iAttrs.expression, function(val) {
+                    scope[iAttrs.
+                      var] = val;
+                    var apply = !scope.$$phase ? scope.$apply : angular.noop;
+                    apply();
+                  });
+                }
+              };
+            }
+          ]);
+</code></pre>
+
+<p>demo效果请移步<a href="http://jsbin.com/neqow/3/edit">jsbin demo</a>;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Jasmine测试ng Promises - Provide and Spy]]></title>
@@ -1354,111 +1411,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 </code></pre>
 
 <p>今天就到这里，谢谢。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angularjs组件之input Mask]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular/"/>
-    <updated>2013-12-15T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/15/jqueryinputmarsk4angular</id>
-    <content type="html"><![CDATA[<p>今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。</p>
-
-<p>当然在官方的angular-ui ui-utils中有一个相应的组件叫做ui-mask，但是其mask功能是很初级脆弱的。所以我希望能得到一个更强大的mask组件。我所知的<a href="https://github.com/RobinHerbots/jquery.inputmask">jquery.inputmask</a>就是这样一个我所期望的强大的mask组件，所以我不必再去重造轮子，好的软件就是为了不停被重复利用。所以写了一个adapter，<a href="https://github.com/greengerong/green.inputmask4angular">https://github.com/greengerong/green.inputmask4angular</a>.</p>
-
-<p>其使用如下，可以去下载项目查看其中的demo page。</p>
-
-<pre><code>&lt;div class="hero-unit"&gt;
-                &lt;h1&gt;'Allo, 'Allo!&lt;/h1&gt;
-
-                &lt;div&gt;
-                    &lt;h3&gt;mask&lt;/h3&gt;
-                    &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
-                    &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
-                    &lt;pre&gt;{{ test | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-                &lt;div&gt;
-                    &lt;h3&gt;y-m-d&lt;/h3&gt;
-                    &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
-                    &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
-                    &lt;pre&gt;{{ test1 | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-
-                &lt;div&gt;
-                    &lt;h3&gt;Regex&lt;/h3&gt;
-                    &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
-                    &lt;input type="text" ng-model="test3" input-mask="'Regex'"
-                     mask-option="regexOption"/&gt;
-                    &lt;pre&gt;{{ test3 | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-                &lt;div&gt;
-                    &lt;h3&gt;Function&lt;/h3&gt;
-                    &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
-                    &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
-                    &lt;pre&gt;{{ test4 | json }}&lt;/pre&gt;
-                &lt;/div&gt;
-
-            &lt;/div&gt;
-</code></pre>
-
-<p> controller code:</p>
-
-<pre><code>'use strict';
-
-    angular.module('green.inputmaskApp')
-        .controller('MainCtrl', ["$scope", function ($scope) {
-
-            $scope.testoption = {
-                "mask": "99-9999999",
-                "oncomplete": function () {
-                    console.log();
-                    console.log(arguments,"oncomplete!this log form controler");
-                },
-                "onKeyValidation": function () {
-                    console.log("onKeyValidation event happend! this log form controler");
-                }
-            }
-
-            //default value
-            $scope.test1 = new Date();
-
-            $scope.dateFormatOption = {
-                parser: function (viewValue) {
-                    return viewValue ? new Date(viewValue) : undefined;
-                },
-                formatter: function (modelValue) {
-                    if (!modelValue) {
-                        return "";
-                    }
-                    var date = new Date(modelValue);
-                    return (date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate()).replace(/\b(\d)\b/g, "0$1");
-                },
-                isEmpty: function (modelValue) {
-                    return !modelValue;
-                }
-            };
-
-
-            $scope.mask = { regex: ["999.999", "aa-aa-aa"]};
-
-
-            $scope.regexOption = {
-                regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"
-            };
-
-            $scope.functionOption = {
-             mask: function () { 
-                return ["[1-]AAA-999", "[1-]999-AAA"]; 
-            }};
-
-
-        }]);
-</code></pre>
-
-<p>这里值列列举了jquery.inputmask的简单实用方式，更复杂的方式请移步到jquery.inputmask查看。</p>
 ]]></content>
   </entry>
   
