@@ -1,12 +1,5 @@
 ---
 layout: post
-<<<<<<< HEAD
-title: "karma for jQuery unit test"
-date: 2014-09-03 13:37:33 +0800
-comments: true
-categories: 
----
-=======
 title: "karma作为jQuery单元测试Runner"
 date: 2014-09-03 22:27:20 +0800
 comments: true
@@ -184,4 +177,3 @@ jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttpreque
 	})		
 
 更多请参见[demo on github](https://github.com/greengerong/karma-jasmine-jquery/).
->>>>>>> a2cb4ac8d999d161caa76a6fb4327023fefd38f5
