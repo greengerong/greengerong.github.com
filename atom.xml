@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-09-29T17:06:10+08:00</updated>
+  <updated>2014-09-29T17:08:01+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -29,8 +29,8 @@
 
     在 模板中,
 
-    {{{% endraw %}this.is.a.very.deep.obj.name{% raw %}}}
-    {{{% endraw %}this.is.a.very.deep.obj.state% raw %}}}
+    {{this.is.a.very.deep.obj.name}}
+    {{this.is.a.very.deep.obj.state}}
     类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
 
     但是我试了, 并没有成功. 求指点.
