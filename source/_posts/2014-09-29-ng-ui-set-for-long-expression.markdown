@@ -16,8 +16,8 @@ categories: [angular]
 
 		在 模板中,
 
-		{% raw %}{{{% endraw %}this.is.a.very.deep.obj.name{% raw %}}}{% endraw %}
-		{% raw %}{{{% endraw %}this.is.a.very.deep.obj.state% raw %}}}{% endraw %}
+		{% raw %}{{this.is.a.very.deep.obj.name}}{% endraw %}
+		{% raw %}{{this.is.a.very.deep.obj.state}}{% endraw %}
 		类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
 
 		但是我试了, 并没有成功. 求指点.
