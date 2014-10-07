@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="[原文发表地址]Introducing Gulp, Grunt, Bower, and npm support for Visual Studio Web 开发，特别是前端 Web 开发，正迅速变得像传统的后端开发一样复杂和精密。大多数项目不仅仅是通过 FTP上传一些 JS 和 CSS 文件。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-07T12:18:24+08:00" pubdate data-updated="true">Oct 7<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p> [原文发表地址]<a href="http://www.hanselman.com/blog/IntroducingGulpGruntBowerAndNpmSupportForVisualStudio.aspx">Introducing Gulp, Grunt, Bower, and npm support for Visual Studio</a></p>
+
+<p>Web 开发，特别是前端 Web 开发，正迅速变得像传统的后端开发一样复杂和精密。<strong>大多数项目不仅仅是通过</strong> FTP上传一些 JS 和 CSS 文件。而现在的<strong>前端生成过程，</strong>可以囊括SASS 和LESS扩展、CSS/JS的压缩包、JSHint 或 JSLint的运行时 、或者更多。这些生成任务和进程都和像Gulp和Grunt这样的工具一起协调工作。此外，类似于npm和bower这样的管理系统将客户端库作为软件包来管理。</p>
+
+<h5>ASP.NET客户端软件包的管理者，为什么不用 NuGet？或MSBuild？</h5>
+
+<p>你们中的一些人可能会问，为什么JavaScript不使用 NuGet？为什么不扩展 MSBuild 去构建 CSS/JS？原因很简单。因为已经有了丰富的系统，来做这种事情。对于服务器端库 （和一些客户端）来说，使用NuGet 就已经很棒了。npm和bower 上已经有了很多的，而且还会有更多的 CSS 和 JS 库。而对于服务器端的应用程序构建来说，使用MSBuild很棒，但当构建客户端应用程序时，它有些多余了。</p>
+
+<p>所以，两者都可以使用。这些都是您工具包中的工具。添加Gulp，Grun，Bower，npm的支持（和将来需要其他东西） ，这意味着为ASP.NET前端开发者提供了一个更熟悉的环境。它允许 ASP.NET 开发人员引入 JS 和 CSS 库，使他们可以每天使用。</p>
+
+<h5>引入任务资源管理器</h5>
+
+<p>我们从你们中，以及整个社会收到了相当多的、关于Grunt/Gulp的功能请求。我们利用Visual Studio “14的充分可扩展性正在构建对Grunt/Gulp第一流的支持。现在我们已经准备好将这个支持作为VS2013的一个扩展加入到预览版本中， 并且我们感激您帮助我们测试和考察这个功能。</p>
+
+<p>今天我们介绍一个预览版本，在这个预览版本中，“<a href="http://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708">任务资源管理器</a>”将作为VSIX<strong>的一个扩展。</strong><strong>同时也推荐两个其他的</strong><strong>VSIX</strong><strong>来完善对这个功能的体验。</strong></p>
+
+<p><strong>注意：</strong><strong> </strong><strong>VSIX</strong><strong>扩展中的大多数功能都被内置到</strong><strong>Visual Studio</strong><strong>中，因此你不需要安装其他别的东西。而且，</strong><strong>在</strong><strong>VS2013</strong><strong>和此预览版本中我们需要更多的</strong><strong>VSIX</strong><strong>，让你迟早能得到这些扩展。</strong><strong> </strong><strong>请注意，今天任务资源管理器只工作于</strong><strong>Vsiaual Studio Express </strong><strong>版本中，但</strong><strong>VS14</strong><strong>的所有功能都将出现在</strong><strong>VS</strong><strong>免费版本中。</strong></p>
+
+<p>类似于VS Productivity Power Tools一样， “DevLabs”这样的功能现在还在预览版中。但是他们终将会集成到最终的产品中。</p>
+
+<h5>你需要什么？</h5>
+
+<h5>首先，你将需要<a href="http://www.microsoft.com/en-us/download/details.aspx?id=43721">Visual Studio 2013.3</a> ，3的意思是免费的更新&#8221;Update 3&#8221;。</h5>
+
+<ol>
+<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F8e1b4368-4afb-467a-bc13-9650572db708"><strong>TRX-</strong><strong>任务资源管理器</strong></a><strong> </strong>Visual Studio 扩展</li>
+<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F65748cdb-4087-497e-a394-2e3449c8e61e">NMP/NBower包智能感知</a>-搜索NPM 和Bower包在线版，它直接附加智能感知功能。</li>
+<li><p>可选的<a href="http://visualstudiogallery.msdn.microsoft.com/dcbc5325-79ef-4b72-960e-0a51ee33a0ff">Grunt Launcher</a>（在解决方案资源管理器上右键单击选项— — 你会看到&#8221; npm install &ldquo;）</p>
+
+<ul>
+<li>如果你现在没有这种扩展，那么你将需要自己运行npm install来还原/添加软件包</li>
+<li>如果你有这种扩展，那么请在运行grunt/gulp之前，右键单击 packages.json 和&#8221;npm install&#8221;</li>
+</ul>
+</li>
+</ol>
+
+
+<p>要打开 TRX （任务资源管理器），只需用鼠标右键单击您的项目中任何一个 gruntfile.js文件：</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image002_60531aad-06cb-4ce7-83ea-5629fa7e8b8d.png" alt="" /></p>
+
+<p>默认情况下，TRX 位于VS的底部，，看起来像这样：</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image001_8eae3676-2331-461b-bfe6-fec463c7f49c.png" alt="" /></p>
+
+<p>在这里，我们看到 gruntfile.js 在该解决方案中的一个或多个项目的根目录中。它还有<strong>任务绑定功能，也就是说任何任务或目标可以由</strong><strong> 4 </strong><strong>个</strong><strong>不同</strong><strong> Visual Studio </strong><strong>事件触发。</strong></p>
+
+<p>要想将一个任务/目标和一个VS事件绑定在一起，只需右键单击进行绑定设置。</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image003_9d3aeb6c-f450-4e68-8d4c-010b619f7da8.png" alt="" /></p>
+
+<p>要想运行任何一个任务/目标，只需双击它，然后控制台将显示如下：</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image004_1db90c39-a4cd-42a7-81df-b3ec2493e8c0.png" alt="" /></p>
+
+<p>当你有了软件包智能感知扩展功能时，你会发现通过bower 和 npm来直接编辑package.json很容易添加并更新软件包。</p>
+
+<p>甚至，你也有了异步填充元数据工具提示功能。</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/tooltip-animated_thumb.gif" alt="" /></p>
+
+<p>现在你可以去测试它了，记住在你用任务资源管理器来运行Grunt任务之前，你需要运行“ npm install” 。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-07T12:18:24+08:00" pubdate data-updated="true">Oct 7<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/bower/'>bower</a>, <a class='category' href='/blog/categories/glup/'>glup</a>, <a class='category' href='/blog/categories/grunt/'>grunt</a>, <a class='category' href='/blog/categories/npm/'>npm</a>, <a class='category' href='/blog/categories/vs/'>vs</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/29/ng-ui-set-for-long-expression/" title="Previous Post: 解决ng界面长表达式(ui-set)">&laquo; 解决ng界面长表达式(ui-set)</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/';
+        var disqus_url = 'http://greengerong.github.io/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
