@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp; 在html5中为我们提供了一种本地缓存机制，它将取代我们的cookie，并且它是不会随浏览器发会我们的服务器端的。我们可以采用js在客户端自由的操作本地缓存。html5中缓存主要有localStorage，和sessionStorage。他们的用法一致。 &hellip;">
+  <meta name="description" content="&shy; 与屋外的夜融合&shy; 没了相伴的影&shy; 去了柳绿花红,还有&shy; 面部的表情,&shy; 正如落魄的&shy;茫然 死亡的静谧 &shy; &shy; 我在内心默祷&shy; 任书桌的狼籍 &shy; 墨汁的飘洒 &shy; 黑的延续&shy; 尽情低落的幸福 &nbsp &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,73 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/05/duan-dian/">断电</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-05T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/05/duan-dian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/05/duan-dian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&shy;</p>
+
+<p>与屋外的夜融合&shy;</p>
+
+<p>没了相伴的影&shy;</p>
+
+<p>去了柳绿花红,还有&shy;</p>
+
+<p>面部的表情,&shy;</p>
+
+<p>正如落魄的&shy;茫然</p>
+
+<p>死亡的静谧 &shy;</p>
+
+<p>&shy;</p>
+
+<p>我在内心默祷&shy;</p>
+
+<p>任书桌的狼籍 &shy;</p>
+
+<p>墨汁的飘洒 &shy;</p>
+
+<p>黑的延续&shy;</p>
+
+<p>尽情低落的幸福</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &mdash;破狼</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/05/1971372.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1518,113 +1585,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/11/29/F-chu-shi-2/">F#初试（2）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-11-29T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/11/29/F-chu-shi-2/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/29/F-chu-shi-2/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; 这里只是几个f#简单的算法应用，请各位别怕砖。</p>
-
-<pre><code>    代码
-
-    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 // Learn more about F# at http://fsharp.net
-
-    #light
-    open System
-
-
-    //简单的网页抓取
-    open System.Text
-    open System.IO
-    open System.Net
-    let http (url:string)=
-        let request=System.Net.WebRequest.Create(url)
-        let response=request.GetResponse()
-        let stream=response.GetResponseStream()
-        let reader=new System.IO.StreamReader(stream)
-        let html =reader.ReadToEnd();
-        html
-    printfn "%s" (http "http://www.google.com")
-
-    //汉罗塔问题：
-    let rec HanLiTa n a b c =
-        match n with
-        | 1 -&gt; printfn " Move %s to %s ;"  a c
-        | num -&gt;  HanLiTa (num-1) a c b ;HanLiTa 1 a b c ; HanLiTa (num-1) b a c ;
-
-    let n=4
-    printfn "HanLiTa start (%d):" n
-    HanLiTa n "A" "B" "C"
-
-    //Fibonacci基数
-
-    let rec Fib n = 
-        match n with
-        |2 |1 -&gt; 1
-        |i when i &gt;1 -&gt; Fib (i-1) + Fib (i-2)
-        |x  when x&lt;= 0 -&gt; failwith " you should input a Interger;"
-
-    let fibn=5    
-    printfn "Fibonacci %d : %d"     fibn (Fib fibn)
-
-
-    //杨辉三角
-    let rec combi n r =
-        let p=ref 1;
-        [1 .. r] |&gt; List.iter(fun g -&gt;  p:=!p*(n-g+1)/g );
-        !p
-
-    let CombiPrint N=
-        [0 .. N] |&gt;
-             List.iter(fun g -&gt; ([0 .. g] |&gt;
-                                        List.iter(fun h-&gt; 
-                                                    if h=0 then 
-                                                        [0..(N-g)] |&gt;
-                                                                 List.iter(fun s-&gt;printf "  ") ; 
-                                                    printf "%5d" (combi g h));
-                            printf "\r\n"));
-
-    printfn "\r\n杨辉三角:"
-    CombiPrint 10
-
-
-    Console.Read() |&gt;ignore
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/29/1891322.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -1658,6 +1618,10 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a>
       </li>
     
@@ -1683,10 +1647,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
     
       <li class="post">
         <a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a>
       </li>
     
   </ul>

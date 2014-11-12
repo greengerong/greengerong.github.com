@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-12T15:05:57+08:00</updated>
+  <updated>2014-11-12T19:44:42+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Vsftpd Refusing to Run With Writable Root Inside Chroot]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/"/>
+    <updated>2014-11-12T19:38:05+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot</id>
+    <content type="html"><![CDATA[<p><img src="images/blog_img/vsftpd.jpg" alt="vsftpd" /></p>
+
+<p>今天记录一个在安装vsftpd的时候遇见错误：</p>
+
+<pre><code>500 OOPS: vsftpd: refusing to run with writable root inside chroot ()
+</code></pre>
+
+<p>在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制，而这在最近的更新里是不被允许的。要修复这个错误，可以用命令chmod a-w /home/$user去除用户根目录的写权限,或者在vsftpd。conf配置允许writeable。</p>
+
+<p>设置允许writeable为：</p>
+
+<pre><code>allow_writeable_chroot=YES
+</code></pre>
+
+<p>最简单的方式就是允许writeable。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mockito自定义verify参数Matcher]]></title>
@@ -1330,102 +1353,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 </code></pre>
 
 <p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angular ngClick阻止冒泡,默认行为]]></title>
-    <link href="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/"/>
-    <updated>2014-02-11T22:27:29+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation</id>
-    <content type="html"><![CDATA[<p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
-
-<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
-
-<p>如ngClick在官方文档是这么描述的：</p>
-
-<pre><code>Expression to evaluate upon click. (Event object is available as $event)
-</code></pre>
-
-<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
-
-<pre><code>    var ngEventDirectives = {};
-    forEach(
-      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
-      function(name) {
-        var directiveName = directiveNormalize('ng-' + name);
-        ngEventDirectives[directiveName] = ['$parse', function($parse) {
-          return {
-            compile: function($element, attr) {
-              var fn = $parse(attr[directiveName]);
-              return function(scope, element, attr) {
-                element.on(lowercase(name), function(event) {
-                  scope.$apply(function() {
-                    fn(scope, {$event:event});
-                  });
-                });
-              };
-            }
-          };
-        }];
-      }
-    );
-</code></pre>
-
-<p>在上边代码我们可以得到两个信息：</p>
-
-<ol>
-<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
-<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
-</ol>
-
-
-<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
-
-<p>html 代码</p>
-
-<pre><code>    &lt;!DOCTYPE html&gt;
-    &lt;html id="ng-app" ng-app="app"&gt;
-    &lt;head&gt;
-    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
-      &lt;meta charset="utf-8"&gt;
-      &lt;title&gt;JS Bin&lt;/title&gt;
-    &lt;/head&gt;
-    &lt;body ng-controller="demo as d"&gt;
-       &lt;div ng-click="d.click('parent',$event)"&gt;
-         given some text for click
-         &lt;hr&gt;
-         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
-         &lt;hr&gt;
-         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
-
-       &lt;/div&gt;
-    &lt;/body&gt;
-    &lt;/html&gt;             
-</code></pre>
-
-<p>js 代码</p>
-
-<pre><code>angular.module("app",[])
-.controller("demo",[function(){
-  var vm = this;
-
-  vm.click = function(name,$event){
-    console.log(name +" -----called");
-    if(vm.stopPropagation){
-      $event.stopPropagation();
-    }
-  };
-
-  return vm;
-}]);
-</code></pre>
-
-<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
-
-<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
-
-<p>希望大家已经明白了，不要再问这类问题了。</p>
 ]]></content>
   </entry>
   
