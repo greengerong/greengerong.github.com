@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-10-07T12:34:07+08:00</updated>
+  <updated>2014-11-12T15:05:57+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,89 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mockito自定义verify参数Matcher]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/12/mockito-custom-verify-matcher/"/>
+    <updated>2014-11-12T13:53:13+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/12/mockito-custom-verify-matcher</id>
+    <content type="html"><![CDATA[<p>在TDD开发中，也许我们会遇见对一些重要的无返回值的行为测试，比如在用户的积分DB中增加用户的积分，这个行为对于我们的业务具有重要的价值，所以我们也希望能测试覆盖这部分业务价值。这个时候我们就得使用mockito带来的verify断言，但verify的参数断言主要有eq，或者any常见的方式。有时我们也希望能够断言对象的一部分属性，比如上文的积分数值，对于不同的场景增加的用户积分可能不同。</p>
+
+<p>回到Mockito的参数Matcher，Mockito给我们提供了ArgumentMatcher，以供我们来扩展Matcher。下面假设一个增加用户积分的场景：</p>
+
+<pre><code>     public class Game {
+        private String type;
+        private int rate;
+
+        public Game(String type, int rate) {
+            this.type = type;
+            this.rate = rate;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public int getRate() {
+            return rate;
+        }
+
+    }
+
+    public class GameDao {
+        public void addRate(Game game) {
+            //TODO: insert to db
+        }
+    }
+</code></pre>
+
+<p>我们希望能够对verify GameDao调用了addRate，并且是积分rate为特定值。</p>
+
+<p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
+
+<pre><code>     public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+            private Object value;
+            private Function&lt;T, Object&gt; function;
+
+            public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
+                this.value = value;
+                this.function = getProperty;
+            }
+
+            @Override
+            public boolean matches(Object o) {
+                return (o instanceof Game) ? function.apply((T) o).equals(value) : false;
+            }
+        }
+</code></pre>
+
+<p>所以我们的测试可以如下：</p>
+
+<pre><code>    @Test
+    public void should_run_customer_mockito_matcher() throws Exception {
+
+        final GameDao gameDao = mock(GameDao.class);
+        gameDao.addRate(new Game("签到", 7));
+
+        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
+            @Override
+            public Object apply(Game game) {
+                return game.getRate();
+            }
+        }, 7)));
+
+        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
+            @Override
+            public Object apply(Game game) {
+                return game.getType();
+            }
+        }, "签到")));
+    }
+</code></pre>
+
+<p>Mockito给我们提供了很多关于Matcher扩展的方法，本文只是ArgumentMatcher的实例。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持]]></title>
@@ -1343,47 +1426,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 <p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
 
 <p>希望大家已经明白了，不要再问这类问题了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ngCloak 实现 Angular 初始化闪烁最佳实践]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak-new/"/>
-    <updated>2013-12-27T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/27/angular-ngcloak-new</id>
-    <content type="html"><![CDATA[<p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
-
-<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
-
-<pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
- &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
- &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：</p>
-
-<pre><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
-&lt;/style&gt;
-</code></pre>
-
-<p>从上面我们可以看见angular将带有ng-clock的的元素设置为display:none，隐藏掉，在等到angular解析到带有ng-clock的节点时候，会把attribute和class同时remove掉，这样就可以实现防止节点的闪烁。</p>
-
-<pre><code>var ngCloakDirective = ngDirective({
-      compile: function(element, attr) {
-        attr.$set('ngCloak', undefined);
-        element.removeClass('ng-cloak');
-      }
-});
-</code></pre>
-
-<p>在angular-bootstrap.js中会看见这样的代码去增加前面所说的css：</p>
-
-<pre><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
-</code></pre>
-
-<p>好像闪烁的问题好像已经能够被我解决了，恩是否是这样的，理论也改如此，但是现实是残酷的，我们的感性认识经常会被现实一记重重的耳光，我们才能很更深入全面的思考，如果浏览器的速度比angular在head中加入css的速度还快呢？我在给公司的一个项目组解决这个闪烁的问题的时候就遇见了这个问题。怎么办呢？那我们只能使出我们必杀技，自己把css加入我们的css文件引入heade，启动加载，ok这样就可以完美解决了。(如果你也遇见了加了ng-cloak还不起作用的话，那么试试直接引入css文件吧)</p>
-
-<p>到这里关于ng-cloak的原理和解决方案已经完成，欢迎继续关注angular的后续经验篇分享。</p>
 ]]></content>
   </entry>
   
