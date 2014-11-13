@@ -3,7 +3,7 @@ layout: post
 title: "vsftpd refusing to run with writable root inside chroot"
 date: 2014-11-12 19:38:05 +0800
 comments: true
-categories: 
+categories: [vsftpd]
 ---
 
 ![vsftpd](images/blog_img/vsftpd.jpg)
