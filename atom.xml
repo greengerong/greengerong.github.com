@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-12T19:44:42+08:00</updated>
+  <updated>2014-11-13T21:26:02+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,106 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[TypeScript - 基本类型系统]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/13/typescript-basic-types/"/>
+    <updated>2014-11-13T19:53:50+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/13/typescript-basic-types</id>
+    <content type="html"><![CDATA[<p>对于程序员来说我们需要基本的数据单元，如：numbers, strings, structures, boolean 等类型结构。在TypeScript中支持很多你所期望在JavaScript中拥有的类型系统。</p>
+
+<h4>Boolean</h4>
+
+<p>在JavaScript和TypeScript中也具有最基本的逻辑断言值true/false，采用&#8217;boolean&#8217;类型。</p>
+
+<pre><code>var isDone: boolean = false;
+</code></pre>
+
+<h4>Number</h4>
+
+<p>如JavaScript，TypeScript所有的数值类型采用浮点型计数，其类型为‘number’。</p>
+
+<pre><code>var height: number = 6;
+</code></pre>
+
+<h4>String</h4>
+
+<p>在webpages的JavaScript或者服务端的应用程序最基本的功能就是处理文本数据。在其他语言中大多使用&#8217;string&#8217;去代表文本数据类型。TypeScript和JavaScript一样也是用双引号(&ldquo;)或者单引号包裹文本数据。</p>
+
+<pre><code>var name: string = "bob";
+    name = 'smith';
+</code></pre>
+
+<h4>Array</h4>
+
+<p>在TypeScript中如JavaScript一样允许我们操结合操作。数组类型可以使用下边两种方式之一。</p>
+
+<p>第一种方式，你可以在数据类型之后带上&#8217;[]&lsquo;:</p>
+
+<pre><code>var list:number[] = [1, 2, 3];
+</code></pre>
+
+<p>第二种方式，也可以采用泛型的数组类型：</p>
+
+<pre><code>var list:Array&lt;number&gt; = [1, 2, 3];
+</code></pre>
+
+<h4>Enum</h4>
+
+<p>TypeScript为JavaScript新增了枚举这种标准的集合数据类型。和在c#中一样，枚举是为一组数值类型一组更友好的名称。</p>
+
+<pre><code>enum Color {Red, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>默认枚举类型其实数值从0开始，你可以可用手动设置某一个成员的数值。例如我们可以将上文的起始值定为1：</p>
+
+<pre><code>enum Color {Red = 1, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>或是手动设置全部的枚举成员：</p>
+
+<pre><code>enum Color {Red = 1, Green = 2, Blue = 4};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>枚举类型可以和容易从一个数值类型获取对应枚举名称。例如我们有一个数值类型2，但不确认将匹配哪一个枚举成员，那么我们可以如下使用：</p>
+
+<pre><code>enum Color {Red = 1, Green, Blue};
+var colorName: string = Color[2];
+
+alert(colorName);
+</code></pre>
+
+<h4>Any</h4>
+
+<p>有时我们需要描述一些我们不知道的什么写进应用的动态数据类型，这可能来自第三方用户或者lib。在这里我们希望该数据不要加入TypeScript的类型检查,是的此值通过编译时检查。为此我们可以采用‘any’类型标注：</p>
+
+<pre><code>var notSure: any = 4;
+notSure = "maybe a string instead";
+notSure = false; // okay, definitely a boolean
+</code></pre>
+
+<p>‘any’类型是一种强大的兼容存在的JavaScript库的类型系统。他允许跳过TypeScript的编译时类型的检查。</p>
+
+<p>&lsquo;any&#8217;类型对于我们只知道部分数据类型，但是不是所有的数据类型的类型系统。如一个混合了多种类型的集合数组。</p>
+
+<pre><code>var list:any[] = [1, true, "free"];
+
+list[1] = 100;
+</code></pre>
+
+<h4>Void</h4>
+
+<p>和‘any’相对的数据类型则是’Void‘，它代表没有任何数据类型。我们常用的一个方法没有任何返回值：</p>
+
+<pre><code>function warnUser(): void {
+    alert("This is my warning message");
+}
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Vsftpd Refusing to Run With Writable Root Inside Chroot]]></title>
@@ -1276,83 +1376,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 <p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
 
 <p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[为Angularjs ngOptions加上index解决方案]]></title>
-    <link href="http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/"/>
-    <updated>2014-02-15T21:43:06+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/02/15/index-for-ng-options</id>
-    <content type="html"><![CDATA[<p>今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.</p>
-
-<p>其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。</p>
-
-<p>把这个问题换成角度来看,我们所需要的就是js数组的下标，所以我们如果我们能够在对象上加入下标，使用表达式作为option的label就能解决了。</p>
-
-<p>但是第一印象让我想起的是js数组本来就是一个key/value的对象，只是key为数组下标而已，所以有了如下之设计：</p>
-
-<p>html:</p>
-
-<pre><code>  &lt;pre&gt;&lt;/pre&gt;
-
-  &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
-</code></pre>
-
-<p>  js:</p>
-
-<pre><code>$scope.getDesc1 = function(key, value) {
-    return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
-};
-</code></pre>
-
-<p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
-
-<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
-  &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
-  &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
-  &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
-  &lt;option value="11" &gt;12-&amp;gt;jw_jobcomment&lt;/option&gt;
-  &lt;option value="12" &gt;13-&amp;gt;jw_companyInfo&lt;/option&gt;
-  ....
-&lt;/select&gt;
-</code></pre>
-
-<p>所以这样是无法解决的。还好博主还有一招，ngOptions支持Angularjs的filter，所以我们可以对数据源对象上加上一个order字段标示下标作为序号。并且你可以在一个2年前的Angular的issue中看到Angular已经fix issue，option会对数组进行按下标顺序生成。</p>
-
-<p>html:</p>
-
-<pre><code>&lt;pre&gt;&lt;/pre&gt;
-
-&lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
-</code></pre>
-
-<p>js:</p>
-
-<pre><code>    var app = angular.module('plunker', []);
-
-    app.controller('MainCtrl', function($scope) {
-      $scope.t = [{
-        "field": "jw_companyTalent"
-      }, {
-        "field": "jw_reportgroup"
-      }];
-      $scope.getDesc = function(l) {
-        return l.order + "-&gt;" + l.field;
-      };
-    }).filter("index", [
-      function() {
-        return function(array) {
-          return (array || []).map(function(item, index) {
-            item.order = index + 1;
-            return item;
-          });
-        };
-      }
-    ]);
-</code></pre>
-
-<p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
 ]]></content>
   </entry>
   
