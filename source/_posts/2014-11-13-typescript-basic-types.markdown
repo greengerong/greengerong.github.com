@@ -5,7 +5,7 @@ date: 2014-11-13 19:53:50 +0800
 comments: true
 categories: [TypeScript]
 ---
-对于程序员来说我们需要基本的数据单元，如：numbers, strings, structures, boolean 等类型结构。在TypeScript中支持很多你所期望在JavaScript中拥有的类型系统。
+对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。
 
 ####Boolean
 
