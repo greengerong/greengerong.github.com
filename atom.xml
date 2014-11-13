@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-13T21:26:02+08:00</updated>
+  <updated>2014-11-13T21:29:58+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -18,7 +18,7 @@
     <link href="http://greengerong.github.io/blog/2014/11/13/typescript-basic-types/"/>
     <updated>2014-11-13T19:53:50+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/11/13/typescript-basic-types</id>
-    <content type="html"><![CDATA[<p>对于程序员来说我们需要基本的数据单元，如：numbers, strings, structures, boolean 等类型结构。在TypeScript中支持很多你所期望在JavaScript中拥有的类型系统。</p>
+    <content type="html"><![CDATA[<p>对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。</p>
 
 <h4>Boolean</h4>
 
