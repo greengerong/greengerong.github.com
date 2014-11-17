@@ -401,7 +401,7 @@ end
 
 ## post to another blogs
 desc "sync latest post to MetaWeblog site"
-task :sync_latest_post, :passwd do |t, args|
+task :sync_post, :passwd do |t, args|
   puts "Sync the latest post to MetaWeblog site"
   system "ruby plugins/sync_latest_post.rb  " + args[:passwd]
 end
