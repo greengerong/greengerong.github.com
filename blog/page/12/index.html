@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="制作Windows服务时候的Timer控件并不是在工具箱上直接拖拽过来的Timer，那是System.Windows.Forms命名空间下的组件，而我们这里使用的Timer应该是System.Timers.Timer. &nbsp; 解决方法有： 打开&#8221;工具箱&#8221;&mdash &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在c# OleDb操作Access时间类型的时候报错：操作符丢失，或者提示错误&#8220;标准表达式中数据类型不匹配&#8221;。 解决方案： &nbsp;&nbsp;&nbsp;&nbsp; ASP.NET在操作日期型数据的时候, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/10/c-OleDb-cao-zuo-Access-shi-jian-lei-xing-cao-zuo-fu-diu-shi-huo-zhe-ti-shi-cuo-wu-biao-zhun-biao-da-shi-zhong-shu-ju-lei-xing-bu-pi-pei/">C# OleDb操作Access时间类型：操作符丢失，或者提示错误“标准表达式中数据类型不匹配</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/09/10/c-OleDb-cao-zuo-Access-shi-jian-lei-xing-cao-zuo-fu-diu-shi-huo-zhe-ti-shi-cuo-wu-biao-zhun-biao-da-shi-zhong-shu-ju-lei-xing-bu-pi-pei/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/10/c-OleDb-cao-zuo-Access-shi-jian-lei-xing-cao-zuo-fu-diu-shi-huo-zhe-ti-shi-cuo-wu-biao-zhun-biao-da-shi-zhong-shu-ju-lei-xing-bu-pi-pei/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在c# OleDb操作Access时间类型的时候报错：操作符丢失，或者提示错误&#8220;标准表达式中数据类型不匹配&#8221;。</p>
+
+<p>解决方案：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; ASP.NET在操作日期型数据的时候,向ACCESS中的&#8221;时间/日期&#8221;字段中插入数据需要两边加#，而SQL SERVER不用。 这可能是C#中的日期类型无法直接转换成Access中的日期类型OleDbType.DBDate所致，因此上面代码向ACCESS中的&#8221;时间/日期&#8221;字段中插入DateTime.Now时出现错误信息&#8220;标准表达式中数据类型不匹配。&#8221;</p>
+
+<p>如代码：</p>
+
+<pre><code>String Sql = "update  ly set re_message='" + TextBox1.Text +    "',re_date=#" + DateTime.Now + "# where ID=" + page_id;
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/10/1823524.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1514,93 +1564,6 @@ if( r ) alert('You entered ' + r);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-zui-zhong-ji-rang-ai-bian-yi-tong-guo/">Visual Studio 2010网剧最终季：《让爱编译通过》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-zui-zhong-ji-rang-ai-bian-yi-tong-guo/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/04/27/Visual-Studio-2010-wang-ju-zui-zhong-ji-rang-ai-bian-yi-tong-guo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;</p>
-
-<p>第五集：让爱编译通过</p>
-
-<p>妈妈说你什么都好，就不该是个程序员&hellip;</p>
-
-<p>这份爱能否编译通过？</p>
-
-<p>&nbsp;</p>
-
-<div style="text-align: center">
-<object data="http://player.ku6.com/refer/0sTIFJ4jxsmyFAyk/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="data" value="http://player.ku6.com/refer/0sTIFJ4jxsmyFAyk/v.swf"     />
-<param name="align" value="middle"     />
-<param name="src" value="http://player.ku6.com/refer/0sTIFJ4jxsmyFAyk/v.swf"     />
-<param name="allowfullscreen" value="true"     />
-<param name="quality" value="high"     /></object></div>
-
-
-<p>   <div style="width:500px;"></p>
-
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/13/">&larr; Older</a>
@@ -1634,6 +1597,10 @@ if( r ) alert('You entered ' + r);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
       </li>
     
@@ -1659,10 +1626,6 @@ if( r ) alert('You entered ' + r);
     
       <li class="post">
         <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
       </li>
     
   </ul>

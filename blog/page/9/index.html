@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; html5作为下一代web标准，年前轩起了html5热潮。对于html5我只是本着了解看看。关于html5和RIA（silverlight，flash，JavaFx等）我不想说什么，也没有什么可说的，存在就有其存在的理由。 &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; &nbsp;最近在做一个流程引擎，现着手于自定义模板的处理。设计在模板中所有的数据都将与字段对应，采用xml结构序列化作为流程持久化机制。字段对于用户的输入则为字段，字段涉及到用户的输入，必定是控件。由于有以前项目word模板转化为在线展示输入经验（ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,59 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/">StringTemplate遇见jQuery的冲突</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; &nbsp;最近在做一个流程引擎，现着手于自定义模板的处理。设计在模板中所有的数据都将与字段对应，采用xml结构序列化作为流程持久化机制。字段对于用户的输入则为字段，字段涉及到用户的输入，必定是控件。由于有以前项目word模板转化为在线展示输入经验（这里不仅仅是将word转化为html，还需要提取word书签作为关键字段，关键字段作为用户的输入，根据用户配置转化为文本框，下拉框，数字，货币框，时间等等可扩展控件）。我在本次的模板设计中不再考虑服务器控件，因为服务器控件将生成一大堆难以控制的html标记。所以彻底疯狂了一把，采用完全html+jQuery实现（验证用的也是jQuery validator）。关于流程的设计将会在后续慢慢总结。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天只是记录一下在控件用户设置界面字段修改界面需要还原用户的上次记录，因为我的全是html+jQuery，所以在框架设计中提供了两种方案：1：根据page对象注册页面初始化脚本，回填控件值。2：利用StringTemplate生成带有回填值的html输出。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 就是第二种方案的使用，出现了StringTemplate对于jQuery$的错误解析：解决方案总结如下：</p>
+
+<ol>
+<li>从jQuery触发，可以利用jQuery()代替$()。</li>
+<li>StringTemplate这可以使jQuery的$转义：\$.</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp; 内容很少，废话很多，网见谅。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/09/21/2184488.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1181,58 +1234,6 @@ namespace SilverlightApplication2
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Excel 货币中文大写汉字转化</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Excel转化货币数字为中文大写：例如：</p>
-
-<p>效果图：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/ExcelP.jpg" alt="" /></p>
-
-<p>代码：</p>
-
-<pre><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
-</code></pre>
-
-<p>&nbsp;这个奖可以结合ASPOSE.Cells处理我的报表导出Excel的汇总，计算问题：<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/21/Aspose_Cells_Template1.html"><font color="#6699cc">报表中的Excel操作之Aspose.Cells（Excel模板）</font></a> 唯一需要改变的就是D8这个单元汇总格是需要动态变更的，可以利用{r}。{-n}，{c}等来处理。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/26/1996192.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/10/">&larr; Older</a>
@@ -1266,6 +1267,10 @@ namespace SilverlightApplication2
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
       </li>
     
@@ -1291,10 +1296,6 @@ namespace SilverlightApplication2
     
       <li class="post">
         <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
       </li>
     
   </ul>

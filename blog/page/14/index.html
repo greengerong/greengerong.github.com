@@ -9,13 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="怎样调整代码排版的格式？
-选择：编辑—>高级—>设置文档的格式 或 编辑—>高级—>设置选中代码的格式。
-格式化cs代码：Ctrl+k+f 格式化aspx代码：Ctrl+k+d
-怎样跳转到指定的某一行？
-两种方法：Ⅰ. Ctrl+G Ⅱ. 单击状态栏中的行号
-怎样创建矩形选区？
-两种方法：Ⅰ. &hellip;">
+  <meta name="description" content="方法有： 示例 if(e.KeyChar = &lsquo;\r&rsquo;) { SendKeys.Send(&ldquo;{TAB}&rdquo;); } 但是 也许是我程序里处理了太多的键盘事件，用它总是反映很慢，有时候还死机。 把Form的KeyPreView设为true， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +65,111 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/18/winform-hui-che-Tab-fang-fa/">Winform 回车&#8211;&gt;Tab方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-18T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/18/winform-hui-che-Tab-fang-fa/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/18/winform-hui-che-Tab-fang-fa/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>方法有：</p>
+
+<ol>
+<li><p>示例</p>
+
+<p> if(e.KeyChar = &lsquo;\r&rsquo;)
+ {
+  SendKeys.Send(&ldquo;{TAB}&rdquo;);
+ }</p></li>
+</ol>
+
+
+<p>但是 也许是我程序里处理了太多的键盘事件，用它总是反映很慢，有时候还死机。</p>
+
+<ol>
+<li><p>把Form的<span style="color: red">KeyPreView设为true</span>，然后在Form的KeyPress中增加下列代码即可：</p>
+
+<p> private void Form1_KeyPress(object sender,      KeyPressEventArgs e)
+       {          <br/>
+             this.SelectNextControl(this.ActiveControl,      true, true, true, true);
+     }</p></li>
+<li><p>用nextControl.Focus();//nextControl 为Control；</p></li>
+</ol>
+
+
+<p>4:Control.rocessTabKey（true）；也可以实现
+方法2对于对于我这个CODE很使用，因为我的控件时动态生成的(及处理它时他的下一个控件还没产生呢)；</p>
+
+<p>关于方法2 查了下MSDN,记录如下：</p>
+
+<pre><code>public bool SelectNextControl (
+    Control ctl,
+    bool forward,
+    bool tabStopOnly,
+    bool nested,
+    bool wrap
+)
+</code></pre>
+
+<p>参数
+ctl
+从其上开始搜索的 Control。</p>
+
+<p>forward
+如果为 true 则在 Tab 键顺序中前移；如果为 false 则在 Tab 键顺序中后移。</p>
+
+<p>tabStopOnly
+true 表示忽略 TabStop 属性设置为 false 的控件；false 表示不忽略。</p>
+
+<p>nested
+true 表示包括嵌套子控件（子控件的子级）；false 表示不包括。</p>
+
+<p>wrap
+true 表示在到达最后一个控件之后从 Tab 键顺序中第一个控件开始继续搜索；false 表示不继续搜索。</p>
+
+<p>返回值
+如果控件已激活，则为 true；否则为 false。
+备注
+如果在 ControlStyles 中将控件的 Selectable 样式位设置为 true，且该控件包含在另一个控件中，并且其所有父控件都可见并已启用，则</p>
+
+<p>SelectNextControl 方法将激活 Tab 键顺序中的下一个控件。</p>
+
+<p>下面列表中的 Windows 窗体控件是不可选择的。从该列表中的控件派生的控件也是不可选择的。</p>
+
+<p>Label Panel GroupBox PictureBox ProgressBar Splitter LinkLabel（当控件中没有链接时）</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/18/1605280.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -964,6 +1063,10 @@ public int MyProperty { get; set; },</p></li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
       </li>
     
@@ -989,10 +1092,6 @@ public int MyProperty { get; set; },</p></li>
     
       <li class="post">
         <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a>
       </li>
     
   </ul>

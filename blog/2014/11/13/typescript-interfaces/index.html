@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>TypeScript - Interfaces - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="简介 关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这优势称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。 初见Interface &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/11/13/typescript-interfaces">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">TypeScript - Interfaces</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-13T21:49:25+08:00" pubdate data-updated="true">Nov 13<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h4>简介</h4>
+
+<p>关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这优势称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。</p>
+
+<h4>初见Interface</h4>
+
+<p>理解interface的最好办法，就是写个hello world程序：</p>
+
+<pre><code>function printLabel(labelledObj: {label: string}) {
+  console.log(labelledObj.label);
+}
+
+var myObj = {size: 10, label: "Size 10 Object"};
+printLabel(myObj);
+</code></pre>
+
+<p>在这里类型检查系统会检查printLabel这个函数，printLabel函数要求传入一个包含一个label的字符串属性。上例可以了解我们传入的对象可以有多个属性，但是类型检查系统只会检查printLabel所要求的label属性是否满足其要求。</p>
+
+<p>接下来我们可以进一步简化，声明一个interface来描述一个具有label字符串属性的对象：</p>
+
+<pre><code>interface LabelledValue {
+  label: string;
+}
+
+function printLabel(labelledObj: LabelledValue) {
+  console.log(labelledObj.label);
+}
+
+var myObj = {size: 10, label: "Size 10 Object"};
+printLabel(myObj);
+</code></pre>
+
+<p>接口LabelledValue描述了上例中printLabel的所要求的类型对象。它依然代表包含一个label的字符串属性。可以看见我们利用‘shape’(行)描述了printLabel的传入参数要求。</p>
+
+<h4>可选的Properties</h4>
+
+<p>有时不是所有定义在interface中的属性都是必须的。例如流行的&#8221;option bags&#8221;模式(option配置)，使用者可以之传入部分定制化属性。如下面“option bags”模式：</p>
+
+<p>interface SquareConfig {
+  color?: string;
+  width?: number;
+}</p>
+
+<pre><code>function createSquare(config: SquareConfig): {color: string; area: number} {
+  var newSquare = {color: "white", area: 100};
+  if (config.color) {
+    newSquare.color = config.color;
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width;
+  }
+  return newSquare;
+}
+
+var mySquare = createSquare({color: "black"});
+</code></pre>
+
+<p>带有可选属性的interface定义和c#语言很相似，以&#8217;?&lsquo;紧跟类型后边表示。</p>
+
+<p>interface的可选属性可以限制那些属性是可用的，这部分能得到类型检查，以及智能感知。例如下例：</p>
+
+<pre><code>interface SquareConfig {
+  color?: string;
+  width?: number;
+}
+
+function createSquare(config: SquareConfig): {color: string; area: number} {
+  var newSquare = {color: "white", area: 100};
+  if (config.color) {
+    newSquare.color = config.collor;  // 类型检查系统能识别不正确的属性collor.
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width;
+  }
+  return newSquare;
+}
+
+var mySquare = createSquare({color: "black"});  
+</code></pre>
+
+<h4>函数类型</h4>
+
+<p>Interfaces为了描述对象能接收的数据形(shapes)的返回。对于interface不仅难呢过描述对象的属性，也能描述函数类型。</p>
+
+<p>下面是定义的interface signature是一个接收两个string的输入参数，并返回boolean的函数类型：</p>
+
+<pre><code>interface SearchFunc {
+  (source: string, subString: string): boolean;
+}
+</code></pre>
+
+<p>我也可以使用函数类型的interface去描述我们的数据。下面演示如何将一个相同类型的函数赋值给interface：</p>
+
+<pre><code>var mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+  var result = source.search(subString);
+  if (result == -1) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+</code></pre>
+
+<p>对于函数类型的interface，并不需要参数名的对应相同，如下例：</p>
+
+<pre><code>var mySearch: SearchFunc;
+mySearch = function(src: string, sub: string) {
+  var result = src.search(sub);
+  if (result == -1) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+</code></pre>
+
+<p>对于函数参数的检查，会按照参数的顺序检查对应的类型是否匹配。同时也会检查函数的返回类型是否匹配，在这个函数我们期望返回boolean类型true/false， 如果返回的是numbers或者string，则类型检查系统会提示返回值类型不匹配。</p>
+
+<h4>数组类型</h4>
+
+<p>类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个&#8217;index&#8217;类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：</p>
+
+<pre><code>interface StringArray {
+  [index: number]: string;
+}
+
+var myArray: StringArray;
+myArray = ["Bob", "Fred"]
+</code></pre>
+
+<p>index的支持两种类型，分别是字符串和数值类型. 我们可以限制index的类型，同时也可以检查index项的返回值类型。</p>
+
+<p>index的类型签名可以描述常用的数组或者是‘dictionary’（字典序）模式，这点会强制所有的属性都需要和其返回值匹配。下例中length属性不匹配这点，所以类型检查会给出一个错误：</p>
+
+<pre><code>interface Dictionary {
+  [index: string]: string;
+  length: number;    // error, the type of 'length' is not a subtype of the indexer
+} 
+</code></pre>
+
+<h4>Class类型</h4>
+
+<h2>实现interface</h2>
+
+<p>在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：</p>
+
+<pre><code>interface ClockInterface {
+    currentTime: Date;
+}
+
+class Clock implements ClockInterface  {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+</code></pre>
+
+<p>同样也可以在interface中实现函数类型的契约，并要求clas实现此函数。如下例的‘setTime’函数：</p>
+
+<pre><code>interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+}
+
+class Clock implements ClockInterface  {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}
+</code></pre>
+
+<p>interface描述的的是class的公开(public)部分，而不是私有部分.</p>
+
+<h2>类static/instance区别</h2>
+
+<p>当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。</p>
+
+<pre><code>interface ClockInterface {
+    new (hour: number, minute: number);
+}
+
+class Clock implements ClockInterface  {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+</code></pre>
+
+<p>这是因为一个类去实现接口的时候，只有instance(实例)的部分才会被检查。而构造函数属于静态部分，所以不会被类型检查。</p>
+
+<p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
+
+<p>interface ClockStatic {</p>
+
+<pre><code>new (hour: number, minute: number);
+</code></pre>
+
+<p>}</p>
+
+<p>class Clock  {</p>
+
+<pre><code>currentTime: Date;
+constructor(h: number, m: number) { }
+</code></pre>
+
+<p>}</p>
+
+<p>var cs: ClockStatic = Clock;
+var newClock = new cs(7, 30);</p>
+
+<h2>interface的集成</h2>
+
+<p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
+
+<pre><code>interface Shape {
+    color: string;
+}
+
+interface Square extends Shape {
+    sideLength: number;
+}
+
+var square = &lt;Square&gt;{};
+square.color = "blue";
+square.sideLength = 10;
+</code></pre>
+
+<p>一个interface可以同时集成多个interface，实现多个接口成员的合并。</p>
+
+<pre><code>interface Shape {
+    color: string;
+}
+
+interface PenStroke {
+    penWidth: number;
+}
+
+interface Square extends Shape, PenStroke {
+    sideLength: number;
+}
+
+var square = &lt;Square&gt;{};
+square.color = "blue";
+square.sideLength = 10;
+square.penWidth = 5.0;
+</code></pre>
+
+<h4>混合式类型</h4>
+
+<p>如前边提到的一样，在interface几乎可以描述JavaScript世界的一切对象。因为JavaScript是一个动态，灵活的脚本语言，所以偶尔也希望一个对象能够描述一些多个类型.</p>
+
+<p>下面是一个混合式描述函数，对象以及额外属性的实例：</p>
+
+<pre><code>interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}
+
+var c: Counter;
+c(10);
+c.reset();
+c.interval = 5.0;
+</code></pre>
+
+<p>和第三方JavaScript库交互的时候，也许我们也会上面的模式来描述一个完整的类型。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-13T21:49:25+08:00" pubdate data-updated="true">Nov 13<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/typescript/'>TypeScript</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/13/typescript-basic-types/" title="Previous Post: TypeScript - 基本类型系统">&laquo; TypeScript - 基本类型系统</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2014/11/13/typescript-interfaces/';
+        var disqus_url = 'http://greengerong.github.io/blog/2014/11/13/typescript-interfaces/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
