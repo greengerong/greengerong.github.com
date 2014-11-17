@@ -185,17 +185,17 @@ interface描述的的是class的公开(public)部分，而不是私有部分.
 
 相反你可以直接在类中实现这些(static)静态部分，如下例：
 
-interface ClockStatic {
-    new (hour: number, minute: number);
-}
+	interface ClockStatic {
+	    new (hour: number, minute: number);
+	}
 
-class Clock  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
+	class Clock  {
+	    currentTime: Date;
+	    constructor(h: number, m: number) { }
+	}
 
-var cs: ClockStatic = Clock;
-var newClock = new cs(7, 30);
+	var cs: ClockStatic = Clock;
+	var newClock = new cs(7, 30);
 
 ####interface的继承
 
