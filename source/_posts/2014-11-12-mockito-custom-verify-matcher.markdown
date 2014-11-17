@@ -50,7 +50,7 @@ categories: [java, TDD]
 
 		        @Override
 		        public boolean matches(Object o) {
-		            return (o instanceof Game) ? function.apply((T) o).equals(value) : false;
+		            return function.apply((T) o).equals(value);
 		        }
 		    }
 
