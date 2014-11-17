@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-17T12:58:36+08:00</updated>
+  <updated>2014-11-17T13:04:38+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -213,23 +213,18 @@ class Clock implements ClockInterface  {
 
 <p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
 
-<p>interface ClockStatic {</p>
+<pre><code>interface ClockStatic {
+    new (hour: number, minute: number);
+}
 
-<pre><code>new (hour: number, minute: number);
+class Clock  {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+
+var cs: ClockStatic = Clock;
+var newClock = new cs(7, 30);
 </code></pre>
-
-<p>}</p>
-
-<p>class Clock  {</p>
-
-<pre><code>currentTime: Date;
-constructor(h: number, m: number) { }
-</code></pre>
-
-<p>}</p>
-
-<p>var cs: ClockStatic = Clock;
-var newClock = new cs(7, 30);</p>
 
 <h4>interface的继承</h4>
 
