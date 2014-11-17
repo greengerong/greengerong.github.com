@@ -3,12 +3,12 @@ layout: post
 title: "TypeScript - Interfaces"
 date: 2014-11-13 21:49:25 +0800
 comments: true
-categories: [TypeScript]
+categories: [TypeScript， JavaScript]
 ---
 ####简介
-关注于数据值的 'shape'的类型检查是TypeScript核心设计原则。这优势称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。
+关注于数据值的 'shape'的类型检查是TypeScript核心设计原则。这中模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。
 
-####初见Interface
+##初见Interface
 
 理解interface的最好办法，就是写个hello world程序：
 
@@ -36,7 +36,7 @@ categories: [TypeScript]
 
 接口LabelledValue描述了上例中printLabel的所要求的类型对象。它依然代表包含一个label的字符串属性。可以看见我们利用‘shape’(行)描述了printLabel的传入参数要求。
 
-####可选的Properties
+##可选的Properties
 有时不是所有定义在interface中的属性都是必须的。例如流行的"option bags"模式(option配置)，使用者可以之传入部分定制化属性。如下面“option bags”模式：
 
 interface SquareConfig {
@@ -79,7 +79,7 @@ interface的可选属性可以限制那些属性是可用的，这部分能得�
 
 	var mySquare = createSquare({color: "black"});  
 
-####函数类型
+##函数类型
 
 Interfaces为了描述对象能接收的数据形(shapes)的返回。对于interface不仅难呢过描述对象的属性，也能描述函数类型。
 
@@ -117,7 +117,7 @@ Interfaces为了描述对象能接收的数据形(shapes)的返回。对于inter
 
 对于函数参数的检查，会按照参数的顺序检查对应的类型是否匹配。同时也会检查函数的返回类型是否匹配，在这个函数我们期望返回boolean类型true/false， 如果返回的是numbers或者string，则类型检查系统会提示返回值类型不匹配。
 
-####数组类型
+##数组类型
 
 类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个'index'类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：
 
@@ -137,9 +137,9 @@ index的类型签名可以描述常用的数组或者是‘dictionary’（字�
 	  length: number;    // error, the type of 'length' is not a subtype of the indexer
 	} 
 
-####Class类型
+##Class类型
 
-##实现interface
+####实现interface
 在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：
 
 	interface ClockInterface {
@@ -168,7 +168,7 @@ index的类型签名可以描述常用的数组或者是‘dictionary’（字�
 
 interface描述的的是class的公开(public)部分，而不是私有部分.
 
-##类static/instance区别
+####类static/instance区别
 
 当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。
 
@@ -197,7 +197,7 @@ class Clock  {
 var cs: ClockStatic = Clock;
 var newClock = new cs(7, 30);
 
-##interface的集成
+####interface的集成
 
 和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。
 
@@ -232,7 +232,7 @@ var newClock = new cs(7, 30);
 	square.sideLength = 10;
 	square.penWidth = 5.0;
 
-####混合式类型
+##混合式类型
 
 如前边提到的一样，在interface几乎可以描述JavaScript世界的一切对象。因为JavaScript是一个动态，灵活的脚本语言，所以偶尔也希望一个对象能够描述一些多个类型.
 
