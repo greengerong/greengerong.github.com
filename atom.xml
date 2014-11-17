@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-17T12:53:56+08:00</updated>
+  <updated>2014-11-17T12:58:36+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,7 +20,7 @@
     <id>http://greengerong.github.io/blog/2014/11/13/typescript-interfaces</id>
     <content type="html"><![CDATA[<h4>简介</h4>
 
-<p>关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这中模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。</p>
+<p>关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这种模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。</p>
 
 <h2>初见Interface</h2>
 
@@ -231,7 +231,7 @@ constructor(h: number, m: number) { }
 <p>var cs: ClockStatic = Clock;
 var newClock = new cs(7, 30);</p>
 
-<h4>interface的集成</h4>
+<h4>interface的继承</h4>
 
 <p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
 
