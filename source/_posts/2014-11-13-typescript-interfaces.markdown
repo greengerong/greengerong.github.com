@@ -6,7 +6,7 @@ comments: true
 categories: [TypeScript， JavaScript]
 ---
 ####简介
-关注于数据值的 'shape'的类型检查是TypeScript核心设计原则。这中模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。
+关注于数据值的 'shape'的类型检查是TypeScript核心设计原则。这种模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。
 
 ##初见Interface
 
@@ -197,7 +197,7 @@ class Clock  {
 var cs: ClockStatic = Clock;
 var newClock = new cs(7, 30);
 
-####interface的集成
+####interface的继承
 
 和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。
 
