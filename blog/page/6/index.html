@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 最近项目中希望加入javascript覆盖率统计，由于项目的单元测试用的google的jstd（javascript test driver），jstd生成&lt;config filename&gt;-coverage.dat LCOV 格式， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 关于SonarLanguage是什么东东，这里就不在描述了，如果你对它感兴趣的话，请移步到上篇随笔开源：Angularjs示例&mdash;Sonar中项目使用语言分布图。这里是最近学习CoffeeScript的练习版。 & &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,356 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/">开源：Angularjs示例&#8211;Sonar中项目使用语言分布图(CoffeeScript版)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/12/20/kai-yuan-Angularjs-shi-li-Sonar-zhong-xiang-mu-shi-yong-yu-yan-fen-bu-tu-CoffeeScript-ban/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 关于<strong><a href="https://github.com/greengerong/SonarLanguage">SonarLanguage</a></strong>是什么东东，这里就不在描述了，如果你对它感兴趣的话，请移步到上篇随笔<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/02/2798001.html">开源：Angularjs示例&mdash;Sonar中项目使用语言分布图</a>。这里是最近学习CoffeeScript的练习版。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://coffeescript.org/">CoffeeScript</a>是一门简洁的，构架于JavaScript之上的预处理器语言，可以静态编译成JavaScript，语法主要受ruby和python影响，目前已经为众多rails和node项目采用。CoffeeScript不是JavaScript的超集，也不是完全替代品。CoffeeScript有点在于：</p>
+
+<ol>
+<li>更少，更紧凑，和更清晰的代码</li>
+<li>通过规避和改变对JavaScript中不良部分的使用，只留下精华，让代码减少出错率，更容易维护</li>
+<li>在很多常用模式的实现上采用了JavaScript中的最佳实践</li>
+<li>CoffeeScript生成的JavaScript代码都可以完全通过<a href="http://www.javascriptlint.com/">JSLint</a>的检测</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 多的也不想说那么多了，这里主要是个简介，CoffeeScript的练笔示例。</p>
+
+<p>代码如下：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;collapse:true;;gutter:true;">app = angular.module('app', [])
+
+    .value("$host", "http://nemo.sonarsource.org")
+
+    .factory("$requestUrl", ($host) -&gt; "#{$host}/api/resources")
+
+    .factory("$dynamicColor", ($host) -&gt;
+
+        [r,g,b] = [10,10,0]
+
+        {
+
+          getColor: -&gt;
+
+               [r,g,b] = [(r+100), (g+400), (b + 200)]
+
+               "##{(r + 256 * g + 65536 * b).toString 16 }"
+
+          ,
+
+          reset: -&gt; 
+
+               [r,g,b] = [10,10,0] 
+
+        };
+
+    ).directive('chartData', -&gt; 
+
+            drawChart = (elementId, data) -&gt; 
+
+               chart = new AmCharts.AmPieChart() 
+
+               chart.dataProvider = data
+
+               chart.titleField = "name"
+
+               chart.valueField = "percentage"
+
+               chart.colorField = "color"
+
+               chart.labelsEnabled = false
+
+               chart.pullOutRadius = 0
+
+               chart.depth3D = 20
+
+               chart.angle = 45
+
+               legend = new AmCharts.AmLegend()
+
+               legend.makerType = "square"
+
+               legend.align = "center"
+
+               chart.addLegend legend
+
+               chart.write elementId
+
+               chart;
+
+            (scope, element, attr) -&gt; 
+
+                  scope.already.push( -&gt; 
+
+                     data = scope.$eval(attr.chartData);
+
+                     drawChart(element[0].id, data); 
+
+                  ) if element[0].id 
+
+    )
+
+report = ($scope, $window, $http, $requestUrl, $dynamicColor) -&gt;
+
+    $scope.already = []
+
+    $window.angularJsonpCallBack = (data) -&gt;
+
+         @data = data
+
+         getObjectByKey = (msr , key) -&gt;
+
+            m for m in msr when m.key == key 
+
+         $scope.gridSource = $scope.projects = data
+
+         ready = (queues) -&gt; angular.forEach(queues, (q) -&gt; q() ) 
+
+         ready $scope.already 
+
+    $scope.getLanguageChartData = -&gt; 
+
+         data = _.groupBy $scope.projects , (project) -&gt; project.lang 
+
+         $dynamicColor.reset()
+
+         chartData = _.map(data, (array, key) -&gt; 
+
+                      "name":key
+
+                      "percentage":array.length,
+
+                      "color":$dynamicColor.getColor())
+
+         _.sortBy(chartData, (num) -&gt; num.percentage )
+
+    $scope.search = -&gt;
+
+        source = []
+
+        if not this.searchName
+
+            source = @projects
+
+        else 
+
+            source = _.filter @projects, (p) -&gt; 
+
+                       p.name.toLowerCase().indexOf $scope.searchName.toLowerCase() != -1 
+
+        source = _.sortBy(source, (p) -&gt; p[$scope.sortCondition.key].toLowerCase()) if @sortCondition and @sortCondition.key
+
+        source.reverse() if @sortCondition.sort and not @sortCondition.sort[$scope.sortCondition.key] 
+
+        @gridSource = source
+
+    $scope.sort = (name) -&gt;
+
+        @sortCondition ?= {}
+
+        @sortCondition.sort ?= {}
+
+        @sortCondition.key = name
+
+        @sortCondition.sort[name] = not @sortCondition.sort[name]
+
+        @search();
+
+    $scope.init = -&gt;
+
+        $http.jsonp "#{$requestUrl}?callback=angularJsonpCallBack"
+
+app.controller "report", report
+</pre>
+</div>
+
+
+<p>最终编译的JavaScript为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;collapse:true;;gutter:true;">var app, report;
+
+app = angular.module('app', []).value("$host", "http://nemo.sonarsource.org").factory("$requestUrl", function($host) {
+  return "" + $host + "/api/resources";
+}).factory("$dynamicColor", function($host) {
+  var b, g, r, _ref;
+  _ref = [10, 10, 0], r = _ref[0], g = _ref[1], b = _ref[2];
+  return {
+    getColor: function() {
+      var _ref1;
+      _ref1 = [r + 100, g + 400, b + 200], r = _ref1[0], g = _ref1[1], b = _ref1[2];
+      return "#" + ((r + 256 * g + 65536 * b).toString(16));
+    },
+    reset: function() {
+      var _ref1;
+      return _ref1 = [10, 10, 0], r = _ref1[0], g = _ref1[1], b = _ref1[2], _ref1;
+    }
+  };
+}).directive('chartData', function() {
+  var drawChart;
+  drawChart = function(elementId, data) {
+    var chart, legend;
+    chart = new AmCharts.AmPieChart();
+    chart.dataProvider = data;
+    chart.titleField = "name";
+    chart.valueField = "percentage";
+    chart.colorField = "color";
+    chart.labelsEnabled = false;
+    chart.pullOutRadius = 0;
+    chart.depth3D = 20;
+    chart.angle = 45;
+    legend = new AmCharts.AmLegend();
+    legend.makerType = "square";
+    legend.align = "center";
+    chart.addLegend(legend);
+    chart.write(elementId);
+    return chart;
+  };
+  return function(scope, element, attr) {
+    if (element[0].id) {
+      return scope.already.push(function() {
+        var data;
+        data = scope.$eval(attr.chartData);
+        return drawChart(element[0].id, data);
+      });
+    }
+  };
+});
+
+report = function($scope, $window, $http, $requestUrl, $dynamicColor) {
+  $scope.already = [];
+  $window.angularJsonpCallBack = function(data) {
+    var getObjectByKey, ready;
+    this.data = data;
+    getObjectByKey = function(msr, key) {
+      var m, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = msr.length; _i &lt; _len; _i++) {
+        m = msr[_i];
+        if (m.key === key) {
+          _results.push(m);
+        }
+      }
+      return _results;
+    };
+    $scope.gridSource = $scope.projects = data;
+    ready = function(queues) {
+      return angular.forEach(queues, function(q) {
+        return q();
+      });
+    };
+    return ready($scope.already);
+  };
+  $scope.getLanguageChartData = function() {
+    var chartData, data;
+    data = _.groupBy($scope.projects, function(project) {
+      return project.lang;
+    });
+    $dynamicColor.reset();
+    chartData = _.map(data, function(array, key) {
+      return {
+        "name": key,
+        "percentage": array.length,
+        "color": $dynamicColor.getColor()
+      };
+    });
+    return _.sortBy(chartData, function(num) {
+      return num.percentage;
+    });
+  };
+  $scope.search = function() {
+    var source;
+    source = [];
+    if (!this.searchName) {
+      source = this.projects;
+    } else {
+      source = _.filter(this.projects, function(p) {
+        return p.name.toLowerCase().indexOf($scope.searchName.toLowerCase() !== -1);
+      });
+    }
+    if (this.sortCondition &amp;&amp; this.sortCondition.key) {
+      source = _.sortBy(source, function(p) {
+        return p[$scope.sortCondition.key].toLowerCase();
+      });
+    }
+    if (this.sortCondition.sort &amp;&amp; !this.sortCondition.sort[$scope.sortCondition.key]) {
+      source.reverse();
+    }
+    return this.gridSource = source;
+  };
+  $scope.sort = function(name) {
+    var _base, _ref, _ref1;
+    if ((_ref = this.sortCondition) == null) {
+      this.sortCondition = {};
+    }
+    if ((_ref1 = (_base = this.sortCondition).sort) == null) {
+      _base.sort = {};
+    }
+    this.sortCondition.key = name;
+    this.sortCondition.sort[name] = !this.sortCondition.sort[name];
+    return this.search();
+  };
+  return $scope.init = function() {
+    return $http.jsonp("" + $requestUrl + "?callback=angularJsonpCallBack");
+  };
+};
+
+app.controller("report", report);
+</pre>
+</div>
+
+
+<blockquote><p>就这么多了，关于CoffeeScript请参考</p>
+
+<ol>
+<li><a href="http://coffeescript.org/">CoffeeScript</a></li>
+<li><a href="http://ruby-china.org/topics/4789">CoffeeScript详解</a></li>
+<li><a href="http://amix.dk/blog/post/19612">CoffeeScript: The beautiful way to write JavaScript</a></li>
+<li><a href="http://developer.51cto.com/art/201109/292065.htm">当jQuery遭遇CoffeeScript&mdash;&mdash;妙不可言</a>></li>
+</ol>
+
+
+<p>本人也会在随后的随笔中继续更新CoffeeScript，请持续关注。</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/20/2827141.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -821,100 +1171,6 @@ filter("fullname", function() {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">PowerShell强大管道</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性，我们可以利用强大的.net FCL在PowerShell中。PowerShell提供强大的管道模型，管道指的是一个命令的输出可以利用操作符（|）方便的传递到下个命令作为输入。PowerShell不同传统管道模型的是它是一门基于对象的管道流，即在命令之间传递的对象不是简单的文本。下面我们就以本地文件操作来实践PowerShell的管道常见命令：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 1：集合遍历ForEach-Object：可以简写为foreach，或者%代替，提供了管道传入的对集合的遍历，同时提供了操作前begin，操作process，结束end命令，其中$_提供对当前索引的指代。</p>
-
-<p>&nbsp; 示例：下面我们实践利用ForEach-Object来计算本地文件目录的文件大小：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531544186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153154315.png" title="image" alt="image" /></a></p>
-
-<p>&nbsp;&nbsp;&nbsp; 2：条件选择Where-Object：可以简写为where或者？代替。提供了对管道输入集合的过滤筛选，类似于SQL中的where条件，$_提供对当前索引的指代。</p>
-
-<p>&nbsp;&nbsp; 示例：输出文件大于100KB的文件名字和大小：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531563054.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153159287.png" title="image" alt="image" /></a></p>
-
-<p>&nbsp;&nbsp; 3：选择Select-Object：简写select，提供了对对象的选择类似于sql的select，.net的new匿名对象。同时select支持-first和-last取最前面或者最后面的几个相当于sql 中top，与下例中Sort-Object结合将很有用。</p>
-
-<p>&nbsp; 示例：选择目录下文件的文件名和大小输出：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532005959.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153202584.png" title="SNAGHTML3b707d0" alt="SNAGHTML3b707d0" /></a></p>
-
-<p>&nbsp;&nbsp; 4：排序Sort-Object：简写sort，对于集合对象参照一个或者多个属性排序，可以指定-descending为倒序。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：获取最大的前5个文件：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532038731.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532053422.png" title="SNAGHTML3bc4128" alt="SNAGHTML3bc4128" /></a></p>
-
-<p>&nbsp;&nbsp; 5：管道树Tee-Object：简写为tee，可以把管道模型传入的对象记录在文件日志或者赋值给变量保存等。提供-inputObject ，-filePath ，-variable</p>
-
-<p>&nbsp; 示例：保存文件对象时$test变量：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532061570.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532075638.png" title="SNAGHTML3c03d8f" alt="SNAGHTML3c03d8f" /></a></p>
-
-<p>&nbsp;&nbsp;&nbsp; 6：分组Group-Object：简写group，提供依据属性分组类似sql group by。</p>
-
-<p>&nbsp;&nbsp; 示例：按照文件类型分组并按照组内文件个数排序
- <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532082149.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532092772.png" title="SNAGHTML3c30688" alt="SNAGHTML3c30688" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; 7：集合统计Measure-Object：简写：measure，提供了对集合的统计，简便的方法来获取最小值、最大值及平均值属性。</p>
-
-<p>&nbsp; 示例：统计文件大小的最小值，最大值，平均值，总大小：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532109524.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532117920.png" title="SNAGHTML3c60aad" alt="SNAGHTML3c60aad" /></a></p>
-
-<p>&nbsp;&nbsp; 8：比较Compare-Object：简写diff，提供了对两个对象或集合的比较，其中有单侧指向器，=&gt;表达此对象出现在右边，&lt;=表示差异对象存在于左边。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：新建一个文件夹2，比较连个目录的不同：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532123592.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532124215.png" title="SNAGHTML3cb035d" alt="SNAGHTML3cb035d" /></a></p>
-
-<p>今天就到这里，PowerShell很强大，继续学习。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543247.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -948,6 +1204,10 @@ filter("fullname", function() {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
       </li>
     
@@ -973,10 +1233,6 @@ filter("fullname", function() {
     
       <li class="post">
         <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a>
       </li>
     
   </ul>

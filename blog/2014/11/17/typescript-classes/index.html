@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>TypeScript - Classes - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="简介 JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/11/17/typescript-classes">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">TypeScript - Classes</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-17T19:10:32+08:00" pubdate data-updated="true">Nov 17<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>简介</h2>
+
+<p>JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式，TypeScript将编译为目前大多数浏览器能允许的普通Javascript代码，所以我们不用在等待ECMAScript 6的到来了。</p>
+
+<h2>类</h2>
+
+<p>我们先看一个关于class-base的实例：</p>
+
+<pre><code>class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+var greeter = new Greeter("world");
+</code></pre>
+
+<p>这种语法和我们先前在c#，java语言看见的很相似。在这里我们声明了一个Greeter的类，其中包含一个greeting的属性，构造函数，以及greet的方法。</p>
+
+<p>你也许已经注意到了例子中的‘this’关键字，’this‘和java/C#一样代表对象实例的成员访问。</p>
+
+<p>在最后一行我们利用‘new’关键字创建了一个Greeter的对象实例。这将会新建一个对象实例，并调用我们先前定义的构造函数初始化此对象。</p>
+
+<h2>继承</h2>
+
+<p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
+
+<pre><code>class Animal {
+    name:string;
+    constructor(theName: string) { this.name = theName; }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+
+class Snake extends Animal {
+    constructor(name: string) { super(name); }
+    move() {
+        alert("Slithering...");
+        super.move(5);
+    }
+}
+
+class Horse extends Animal {
+    constructor(name: string) { super(name); }
+    move() {
+        alert("Galloping...");
+        super.move(45);
+    }
+}
+
+var sam = new Snake("Sammy the Python");
+var tom: Animal = new Horse("Tommy the Palomino");
+
+sam.move();
+tom.move(34);
+</code></pre>
+
+<p>在这个案例中展示了TypeScript的OO继承方式，它和其他语言很相似。在TypeScript中我们采用‘extends’关键字来表示类的继承关系。在这里你可以看见 &lsquo;Horse&#8217;和&#8217;Snake&#8217;都是继承至&#8217;Animal&#8217;的子类实现。</p>
+
+<p>在案例中也展示如何去重写父类的方法，在这里&#8217;Snake&#8217;和&#8217;Horse都各自创建了一个‘move’方法来重写父类&#8217;Animal&#8217;的‘move’方法，并和‘super’关键字来调用父类的方法。</p>
+
+<h2>Private/Public访问限制</h2>
+
+<h4>Public为默认行为</h4>
+
+<p>你可能注意到了在上例中我们并没有用‘public’关键字去描述类的成员的访问级别让其可见。在C#这类语言中，我们必须显示的标注public关键字才能使得类的成员可见。但是在TypeScript中public为默认访问级别，而不是想c#一样private默认。</p>
+
+<p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
+
+<pre><code>class Animal {
+    private name:string;
+    constructor(theName: string) { this.name = theName; }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+</code></pre>
+
+<h4>理解private(私有)</h4>
+
+<p>TypeScript有一个结构化的类型(或者鸭子类型)系统。在我们比较两个不同类型，我们不关心它们来自哪里，只关心对类型的每个成员的兼容性。一旦所有的成员都是兼容的，那么我们就认为这两个类型也是兼容的。</p>
+
+<p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
+
+<pre><code>class Animal {
+    private name:stringParameter properties;
+    constructor(theName: string) { this.name = theName; }
+}
+
+class Rhino extends Animal {
+    constructor() { super("Rhino"); }
+}
+
+class Employee {
+    private name:string;
+    constructor(theName: string) { this.name = theName; }   
+}
+
+var animal = new Animal("Goat");
+var rhino = new Rhino();
+var employee = new Employee("Bob");
+
+animal = rhino;
+animal = employee; //error: Animal and Employee are not compatible
+</code></pre>
+
+<p>在上例中我们有&#8217;Animal&#8217;和‘Rhino’两个类型，&#8217;Rhino&#8217;是‘Animal’的一个子类。同时我们也定义了一个 &lsquo;Employee&#8217;的类，它和‘Animal’类完全相同。我们分别创建了第三个类的对象，并相互赋值，结果&#8217;Animal&#8217;和&#8217;Rhino&#8217;继承关系，所以对于私有字段name在‘Animal’中具有相同的声明  &#8216;private name: string&#8217;，他们是兼容的。但对于&#8217;Employee&#8217;则各自声明了一个私有name字段，对于私有字段是不相同的，所以我们不能将employee赋值给animal对象，他们是不兼容的类型。</p>
+
+<h4>参数属性(Parameter properties)</h4>
+
+<p>访问限制关键字public&#8217;和&#8217;private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
+
+<pre><code>class Animal {
+    constructor(private name: string) { }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+</code></pre>
+
+<p>这里我们利用‘private’关键字为类创建了一个私有成员并初始化其值。对于public也类似。</p>
+
+<h2>访问器(Accessors)</h2>
+
+<p>TypeScript支持利用getters/setters来控制对成员的访问。让我们可以控制类的成员之间的访问方式。</p>
+
+<p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
+
+<pre><code>class Employee {
+    fullName: string;
+}
+
+var employee = new Employee();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+</code></pre>
+
+<p>在这里我们允许任意的访问内部fullName成员。有时这可能不是我们所期望的。</p>
+
+<p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
+
+<pre><code>var passcode = "secret passcode";
+
+class Employee {
+    private _fullName: string;
+
+    get fullName(): string {
+        return this._fullName;
+    }
+
+    set fullName(newName: string) {
+        if (passcode &amp;&amp; passcode == "secret passcode") {
+            this._fullName = newName;
+        }
+        else {
+            alert("Error: Unauthorized update of employee!");
+        }
+    }
+}
+
+var employee = new Employee();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+</code></pre>
+
+<p>这里我们在修改fullName属性的时候验证了passcode值，是否有权限修改。你可以尝试修改passcode的值，使其不匹配，观察下会发生什么问题？</p>
+
+<p><strong>注意:</strong>访问器使用我们需要设置编译输出为ECMAScript 5。</p>
+
+<h2>静态属性</h2>
+
+<p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用&#8217;static&#8217; 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的&#8217;this.&lsquo;.</p>
+
+<pre><code>class Grid {
+    static origin = {x: 0, y: 0};
+    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
+        var xDist = (point.x - Grid.origin.x);
+        var yDist = (point.y - Grid.origin.y);
+        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
+    }
+    constructor (public scale: number) { }
+}
+
+var grid1 = new Grid(1.0);  // 1x scale
+var grid2 = new Grid(5.0);  // 5x scale
+
+alert(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
+alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+</code></pre>
+
+<h2>高级特性</h2>
+
+<h4>构造函数</h4>
+
+<p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
+
+<pre><code>class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+var greeter: Greeter;
+greeter = new Greeter("world");
+alert(greeter.greet());
+</code></pre>
+
+<p>这里“var greeter: Greeter”首先声明一个Greeter类的实例变量。这在很多OO语言中是很自然的方式。</p>
+
+<p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
+
+<pre><code>var Greeter = (function () {
+    function Greeter(message) {
+        this.greeting = message;
+    }
+    Greeter.prototype.greet = function () {
+        return "Hello, " + this.greeting;
+    };
+    return Greeter;
+})();
+
+var greeter;
+greeter = new Greeter("world");
+alert(greeter.greet());
+</code></pre>
+
+<p>这里&#8217;var Greeter&#8217;被赋值构造函数，并利用‘new’调用了这个方法得到类的实例。同样我们的类也可以包含静态变量。我们可以这么认为所有的类都可以拥有实例和静态两种类型的成员。</p>
+
+<p>让我们对上例稍微做一些修改：</p>
+
+<pre><code>class Greeter {
+    static standardGreeting = "Hello, there";
+    greeting: string;
+    greet() {
+        if (this.greeting) {
+            return "Hello, " + this.greeting;
+        }
+        else {
+            return Greeter.standardGreeting;
+        }
+    }
+}
+
+var greeter1: Greeter;
+greeter1 = new Greeter();
+alert(greeter1.greet());
+
+var greeterMaker: typeof Greeter = Greeter;
+greeterMaker.standardGreeting = "Hey there!";
+var greeter2:Greeter = new greeterMaker();
+alert(greeter2.greet());
+</code></pre>
+
+<p>这里‘greeter1’和上例工作很相似。我们初始化了‘Greeter’类，并调用此对象。其结果在上例已经看见。</p>
+
+<p>接着，我们直接使用了类访问。首先我们定义了一个新的‘greeterMaker’的变量，这变量保持了Greeter类的类型信息，这里我们使用的是‘typeof Greeter’，这会返回Greeter自身的类类型信息。这个类型信息中会包含所以的静态成员信息和实例化对象的构造函数信息。然后通过‘new’ greeterMaker来创建一个Greeter的实例对象，在调用其方法greet。</p>
+
+<h2>利用interface来使用class</h2>
+
+<p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
+
+<p>class Point {</p>
+
+<pre><code>x: number;
+y: number;
+</code></pre>
+
+<p>}</p>
+
+<p>interface Point3d extends Point {</p>
+
+<pre><code>z: number;
+</code></pre>
+
+<p>}</p>
+
+<p>var point3d: Point3d = {x: 1, y: 2, z: 3};</p>
+
+<p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-17T19:10:32+08:00" pubdate data-updated="true">Nov 17<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>JavaScript</a>, <a class='category' href='/blog/categories/typescript/'>TypeScript</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/13/typescript-interfaces/" title="Previous Post: TypeScript - Interfaces">&laquo; TypeScript - Interfaces</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2014/11/17/typescript-classes/';
+        var disqus_url = 'http://greengerong.github.io/blog/2014/11/17/typescript-classes/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

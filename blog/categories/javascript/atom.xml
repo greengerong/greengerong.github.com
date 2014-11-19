@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Javascript | 破狼 Blog]]></title>
+  <title><![CDATA[Category: JavaScript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-17T20:41:37+08:00</updated>
+  <updated>2014-11-19T12:34:57+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,321 +14,302 @@
 
   
   <entry>
-    <title type="html"><![CDATA[karma作为jQuery单元测试Runner]]></title>
-    <link href="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/"/>
-    <updated>2014-09-03T22:27:20+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test</id>
-    <content type="html"><![CDATA[<p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
+    <title type="html"><![CDATA[TypeScript - Classes]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/17/typescript-classes/"/>
+    <updated>2014-11-17T19:10:32+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/17/typescript-classes</id>
+    <content type="html"><![CDATA[<h2>简介</h2>
 
-<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
+<p>JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式，TypeScript将编译为目前大多数浏览器能允许的普通Javascript代码，所以我们不用在等待ECMAScript 6的到来了。</p>
 
-<h4>jasmime测试套件</h4>
+<h2>类</h2>
 
-<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
+<p>我们先看一个关于class-base的实例：</p>
 
-<h4>jasmine-jquery</h4>
+<pre><code>class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
 
-<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
-
-<pre><code>jasmine.getFixtures().fixturesPath = 'base path';
-loadFixtures('myfixture.html');
-jasmine.getFixtures().load(...);
+var greeter = new Greeter("world");
 </code></pre>
 
-<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
+<p>这种语法和我们先前在c#，java语言看见的很相似。在这里我们声明了一个Greeter的类，其中包含一个greeting的属性，构造函数，以及greet的方法。</p>
 
-<h4>jasmine-ajax</h4>
+<p>你也许已经注意到了例子中的‘this’关键字，’this‘和java/C#一样代表对象实例的成员访问。</p>
 
-<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
+<p>在最后一行我们利用‘new’关键字创建了一个Greeter的对象实例。这将会新建一个对象实例，并调用我们先前定义的构造函数初始化此对象。</p>
 
-<pre><code> beforeEach(function() {
-    jasmine.Ajax.requests.when = function (url) {
-      return this.filter("/jquery/ajax")[0];
+<h2>继承</h2>
+
+<p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
+
+<pre><code>class Animal {
+    name:string;
+    constructor(theName: string) { this.name = theName; }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+
+class Snake extends Animal {
+    constructor(name: string) { super(name); }
+    move() {
+        alert("Slithering...");
+        super.move(5);
+    }
+}
+
+class Horse extends Animal {
+    constructor(name: string) { super(name); }
+    move() {
+        alert("Galloping...");
+        super.move(45);
+    }
+}
+
+var sam = new Snake("Sammy the Python");
+var tom: Animal = new Horse("Tommy the Palomino");
+
+sam.move();
+tom.move(34);
+</code></pre>
+
+<p>在这个案例中展示了TypeScript的OO继承方式，它和其他语言很相似。在TypeScript中我们采用‘extends’关键字来表示类的继承关系。在这里你可以看见 &lsquo;Horse'和'Snake'都是继承至'Animal'的子类实现。</p>
+
+<p>在案例中也展示如何去重写父类的方法，在这里'Snake'和'Horse都各自创建了一个‘move’方法来重写父类'Animal'的‘move’方法，并和‘super’关键字来调用父类的方法。</p>
+
+<h2>Private/Public访问限制</h2>
+
+<h4>Public为默认行为</h4>
+
+<p>你可能注意到了在上例中我们并没有用‘public’关键字去描述类的成员的访问级别让其可见。在C#这类语言中，我们必须显示的标注public关键字才能使得类的成员可见。但是在TypeScript中public为默认访问级别，而不是想c#一样private默认。</p>
+
+<p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
+
+<pre><code>class Animal {
+    private name:string;
+    constructor(theName: string) { this.name = theName; }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+</code></pre>
+
+<h4>理解private(私有)</h4>
+
+<p>TypeScript有一个结构化的类型(或者鸭子类型)系统。在我们比较两个不同类型，我们不关心它们来自哪里，只关心对类型的每个成员的兼容性。一旦所有的成员都是兼容的，那么我们就认为这两个类型也是兼容的。</p>
+
+<p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
+
+<pre><code>class Animal {
+    private name:stringParameter properties;
+    constructor(theName: string) { this.name = theName; }
+}
+
+class Rhino extends Animal {
+    constructor() { super("Rhino"); }
+}
+
+class Employee {
+    private name:string;
+    constructor(theName: string) { this.name = theName; }   
+}
+
+var animal = new Animal("Goat");
+var rhino = new Rhino();
+var employee = new Employee("Bob");
+
+animal = rhino;
+animal = employee; //error: Animal and Employee are not compatible
+</code></pre>
+
+<p>在上例中我们有'Animal'和‘Rhino’两个类型，'Rhino'是‘Animal’的一个子类。同时我们也定义了一个 &lsquo;Employee'的类，它和‘Animal’类完全相同。我们分别创建了第三个类的对象，并相互赋值，结果'Animal'和'Rhino'继承关系，所以对于私有字段name在‘Animal’中具有相同的声明  'private name: string'，他们是兼容的。但对于'Employee'则各自声明了一个私有name字段，对于私有字段是不相同的，所以我们不能将employee赋值给animal对象，他们是不兼容的类型。</p>
+
+<h4>参数属性(Parameter properties)</h4>
+
+<p>访问限制关键字public'和'private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
+
+<pre><code>class Animal {
+    constructor(private name: string) { }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+</code></pre>
+
+<p>这里我们利用‘private’关键字为类创建了一个私有成员并初始化其值。对于public也类似。</p>
+
+<h2>访问器(Accessors)</h2>
+
+<p>TypeScript支持利用getters/setters来控制对成员的访问。让我们可以控制类的成员之间的访问方式。</p>
+
+<p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
+
+<pre><code>class Employee {
+    fullName: string;
+}
+
+var employee = new Employee();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+</code></pre>
+
+<p>在这里我们允许任意的访问内部fullName成员。有时这可能不是我们所期望的。</p>
+
+<p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
+
+<pre><code>var passcode = "secret passcode";
+
+class Employee {
+    private _fullName: string;
+
+    get fullName(): string {
+        return this._fullName;
+    }
+
+    set fullName(newName: string) {
+        if (passcode &amp;&amp; passcode == "secret passcode") {
+            this._fullName = newName;
+        }
+        else {
+            alert("Error: Unauthorized update of employee!");
+        }
+    }
+}
+
+var employee = new Employee();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+</code></pre>
+
+<p>这里我们在修改fullName属性的时候验证了passcode值，是否有权限修改。你可以尝试修改passcode的值，使其不匹配，观察下会发生什么问题？</p>
+
+<p><strong>注意:</strong>访问器使用我们需要设置编译输出为ECMAScript 5。</p>
+
+<h2>静态属性</h2>
+
+<p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用'static' 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的'this.&lsquo;.</p>
+
+<pre><code>class Grid {
+    static origin = {x: 0, y: 0};
+    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
+        var xDist = (point.x - Grid.origin.x);
+        var yDist = (point.y - Grid.origin.y);
+        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
+    }
+    constructor (public scale: number) { }
+}
+
+var grid1 = new Grid(1.0);  // 1x scale
+var grid2 = new Grid(5.0);  // 5x scale
+
+alert(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
+alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+</code></pre>
+
+<h2>高级特性</h2>
+
+<h4>构造函数</h4>
+
+<p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
+
+<pre><code>class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+var greeter: Greeter;
+greeter = new Greeter("world");
+alert(greeter.greet());
+</code></pre>
+
+<p>这里“var greeter: Greeter”首先声明一个Greeter类的实例变量。这在很多OO语言中是很自然的方式。</p>
+
+<p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
+
+<pre><code>var Greeter = (function () {
+    function Greeter(message) {
+        this.greeting = message;
+    }
+    Greeter.prototype.greet = function () {
+        return "Hello, " + this.greeting;
     };
-    jasmine.Ajax.install();
-});
+    return Greeter;
+})();
 
-it("jquery ajax success with getResponse", function() {
-    var result;
-
-    $.get("/jquery/ajax").success(function(data) {
-        result = data;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'data from mock ajax'
-    });
-
-    expect(result).toEqual('data from mock ajax');
-});
-
-
-afterEach(function() {
-    jasmine.Ajax.uninstall();
-});
+var greeter;
+greeter = new Greeter("world");
+alert(greeter.greet());
 </code></pre>
 
-<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
+<p>这里'var Greeter'被赋值构造函数，并利用‘new’调用了这个方法得到类的实例。同样我们的类也可以包含静态变量。我们可以这么认为所有的类都可以拥有实例和静态两种类型的成员。</p>
 
-<h4>运用karma runner</h4>
+<p>让我们对上例稍微做一些修改：</p>
 
-<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
+<pre><code>class Greeter {
+    static standardGreeting = "Hello, there";
+    greeting: string;
+    greet() {
+        if (this.greeting) {
+            return "Hello, " + this.greeting;
+        }
+        else {
+            return Greeter.standardGreeting;
+        }
+    }
+}
 
-<p>所以分为以下几步：
-1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
-2：host 测试的html fixtures。
-3：加载html fixtures 与install ajax之前。</p>
+var greeter1: Greeter;
+greeter1 = new Greeter();
+alert(greeter1.greet());
 
-<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
-
-<pre><code>files: [
-    {
-      pattern: 'view/**/*.html',
-      watched: true,
-      included: false,
-      served: true
-    },
-    'bower_components/jquery/dist/jquery.js',
-    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
-    'bower_components/jasmine-ajax/lib/mock-ajax.js',
-    'src/*.js',
-    'test/*.js'
-],
+var greeterMaker: typeof Greeter = Greeter;
+greeterMaker.standardGreeting = "Hey there!";
+var greeter2:Greeter = new greeterMaker();
+alert(greeter2.greet());
 </code></pre>
 
-<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
+<p>这里‘greeter1’和上例工作很相似。我们初始化了‘Greeter’类，并调用此对象。其结果在上例已经看见。</p>
 
-<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+<p>接着，我们直接使用了类访问。首先我们定义了一个新的‘greeterMaker’的变量，这变量保持了Greeter类的类型信息，这里我们使用的是‘typeof Greeter’，这会返回Greeter自身的类类型信息。这个类型信息中会包含所以的静态成员信息和实例化对象的构造函数信息。然后通过‘new’ greeterMaker来创建一个Greeter的实例对象，在调用其方法greet。</p>
 
-<p>测试html fixtures加载：</p>
+<h2>利用interface来使用class</h2>
 
-<pre><code>describe('console html content', function() {
+<p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
 
-  beforeEach(function() {
-    jasmine.getFixtures().fixturesPath = 'base/view/';
-    loadFixtures("index.html");
-  });
+<p>class Point {</p>
 
-  it('index html', function() {
-    expect($("h2")).toBeInDOM();
-    expect($("h2")).toContainText("this is index page");
-  });
-
-})
+<pre><code>x: number;
+y: number;
 </code></pre>
 
-<p>测试mock ajax：</p>
+<p>}</p>
 
-<pre><code>describe('console html content', function() {
+<p>interface Point3d extends Point {</p>
 
-  beforeEach(function() {
-     jasmine.Ajax.requests.when = function(url) {
-         return this.filter("/jquery/ajax")[0];
-     };
-     jasmine.Ajax.install();
- });
-
-
-  it('index html', function() {
-    expect($("h2")).toBeInDOM();
-    expect($("h2")).toContainText("this is index page");
-  });
-
-  it("ajax mock", function() {
-    var doneFn = jasmine.createSpy("success");
-
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(args) {
-      if (this.readyState == this.DONE) {
-        doneFn(this.responseText);
-      }
-    };
-
-    xhr.open("GET", "/some/cool/url");
-    xhr.send();
-
-    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
-    expect(doneFn).not.toHaveBeenCalled();
-
-    jasmine.Ajax.requests.mostRecent().response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'awesome response'
-    });
-
-    expect(doneFn).toHaveBeenCalledWith('awesome response');
-  });
-
-  it("jquery ajax success with getResponse", function() {
-    var result;
-    getResponse().then(function(data){
-      result = data;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'data from mock ajax'
-    });
-
-    expect(result).toEqual('data from mock ajax');
-  });
-
-  it("jquery ajax error", function() {
-    var status;
-    $.get("/jquery/ajax").error(function(response) {
-      status = response.status;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 400
-    });
-
-    expect(status).toEqual(400);
-  });
-
-  afterEach(function() {
-    jasmine.Ajax.uninstall();
-  });
-})      
+<pre><code>z: number;
 </code></pre>
 
-<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[angularjs之browserTrigger]]></title>
-    <link href="http://greengerong.github.io/blog/2014/06/24/angularjs-browsertrigger/"/>
-    <updated>2014-06-24T20:42:33+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/06/24/angularjs-browsertrigger</id>
-    <content type="html"><![CDATA[<p>今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。</p>
+<p>}</p>
 
-<p>这是angularjs源码中单元测试的使用browserTrigger的实例：</p>
+<p>var point3d: Point3d = {x: 1, y: 2, z: 3};</p>
 
-<pre><code>it('should set the model to empty string when empty option is selected', function() {
-    scope.robot = 'x';
-    compile('&lt;select ng-model="robot"&gt;' +
-              '&lt;option value=""&gt;--select--&lt;/option&gt;' +
-              '&lt;option value="x"&gt;robot x&lt;/option&gt;' +
-              '&lt;option value="y"&gt;robot y&lt;/option&gt;' +
-            '&lt;/select&gt;');
-    expect(element).toEqualSelect('', ['x'], 'y');
-
-    browserTrigger(element.find('option').eq(0));
-    expect(element).toEqualSelect([''], 'x', 'y');
-    expect(scope.robot).toBe('');
-  });
-</code></pre>
-
-<p>在这段代码中给browserTrigger传入你希望选择的select option，则它会帮助你tigger change，选中当前option，更触发更新ng select的viewmodel。</p>
-
-<p>在browserTrigger中还为我们做了很多其他输入框或者html控件的触发接口，同时也加入了浏览器的兼容性。使得我们的测试更加方便不用考虑浏览器兼容性或者不同的html控件trigger不同的事件去更新scope的值。</p>
-
-<p>具体更多信息请参考<a href="https://github.com/angular/angular.js/blob/accd35b7471bbf58cd5b569a004824fa60fa640a/test/ng/directive/selectSpec.js">ng的官方测试</a>和<a href="https://raw.githubusercontent.com/angular/angular.js/dafb8a3cd12e7c3247838f536c25eb796331658d/src/ngScenario/browserTrigger.js">browserTrigger源码</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ng-template寄宿方式]]></title>
-    <link href="http://greengerong.github.io/blog/2014/03/15/ng-html2js-maven-plugins-for-java/"/>
-    <updated>2014-03-15T13:14:55+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/03/15/ng-html2js-maven-plugins-for-java</id>
-    <content type="html"><![CDATA[<p>如果你是一个angular的开发者的话，对于ng-html2js你应该
-很熟悉。对于angular的指令，我们经常需要定义模板(
-directive template/templateUrl),你可以选择讲html page
-放在真正的的web容器中寄宿，也可以选择angular的ng-template
-放在view的page之上，抑或也可以讲html打成一个js文件和directive
-的js文件合并在一起发布。</p>
-
-<ul>
-<li><p>对于直接寄宿在web容器.</p>
-
-<p>这很简单，直接放在jetty，tomcat，iis，
-抑或node express public目录下。这里没什么可以多说的，所以我们跳过。</p></li>
-<li><p>angular ng-template模板:</p>
-
-<p>代码如下：</p>
-
-<pre><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
-
-      Content of the template.
-
-    &lt;/script&gt;
-</code></pre>
-
-<p>这将会在angular的compile时候解析，angular将会把它放在angular的$templateCache
-中。</p>
-
-<p>对于<a href="http://docs.angularjs.org/api/ng/service/$templateCache">$templateCache</a>，如其名
-这是angular对模板的缓存的service。在启用了$templateCache的$http ajax请求，
-angular将会首先在$templateCache中查找是否有对此url的缓存：</p>
-
-<pre><code>      $templateCache.get('templateId.html')
-</code></pre>
-
-<p>如果存在缓存，着angular将会直接用缓存中获取，并不会在发送一次ajax。
-对于所有的指令和模板angular默认启用了templateCache。</p>
-
-<p>这在于angular所处理的模式开发很有关系的。我们经常提到的SPA(single page application)
-我们把view的显示处理等表现逻辑推到了前段，而后端提供只与数据有关的soap/restful service
-这样对于一个应用程序业务逻辑来说不变的是处理数据的业务逻辑，这份逻辑你可以共享在不管前端是mobile
-app 或者是浏览器，或者winform gui的图形化程序，因为对于同一个业务这是不变的。将view的分离推到各自的客户端
-将是更好的解决方案。</p>
-
-<p>回到angular $templateCahce，对于一个应用程序view的分离，之后在对于当前的应用程序平台，html/js/css
-这类资源是静态的，最好是不变的，那么你可以自由的缓存在客户端，减少服务器的交互，以及为了更大的性能追求，我们
-可以把这类静态资源放在Nginx这里反向代理或者CDN上，让我们的程序获取更大的性能和扩展空间。</p></li>
-<li><p>回到angular的ng-html2js：</p>
-
-<p>有了上边对于$templateCache的理解，那你应该很容易理解html2js的方式了，与ng-template不同的
-是ng-template是angular在compile的时候自动加入$templateCache的，html2js是我们在开发
-时候利用build自己放入$templateCache。</p>
-
-<pre><code>  angular.module('myApp', [])
-  .run(function($templateCache) {
-      $templateCache.put('templateId.html',
-          'This is the content of the template'
-      );
-  });
-</code></pre></li>
-</ul>
-
-
-<p>形如上面的输出，将html文件打成一个js文件。</p>
-
-<p>这你也许在angular的单元测试karma unit test中看见过，<a href="https://github.com/karma-runner/karma-ng-html2js-preprocessor"> karma-ng-html2js-preprocessor</a>
-，还有如果你也希望在build时候做到如此，那么你可以使用grunt plugin <a href="https://github.com/karlgoldstein/grunt-html2js"> grunt-html2js</a>.</p>
-
-<p>但使用grunt plugin的前提是你在你的项目中引入的grunt build的work flow，那么你可以在gruntfile.js中几行代码轻松的搞定。但是如果
-你和我一样使用的是java的maven或者是gradle 作为build，那么你可以尝试博主的maven plugin<a href="https://github.com/greengerong/nghtml2js">nghtml2js</a>.
-使用方式如下：</p>
-
-<pre><code>&lt;plugin&gt;
-    &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
-    &lt;artifactId&gt;nghtml2js&lt;/artifactId&gt;
-    &lt;version&gt;0.0.3&lt;/version&gt;
-    &lt;configuration&gt;
-        &lt;module&gt;demo.template&lt;/module&gt;
-        &lt;html&gt;${project.basedir}&lt;/html&gt;
-        &lt;extensions&gt;
-            &lt;param&gt;tpl&lt;/param&gt;
-            &lt;param&gt;html&lt;/param&gt;
-        &lt;/extensions&gt;
-    &lt;/configuration&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;id&gt;nghtml2js&lt;/id&gt;
-            &lt;phase&gt;generate-resources&lt;/phase&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;run&lt;/goal&gt;
-            &lt;/goals&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-&lt;/plugin&gt;
-</code></pre>
+<p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
 ]]></content>
   </entry>
   
