@@ -368,22 +368,17 @@ alert(greeter2.greet());
 
 <p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
 
-<p>class Point {</p>
+<pre><code>class Point {
+    x: number;
+    y: number;
+}
 
-<pre><code>x: number;
-y: number;
+interface Point3d extends Point {
+    z: number;
+}
+
+var point3d: Point3d = {x: 1, y: 2, z: 3};
 </code></pre>
-
-<p>}</p>
-
-<p>interface Point3d extends Point {</p>
-
-<pre><code>z: number;
-</code></pre>
-
-<p>}</p>
-
-<p>var point3d: Point3d = {x: 1, y: 2, z: 3};</p>
 
 <p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
 </div>
