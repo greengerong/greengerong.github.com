@@ -268,15 +268,15 @@ TypeScript支持利用getters/setters来控制对成员的访问。让我们可�
 
 如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：
 
-class Point {
-    x: number;
-    y: number;
-}
+	class Point {
+	    x: number;
+	    y: number;
+	}
 
-interface Point3d extends Point {
-    z: number;
-}
+	interface Point3d extends Point {
+	    z: number;
+	}
 
-var point3d: Point3d = {x: 1, y: 2, z: 3};
+	var point3d: Point3d = {x: 1, y: 2, z: 3};
 
 **注意:**TypeScript更准确说是为了类型检查的类型推断。
