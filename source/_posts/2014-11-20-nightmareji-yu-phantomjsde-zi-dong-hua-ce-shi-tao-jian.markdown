@@ -48,7 +48,7 @@ nightmare代码：
 
 一切显而易见，不用多说。
 
-nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语气，如下例子：
+nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：
 
 	/**
 	 * Login to a Swiftly account.
