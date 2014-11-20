@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Phantomjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/phantomjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-20T19:13:48+08:00</updated>
+  <updated>2014-11-20T19:17:04+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -64,7 +64,7 @@
 
 <p>一切显而易见，不用多说。</p>
 
-<p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语气，如下例子：</p>
+<p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：</p>
 
 <pre><code>/**
  * Login to a Swiftly account.
