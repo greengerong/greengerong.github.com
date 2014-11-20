@@ -4,7 +4,7 @@ title: "nightmare基于phantomjs的自动化测试套件"
 date: 2014-11-20 18:58:15 +0800
 comments: true
 categories: [nightmare, phantomjs]
----(
+---
 今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type...等简单的常用e2e测试动作封装，使得其语义清晰，简洁。其官方在[http://www.nightmarejs.org/](http://www.nightmarejs.org/).
 
 如果你的项目测试不需要想需求和测试人员理解，那么基于nightmare测试或许是一个好的选择，你的降低测试代码的成本，以及测试套件的部署。我们可以选择基于jasmine-node等作为测试套件集成。
