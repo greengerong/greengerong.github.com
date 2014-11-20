@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Phantomjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/phantomjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-20T19:11:06+08:00</updated>
+  <updated>2014-11-20T19:13:48+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,90 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Nightmare基于phantomjs的自动化测试套件]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/"/>
+    <updated>2014-11-20T18:58:15+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian</id>
+    <content type="html"><![CDATA[<p>今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type&hellip;等简单的常用e2e测试动作封装，使得其语义清晰，简洁。其官方在<a href="http://www.nightmarejs.org/">http://www.nightmarejs.org/</a>.</p>
+
+<p>如果你的项目测试不需要想需求和测试人员理解，那么基于nightmare测试或许是一个好的选择，你的降低测试代码的成本，以及测试套件的部署。我们可以选择基于jasmine-node等作为测试套件集成。</p>
+
+<p>安装nightmare：</p>
+
+<pre><code>npm install nightmare
+</code></pre>
+
+<p>下面我们对比与远程phantomjs的对比：</p>
+
+<p>原phantomjs的代码：</p>
+
+<pre><code>phantom.create(function (ph) {
+  ph.createPage(function (page) {
+    page.open('http://yahoo.com', function (status) {
+      page.evaluate(function () {
+        var el =
+          document.querySelector('input[title="Search"]');
+        el.value = 'github nightmare';
+      }, function (result) {
+        page.evaluate(function () {
+          var el = document.querySelector('.searchsubmit');
+          var event = document.createEvent('MouseEvent');
+          event.initEvent('click', true, false);
+          el.dispatchEvent(event);
+        }, function (result) {
+          ph.exit();
+        });
+      });
+    });
+  });
+});
+</code></pre>
+
+<p>nightmare代码：</p>
+
+<pre><code>new Nightmare()
+  .goto('http://yahoo.com')
+  .type('input[title="Search"]', 'github nightmare')
+  .click('.searchsubmit')
+  .run();
+</code></pre>
+
+<p>一切显而易见，不用多说。</p>
+
+<p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语气，如下例子：</p>
+
+<pre><code>/**
+ * Login to a Swiftly account.
+ *
+ * @param {String} email
+ * @param {String} password
+ */
+
+exports.login = function(email, password){
+  return function(nightmare) {
+    nightmare
+      .viewport(800, 1600)
+      .goto('https://swiftly.com/login')
+        .type('#username', email)
+        .type('#password', password)
+        .click('.button--primary')
+      .wait();
+  };
+};
+</code></pre>
+
+<p>使用代码很简单：</p>
+
+<pre><code>var Swiftly = require('nightmare-swiftly');
+new Nightmare()
+  .use(Swiftly.login(email, password))
+  .use(Swiftly.task(instructions, uploads, path))
+  .run();
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[生成PDF的新选择-Phantomjs]]></title>
