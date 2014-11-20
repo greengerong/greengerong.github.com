@@ -9,7 +9,12 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="简介 JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式， &hellip;">
+  <meta name="description" content="layout: post
+title: &ldquo;nightmare基于phantomjs的自动化测试套件&rdquo;
+date: 2014-11-20 18:58:15 +0800
+comments: true
+categories: [nightmare, phantomjs]
+& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +70,128 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmareji Yu Phantomjsde Zi Dong Hua Ce Shi Tao Jian</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><hr />
+
+<p>layout: post
+title: &ldquo;nightmare基于phantomjs的自动化测试套件&rdquo;
+date: 2014-11-20 18:58:15 +0800
+comments: true
+categories: [nightmare, phantomjs]
+&mdash;&ndash;(
+今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type&hellip;等简单的常用e2e测试动作封装，使得其语义清晰，简洁。其官方在<a href="http://www.nightmarejs.org/">http://www.nightmarejs.org/</a>.</p>
+
+<p>如果你的项目测试不需要想需求和测试人员理解，那么基于nightmare测试或许是一个好的选择，你的降低测试代码的成本，以及测试套件的部署。我们可以选择基于jasmine-node等作为测试套件集成。</p>
+
+<p>安装nightmare：</p>
+
+<pre><code>npm install nightmare
+</code></pre>
+
+<p>下面我们对比与远程phantomjs的对比：</p>
+
+<p>原phantomjs的代码：</p>
+
+<pre><code>phantom.create(function (ph) {
+  ph.createPage(function (page) {
+    page.open('http://yahoo.com', function (status) {
+      page.evaluate(function () {
+        var el =
+          document.querySelector('input[title="Search"]');
+        el.value = 'github nightmare';
+      }, function (result) {
+        page.evaluate(function () {
+          var el = document.querySelector('.searchsubmit');
+          var event = document.createEvent('MouseEvent');
+          event.initEvent('click', true, false);
+          el.dispatchEvent(event);
+        }, function (result) {
+          ph.exit();
+        });
+      });
+    });
+  });
+});
+</code></pre>
+
+<p>nightmare代码：</p>
+
+<pre><code>new Nightmare()
+  .goto('http://yahoo.com')
+  .type('input[title="Search"]', 'github nightmare')
+  .click('.searchsubmit')
+  .run();
+</code></pre>
+
+<p>一切显而易见，不用多说。</p>
+
+<p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语气，如下例子：</p>
+
+<pre><code>/**
+ * Login to a Swiftly account.
+ *
+ * @param {String} email
+ * @param {String} password
+ */
+
+exports.login = function(email, password){
+  return function(nightmare) {
+    nightmare
+      .viewport(800, 1600)
+      .goto('https://swiftly.com/login')
+        .type('#username', email)
+        .type('#password', password)
+        .click('.button--primary')
+      .wait();
+  };
+};
+</code></pre>
+
+<p>使用代码很简单：</p>
+
+<pre><code>var Swiftly = require('nightmare-swiftly');
+new Nightmare()
+  .use(Swiftly.login(email, password))
+  .use(Swiftly.task(instructions, uploads, path))
+  .run();
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1367,222 +1494,6 @@ list[1] = 100;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
-        
-           | <a href="/blog/2014/09/03/karma-for-jquery-unit-test/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
-
-<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
-
-<h4>jasmime测试套件</h4>
-
-<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
-
-<h4>jasmine-jquery</h4>
-
-<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
-
-<pre><code>jasmine.getFixtures().fixturesPath = 'base path';
-loadFixtures('myfixture.html');
-jasmine.getFixtures().load(...);
-</code></pre>
-
-<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
-
-<h4>jasmine-ajax</h4>
-
-<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
-
-<pre><code> beforeEach(function() {
-    jasmine.Ajax.requests.when = function (url) {
-      return this.filter("/jquery/ajax")[0];
-    };
-    jasmine.Ajax.install();
-});
-
-it("jquery ajax success with getResponse", function() {
-    var result;
-
-    $.get("/jquery/ajax").success(function(data) {
-        result = data;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'data from mock ajax'
-    });
-
-    expect(result).toEqual('data from mock ajax');
-});
-
-
-afterEach(function() {
-    jasmine.Ajax.uninstall();
-});
-</code></pre>
-
-<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
-
-<h4>运用karma runner</h4>
-
-<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
-
-<p>所以分为以下几步：
-1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
-2：host 测试的html fixtures。
-3：加载html fixtures 与install ajax之前。</p>
-
-<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
-
-<pre><code>files: [
-    {
-      pattern: 'view/**/*.html',
-      watched: true,
-      included: false,
-      served: true
-    },
-    'bower_components/jquery/dist/jquery.js',
-    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
-    'bower_components/jasmine-ajax/lib/mock-ajax.js',
-    'src/*.js',
-    'test/*.js'
-],
-</code></pre>
-
-<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
-
-<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
-
-<p>测试html fixtures加载：</p>
-
-<pre><code>describe('console html content', function() {
-
-  beforeEach(function() {
-    jasmine.getFixtures().fixturesPath = 'base/view/';
-    loadFixtures("index.html");
-  });
-
-  it('index html', function() {
-    expect($("h2")).toBeInDOM();
-    expect($("h2")).toContainText("this is index page");
-  });
-
-})
-</code></pre>
-
-<p>测试mock ajax：</p>
-
-<pre><code>describe('console html content', function() {
-
-  beforeEach(function() {
-     jasmine.Ajax.requests.when = function(url) {
-         return this.filter("/jquery/ajax")[0];
-     };
-     jasmine.Ajax.install();
- });
-
-
-  it('index html', function() {
-    expect($("h2")).toBeInDOM();
-    expect($("h2")).toContainText("this is index page");
-  });
-
-  it("ajax mock", function() {
-    var doneFn = jasmine.createSpy("success");
-
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(args) {
-      if (this.readyState == this.DONE) {
-        doneFn(this.responseText);
-      }
-    };
-
-    xhr.open("GET", "/some/cool/url");
-    xhr.send();
-
-    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
-    expect(doneFn).not.toHaveBeenCalled();
-
-    jasmine.Ajax.requests.mostRecent().response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'awesome response'
-    });
-
-    expect(doneFn).toHaveBeenCalledWith('awesome response');
-  });
-
-  it("jquery ajax success with getResponse", function() {
-    var result;
-    getResponse().then(function(data){
-      result = data;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'data from mock ajax'
-    });
-
-    expect(result).toEqual('data from mock ajax');
-  });
-
-  it("jquery ajax error", function() {
-    var status;
-    $.get("/jquery/ajax").error(function(response) {
-      status = response.status;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 400
-    });
-
-    expect(status).toEqual(400);
-  });
-
-  afterEach(function() {
-    jasmine.Ajax.uninstall();
-  });
-})      
-</code></pre>
-
-<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1614,6 +1525,10 @@ afterEach(function() {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmareji Yu Phantomjsde Zi Dong Hua Ce Shi Tao Jian</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
       </li>
     
@@ -1639,10 +1554,6 @@ afterEach(function() {
     
       <li class="post">
         <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a>
       </li>
     
   </ul>
