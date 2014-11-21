@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。 &hellip;">
+  <meta name="description" content="android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。 今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,70 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T10:22:25+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/29/android-settag-key/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/android-settag-key/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。</p>
+
+<p>今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。但有时我们需要存储多个数据，所以这个时候我们就需要使用带key的重载。</p>
+
+<p>文档是描述：“ The specified key should be an id declared in the resources of the application to ensure it is unique (see the ID resource type). Keys identified as belonging to the Android framework or not associated with any package will cause an IllegalArgumentExceptionto be thrown.”</p>
+
+<p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
+
+<pre><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+</code></pre>
+
+<p>正确的解决方案是：</p>
+
+<p>在res/values/strings.xml中定义这个key常量，如下：</p>
+
+<pre><code>    &lt;resources&gt;
+        &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
+        &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
+    &lt;/resources&gt;
+</code></pre>
+
+<p>使用如下：</p>
+
+<pre><code>    imageView.setTag(R.id.tag_first, "Hello");
+    imageView.setTag(R.id.tag_second, "Success");
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1038,68 +1102,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">微软开放了.NET 4.5.1的源代码</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-28T12:25:25+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://referencesource.microsoft.com/">.NET Reference Source</a>发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，<a href="http://referencesource-beta.microsoft.com/setup.html">在Visual Studio 2013中调试.NET Framework</a>。</p>
-
-<p>.NET Framework团队的项目经理Alok Shriram在<a href="http://blogs.msdn.com/b/dotnet/archive/2014/02/24/a-new-look-for-net-reference-source.aspx">.NET Framework的博客</a>中撰文介绍了最新的.NET Reference Source。它不仅可以用来浏览最新的.NET代码，而且通过强大的<a href="http://msdn.com/roslyn">Roslyn</a>，改善了“Go to Defination”和“Finding Reference”的在线体验。此外，开发者还可以下载整个源代码包，在Visual Studio中打开并浏览。使用Schabse Laks编写的<a href="http://visualstudiogallery.msdn.microsoft.com/f89b27c5-7d7b-4059-adde-7ccc709fa86e">插件</a>，可以在VS中直接导航到该网站。</p>
-
-<p>通过简单的配置，开发者可以在Visual Studio中单步调试.NET Framework 4.5.1及其后续补丁和更新。这无疑是广大开发者<a href="http://visualstudio.uservoice.com/forums/121579-visual-studio/suggestions/4083118-allow-developers-to-step-through-net-framework-so">翘首以盼的功能</a>。启动Visual Studio 2013，打开Tools &ndash;> Options &ndash;> Debugging &ndash;> General菜单，进行如下配置：</p>
-
-<ul>
-<li>   禁用Just My Code</li>
-<li>   禁用Step over properties and operators</li>
-<li>   禁用Require source files to exactly match the original version</li>
-<li>   选中Enable .NET Framework source stepping</li>
-<li>   选中Enable source server support</li>
-</ul>
-
-
-<p>这样，开发者在调试代码时，就可以通过F11直接进入.NET代码。</p>
-
-<p>这并不是微软第一次开放.NET Framework的源代码。早在2007年，他们就第一次公布了<a href="http://weblogs.asp.net/scottgu/archive/2007/10/03/releasing-the-source-code-for-the-net-framework-libraries.aspx">.NET 3.5的源代码</a>并支持Visual Studio调试。并且对于后续的4.0和4.5，也都提供了相应的源代码包。但当框架升级时，这些旧的包就变得毫无价值了。从4.5.1开始，.NET Framework团队彻底改变了符号索引和发布的过程，使其与构建过程同步，这样在新版本发布时，相应的PDB文件也会从Reference Source网站进行更新。</p>
-
-<p>目前的beta站点只是临时的，届时将会取代现在的旧站点。后续微软也会将还未公布源代码的程序集逐步添加进来。新的.NET Reference Source许可协议回归到了<a href="http://referencesource-beta.microsoft.com/license.html">MS-RSL</a>，这也使得像Mono这样的团队可以放心大胆地使用。</p>
-
-<p>正如Scott Hanselman所说：微软可能并不是开源的，但却绝对是源代码开放的。</p>
-
-<p>Infoq原文链接:<a href="http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly">http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1133,6 +1135,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
       </li>
     
@@ -1158,10 +1164,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a>
       </li>
     
   </ul>

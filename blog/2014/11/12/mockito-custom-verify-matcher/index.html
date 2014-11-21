@@ -128,20 +128,24 @@
 
 <p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
 
-<pre><code>     public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
-            private Object value;
-            private Function&lt;T, Object&gt; function;
+<pre><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+    private Object value;
+    private Function&lt;T, Object&gt; function;
 
-            public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
-                this.value = value;
-                this.function = getProperty;
-            }
+    public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
+        this.value = value;
+        this.function = getProperty;
+    }
 
-            @Override
-            public boolean matches(Object o) {
-                return function.apply((T) o).equals(value);
-            }
-        }
+    public static &lt;F&gt; PartyMatcher&lt;F&gt; partyMatcher(Function&lt;F, Object&gt; getProperty, Object value) {
+        return new PartyMatcher&lt;F&gt;(getProperty, value);
+    }
+
+    @Override
+    public boolean matches(Object o) {
+        return function.apply((T) o).equals(value);
+    }
+}
 </code></pre>
 
 <p>所以我们的测试可以如下：</p>
@@ -279,6 +283,10 @@ dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
       </li>
     
@@ -304,10 +312,6 @@ dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     
       <li class="post">
         <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a>
       </li>
     
   </ul>

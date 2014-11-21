@@ -682,7 +682,7 @@
     </url>
     <url>
         <loc>http://greengerong.github.io/blog/2014/11/12/mockito-custom-verify-matcher/</loc>
-        <lastmod>2014-11-17T20:40:35+08:00</lastmod>
+        <lastmod>2014-11-21T19:56:37+08:00</lastmod>
     </url>
     <url>
         <loc>
@@ -709,12 +709,18 @@
         <lastmod>2014-11-20T19:16:54+08:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/
+        </loc>
+        <lastmod>2014-11-21T20:58:29+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://greengerong.github.io/blog/archives/</loc>
-        <lastmod>2014-11-20T19:16:54+08:00</lastmod>
+        <lastmod>2014-11-21T20:58:29+08:00</lastmod>
     </url>
     <url>
         <loc>http://greengerong.github.io/</loc>
-        <lastmod>2014-11-20T19:16:54+08:00</lastmod>
+        <lastmod>2014-11-21T20:58:29+08:00</lastmod>
     </url>
     <url>
         <loc>http://greengerong.github.io/robots.txt</loc>

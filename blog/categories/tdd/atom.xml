@@ -4,7 +4,7 @@
   <title><![CDATA[Category: TDD | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/tdd/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-20T19:17:04+08:00</updated>
+  <updated>2014-11-21T20:58:38+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -52,20 +52,24 @@
 
 <p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
 
-<pre><code>     public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
-            private Object value;
-            private Function&lt;T, Object&gt; function;
+<pre><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+    private Object value;
+    private Function&lt;T, Object&gt; function;
 
-            public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
-                this.value = value;
-                this.function = getProperty;
-            }
+    public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
+        this.value = value;
+        this.function = getProperty;
+    }
 
-            @Override
-            public boolean matches(Object o) {
-                return function.apply((T) o).equals(value);
-            }
-        }
+    public static &lt;F&gt; PartyMatcher&lt;F&gt; partyMatcher(Function&lt;F, Object&gt; getProperty, Object value) {
+        return new PartyMatcher&lt;F&gt;(getProperty, value);
+    }
+
+    @Override
+    public boolean matches(Object o) {
+        return function.apply((T) o).equals(value);
+    }
+}
 </code></pre>
 
 <p>所以我们的测试可以如下：</p>
