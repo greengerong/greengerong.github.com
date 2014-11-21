@@ -85,7 +85,5 @@ makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一�
 	    });
 
 	    System.out.println(transform.get());
-	    final int i = BigDecimal.valueOf(1.984).setScale(0, BigDecimal.ROUND_FLOOR).intValue();
-	    System.out.println(i);
 	}
 
