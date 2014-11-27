@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-21T21:05:11+08:00</updated>
+  <updated>2014-11-27T19:52:30+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -54,6 +54,8 @@
 <p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p>
 
 <p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p>
+
+<p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p>
 
 <p>下边是一个对于Future的测试demo：</p>
 
