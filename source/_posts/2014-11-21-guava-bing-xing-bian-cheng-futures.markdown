@@ -89,4 +89,4 @@ JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future�
 	    System.out.println(transform.get());
 	}
 
-
+   官方资料主页：[https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained](https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained)
