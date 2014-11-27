@@ -40,6 +40,8 @@ immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的Lis
 
 makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易
 
+JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。
+
 下边是一个对于Future的测试demo：
 
 	@Test
@@ -86,4 +88,5 @@ makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一�
 
 	    System.out.println(transform.get());
 	}
+
 
