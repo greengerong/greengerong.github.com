@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Guava | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/guava/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-30T11:17:15+08:00</updated>
+  <updated>2014-11-30T11:32:05+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -28,15 +28,13 @@
 
 <p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
 
-<pre><code>``` java
-new Object() {
+<pre><code>new Object() {
 
     @Subscribe
     public void lister(Integer integer) {
         System.out.printf("%d from int%n", integer);
     }
 }
-``` 
 </code></pre>
 
 <p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
@@ -45,8 +43,7 @@ new Object() {
 
 <p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
 
-<pre><code>``` java
-final EventBus eventBus = new EventBus();
+<pre><code>final EventBus eventBus = new EventBus();
 eventBus.register(new Object() {
 
     @Subscribe
@@ -67,7 +64,6 @@ eventBus.register(new Object() {
 
 eventBus.post(1);
 eventBus.post(1L);
-```
 </code></pre>
 
 <p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
@@ -78,8 +74,7 @@ eventBus.post(1L);
 
 <p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
 
-<pre><code>``` java    
-final EventBus eventBus = new EventBus();
+<pre><code>final EventBus eventBus = new EventBus();
 eventBus.register(new Object() {
 
     @Subscribe
@@ -89,7 +84,6 @@ eventBus.register(new Object() {
 });
 
 eventBus.post(new Object());
-```
 </code></pre>
 
 <p>更多Guava博文：</p>
