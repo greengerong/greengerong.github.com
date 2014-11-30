@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-30T10:34:48+08:00</updated>
+  <updated>2014-11-30T10:39:53+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,13 +14,13 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Guava之EventBus(事件总线)]]></title>
+    <title type="html"><![CDATA[Guava - EventBus(事件总线)]]></title>
     <link href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/"/>
     <updated>2014-11-27T21:49:40+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/11/27/guava-eventbus</id>
-    <content type="html"><![CDATA[<p>Guava在<a href="http://code.google.com/p/guava-libraries/">guava-libraries</a>)中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。</p>
+    <content type="html"><![CDATA[<p>Guava在<a href="http://code.google.com/p/guava-libraries/">guava-libraries</a>中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。</p>
 
-<p>不在多的废话，直奔Guava EventBus主题。首先Guava为我们提供了同步事件EventBus和异步实现AsyncEventBus两个事件总线，他们都不是单例的，官方理由是并不想我们我们的使用方式。当然如果我们想其为单例，我们可以很容易封装它，一个单例模式保证只创建一个实例就对了。</p>
+<p>不再多的废话，直奔Guava EventBus主题。首先Guava为我们提供了同步事件EventBus和异步实现AsyncEventBus两个事件总线，他们都不是单例的，官方理由是并不想我们我们的使用方式。当然如果我们想其为单例，我们可以很容易封装它，一个单例模式保证只创建一个实例就对了。</p>
 
 <p>下面将以EventBus为例，AsyncEventBus使用方式与其一致的。</p>
 
@@ -88,14 +88,16 @@ eventBus.post(new Object());
 
 <p>更多Guava博文：</p>
 
-<pre><code>1 [Guava 并行编程Futures](http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/)
-2 [Guava之EventBus(事件总线)](http://greengerong.github.io/blog/2014/11/27/guava-eventbus/)
-</code></pre>
+<ol>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava之EventBus(事件总线)</a></li>
+</ol>
+
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Guava 并行编程Futures]]></title>
+    <title type="html"><![CDATA[Guava - 并行编程Futures]]></title>
     <link href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/"/>
     <updated>2014-11-21T20:41:30+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures</id>
@@ -188,11 +190,13 @@ public void should_test_furture() throws Exception {
 
 <p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
 
-<p>   更多Guava博文：</p>
+<p>更多Guava博文：</p>
 
-<pre><code>1 [Guava 并行编程Futures](http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/)
-2 [Guava之EventBus(事件总线)](http://greengerong.github.io/blog/2014/11/27/guava-eventbus/)
-</code></pre>
+<ol>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava之EventBus(事件总线)</a></li>
+</ol>
+
 ]]></content>
   </entry>
   
