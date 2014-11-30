@@ -90,3 +90,9 @@ JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future�
 	}
 
    官方资料主页：[https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained](https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained)
+
+   更多Guava博文：
+
+	1 [Guava 并行编程Futures](http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/)
+	2 [Guava之EventBus(事件总线)](http://greengerong.github.io/blog/2014/11/27/guava-eventbus/)
+
