@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-30T10:39:53+08:00</updated>
+  <updated>2014-11-30T10:42:02+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -89,8 +89,8 @@ eventBus.post(new Object());
 <p>更多Guava博文：</p>
 
 <ol>
-<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a></li>
-<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava之EventBus(事件总线)</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
 </ol>
 
 ]]></content>
@@ -193,8 +193,8 @@ public void should_test_furture() throws Exception {
 <p>更多Guava博文：</p>
 
 <ol>
-<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a></li>
-<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava之EventBus(事件总线)</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
 </ol>
 
 ]]></content>
