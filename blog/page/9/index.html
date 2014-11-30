@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp; 在上两篇我们介绍了OnExceptionAspect和OnMethodBoundaryAspect ，在这节我们将继续了解MethodInterceptionAspect，他为我们提供了关于方法处理的AOP切入，不同于OnMethodBoundaryAspect， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,164 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果我们了解wpf或者silverlight开发中的MVVM模式，就知道框架要求我们的ViewModel必须实现INotifyPropertyChanged，来得到属性改变的事件通知，更新UI。</p>
+
+<p>实现INotifyPropertyChanged接口很简单，而且一沉不变，属于重复劳动。在这里我们将看看如何运用PostSharp来解决我们的重复劳动。当然这里只是一个demo演示，具体在项目开发中你直接实现INotifyPropertyChanged，或者AOP植入，这取决我个人和团队文化。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在下面我们将会用到Postsharp的：</p>
+
+<ol>
+<li>IntroduceMember：向目标对象植入成员。</li>
+<li>IntroduceInterface：使得目标实现接口，参数接口类型。</li>
+<li>OnLocationSetValueAdvice：PostSharp的一种Advice Aspect。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 下面我就看看我们的代码是如何简洁来实现：</p>
+
+<pre><code> using System;
+  using System.ComponentModel;
+  using PostSharp.Aspects;
+  using PostSharp.Aspects.Advices;
+  using PostSharp.Extensibility;
+
+  namespace PostSharpDemo
+  {
+      [Serializable]
+      [IntroduceInterface(typeof(INotifyPropertyChanged), OverrideAction = InterfaceOverrideAction.Ignore)]
+      public class INotifyPropertyChangedAttribute : InstanceLevelAspect, INotifyPropertyChanged
+      {
+
+          [OnLocationSetValueAdvice, MulticastPointcut(Targets = MulticastTargets.Property)]
+          public void OnValueChanged(LocationInterceptionArgs args)
+          {
+              var current=args.GetCurrentValue();
+              if ((args.Value != null &amp;&amp; (!args.Value.Equals(current)))
+                  || (current != null &amp;&amp; (!current.Equals(args.Value))))
+              {
+                  args.ProceedSetValue();
+                  this.OnRaisePropertyChange(args.Location.Name);
+              }
+          }
+
+          #region INotifyPropertyChanged 成员
+
+          [IntroduceMember(IsVirtual = true, OverrideAction = MemberOverrideAction.Ignore)]
+          public event PropertyChangedEventHandler PropertyChanged;
+
+
+
+
+          protected void OnRaisePropertyChange(string property)
+          {
+              if (PropertyChanged != null)
+              {
+                  PropertyChanged.Invoke(this.Instance, new PropertyChangedEventArgs(property));
+              }
+          }
+          #endregion
+      }
+  }
+</code></pre>
+
+<p>测试代码：</p>
+
+<p>static void Main(string[] args)</p>
+
+<pre><code>    { 
+
+         Student stu = new Student(); 
+        (stu as INotifyPropertyChanged).PropertyChanged += new PropertyChangedEventHandler(Program_PropertyChanged); 
+        stu.ID = 10; 
+        stu.Name = "wolf"; 
+        stu.Sex = "Man"; 
+        stu.ID = 2; 
+        Console.Read(); 
+    } 
+
+    static void Program_PropertyChanged(object sender, PropertyChangedEventArgs e) 
+    { 
+        Console.WriteLine(string.Format("property {0} has changed", e.PropertyName)); 
+    }
+</code></pre>
+
+<p>实体类：</p>
+
+<pre><code>  [INotifyPropertyChanged] 
+   public class Student 
+   { 
+       public string Name 
+       { get; set; } 
+
+       public string Sex 
+       { get; set; } 
+
+       public int ID 
+       { get; set; } 
+   }
+</code></pre>
+
+<div class="cnblogs_code">运行效果如下：</div>
+
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006066024.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006218755.png" title="image" alt="image" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
+
+<p>本博客中相关文章有：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1528,162 +1686,6 @@ C#：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">浅谈.NET编译时注入（C#&#8211;&gt;IL）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; .NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器，在这里就不多说了，不是本文的重点。本文主要讨论下预编译过程中我们能做的改变编译情况，改变生成的ＩＬ，从编译前后看看微软Ｃ＃３．０一些语法糖，PostSharp的静态注入等等。</p>
-
-<p>１：我们先来看看最简单的var:</p>
-
-<p>Ｃ#:</p>
-
-<pre><code>public void TestVar() { 
-    var i = 0;    Console.WriteLine(i); }
-</code></pre>
-
-<p>使用Reflector查看生成</p>
-
-<p>ＩＬ：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124334478.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/20110726212434999.jpg" title="clip_image001" alt="clip_image001" /></a></p>
-
-<p>反编译后的Ｃ＃：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124353474.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124359853.jpg" title="clip_image002" alt="clip_image002" /></a></p>
-
-<p>这里ＶＳ在编译的时候将ｖａｒ为我们转变为了ｉｎｔ类型。</p>
-
-<p>２：Action&lt;int&gt;：</p>
-
-<p>Ｃ＃：</p>
-
-<pre><code>public void TestAction() { var i = 1; Func&lt;int,int&gt; f = t =&gt; t+1; i=10; f(i); }
-</code></pre>
-
-<p>反编译后Ｃ＃：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124351772.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124364737.jpg" title="clip_image004" alt="clip_image004" /></a></p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124369164.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124379131.jpg" title="clip_image005" alt="clip_image005" /></a></p>
-
-<p>编译器为我们在这里生成了代理方法。</p>
-
-<p>总结：</p>
-
-<p>关于lambda表达式的编译规则：</p>
-
-<p>当一个lambda expression被赋值给一个delegate类型，例如<a href="http://msdn2.microsoft.com/en-us/library/018hxwa8.aspx">Action&lt;T&gt;</a>或者<a href="http://msdn2.microsoft.com/en-us/library/bb549151.aspx">Func&lt;T, TResult&gt;</a>等，这个lambda expression会被编译器直接编译为
-1) 当lambda expression没有使用闭包内的非局部引用也没有使用到this时，编译为一个私有静态方法；
-2) 当lambda expression没有使用闭包内的非局部引用，但用到了this时，编译为一个私有成员方法；
-3) 当lambda expression中引用到非局部变量，则编译为一个私有的内部类，将引用到的非局部变量提升为内部类的。</p>
-
-<p>３：PostSharp：</p>
-
-<p>PostSharp是结合了 MSBuild Task 和 MSIL Injection 技术，编译时静态注入实现 AOP 编程。在编译时候改变VS的编译行为。更详细的信息，请访问 <a href="http://www.postsharp.org/">PostSharp</a> 网站</p>
-
-<p>原ｃ＃：</p>
-
-<pre><code>    using System;
-
-  using System.Collections.Generic;
-
-  using System.Linq;
-
-  using System.Text;
-
-  namespace ConsoleApplication1
-
-  {
-
-  class Program
-
-  {
-
-  static void Main(string[] args)
-
-  {
-
-  new Program().TestPostSharp();
-
-  }
-
-  [ErrorHandler()]
-
-  public void TestPostSharp()
-
-  {
-
-  throw new Exception("I will throw a exception!");
-
-  }
-
-  }
-
-  [Serializable]
-
-  public class ErrorHandlerAttribute : PostSharp.Laos.OnMethodBoundaryAspect
-
-  {
-
-  public override void OnException(PostSharp.Laos.MethodExecutionEventArgs eventArgs)
-
-  {
-
-  //do some AOP operation!
-
-  Console.WriteLine(eventArgs.Method+":" +eventArgs.Exception.Message);
-
-  eventArgs.FlowBehavior = PostSharp.Laos.FlowBehavior.Continue;
-
-  }
-
-  }
-
-  }
-</code></pre>
-
-<p>反编译后：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124385030.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124418146.jpg" title="clip_image007" alt="clip_image007" /></a></p>
-
-<p>今天就到此为至,只是简单的了解下IL注入实例,在后面会利用<strong>MSBuild Task+Mono Cecil</strong> 和<strong>PostSharp</strong>实现一些简单的注入实例.</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/10/">&larr; Older</a>
@@ -1717,6 +1719,10 @@ C#：</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/27/guava-eventbus/">Guava之EventBus(事件总线)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava 并行编程Futures</a>
       </li>
     
@@ -1742,10 +1748,6 @@ C#：</p>
     
       <li class="post">
         <a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a>
       </li>
     
   </ul>

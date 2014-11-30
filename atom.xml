@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2014-11-27T19:54:53+08:00</updated>
+  <updated>2014-11-30T10:34:48+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,87 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Guava之EventBus(事件总线)]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/"/>
+    <updated>2014-11-27T21:49:40+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/27/guava-eventbus</id>
+    <content type="html"><![CDATA[<p>Guava在<a href="http://code.google.com/p/guava-libraries/">guava-libraries</a>)中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。</p>
+
+<p>不在多的废话，直奔Guava EventBus主题。首先Guava为我们提供了同步事件EventBus和异步实现AsyncEventBus两个事件总线，他们都不是单例的，官方理由是并不想我们我们的使用方式。当然如果我们想其为单例，我们可以很容易封装它，一个单例模式保证只创建一个实例就对了。</p>
+
+<p>下面将以EventBus为例，AsyncEventBus使用方式与其一致的。</p>
+
+<h4>订阅</h4>
+
+<p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
+
+<pre><code>new Object() {
+
+    @Subscribe
+    public void lister(Integer integer) {
+        System.out.printf("%d from int%n", integer);
+    }
+}
+</code></pre>
+
+<p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
+
+<h4>发布</h4>
+
+<p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
+
+<pre><code>final EventBus eventBus = new EventBus();
+eventBus.register(new Object() {
+
+    @Subscribe
+    public void lister(Integer integer) {
+        System.out.printf("%s from int%n", integer);
+    }
+
+    @Subscribe
+    public void lister(Number integer) {
+        System.out.printf("%s from Number%n", integer);
+    }
+
+    @Subscribe
+    public void lister(Long integer) {
+        System.out.printf("%s from long%n", integer);
+    }
+});
+
+eventBus.post(1);
+eventBus.post(1L);
+</code></pre>
+
+<p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
+
+<p>所以博主建议对于每类时间封装一个特定的事件类型是必要的。</p>
+
+<h4>DeadEvent</h4>
+
+<p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
+
+<pre><code>final EventBus eventBus = new EventBus();
+eventBus.register(new Object() {
+
+    @Subscribe
+    public void lister(DeadEvent event) {
+        System.out.printf("%s=%s from dead events%n", event.getSource().getClass(), event.getEvent());
+    }
+});
+
+eventBus.post(new Object());
+</code></pre>
+
+<p>更多Guava博文：</p>
+
+<pre><code>1 [Guava 并行编程Futures](http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/)
+2 [Guava之EventBus(事件总线)](http://greengerong.github.io/blog/2014/11/27/guava-eventbus/)
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Guava 并行编程Futures]]></title>
@@ -106,6 +187,12 @@ public void should_test_furture() throws Exception {
 </code></pre>
 
 <p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
+
+<p>   更多Guava博文：</p>
+
+<pre><code>1 [Guava 并行编程Futures](http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/)
+2 [Guava之EventBus(事件总线)](http://greengerong.github.io/blog/2014/11/27/guava-eventbus/)
+</code></pre>
 ]]></content>
   </entry>
   
@@ -1890,43 +1977,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     &lt;/executions&gt;
 &lt;/plugin&gt;
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ThoughtWorks持续集成平台GO开源了]]></title>
-    <link href="http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source/"/>
-    <updated>2014-02-28T22:11:34+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source</id>
-    <content type="html"><![CDATA[<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0" alt="go" /></p>
-
-<p>ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。</p>
-
-<p>Go下载地址为<a href="http://www.go.cd/download/">http://www.go.cd/download/</a>.</p>
-
-<p>下面是几张来自官方的视图：</p>
-
-<p>GO流程图：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" /></p>
-
-<p>GO截面图：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" /></p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" /></p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" /></p>
-
-<p>GO的版本：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" /></p>
-
-<ul>
-<li> <a href="http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c">Thoughtworks官方的宣布文章</a></li>
-<li> 你也可以在ThoughtWorks中国微信雷小达看到:<a href="http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&amp;mid=200062098&amp;idx=1&amp;sn=25198a84122904cd113ef010637d27ed&amp;uin=MjA0MjY0NDk0MA%3D%3D">GO！我们开源了！</a></li>
-</ul>
-
 ]]></content>
   </entry>
   
