@@ -200,9 +200,8 @@ public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService 
 
 <p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
 
-<p>   @Provides</p>
-
-<pre><code>public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+<pre><code>@Provides
+public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
                                              @Named("impl2") NamedService nameService2) {
     final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
     list.add(nameService1);
