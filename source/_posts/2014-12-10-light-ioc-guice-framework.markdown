@@ -96,7 +96,7 @@ Binder利用链式形成一套独具语义的DSL，如：
 
 Guice也可以利用@Provides标注注入方法来运行时注入：如
 
-   @Provides
+    @Provides
     public List<NamedService> getAllItemServices(@Named("impl1") NamedService nameService1,
                                                  @Named("impl2") NamedService nameService2) {
         final ArrayList<NamedService> list = new ArrayList<NamedService>();
