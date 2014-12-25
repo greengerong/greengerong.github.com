@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子： angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) { &hellip;">
+  <meta name="description" content="本文来自网友sun shine的问题，问题如下： 您好, 我想求教一个问题. 在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢? 比如: $scope.this.is.a.very.deep.obj = { 'name &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T16:52:55+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/ng-ui-set-for-long-expression/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文来自网友sun shine的问题，问题如下：</p>
+
+<pre><code>    您好, 我想求教一个问题.
+    在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢?
+    比如:
+    $scope.this.is.a.very.deep.obj = {
+    'name': 'xxx',
+    'state': 'active'};
+
+    在 模板中,
+
+    {{this.is.a.very.deep.obj.name}}
+    {{this.is.a.very.deep.obj.state}}
+    类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
+
+    但是我试了, 并没有成功. 求指点.
+    先谢了.
+</code></pre>
+
+<p>在这里首先需要说明的是ng界面的所有引用都需要在$scope这个viewmodel(ui和view的胶水层)，所以如果我们希望能够把表达式变得更可读，更友好，那么我们就必须在$scope上创建这个变量。</p>
+
+<p>再则对于ng其使用使用的一堆的$watch，实现脏检查，如果你理解这些了，那么我们就可以很容易的实现一套如spring的</p>
+
+<pre><code>&lt;c:set var="xxx" expression="xxx" /&gt;
+</code></pre>
+
+<p>的tag.</p>
+
+<p>对于实现这类tag，我们最好的方式则是利用ng的directive来实现，代码如下：</p>
+
+<pre><code>        angular.module("greengerong.ui.tag", [])
+          .directive("uiSet", [
+            function() {
+              return {
+                restrict: "EA",
+                link: function(scope, elm, iAttrs) {
+                  scope.$watch(iAttrs.expression, function(val) {
+                    scope[iAttrs.
+                      var] = val;
+                    var apply = !scope.$$phase ? scope.$apply : angular.noop;
+                    apply();
+                  });
+                }
+              };
+            }
+          ]);
+</code></pre>
+
+<p>demo效果请移步<a href="http://jsbin.com/neqow/3/edit">jsbin demo</a>;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1031,137 +1118,6 @@ archetype plugin，然后就可以喝杯coffe等待build success。</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Ng-template寄宿方式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-15T13:14:55+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/03/15/ng-html2js-maven-plugins-for-java/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/15/ng-html2js-maven-plugins-for-java/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>如果你是一个angular的开发者的话，对于ng-html2js你应该
-很熟悉。对于angular的指令，我们经常需要定义模板(
-directive template/templateUrl),你可以选择讲html page
-放在真正的的web容器中寄宿，也可以选择angular的ng-template
-放在view的page之上，抑或也可以讲html打成一个js文件和directive
-的js文件合并在一起发布。</p>
-
-<ul>
-<li><p>对于直接寄宿在web容器.</p>
-
-<p>这很简单，直接放在jetty，tomcat，iis，
-抑或node express public目录下。这里没什么可以多说的，所以我们跳过。</p></li>
-<li><p>angular ng-template模板:</p>
-
-<p>代码如下：</p>
-
-<pre><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
-
-      Content of the template.
-
-    &lt;/script&gt;
-</code></pre>
-
-<p>这将会在angular的compile时候解析，angular将会把它放在angular的$templateCache
-中。</p>
-
-<p>对于<a href="http://docs.angularjs.org/api/ng/service/$templateCache">$templateCache</a>，如其名
-这是angular对模板的缓存的service。在启用了$templateCache的$http ajax请求，
-angular将会首先在$templateCache中查找是否有对此url的缓存：</p>
-
-<pre><code>      $templateCache.get('templateId.html')
-</code></pre>
-
-<p>如果存在缓存，着angular将会直接用缓存中获取，并不会在发送一次ajax。
-对于所有的指令和模板angular默认启用了templateCache。</p>
-
-<p>这在于angular所处理的模式开发很有关系的。我们经常提到的SPA(single page application)
-我们把view的显示处理等表现逻辑推到了前段，而后端提供只与数据有关的soap/restful service
-这样对于一个应用程序业务逻辑来说不变的是处理数据的业务逻辑，这份逻辑你可以共享在不管前端是mobile
-app 或者是浏览器，或者winform gui的图形化程序，因为对于同一个业务这是不变的。将view的分离推到各自的客户端
-将是更好的解决方案。</p>
-
-<p>回到angular $templateCahce，对于一个应用程序view的分离，之后在对于当前的应用程序平台，html/js/css
-这类资源是静态的，最好是不变的，那么你可以自由的缓存在客户端，减少服务器的交互，以及为了更大的性能追求，我们
-可以把这类静态资源放在Nginx这里反向代理或者CDN上，让我们的程序获取更大的性能和扩展空间。</p></li>
-<li><p>回到angular的ng-html2js：</p>
-
-<p>有了上边对于$templateCache的理解，那你应该很容易理解html2js的方式了，与ng-template不同的
-是ng-template是angular在compile的时候自动加入$templateCache的，html2js是我们在开发
-时候利用build自己放入$templateCache。</p>
-
-<pre><code>  angular.module('myApp', [])
-  .run(function($templateCache) {
-      $templateCache.put('templateId.html',
-          'This is the content of the template'
-      );
-  });
-</code></pre></li>
-</ul>
-
-
-<p>形如上面的输出，将html文件打成一个js文件。</p>
-
-<p>这你也许在angular的单元测试karma unit test中看见过，<a href="https://github.com/karma-runner/karma-ng-html2js-preprocessor"> karma-ng-html2js-preprocessor</a>
-，还有如果你也希望在build时候做到如此，那么你可以使用grunt plugin <a href="https://github.com/karlgoldstein/grunt-html2js"> grunt-html2js</a>.</p>
-
-<p>但使用grunt plugin的前提是你在你的项目中引入的grunt build的work flow，那么你可以在gruntfile.js中几行代码轻松的搞定。但是如果
-你和我一样使用的是java的maven或者是gradle 作为build，那么你可以尝试博主的maven plugin<a href="https://github.com/greengerong/nghtml2js">nghtml2js</a>.
-使用方式如下：</p>
-
-<pre><code>&lt;plugin&gt;
-    &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
-    &lt;artifactId&gt;nghtml2js&lt;/artifactId&gt;
-    &lt;version&gt;0.0.3&lt;/version&gt;
-    &lt;configuration&gt;
-        &lt;module&gt;demo.template&lt;/module&gt;
-        &lt;html&gt;${project.basedir}&lt;/html&gt;
-        &lt;extensions&gt;
-            &lt;param&gt;tpl&lt;/param&gt;
-            &lt;param&gt;html&lt;/param&gt;
-        &lt;/extensions&gt;
-    &lt;/configuration&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;id&gt;nghtml2js&lt;/id&gt;
-            &lt;phase&gt;generate-resources&lt;/phase&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;run&lt;/goal&gt;
-            &lt;/goals&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-&lt;/plugin&gt;
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1195,6 +1151,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
       </li>
     
@@ -1220,10 +1180,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a>
       </li>
     
   </ul>

@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>java轻量级IOC框架Guice - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于： 速度快，号称比spring快100倍。
+无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。
+简单，快速，基本没有学习成本。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2014/12/10/light-ioc-guice-framework">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">java轻量级IOC框架Guice</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-10T21:50:37+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于：</p>
+
+<ol>
+<li>速度快，号称比spring快100倍。</li>
+<li>无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。</li>
+<li>简单，快速，基本没有学习成本。</li>
+</ol>
+
+
+<p>Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目简单方案，如OSGI容器，spring更适合大型项目组织。</p>
+
+<h2>注入方式</h2>
+
+<p>在我们谈到IOC框架，首先我们的话题将是构造，属性以及函数注入方式，Guice的实现只需要在构造函数，字段，或者注入函数上标注@Inject，如：</p>
+
+<h4>构造注入</h4>
+
+<pre><code>public class OrderServiceImpl implements OrderService {
+    private ItemService itemService;
+    private PriceService priceService;
+
+    @Inject
+    public OrderServiceImpl(ItemService itemService, PriceService priceService) {
+        this.itemService = itemService;
+        this.priceService = priceService;
+    }
+
+    ...
+}
+</code></pre>
+
+<h4>属性注入</h4>
+
+<pre><code>public class OrderServiceImpl implements OrderService {
+    private ItemService itemService;
+    private PriceService priceService;
+
+    @Inject
+    public void init(ItemService itemService, PriceService priceService) {
+        this.itemService = itemService;
+        this.priceService = priceService;
+    }
+
+    ...
+}
+</code></pre>
+
+<h4>函数(setter)注入</h4>
+
+<pre><code>public class OrderServiceImpl implements OrderService {
+    private ItemService itemService;
+    private PriceService priceService;
+
+    @Inject
+    public void setItemService(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @Inject
+    public void setPriceService(PriceService priceService) {
+        this.priceService = priceService;
+    } 
+
+    ...
+}
+</code></pre>
+
+<h2>Module依赖注册</h2>
+
+<p>Guice提供依赖配置类，需要继承至AbstractModule，实现configure方法。在configure方法中我们可以用Binder配置依赖。</p>
+
+<p>Binder利用链式形成一套独具语义的DSL，如：</p>
+
+<ul>
+<li>基本配置：binder.bind(serviceClass).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>无base类、接口配置：binder.bind(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>service实例配置：binder.bind(serviceClass).toInstance(servieInstance).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>多个实例按名注入：binder.bind(serviceClass).annotatedWith(Names.named(&ldquo;name&rdquo;)).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>运行时注入：利用@Provides标注注入方法，相当于spring的@Bean。</li>
+<li>@ImplementedBy：或者在实现接口之上标注@ImplementedBy指定其实现类。这种方式有点反OO设计，抽象不该知道其实现类。</li>
+</ul>
+
+
+<p>对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：</p>
+
+<pre><code>public void configure() {
+    final Binder binder = binder();
+
+    //TODO: bind named instance;
+    binder.bind(NamedService.class).annotatedWith(Names.named("impl1")).to(NamedServiceImpl1.class);
+    binder.bind(NamedService.class).annotatedWith(Names.named("impl2")).to(NamedServiceImpl2.class);
+}
+
+@Inject
+public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+                                                 @Named("impl2") NamedService nameService2) {
+}
+</code></pre>
+
+<p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
+
+<p>   @Provides</p>
+
+<pre><code>public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+                                             @Named("impl2") NamedService nameService2) {
+    final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
+    list.add(nameService1);
+    list.add(nameService2);
+    return list;
+}
+</code></pre>
+
+<h2>Guice实例</h2>
+
+<p>下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
+
+<pre><code>package com.github.greengerong.app;
+
+/**
+ * ***************************************
+ * *
+ * Auth: green gerong                     *
+ * Date: 2014                             *
+ * blog: http://greengerong.github.io/    *
+ * github: https://github.com/greengerong *
+ * *
+ * ****************************************
+ */
+public class AppModule extends AbstractModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppModule.class);
+    private final BundleContext bundleContext;
+
+    public AppModule(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+        LOGGER.info(String.format("enter app module with: %s", bundleContext));
+    }
+
+    @Override
+    public void configure() {
+        final Binder binder = binder();
+        //TODO: bind interface
+        binder.bind(ItemService.class).to(ItemServiceImpl.class).in(SINGLETON);
+        binder.bind(OrderService.class).to(OrderServiceImpl.class).in(SINGLETON);
+        //TODO: bind self class(without interface or base class)
+        binder.bind(PriceService.class).in(Scopes.SINGLETON);
+
+
+        //TODO: bind instance not class.
+        binder.bind(RuntimeService.class).toInstance(new RuntimeService());
+
+        //TODO: bind named instance;
+        binder.bind(NamedService.class).annotatedWith(Names.named("impl1")).to(NamedServiceImpl1.class);
+        binder.bind(NamedService.class).annotatedWith(Names.named("impl2")).to(NamedServiceImpl2.class);
+    }
+
+    @Provides
+    public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+                                                 @Named("impl2") NamedService nameService2) {
+        final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
+        list.add(nameService1);
+        list.add(nameService2);
+        return list;
+    }
+}
+</code></pre>
+
+<h2>Guice的使用</h2>
+
+<p>对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：</p>
+
+<pre><code>Injector injector = Guice.createInjector(new AppModule(bundleContext));
+</code></pre>
+
+<p>这里可以传入多个module，我们可以利用module分离领域依赖。</p>
+
+<p>Guice api方法：</p>
+
+<pre><code>public static Injector createInjector(Module... modules) 
+
+public static Injector createInjector(Iterable&lt;? extends Module&gt; modules) 
+
+public static Injector createInjector(Stage stage, Module... modules)
+
+public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&gt; modules) 
+</code></pre>
+
+<p>Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。</p>
+
+<h2>后续</h2>
+
+<p>本文Guice更全的demo代码请参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
+
+<p>Guice还有很多的扩展如AOP，同一个服务多个实例注入set，map，OSGI，UOW等扩展，请参见<a href="https://github.com/google/guice/wiki">Guice wiki</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-10T21:50:37+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/guice/'>Guice</a>, <a class='category' href='/blog/categories/ioc/'>ioc</a>, <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/27/guava-eventbus/" title="Previous Post: Guava - EventBus(事件总线)">&laquo; Guava - EventBus(事件总线)</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2014/12/10/light-ioc-guice-framework/';
+        var disqus_url = 'http://greengerong.github.io/blog/2014/12/10/light-ioc-guice-framework/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

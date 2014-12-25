@@ -9,7 +9,9 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="Guava在guava-libraries中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。 不再多的废话，直奔Guava EventBus主题。 &hellip;">
+  <meta name="description" content="Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于： 速度快，号称比spring快100倍。
+无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。
+简单，快速，基本没有学习成本。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +67,237 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-10T21:50:37+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/12/10/light-ioc-guice-framework/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/12/10/light-ioc-guice-framework/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于：</p>
+
+<ol>
+<li>速度快，号称比spring快100倍。</li>
+<li>无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。</li>
+<li>简单，快速，基本没有学习成本。</li>
+</ol>
+
+
+<p>Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目简单方案，如OSGI容器，spring更适合大型项目组织。</p>
+
+<h2>注入方式</h2>
+
+<p>在我们谈到IOC框架，首先我们的话题将是构造，属性以及函数注入方式，Guice的实现只需要在构造函数，字段，或者注入函数上标注@Inject，如：</p>
+
+<h4>构造注入</h4>
+
+<pre><code>public class OrderServiceImpl implements OrderService {
+    private ItemService itemService;
+    private PriceService priceService;
+
+    @Inject
+    public OrderServiceImpl(ItemService itemService, PriceService priceService) {
+        this.itemService = itemService;
+        this.priceService = priceService;
+    }
+
+    ...
+}
+</code></pre>
+
+<h4>属性注入</h4>
+
+<pre><code>public class OrderServiceImpl implements OrderService {
+    private ItemService itemService;
+    private PriceService priceService;
+
+    @Inject
+    public void init(ItemService itemService, PriceService priceService) {
+        this.itemService = itemService;
+        this.priceService = priceService;
+    }
+
+    ...
+}
+</code></pre>
+
+<h4>函数(setter)注入</h4>
+
+<pre><code>public class OrderServiceImpl implements OrderService {
+    private ItemService itemService;
+    private PriceService priceService;
+
+    @Inject
+    public void setItemService(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @Inject
+    public void setPriceService(PriceService priceService) {
+        this.priceService = priceService;
+    } 
+
+    ...
+}
+</code></pre>
+
+<h2>Module依赖注册</h2>
+
+<p>Guice提供依赖配置类，需要继承至AbstractModule，实现configure方法。在configure方法中我们可以用Binder配置依赖。</p>
+
+<p>Binder利用链式形成一套独具语义的DSL，如：</p>
+
+<ul>
+<li>基本配置：binder.bind(serviceClass).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>无base类、接口配置：binder.bind(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>service实例配置：binder.bind(serviceClass).toInstance(servieInstance).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>多个实例按名注入：binder.bind(serviceClass).annotatedWith(Names.named(&ldquo;name&rdquo;)).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
+<li>运行时注入：利用@Provides标注注入方法，相当于spring的@Bean。</li>
+<li>@ImplementedBy：或者在实现接口之上标注@ImplementedBy指定其实现类。这种方式有点反OO设计，抽象不该知道其实现类。</li>
+</ul>
+
+
+<p>对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：</p>
+
+<pre><code>public void configure() {
+    final Binder binder = binder();
+
+    //TODO: bind named instance;
+    binder.bind(NamedService.class).annotatedWith(Names.named("impl1")).to(NamedServiceImpl1.class);
+    binder.bind(NamedService.class).annotatedWith(Names.named("impl2")).to(NamedServiceImpl2.class);
+}
+
+@Inject
+public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+                                                 @Named("impl2") NamedService nameService2) {
+}
+</code></pre>
+
+<p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
+
+<p>   @Provides</p>
+
+<pre><code>public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+                                             @Named("impl2") NamedService nameService2) {
+    final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
+    list.add(nameService1);
+    list.add(nameService2);
+    return list;
+}
+</code></pre>
+
+<h2>Guice实例</h2>
+
+<p>下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
+
+<pre><code>package com.github.greengerong.app;
+
+/**
+ * ***************************************
+ * *
+ * Auth: green gerong                     *
+ * Date: 2014                             *
+ * blog: http://greengerong.github.io/    *
+ * github: https://github.com/greengerong *
+ * *
+ * ****************************************
+ */
+public class AppModule extends AbstractModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppModule.class);
+    private final BundleContext bundleContext;
+
+    public AppModule(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+        LOGGER.info(String.format("enter app module with: %s", bundleContext));
+    }
+
+    @Override
+    public void configure() {
+        final Binder binder = binder();
+        //TODO: bind interface
+        binder.bind(ItemService.class).to(ItemServiceImpl.class).in(SINGLETON);
+        binder.bind(OrderService.class).to(OrderServiceImpl.class).in(SINGLETON);
+        //TODO: bind self class(without interface or base class)
+        binder.bind(PriceService.class).in(Scopes.SINGLETON);
+
+
+        //TODO: bind instance not class.
+        binder.bind(RuntimeService.class).toInstance(new RuntimeService());
+
+        //TODO: bind named instance;
+        binder.bind(NamedService.class).annotatedWith(Names.named("impl1")).to(NamedServiceImpl1.class);
+        binder.bind(NamedService.class).annotatedWith(Names.named("impl2")).to(NamedServiceImpl2.class);
+    }
+
+    @Provides
+    public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
+                                                 @Named("impl2") NamedService nameService2) {
+        final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
+        list.add(nameService1);
+        list.add(nameService2);
+        return list;
+    }
+}
+</code></pre>
+
+<h2>Guice的使用</h2>
+
+<p>对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：</p>
+
+<pre><code>Injector injector = Guice.createInjector(new AppModule(bundleContext));
+</code></pre>
+
+<p>这里可以传入多个module，我们可以利用module分离领域依赖。</p>
+
+<p>Guice api方法：</p>
+
+<pre><code>public static Injector createInjector(Module... modules) 
+
+public static Injector createInjector(Iterable&lt;? extends Module&gt; modules) 
+
+public static Injector createInjector(Stage stage, Module... modules)
+
+public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&gt; modules) 
+</code></pre>
+
+<p>Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。</p>
+
+<h2>后续</h2>
+
+<p>本文Guice更全的demo代码请参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
+
+<p>Guice还有很多的扩展如AOP，同一个服务多个实例注入set，map，OSGI，UOW等扩展，请参见<a href="https://github.com/google/guice/wiki">Guice wiki</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1454,93 +1687,6 @@ list[1] = 100;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-29T16:52:55+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/09/29/ng-ui-set-for-long-expression/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/ng-ui-set-for-long-expression/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文来自网友sun shine的问题，问题如下：</p>
-
-<pre><code>    您好, 我想求教一个问题.
-    在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢?
-    比如:
-    $scope.this.is.a.very.deep.obj = {
-    'name': 'xxx',
-    'state': 'active'};
-
-    在 模板中,
-
-    {{this.is.a.very.deep.obj.name}}
-    {{this.is.a.very.deep.obj.state}}
-    类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
-
-    但是我试了, 并没有成功. 求指点.
-    先谢了.
-</code></pre>
-
-<p>在这里首先需要说明的是ng界面的所有引用都需要在$scope这个viewmodel(ui和view的胶水层)，所以如果我们希望能够把表达式变得更可读，更友好，那么我们就必须在$scope上创建这个变量。</p>
-
-<p>再则对于ng其使用使用的一堆的$watch，实现脏检查，如果你理解这些了，那么我们就可以很容易的实现一套如spring的</p>
-
-<pre><code>&lt;c:set var="xxx" expression="xxx" /&gt;
-</code></pre>
-
-<p>的tag.</p>
-
-<p>对于实现这类tag，我们最好的方式则是利用ng的directive来实现，代码如下：</p>
-
-<pre><code>        angular.module("greengerong.ui.tag", [])
-          .directive("uiSet", [
-            function() {
-              return {
-                restrict: "EA",
-                link: function(scope, elm, iAttrs) {
-                  scope.$watch(iAttrs.expression, function(val) {
-                    scope[iAttrs.
-                      var] = val;
-                    var apply = !scope.$$phase ? scope.$apply : angular.noop;
-                    apply();
-                  });
-                }
-              };
-            }
-          ]);
-</code></pre>
-
-<p>demo效果请移步<a href="http://jsbin.com/neqow/3/edit">jsbin demo</a>;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1572,6 +1718,10 @@ list[1] = 100;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
       </li>
     
@@ -1597,10 +1747,6 @@ list[1] = 100;
     
       <li class="post">
         <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a>
       </li>
     
   </ul>
