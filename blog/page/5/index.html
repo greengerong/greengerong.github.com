@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,67 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">隐藏在mock之后的‘快感’</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo;独立&ldquo;的过度。 在前边转载过《软件开发中没有所谓正确的方法》，当你把某一种方法论作为银弹使用的时候，早晚魔鬼会伴随在你身边。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock给我带来了感知，剥离了类与类之间的依赖，有助于我们更好的工作在当前的关注点 .但同时由于太多的对场景的假设，导致这块代码成为了信息的孤岛，甚至很多时候不得不用mock的第二特性verify，order，以至于你的测试关心的不再是代码存在的business逻辑，而倾向代码层面的设计实现，这就把你单元测试推向了&ldquo;白盒测试&ldquo;的位置，导致测试变为脆弱的测试。每当简单的重构导致内部的变化，你的测试也必须随着改变。</p>
+
+<p>&nbsp; &nbsp; &nbsp;鄙人认为作为一个好的测试而言，在一次合法的简单重构之下，是不需要修改测试的，因为你修改的只是内部实现，而不是business的改变，如果你边改测试边重构或者重构后挂到一大堆测试，这意味这你的测试不是一个稳定的测试或者你不是一次合法的重构（也许redesign，override）。</p>
+
+<p>&nbsp; &nbsp; &nbsp;在同事的项目中对mock的极端到了对简单的View Object 也采用builder模式，可是内部却全是mock given。在我看来而言View Object只是一个简单的数据载体，不存在行为逻辑，我们毫无必要去做mock，mock该是针对假设，而应该尽量避免对状态mock。在同事的项目中导致需要写一个测试之前，作为测试的准备given ，必须理解存在代码的实现，因为你需要一堆given，比如对于person对象，如果你在实现中需要得到account则：</p>
+
+<p>given(person.getAccount()).willReturn(some account);</p>
+
+<p>&nbsp; &nbsp; &nbsp;导致我需要了解实现需要什么property，如果我需要新的的property也许只是简单的把某个&ldquo;依恋情结&rdquo;放入了object，测试也需要被修改，导致重构者对自己的重构并不那么自信，这将影响重构成为日常行为，随着堆积的&rdquo;坏味道&ldquo;这将一点一点的侵蚀你的代码，项目慢慢的也许会不能的不可控。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock并不是一个坏的东西，结果的好坏在于使用的人，团队 的意识，如果是mock anywhere或者杜绝mock走向两个任意的极端都将是一个错误的抉择。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock更多的使用场景为对外界资源解依赖增强感知能力，以及对无响应的重要business的验证，后者长体现于一个没有返回子void的method，但是method比如增加用户积分，记录用户信息等的。然而对于有响应的business，我需要的不是mock而应该是assert，对于测试来说对于business来说应试是我的输入应该得到我预期的响应，而非我verify某个行为发生了，那么其结果一定就正确，当然对于实现来说这是成立的，但是从测试的价值来说这厮无意义的，这将是一个脆弱的测试，我认为一个好的测试将是&ldquo;黑盒测试&ldquo;，是一个business的描述，对一份约定，契约的阐述。</p>
+
+<p>&nbsp; &nbsp; &nbsp; 附言，如果你因为测试的速度，独立性来为自己的mock证明，那将是无意义的，不是每一个测试都必须在黄金法则内（0.1s），如果你对外部依赖，耗时依赖的分离，这我相信将不再是问题所在，测试的优化将是另一个有趣的话题，将不是本文内容之列。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/29/3107019.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1217,135 +1278,6 @@ grep --color=auto node
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie/">Angularjs开发一些经验总结</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-24T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在去年到今年参与了2个使用Angularjs作为客户端开发框架的项目开发。主要利用asp.net web api作为restfull服务提供框架和angularjs结合。Angularjs作为html的扩展，旨在建立一个丰富的动态web应用，通过Directive建立一套html扩展的DSL模型，利用PM模式变形MVVM（在网上很多称MVC模式，本人认为在angular0.8是属于经典MVC模式，但在1.0把scope独立注入过后，更倾向于MVVM模式，这将会后续随笔中写道）简化前端开发和使得前端业务逻辑得以分离，view和表现逻辑的分离，更便于维护，扩展。Angularjs本来就是采用TDD开发的，提供了一套单元测试组件和End 2 End的测试框架。Angularjs的的强大之处在于提供了一套内似WPF，Silverlight的强大数据绑定和格式化，过滤组件，这也是MVVM模式所必备的条件；再加之IOC的注入机制，使得不能业务逻辑的分离，服务代码的更大程度抽象重用。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在这节随便中将讨论的angularjs开发的一些基本准则，为什么会有这篇随便呢，因为看见一些项目对于angularjs的乱用。</p>
-
-<p>&nbsp; 1：不要一个page一个God似无所不能的controller包含所有页面逻辑。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs ng-controller旨在将业务逻辑的区分，更推荐按照业务逻辑的划分controller，做到业务功能的高内聚，controller的单一原则SRP。</p>
-
-<p>&nbsp; 2：View中包含尽量少的逻辑。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 就像jsp，asp这类服务端模板引擎一样，我们应该把尽量少的逻辑放在view中，因为这样会导致view和逻辑的紧耦合性，view在软件开发中是最易变化的，而表现层逻辑却相对于view是相对稳定的行为。同时也导致的view中的逻辑不能被自动化测试，持续集成所覆盖，这将导致以后修改重构和模块的集成的痛苦。很明显的就是太多的angularjs的ng-switch，ng-when和页面计算表达式等等。</p>
-
-<p>3：注意一些特殊的节点式的angularjs directive，因为在IE7上这是不被认识的，因为IE的严格XML模式。如果你想make ie7 happy，</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 1：请注意导入json2或者json3的js</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 2：xmlns:ng命令空间和节点element式directive。</p>
-
-<blockquote><p>&lt;html xmlns:ng=&ldquo;<a href="http://angularjs.org">http://angularjs.org</a>&rdquo;&gt;</p>
-
-<p>&lt;head&gt;</p>
-
-<p>&lt;!&mdash;[if lte IE 8]&gt;</p>
-
-<p>&lt;script&gt;</p>
-
-<p>document.createElement(&lsquo;ng-include&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng-pluralize&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng-view&rsquo;);</p>
-
-<p>&nbsp;</p>
-
-<p>// Optionally these for CSS</p>
-
-<p>document.createElement(&lsquo;ng:include&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng:pluralize&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng:view&rsquo;);</p>
-
-<p>&lt;/script&gt;</p>
-
-<p>&lt;![endif]&mdash;&gt;</p>
-
-<p>&lt;/head&gt;</p></blockquote>
-
-<p>&nbsp; &nbsp; 3:除官网介绍的几个注意点之外 需要将</p>
-
-<pre><code>&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;lt;div &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;ng-app&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"xxx"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;gt;
-
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;`改为&lt;/pre&gt;
-&lt;pre class="prettyprint"&gt;`&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;lt;div &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;id&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"ng-app" &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;ng-app&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"xxx"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;`&lt;/pre&gt;
-
-&amp;nbsp;另外注意html 头部要引入（否则会进入坑爹的quirk模式）
-
-&lt;pre class="prettyprint"&gt;`&lt;span class="dec"&gt;&lt;span class="dec"&gt;&lt;span class="dec"&gt;&lt;span class="dec"&gt;&amp;lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
-</code></pre>
-
-<p>&nbsp;</p>
-
-<p>4：在controller和service中绝对不能出现html的DOM和CSS代码。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这会导致逻辑的混杂耦合，对于angularjs自身的绑定对html操作，很多时候你会分不清是view的影响源，导致修复bug，和新增功能，重构的艰难，常常出现很多的诡异行为。最好的实践模式则是把必须的dom，css操作移向angular的Directive，或者view中。在angularjs模式中只有directive和view才能出现dom和css的逻辑操作。</p>
-
-<p>&nbsp; 5：controller中公用的逻辑推向service（factory，value，config)，采用IOC的注入，提高代码的重用度，修改的单一点，开闭原则。</p>
-
-<p>&nbsp; 6：controller应该只包含业务逻辑，对于数据模型的格式化过滤尽量交给angular框架filter等处理。</p>
-
-<p>7：viewmodel中最好建立一个通用属性比如vm，它承载view渲染的最小量化model，对于model的变形事件则在vm之外scope之上。这才是MVVM推荐方式。事件相当于WPF中的command，负责模型事件的传递修改模型，从而从模型的改变通知view的强制更新（WPF中model必须实现INotifyPropertyChange接口）。同时这样vm属性也便于数据的填充和收集回发服务端。</p>
-
-<p>8：IOC注入优先，注有助于良好的设计，逻辑的可重用和单元的可测试性，面向对象的&ldquo;开闭原则&rdquo;，修改的单一点。</p>
-
-<p>9：良好的分层设计，对于服view的交互采用controller通过viewmode（scope）的推送，服务器的交互推向service层次，利用angularjs的$resource或者$http获取更新数据model，与服务端交互。层次属于纵向分割，将一类功能逻辑的接口放在一起，架构层次，而model则从业务的逻辑横向分离。</p>
-
-<p>10：服务端的服务的接口需要考虑表现层客户端的应用提供，这是一个良好的SOA服务设计的准则，这里不用多余的描述，具体请移步<a href="http://www.cnblogs.com/whitewolf/category/379884.html">架构篇</a>。</p>
-
-<p>11：如果你的公司应用了敏捷开发则，TDD的开发是必备的，angularjs本也是解决javascript测试驱动开发项目。</p>
-
-<p>&nbsp;12：scope的纯净性，scope上的每一个函数和属性必须为view所用（事件传递或者属性绑定），不用的可以作为工具函数或者service处置.</p>
-
-<p>&nbsp;13：对controller之间如果不是强依赖，只是弱引用则最好用事件$emit,$on,<span style="font-size: 16px; font-family: 楷体;">$broadcast</span>,是的controller之间低耦合（<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html">Angularjs Controller 间通信机制</a>）。</p>
-
-<p>&nbsp;14：angularjs的的模块管理参见<a href="http://kb.cnblogs.com/page/176541/">如何组织大型JavaScript应用中的代码？</a>.</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; 最后想说说angularjs也不是银弹，并不是万能的，不是所有的项目都适合应用，它适用于CRUD的应用系统，内置了一些默认规则（惯例优先），对于表现层频繁交互的项目不适用，对于一些特殊的项目比如spring hdiv的项目也不是那么友好，或者就是你希望兼容更多的IE8一下的版本的应用系统，同样也不实用。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -1379,6 +1311,10 @@ grep --color=auto node
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
       </li>
     
@@ -1404,10 +1340,6 @@ grep --color=auto node
     
       <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
       </li>
     
   </ul>
@@ -1452,7 +1384,7 @@ grep --color=auto node
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - 破 狼 -
+  Copyright &copy; 2015 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

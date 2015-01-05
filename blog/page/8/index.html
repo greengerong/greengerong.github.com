@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上篇中我们简单谈了下架构设计中服务层的简单理解，在这里我们将继续服务层的架构，在本节我们将重点在于分布式服务。在分布式系统中表现层和业务逻辑层 并不处于同一物理部署，所以我们必须存在分布式服务，以契约方式发布于网络中， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp; 这其实是个很基础的问题，在我们学习C#类型的时候第一句就是所有的对象都继承至System.Object。今天一个同事问我Interface继承之System.Object。所以才有了本文。 &nbsp; 在这里我只从几个方面简单的说明： &nbsp; 1：从语义： & &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,100 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Interface继承至System.Object？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-23T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 这其实是个很基础的问题，在我们学习C#类型的时候第一句就是所有的对象都继承至System.Object。今天一个同事问我Interface继承之System.Object。所以才有了本文。</p>
+
+<p>&nbsp; 在这里我只从几个方面简单的说明：</p>
+
+<p>&nbsp; 1：从语义：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; Interface在oo中表示一组行为的集合，是高层次的抽象，契约，一种稳定的表现。好比我们生活的公司和员工之间的合同，双方都必须遵循。所以我们的接口必须是一个干净纯洁的体系。加入interface继承之System.Object，这以为这是不是，Interface有Equal，ToString等方法？这明显破坏了接口的干净体系。</p>
+
+<p>2：实践（C#）：</p>
+
+<p>&nbsp;&nbsp; 如果interface继承之System.Object，这我们可以从System.Type获取其基类：</p>
+
+<p>如下测试：</p>
+
+<p>public interface Itest{}</p>
+
+<p>public class test{}</p>
+
+<p>typeof(Itest).BaseTye//为null</p>
+
+<p>typeof(test).BaseType//System.Object.</p>
+
+<p>3:我们从IL指令来看（这也是最有力的证明）：</p>
+
+<p>我们先写一个接口和一个类，他们都是空实现：</p>
+
+<p>namespace ConsoleApplication1  <br/>
+{   <br/>
+&nbsp;&nbsp;&nbsp; public class test   <br/>
+&nbsp;&nbsp;&nbsp; {   <br/>
+&nbsp;&nbsp;&nbsp; }</p>
+
+<p>&nbsp;&nbsp;&nbsp; public interface Itest  <br/>
+&nbsp;&nbsp;&nbsp; {   <br/>
+&nbsp;&nbsp;&nbsp; }   <br/>
+}</p>
+
+<p>&nbsp;</p>
+
+<p>在反编译查看IL：</p>
+
+<p>test clas:</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004187699.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/20120523000419947.png" title="image" alt="image" /></a></p>
+
+<p>而interface Itest的IL：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004197566.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004208405.png" title="image" alt="image" /></a></p>
+
+<p>从上面两个IL比较我们可以清晰的看出来class有显示的extends [mscorlib]System.Object，而接口没有，本篇的答案到这里你应该很清晰吧。这里还需要说明的是他们都是class，说明都是一种类型，而interface是一种特殊的类型。</p>
+
+<p>接口能定义什么？接口能定义行为（方法），无参属性（属性，又称守信），有参属性（索引），不能定义私例字段，定义都是对编译器都是一组方法行为。</p>
+
+<p>&nbsp;&nbsp; 在最后我们在来说说前面说的&#8220;所有的对象都继承至System.Object&#8221;，这是真的嘛？在c#的编译过程中为我们提供了一个选项NOAUTOINHERIT，是的我们可以为自定义类型去掉默认的System.Object的基类。这就打破了System.Object创世之祖的戒律。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/23/2514123.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2313,144 +2407,6 @@ public class HelloService1 : IHelloService
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/">AOP之PostSharp6-EventInterceptionAspect(事件异步调用)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-13T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在上几章我们讨论了方法属性字段的aspect，现在我们再来看看事件机制的aspect。和字段，属性location一样，在c#中字段也可以转化为方法名为add，remove的方法处理，所以对于事件的aspect，同样类似于我们的方法。我们先看看EventInterceptionAspect的定义：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947164625.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947198892.png" title="image" alt="image" /></a></p>
-
-<p>aspect类包含我们对于事件aspect所必要的注册，取消，调用的注入。</p>
-
-<p>其参数定义如下：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947203069.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947226648.png" title="image" alt="image" /></a></p>
-
-<p>为我们提供了，ProceedAddHandler，ProceedInvokeHandler，ProceedRemoveHandler的事件处理代理。同样包含来自AdviceArgs的Instance对象。</p>
-
-<p>&nbsp; 对于事件aspect的例子真的不好想，在这里我们只是简单的做个事件变为异步调用的代码作为demo：</p>
-
-<pre><code> [Serializable]
-    public class AsynEventAspectAttribute : PostSharp.Aspects.EventInterceptionAspect
-    {
-
-        public override void OnInvokeHandler(PostSharp.Aspects.EventInterceptionArgs args)
-        {
-            var th = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(new Action&lt;object&gt;((obj) =&gt;
-                {
-                    System.Threading.Thread.Sleep(new Random().Next(1000));
-                    try
-                    {
-                        args.ProceedInvokeHandler();
-                    }
-                    catch (Exception ex)
-                    {
-
-                        args.ProceedRemoveHandler();
-                    }
-                })));
-            th.Start();
-        }
-    }
-</code></pre>
-
-<p>&nbsp;测试代码：</p>
-
-<pre><code> namespace PostSharpDemo 
-{ 
-    public class TestAsyncAspect 
-    { 
-        [AsynEventAspectAttribute] 
-        public event EventHandler SomeEvent = null; 
-
-        public void OnSomeEvent() 
-        { 
-            if (SomeEvent != null) 
-            { 
-
-                SomeEvent(this, EventArgs.Empty); 
-            } 
-        } 
-    } 
-}
-
-class Program 
-    { 
-        static void Main(string[] args) 
-        {
-
-TestAsyncAspect pro = new TestAsyncAspect(); 
-          for (int i = 0; i &lt; 10; i++) 
-          { 
-              pro.SomeEvent += new EventHandler(pro_SomeEvent); 
-          } 
-          pro.OnSomeEvent(); 
-    //      pro.SomeEvent -= new EventHandler(pro_SomeEvent); 
-          Console.WriteLine("主线程完了！"); 
-          Console.Read(); 
-      } 
-
-      static void pro_SomeEvent(object sender, EventArgs e) 
-      { 
-          Console.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId); 
-      }    
-
-}
-</code></pre>
-
-<p>&nbsp;效果图如下：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947247402.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947264536.png" title="image" alt="image" /></a></p>
-
-<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
-<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -2484,6 +2440,10 @@ TestAsyncAspect pro = new TestAsyncAspect();
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
       </li>
     
@@ -2509,10 +2469,6 @@ TestAsyncAspect pro = new TestAsyncAspect();
     
       <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
       </li>
     
   </ul>
@@ -2557,7 +2513,7 @@ TestAsyncAspect pro = new TestAsyncAspect();
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - 破 狼 -
+  Copyright &copy; 2015 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

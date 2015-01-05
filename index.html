@@ -9,9 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于： 速度快，号称比spring快100倍。
-无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。
-简单，快速，基本没有学习成本。 &hellip;">
+  <meta name="description" content="2014年我一直从事在企业敏捷实践咨询项目，这也是我颇有收获的一年，特别是咨询项目的没一点改变，不管是代码质量的提高，还是自组织团队的建设，每一点的改变都能让我感到很大的欣慰。有人的问题都是复杂系统，改变人，改变一个组织更是复杂问题，这里可能涉及很多的非技术，非能力问题， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +65,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-05T21:58:10+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/01/05/tddsui-xiang-lu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/01/05/tddsui-xiang-lu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>2014年我一直从事在企业敏捷实践咨询项目，这也是我颇有收获的一年，特别是咨询项目的没一点改变，不管是代码质量的提高，还是自组织团队的建设，每一点的改变都能让我感到很大的欣慰。有人的问题都是复杂系统，改变人，改变一个组织更是复杂问题，这里可能涉及很多的非技术，非能力问题，所以每一点改变都会让你有所欣慰。</p>
+
+<p>在2014年12月我在某企业内部推行TDD(测试驱动开发)培训，一共分4个课时完成一个特定需求的例子，看着大家一步一步的加深对TDD的理解，直到2014-12-31号，也是2014的最后一天下午培训完TDD课程，经过一系列的总结过后，某参与人员说道：“单元测试需要写更多的代码，但是从项目的总体来看，一个字‘值’.”。算是2014年的一个完美结束吧，倍感欣慰。不知来的更大的欣慰也将到来，后来某参与人员发了一份其关于TDD培训感受，名叫《TDD随想录》也将是本文的主题，本文或许更好的说是转载此文，了解一个开发人员对TDD了解的心路历程，以及对TDD的看法。</p>
+
+<p>注：原文发布与hxfirefox的<a href="https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md">https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md</a>.</p>
+
+<p>原文如下：</p>
+
+<h2>TDD随想录</h2>
+
+<p>谨以本文献给TDD的开创者与传播者</p>
+
+<p>本文纯属个人经历，如有雷同纯属巧合</p>
+
+<p>我从不觉得自己是一个好的程序员，甚至可能连合格都谈不上，不过在内心深处我却渴望着在编程这件事上获得成功。</p>
+
+<p>可惜每次审视自己写的暂且称之为代码的东西，都会有挫折感，想重构却又感觉盘根错节，难以下手;想重写却又感觉自己好不容易写出来的，也花了不少心思，就这样丢弃心有不甘。</p>
+
+<p>也曾思考过如何才能写好代码，有段时间觉得只有严格符合编程规范的代码才是好代码进而如同遵守戒律一样地字字斟酌，还有段时间觉得只有用上设计模式才能称之优秀代码进而非模式不用，一切套用模式。不过这些都没有让我走出开发的迷雾，永远是加不完的班，修不完的bug。</p>
+
+<p>究竟是否有一种方法能够让我拨开开发迷雾，至少能够让我能够轻松地修剪代码，降低bug发生率，那么我觉得这种方法在我身上就是成功的。</p>
+
+<p>初次接触到TDD是通过公司内部的“代码大全培训”，犹如十月革命中阿芙勒尔号的一声炮响，为我打开了软件开发的视野。先测试后开发，小步迭代，持续集成，这些新名词突然涌进了我的大脑，既新鲜又晦涩。犹如人的幼年容易犯幼稚病一样，初识这些新名词就以为了解了TDD的一切，结果却发现在实践过程中处处碰壁，举步维艰。对TDD中每个环节真正隐含的开发思想的囫囵吞枣，让这一次的培训只在我脑中留下TDD的一个模糊身影:为软件开发结下一张安全网。</p>
+
+<p>虽然未领悟精髓，但培训后体验和直觉告诉我TDD是一条通往我向往的软件成功的道路，尽管自己摸索前行比较坎坷。很幸运的是团队获得了随队敏捷教练的支持，结对让我系统地了解到了TDD的思想。</p>
+
+<p><strong>测试先行</strong>，其实讲的是需求边界，测试不是漫无目的而是精确计算成本的一项活动。测试从何而来，从需求来，需求推演出测试，也规划出产品边界，不能反映需求的测试是一种浪费，因此引申出开发需要讲求适当。开发是一项功利性的活动，永远都在追求盈利，而测试就一条红线，一旦跨过就意味着亏损。</p>
+
+<p><strong>小步迭代</strong>，“让子弹飞”中有句话很经典:步子要一步一步迈，一步迈大了，咔，容易扯着蛋。代码堆叠的后遗症是复杂，复杂到没人愿意触碰，且不停地咒骂这代码有多烂，这是步子迈太大的真实写照。TDD讲求的小步迭代是写完一个测试再去写完一个实现，每个实现都是通过测试的，如此累加小胜为大胜，最后所有代码的收尾也不过是让最后一个测试通过而已，就是这样简单。</p>
+
+<p><strong>重构</strong>，这是我最喜欢的部分，为啥？因为这里面所有的活动都会要求你去思考，且看上去都像是让你的代码向着大师级代码前进。漂亮的代码并不是堆砌各种技巧，而是在正确的时间，正确的地点做正确的事，重构很容易实现这个目标。重构是一件让人一旦开始就会欲罢不能的事，会让开发者在整个开发阶段都能够不停地去思考、实践再思考，直到无法再添加或删除一个字母。</p>
+
+<p><strong>持续集成</strong>，你终究是需要交付产品的，产品就是客户需要的价值，就如同厨师终究会端出客人点的大餐一样，没有哪个厨师是把所有食材罗列着呈现给你的，而是混合在一起，蒸煮炖烧，有些食材需要先处理，这样吃起来才软硬适中，而有些则是最后下锅，这样吃起来才鲜嫩多汁，厨师就是这样一步步将食材集成起来，每一步的处理都是可用都是有价值的，都是为后续进行的铺垫。软件开发也一样，持续集成就要保证每一次的完成都是有价值都可以为后续提供支撑。</p>
+
+<p>写到这里也许会有人问你如何知道TDD是真理，是康庄大道，它一定适合每个人吗？不，我并不知道，我所写的一切只是发生在我身上的一段经历。这段经历告诉我TDD迫使我去更多的思考，去切割我那些冗长且复杂又不切实际的胡思乱想，把它们碾碎成一个个小片段，提炼，过滤，不断累加，最终变成最接近交代价值的东西，而这最终的东西正是我一直在追求的那个成就感。如果想要知道TDD是不是适合自己，最好的办法就是去尝试，去亲身体验一下，无论好坏也许你能获得比我更多的体会。</p>
+
+<h2>博主总结</h2>
+
+<p>TDD并不是万能的，但是TDD也不是一无是处的，总要的是用方法论的人，引入某同事一句话：</p>
+
+<pre><code>站在教学的角度来讲，我还是很推崇TDD的，TDD是一个很好的思维框架，如果非要教人一个思维框架的话就得教TDD，不然人会瞎碰，不思考，不总结，不结果导向，靠灵感编程，凭直觉设计，撞大运修bug。最糟糕的是因为没有好的习惯会接二连三的发生灵异现象。同一道题，习惯不好的人做，总能做出无数种新问题来。而且问题套问题，给他解决要浪费我半天时间，如果他学会了TDD出的错只在最近一个引入的变化里，就好纠正多了。甚至他自己都能纠正。
+</code></pre>
+
+<p>博主很是赞同该同事的看法，并且作者认为：</p>
+
+<pre><code>tdd重要的不是测试代码本身，是解决问题的思维，也许可以泛化，哪怕没测试，如果能够做到快速验证，反馈，价值的稳定叠加，有足够信心，也未尝不可。也许你会说测试可以cover功能，那么如果只有这一点的话，我更喜欢BDD(behavior-driven development)，因为这具有用户最终的使用价值。如果你说快速定位bug，我们我更倾向于BDD(bug-driven development，自创的)。这写都是TDD的结果导致的好处所在，而价值反馈思维才是实现TDD背后原理。TDD驱使我们以结果导向，使得我们简单设计(并不是无设计)，日常重构我们的代码库，注重交付价值流稳定叠加。
+</code></pre>
+
+<p>如果你对TDD还有兴趣，你可以对比本文新人的《TDD随想录》和某大牛的《<a href="http://coolshell.cn/articles/3649.html">TDD并不是看上去的那么美</a>》，世上并没有放之四海皆准的法则，TDD好坏在于你的判断，本文并不会给你一个完美的答案，这需要你自己的发掘。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1586,106 +1671,6 @@ list[1] = 100;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-07T12:18:24+08:00" pubdate data-updated="true">Oct 7<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p> [原文发表地址]<a href="http://www.hanselman.com/blog/IntroducingGulpGruntBowerAndNpmSupportForVisualStudio.aspx">Introducing Gulp, Grunt, Bower, and npm support for Visual Studio</a></p>
-
-<p>Web 开发，特别是前端 Web 开发，正迅速变得像传统的后端开发一样复杂和精密。<strong>大多数项目不仅仅是通过</strong> FTP上传一些 JS 和 CSS 文件。而现在的<strong>前端生成过程，</strong>可以囊括SASS 和LESS扩展、CSS/JS的压缩包、JSHint 或 JSLint的运行时 、或者更多。这些生成任务和进程都和像Gulp和Grunt这样的工具一起协调工作。此外，类似于npm和bower这样的管理系统将客户端库作为软件包来管理。</p>
-
-<h5>ASP.NET客户端软件包的管理者，为什么不用 NuGet？或MSBuild？</h5>
-
-<p>你们中的一些人可能会问，为什么JavaScript不使用 NuGet？为什么不扩展 MSBuild 去构建 CSS/JS？原因很简单。因为已经有了丰富的系统，来做这种事情。对于服务器端库 （和一些客户端）来说，使用NuGet 就已经很棒了。npm和bower 上已经有了很多的，而且还会有更多的 CSS 和 JS 库。而对于服务器端的应用程序构建来说，使用MSBuild很棒，但当构建客户端应用程序时，它有些多余了。</p>
-
-<p>所以，两者都可以使用。这些都是您工具包中的工具。添加Gulp，Grun，Bower，npm的支持（和将来需要其他东西） ，这意味着为ASP.NET前端开发者提供了一个更熟悉的环境。它允许 ASP.NET 开发人员引入 JS 和 CSS 库，使他们可以每天使用。</p>
-
-<h5>引入任务资源管理器</h5>
-
-<p>我们从你们中，以及整个社会收到了相当多的、关于Grunt/Gulp的功能请求。我们利用Visual Studio “14的充分可扩展性正在构建对Grunt/Gulp第一流的支持。现在我们已经准备好将这个支持作为VS2013的一个扩展加入到预览版本中， 并且我们感激您帮助我们测试和考察这个功能。</p>
-
-<p>今天我们介绍一个预览版本，在这个预览版本中，“<a href="http://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708">任务资源管理器</a>”将作为VSIX<strong>的一个扩展。</strong><strong>同时也推荐两个其他的</strong><strong>VSIX</strong><strong>来完善对这个功能的体验。</strong></p>
-
-<p><strong>注意：</strong><strong> </strong><strong>VSIX</strong><strong>扩展中的大多数功能都被内置到</strong><strong>Visual Studio</strong><strong>中，因此你不需要安装其他别的东西。而且，</strong><strong>在</strong><strong>VS2013</strong><strong>和此预览版本中我们需要更多的</strong><strong>VSIX</strong><strong>，让你迟早能得到这些扩展。</strong><strong> </strong><strong>请注意，今天任务资源管理器只工作于</strong><strong>Vsiaual Studio Express </strong><strong>版本中，但</strong><strong>VS14</strong><strong>的所有功能都将出现在</strong><strong>VS</strong><strong>免费版本中。</strong></p>
-
-<p>类似于VS Productivity Power Tools一样， “DevLabs”这样的功能现在还在预览版中。但是他们终将会集成到最终的产品中。</p>
-
-<h5>你需要什么？</h5>
-
-<h5>首先，你将需要<a href="http://www.microsoft.com/en-us/download/details.aspx?id=43721">Visual Studio 2013.3</a> ，3的意思是免费的更新&#8221;Update 3&#8221;。</h5>
-
-<ol>
-<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F8e1b4368-4afb-467a-bc13-9650572db708"><strong>TRX-</strong><strong>任务资源管理器</strong></a><strong> </strong>Visual Studio 扩展</li>
-<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F65748cdb-4087-497e-a394-2e3449c8e61e">NMP/NBower包智能感知</a>-搜索NPM 和Bower包在线版，它直接附加智能感知功能。</li>
-<li><p>可选的<a href="http://visualstudiogallery.msdn.microsoft.com/dcbc5325-79ef-4b72-960e-0a51ee33a0ff">Grunt Launcher</a>（在解决方案资源管理器上右键单击选项— — 你会看到&#8221; npm install &ldquo;）</p>
-
-<ul>
-<li>如果你现在没有这种扩展，那么你将需要自己运行npm install来还原/添加软件包</li>
-<li>如果你有这种扩展，那么请在运行grunt/gulp之前，右键单击 packages.json 和&#8221;npm install&#8221;</li>
-</ul>
-</li>
-</ol>
-
-
-<p>要打开 TRX （任务资源管理器），只需用鼠标右键单击您的项目中任何一个 gruntfile.js文件：</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image002_60531aad-06cb-4ce7-83ea-5629fa7e8b8d.png" alt="" /></p>
-
-<p>默认情况下，TRX 位于VS的底部，，看起来像这样：</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image001_8eae3676-2331-461b-bfe6-fec463c7f49c.png" alt="" /></p>
-
-<p>在这里，我们看到 gruntfile.js 在该解决方案中的一个或多个项目的根目录中。它还有<strong>任务绑定功能，也就是说任何任务或目标可以由</strong><strong> 4 </strong><strong>个</strong><strong>不同</strong><strong> Visual Studio </strong><strong>事件触发。</strong></p>
-
-<p>要想将一个任务/目标和一个VS事件绑定在一起，只需右键单击进行绑定设置。</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image003_9d3aeb6c-f450-4e68-8d4c-010b619f7da8.png" alt="" /></p>
-
-<p>要想运行任何一个任务/目标，只需双击它，然后控制台将显示如下：</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image004_1db90c39-a4cd-42a7-81df-b3ec2493e8c0.png" alt="" /></p>
-
-<p>当你有了软件包智能感知扩展功能时，你会发现通过bower 和 npm来直接编辑package.json很容易添加并更新软件包。</p>
-
-<p>甚至，你也有了异步填充元数据工具提示功能。</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/tooltip-animated_thumb.gif" alt="" /></p>
-
-<p>现在你可以去测试它了，记住在你用任务资源管理器来运行Grunt任务之前，你需要运行“ npm install” 。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1717,6 +1702,10 @@ list[1] = 100;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
       </li>
     
@@ -1742,10 +1731,6 @@ list[1] = 100;
     
       <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
       </li>
     
   </ul>
@@ -1790,7 +1775,7 @@ list[1] = 100;
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - 破 狼 -
+  Copyright &copy; 2015 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp; 紧接上两篇浅谈.NET编译时注入（C#&mdash;&gt;IL）和浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)，在第一篇中我们简单研究了c#语法糖和PostSharp的MSIl注入， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; 实现静态AOP，就需要我们在预编译时期，修改IL实现对代码逻辑的修改。Mono.Cecil就是一个很好的IL解析和注入框架，参见编译时MSIL注入&mdash;实践Mono Cecil(1)。 &nbsp; 我的思路为： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,128 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/">MSBuild + MSILInect实现编译时AOP-改变前后对比</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 实现静态AOP，就需要我们在预编译时期，修改IL实现对代码逻辑的修改。Mono.Cecil就是一个很好的IL解析和注入框架，参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a>。</p>
+
+<p>&nbsp; 我的思路为：在编译时将加有继承制MethodInterceptBaseAttribute标签的原方法，重新组装成一个方法（并加上[<a href="http://www.aisto.com/roeder/dotnet/Default.aspx?Target=code://mscorlib:2.0.0.0:b77a5c561934e089/System.Runtime.CompilerServices.CompilerGeneratedAttribute/.ctor(">CompilerGenerated</a>)]标签），在加入横切注入接口前后代码，调用此方法。</p>
+
+<p>比如代码：</p>
+
+<pre><code>[TestAOPAttribute(Order = 1)]
+
+public Class1 TestMethod1(int i, int j, Class1 c) 
+        { 
+            Console.WriteLine("ok"); 
+            return new Class1(); 
+        }
+
+public class TestAOPAttribute : Green.AOP.MethodInterceptBase 
+    { 
+
+        #region IMethodInject Members 
+
+        public override bool Executeing(Green.AOP.MethodExecutionEventArgs args) 
+        { 
+            Console.WriteLine(this.GetType() + ":" + "Executeing"); 
+            return true; 
+        } 
+
+        public override Green.AOP.ExceptionStrategy Exceptioned(Green.AOP.MethodExecutionEventArgs args) 
+        { 
+            Console.WriteLine(this.GetType() + ":" + "Exceptioned"); 
+            return Green.AOP.ExceptionStrategy.Handle; 
+        } 
+
+        public override void ExecuteSuccess(Green.AOP.MethodExecutionEventArgs args) 
+        { 
+            Console.WriteLine(this.GetType() + ":" + "ExecuteSuccess"); 
+        } 
+
+        #endregion 
+
+        #region IMethodInject Members 
+
+               #endregion 
+    }
+</code></pre>
+
+<p>将会转化（实际注入IL，这里反编译为了c#代码，更清晰）为：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313329255.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313392150.png" title="12" alt="12" /></a></p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313397449.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313416379.png" title="image" alt="image" /></a></p>
+
+<p>从这里你就会清晰的明白这里实现静态注入了机制和原理了。我们需要做的目的就是从IL出发改变原来代码逻辑，注入我们的截取代码。使用Mono.Cecil具体代码在程序包MethodILInjectTask中。</p>
+
+<p>MatchedMethodInterceptBase是应用于class上匹配该class多个methodattribute基类。rule为匹配规则。</p>
+
+<pre><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
+
+public class Class1 
+</code></pre>
+
+<p>&nbsp;&nbsp; <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313445558.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313488651.png" title="image" alt="image" /></a></p>
+
+<p>这里需要对于继承制该基类的标示class的所有满足rule的方法进行注入。</p>
+
+<p>PropertyInterceptBase：属性注入，Action属性标识get，set方法。</p>
+
+<pre><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
+   public int TestProperty 
+   { 
+       get; 
+       set; 
+   }
+</code></pre>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313514766.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313565383.png" title="image" alt="image" /></a></p>
+
+<p>属性注入找出标示property，更具action选择get，set方法注入IL逻辑。</p>
+
+<p>现在对于方法中获取attribute通过反射，性能存在一定问题。完全可以在class中注入属性，延时加载，Dictionary类级缓存来减少这方面损失，还暂时没考虑加入。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 不是很会写blog，所以有什么不明白的可留言，上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html" title="发布于2011-08-09 14:05"><font color="#3d81ee">MSBuild + MSILInect实现编译时AOP之预览</font></a>，由于时间写的没头没尾的，估计大家都看的很迷茫，迷茫该怎么写。关于IL注入Mono.Cecil可以参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a>和官方<a href="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>。还有必须对MSIL具有一定了解（相同与Emit的IL注入）</p>
+
+<p>&nbsp;&nbsp; 附带：<a href="http://files.cnblogs.com/whitewolf/ConsoleApplication1.rar" title="源码下载">源码下载</a></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1020,164 +1142,6 @@ localStorage.removeItem(&#8220;fresh&#8221;);</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/">Wpf消息循环之消息传递</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 几天遇见一个问题需要检查某个wpf程序是否已经运行，如果没有运行则启动传递参数，如果已运行则需要直接传递消息。在没有运行 情况下传递参数很简单，我们只需要Process cmd窗口启动并传递参数，在程序中处理。但是如果程序已经启动有点麻烦，凭着我曾winform的经验第一时间想到的是win32 api&nbsp; SendMessage,我们的C#程序只需要DllImport就可以调用了。经过一番查找和对wpf window和DispatcherObject的Reflector，花了我大半天终于找到了System.Windows.Interop.HwndSource中有AddHock方法可以添加对win32消息机制的监听。这下就很好办了我们只需要注册MainWindow的这个时间，来监听win32消息处理我们的0x004A消息。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 控制台代码，主要应用的FindWindow 这个win32方法查找我们的窗体，SendMessage发送我们的消息，和winform没有什么差别，对于win32的使用你可以参考<a href="http://www.cnblogs.com/speeding/">毒龙的程序人生</a> 的<a href="http://www.cnblogs.com/speeding/archive/2004/10/24/56033.html">关于C#中实现两个应用程序消息通讯的问题</a>。难得查win32 Api直接copy，借来用用。</p>
-
-<p>程序：</p>
-
-<pre><code>using System; 
-using System.Collections.Generic; 
-using System.Linq; 
-using System.Text; 
-using System.Runtime.InteropServices; 
-
-namespace ConsoleApplication1 
-{ 
-    class Program 
-    { 
-        static void Main(string[] args) 
-        { 
-            string ch = ""; 
-            while (ch.ToLower() != "q") 
-            { 
-
-                if (!SendMessage("Window1", @"Hello,I am from Console Program:" + ch)) 
-                { 
-                   Console.WriteLine("no window");
-
-                }; 
-                ch = Console.ReadLine(); 
-            } 
-        } 
-
-        public static bool SendMessage(string windowName, string strMsg) 
-        { 
-            if (strMsg == null) return true; 
-            IntPtr hwnd = (IntPtr)FindWindow(null, windowName   ); 
-            if (hwnd != IntPtr.Zero) 
-            { 
-                CopyDataStruct cds; 
-                cds.dwData = IntPtr.Zero; 
-                cds.lpData = strMsg; 
-                cds.cbData = System.Text.Encoding.Default.GetBytes(strMsg).Length + 1; 
-                int fromWindowHandler = 0; 
-                SendMessage(hwnd, 0x004A, fromWindowHandler, ref  cds); 
-                return true; 
-            } 
-            return false; 
-        } 
-
-        [DllImport("User32.dll", EntryPoint = "FindWindow")] 
-        private static extern int FindWindow(string lpClassName, string lpWindowName); 
-
-        [DllImport("User32.dll", EntryPoint = "SendMessage")] 
-
-        private static extern int SendMessage 
-
-        ( 
-
-        IntPtr hWnd, 
-
-        int Msg, 
-
-        int wParam, 
-
-        ref  CopyDataStruct lParam 
-
-        ); 
-
-    } 
-
-    [StructLayout(LayoutKind.Sequential)] 
-
-    public struct CopyDataStruct 
-    { 
-
-        public IntPtr dwData; 
-
-        public int cbData; 
-
-        [MarshalAs(UnmanagedType.LPStr)] 
-
-        public string lpData; 
-
-    } 
-
-}
-</code></pre>
-
-<p>&nbsp;wpf端程序：主要需要在MainWindow中loaded事件订阅消息监听：这里需要System.Windows.Interop.HwndSource的AddHock方法注册
-程序：</p>
-
-<pre><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
-         { 
-
-             if (msg == 0x004A) 
-             { 
-
-                 CopyDataStruct cds = (CopyDataStruct)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(CopyDataStruct)); 
-
-                 MessageBox.Show(cds.lpData); 
-                 this.Visibility = Visibility.Visible; 
-             } 
-
-             return hwnd; 
-
-         } 
-
-         private void Window_Loaded(object sender, RoutedEventArgs e) 
-         {           
-
-             (PresentationSource.FromVisual(this) as System.Windows.Interop.HwndSource).AddHook(new System.Windows.Interop.HwndSourceHook(WndProc)); 
-         }
-</code></pre>
-
-<p>截个图：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248312846.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248334156.jpg" title="GDVCJ_1PZO7SU((~1}41XSG" alt="GDVCJ_1PZO7SU((~1}41XSG" /></a></p>
-
-<p>很简单的东西结果被MS封装的不知哪里去，让我查了半天（其实应该是我的无知吧，不管怎么解决了就是心情舒畅了）；</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1971300.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -1211,6 +1175,10 @@ namespace ConsoleApplication1
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
       </li>
     
@@ -1236,10 +1204,6 @@ namespace ConsoleApplication1
     
       <li class="post">
         <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a>
       </li>
     
   </ul>
@@ -1284,7 +1248,7 @@ namespace ConsoleApplication1
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - 破 狼 -
+  Copyright &copy; 2015 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

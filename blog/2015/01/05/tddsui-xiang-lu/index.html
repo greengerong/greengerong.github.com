@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>TDD随想录 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="2014年我一直从事在企业敏捷实践咨询项目，这也是我颇有收获的一年，特别是咨询项目的没一点改变，不管是代码质量的提高，还是自组织团队的建设，每一点的改变都能让我感到很大的欣慰。有人的问题都是复杂系统，改变人，改变一个组织更是复杂问题，这里可能涉及很多的非技术，非能力问题， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2015/01/05/tddsui-xiang-lu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">TDD随想录</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-05T21:58:10+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2015</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>2014年我一直从事在企业敏捷实践咨询项目，这也是我颇有收获的一年，特别是咨询项目的没一点改变，不管是代码质量的提高，还是自组织团队的建设，每一点的改变都能让我感到很大的欣慰。有人的问题都是复杂系统，改变人，改变一个组织更是复杂问题，这里可能涉及很多的非技术，非能力问题，所以每一点改变都会让你有所欣慰。</p>
+
+<p>在2014年12月我在某企业内部推行TDD(测试驱动开发)培训，一共分4个课时完成一个特定需求的例子，看着大家一步一步的加深对TDD的理解，直到2014-12-31号，也是2014的最后一天下午培训完TDD课程，经过一系列的总结过后，某参与人员说道：“单元测试需要写更多的代码，但是从项目的总体来看，一个字‘值’.”。算是2014年的一个完美结束吧，倍感欣慰。不知来的更大的欣慰也将到来，后来某参与人员发了一份其关于TDD培训感受，名叫《TDD随想录》也将是本文的主题，本文或许更好的说是转载此文，了解一个开发人员对TDD了解的心路历程，以及对TDD的看法。</p>
+
+<p>注：原文发布与hxfirefox的<a href="https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md">https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md</a>.</p>
+
+<p>原文如下：</p>
+
+<h2>TDD随想录</h2>
+
+<p>谨以本文献给TDD的开创者与传播者</p>
+
+<p>本文纯属个人经历，如有雷同纯属巧合</p>
+
+<p>我从不觉得自己是一个好的程序员，甚至可能连合格都谈不上，不过在内心深处我却渴望着在编程这件事上获得成功。</p>
+
+<p>可惜每次审视自己写的暂且称之为代码的东西，都会有挫折感，想重构却又感觉盘根错节，难以下手;想重写却又感觉自己好不容易写出来的，也花了不少心思，就这样丢弃心有不甘。</p>
+
+<p>也曾思考过如何才能写好代码，有段时间觉得只有严格符合编程规范的代码才是好代码进而如同遵守戒律一样地字字斟酌，还有段时间觉得只有用上设计模式才能称之优秀代码进而非模式不用，一切套用模式。不过这些都没有让我走出开发的迷雾，永远是加不完的班，修不完的bug。</p>
+
+<p>究竟是否有一种方法能够让我拨开开发迷雾，至少能够让我能够轻松地修剪代码，降低bug发生率，那么我觉得这种方法在我身上就是成功的。</p>
+
+<p>初次接触到TDD是通过公司内部的“代码大全培训”，犹如十月革命中阿芙勒尔号的一声炮响，为我打开了软件开发的视野。先测试后开发，小步迭代，持续集成，这些新名词突然涌进了我的大脑，既新鲜又晦涩。犹如人的幼年容易犯幼稚病一样，初识这些新名词就以为了解了TDD的一切，结果却发现在实践过程中处处碰壁，举步维艰。对TDD中每个环节真正隐含的开发思想的囫囵吞枣，让这一次的培训只在我脑中留下TDD的一个模糊身影:为软件开发结下一张安全网。</p>
+
+<p>虽然未领悟精髓，但培训后体验和直觉告诉我TDD是一条通往我向往的软件成功的道路，尽管自己摸索前行比较坎坷。很幸运的是团队获得了随队敏捷教练的支持，结对让我系统地了解到了TDD的思想。</p>
+
+<p><strong>测试先行</strong>，其实讲的是需求边界，测试不是漫无目的而是精确计算成本的一项活动。测试从何而来，从需求来，需求推演出测试，也规划出产品边界，不能反映需求的测试是一种浪费，因此引申出开发需要讲求适当。开发是一项功利性的活动，永远都在追求盈利，而测试就一条红线，一旦跨过就意味着亏损。</p>
+
+<p><strong>小步迭代</strong>，“让子弹飞”中有句话很经典:步子要一步一步迈，一步迈大了，咔，容易扯着蛋。代码堆叠的后遗症是复杂，复杂到没人愿意触碰，且不停地咒骂这代码有多烂，这是步子迈太大的真实写照。TDD讲求的小步迭代是写完一个测试再去写完一个实现，每个实现都是通过测试的，如此累加小胜为大胜，最后所有代码的收尾也不过是让最后一个测试通过而已，就是这样简单。</p>
+
+<p><strong>重构</strong>，这是我最喜欢的部分，为啥？因为这里面所有的活动都会要求你去思考，且看上去都像是让你的代码向着大师级代码前进。漂亮的代码并不是堆砌各种技巧，而是在正确的时间，正确的地点做正确的事，重构很容易实现这个目标。重构是一件让人一旦开始就会欲罢不能的事，会让开发者在整个开发阶段都能够不停地去思考、实践再思考，直到无法再添加或删除一个字母。</p>
+
+<p><strong>持续集成</strong>，你终究是需要交付产品的，产品就是客户需要的价值，就如同厨师终究会端出客人点的大餐一样，没有哪个厨师是把所有食材罗列着呈现给你的，而是混合在一起，蒸煮炖烧，有些食材需要先处理，这样吃起来才软硬适中，而有些则是最后下锅，这样吃起来才鲜嫩多汁，厨师就是这样一步步将食材集成起来，每一步的处理都是可用都是有价值的，都是为后续进行的铺垫。软件开发也一样，持续集成就要保证每一次的完成都是有价值都可以为后续提供支撑。</p>
+
+<p>写到这里也许会有人问你如何知道TDD是真理，是康庄大道，它一定适合每个人吗？不，我并不知道，我所写的一切只是发生在我身上的一段经历。这段经历告诉我TDD迫使我去更多的思考，去切割我那些冗长且复杂又不切实际的胡思乱想，把它们碾碎成一个个小片段，提炼，过滤，不断累加，最终变成最接近交代价值的东西，而这最终的东西正是我一直在追求的那个成就感。如果想要知道TDD是不是适合自己，最好的办法就是去尝试，去亲身体验一下，无论好坏也许你能获得比我更多的体会。</p>
+
+<h2>博主总结</h2>
+
+<p>TDD并不是万能的，但是TDD也不是一无是处的，总要的是用方法论的人，引入某同事一句话：</p>
+
+<pre><code>站在教学的角度来讲，我还是很推崇TDD的，TDD是一个很好的思维框架，如果非要教人一个思维框架的话就得教TDD，不然人会瞎碰，不思考，不总结，不结果导向，靠灵感编程，凭直觉设计，撞大运修bug。最糟糕的是因为没有好的习惯会接二连三的发生灵异现象。同一道题，习惯不好的人做，总能做出无数种新问题来。而且问题套问题，给他解决要浪费我半天时间，如果他学会了TDD出的错只在最近一个引入的变化里，就好纠正多了。甚至他自己都能纠正。
+</code></pre>
+
+<p>博主很是赞同该同事的看法，并且作者认为：</p>
+
+<pre><code>tdd重要的不是测试代码本身，是解决问题的思维，也许可以泛化，哪怕没测试，如果能够做到快速验证，反馈，价值的稳定叠加，有足够信心，也未尝不可。也许你会说测试可以cover功能，那么如果只有这一点的话，我更喜欢BDD(behavior-driven development)，因为这具有用户最终的使用价值。如果你说快速定位bug，我们我更倾向于BDD(bug-driven development，自创的)。这写都是TDD的结果导致的好处所在，而价值反馈思维才是实现TDD背后原理。TDD驱使我们以结果导向，使得我们简单设计(并不是无设计)，日常重构我们的代码库，注重交付价值流稳定叠加。
+</code></pre>
+
+<p>如果你对TDD还有兴趣，你可以对比本文新人的《TDD随想录》和某大牛的《<a href="http://coolshell.cn/articles/3649.html">TDD并不是看上去的那么美</a>》，世上并没有放之四海皆准的法则，TDD好坏在于你的判断，本文并不会给你一个完美的答案，这需要你自己的发掘。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-05T21:58:10+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2015</time>
+      
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/10/light-ioc-guice-framework/" title="Previous Post: java轻量级IOC框架Guice">&laquo; java轻量级IOC框架Guice</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2015/01/05/tddsui-xiang-lu/';
+        var disqus_url = 'http://greengerong.github.io/blog/2015/01/05/tddsui-xiang-lu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
