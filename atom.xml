@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-05T23:06:32+08:00</updated>
+  <updated>2015-01-05T23:08:39+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -57,7 +57,7 @@
 
 <h2>博主总结</h2>
 
-<p>TDD并不是万能的，但是TDD也不是一无是处的，总要的是用方法论的人，引入某同事一句话：</p>
+<p>TDD并不是万能的，但是TDD也不是一无是处的，重要的是用方法论的人，引入某同事一句话：</p>
 
 <pre><code>站在教学的角度来讲，我还是很推崇TDD的，TDD是一个很好的思维框架，如果非要教人一个思维框架的话就得教TDD，
 不然人会瞎碰，不思考，不总结，不结果导向，靠灵感编程，凭直觉设计，撞大运修bug。最糟糕的是因为没有好的习惯
