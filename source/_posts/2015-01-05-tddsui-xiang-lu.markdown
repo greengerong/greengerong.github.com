@@ -11,7 +11,6 @@ categories:
 
 注：原文发布与hxfirefox的[https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md](https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md).
 
-*建议:*在阅读本文之前先移步看完《[TDD并不是看上去的那么美](http://coolshell.cn/articles/3649.html)》，在继续下面的内容。
 原文如下：
 
 ##TDD随想录
