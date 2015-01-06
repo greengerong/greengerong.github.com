@@ -98,7 +98,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 在Linq2Sql的Dbml文件其实就是一个Xml文件，记录着数据库与生成Linq2SqlCode的数据信息，所以转化为TSql没有什么说的。我们需要提取其中的数据库信息，在转化为我们的Tsql，在这里建立了DBTable、DBColumn、DBAssociation三个实体类：</p>
 
-<pre><code>    代码 
+<pre class='green'><code>    代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;  1 using System; 
     using System.Collections.Generic; 
@@ -211,7 +211,7 @@
 
 <p>&nbsp;&nbsp; 建立了一个 将我们的dbml文件xml Document转化为实体类辅助类：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
     using System.Collections.Generic; 
@@ -277,7 +277,7 @@
 
 <p>&nbsp;&nbsp; 在转化为我们的实体类，我们剩下的就是编写我们的CodeSmith模板了（更多知识可以参考<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html">CodeSmith模板</a>）：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
 
@@ -340,7 +340,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在控制台调用编译模板以及输出：</p>
 
-<pre><code>    代码 
+<pre class='green'><code>    代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
     using System.Collections.Generic; 
@@ -378,7 +378,7 @@
 
 <p>在上面到我的CodeSmith模板编译辅助类，在上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/1834317.html">通过代码生成机制实现强类型编程-CodeSmith版</a>也有，在这里也附带上：需要引用CodeSmith.Engine.dll.</p>
 
-<pre><code>    代码 
+<pre class='green'><code>    代码 
 
         Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
 

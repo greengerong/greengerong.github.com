@@ -96,7 +96,7 @@
 
 <div class="entry-content"><p>   最近在准备Angularjs +node.js demo的时候在我的mac开发中 遇见此错误，如下：</p>
 
-<pre><code>events.js:71
+<pre class='green'><code>events.js:71
         throw arguments[1]; // Unhandled 'error' event
                    ^
 Error: connect ECONNREFUSED
@@ -106,7 +106,7 @@ Error: connect ECONNREFUSED
 
 <p>最后在stackoverflow找到解决方案，这主要由于上一次node.js server进程仍然还在运行没关闭掉，所以我们需要杀掉此进程，在mac上操作为：</p>
 
-<pre><code>ps aux | grep node
+<pre class='green'><code>ps aux | grep node
 
 twer    7668  4.3  1.0  42060 10708 pts/1    Sl+  20:36   0:00 
 node server 

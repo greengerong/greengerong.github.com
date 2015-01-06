@@ -98,7 +98,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好直接到主题。首先是数据实体MessageEntry（我到老A的基础上添加了description属性作为代码字段描述）：</p>
 
-<pre><code>       public class MessageEntry 
+<pre class='green'><code>       public class MessageEntry 
         { 
             public string Id { get; private set; } 
             public string Value { get; private set; }        
@@ -129,7 +129,7 @@
 
 <p>Code：</p>
 
-<pre><code>     using System.Collections.Generic; 
+<pre class='green'><code>     using System.Collections.Generic; 
     using System.Linq; 
     using System.Text; 
     using System.Xml; 
@@ -174,7 +174,7 @@
 
 <p> 这下就可以开始写模板了，见下Code：</p>
 
-<pre><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
+<pre class='green'><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
 
     &lt;%@ Import NameSpace="System" %&gt; 
     &lt;%@ Import NameSpace="System.Xml" %&gt; 
@@ -227,7 +227,7 @@
 
 <p>XMl实体用的是老A的：</p>
 
-<pre><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
+<pre class='green'><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
     &lt;messages&gt;   
     &lt;message id="MandatoryField" value="The {0} is mandatory."  category="Validation"  description="description" /&gt;   
     &lt;message id="GreaterThan" value="The {0} must be greater than {1}."  category="Validation" description="description" /&gt;   
@@ -239,7 +239,7 @@
 
 <p>Code：</p>
 
-<pre><code> public static void Main(string[] args) 
+<pre class='green'><code> public static void Main(string[] args) 
        { 
           //    Wolf.Message.Messages.Confirmation.ReallyDelete.Value 
            // test(); 
@@ -282,7 +282,7 @@
 
 <p>&nbsp;</p>
 
-<pre><code> using Wolf; 
+<pre class='green'><code> using Wolf; 
 using System; 
 using System.Collections.Generic; 
 namespace Wolf.Message 

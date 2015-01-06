@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Nightmare | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/nightmare/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-06T06:53:46+08:00</updated>
+  <updated>2015-01-06T16:50:11+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -24,12 +24,18 @@
 
 <p>安装nightmare：</p>
 
+<p>```sh</p>
+
 <pre><code>npm install nightmare
 </code></pre>
+
+<p>```</p>
 
 <p>下面我们对比与远程phantomjs的对比：</p>
 
 <p>原phantomjs的代码：</p>
+
+<p>```js</p>
 
 <pre><code>phantom.create(function (ph) {
   ph.createPage(function (page) {
@@ -53,7 +59,11 @@
 });
 </code></pre>
 
+<p>```</p>
+
 <p>nightmare代码：</p>
+
+<p>```js</p>
 
 <pre><code>new Nightmare()
   .goto('http://yahoo.com')
@@ -62,9 +72,13 @@
   .run();
 </code></pre>
 
+<p>```</p>
+
 <p>一切显而易见，不用多说。</p>
 
 <p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：</p>
+
+<p>```js</p>
 
 <pre><code>/**
  * Login to a Swiftly account.
@@ -86,7 +100,11 @@ exports.login = function(email, password){
 };
 </code></pre>
 
+<p>```</p>
+
 <p>使用代码很简单：</p>
+
+<p>```js</p>
 
 <pre><code>var Swiftly = require('nightmare-swiftly');
 new Nightmare()
@@ -94,6 +112,8 @@ new Nightmare()
   .use(Swiftly.task(instructions, uploads, path))
   .run();
 </code></pre>
+
+<p>```</p>
 ]]></content>
   </entry>
   

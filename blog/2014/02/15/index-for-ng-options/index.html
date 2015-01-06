@@ -104,21 +104,21 @@
 
 <p>html:</p>
 
-<pre><code>  &lt;pre&gt;&lt;/pre&gt;
+<pre class='green'><code>  &lt;pre&gt;&lt;/pre&gt;
 
   &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
 </code></pre>
 
 <p>  js:</p>
 
-<pre><code>$scope.getDesc1 = function(key, value) {
+<pre class='green'><code>$scope.getDesc1 = function(key, value) {
     return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
 };
 </code></pre>
 
 <p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
 
-<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+<pre class='green'><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
   &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
   &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
   &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
@@ -132,14 +132,14 @@
 
 <p>html:</p>
 
-<pre><code>&lt;pre&gt;&lt;/pre&gt;
+<pre class='green'><code>&lt;pre&gt;&lt;/pre&gt;
 
 &lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
 </code></pre>
 
 <p>js:</p>
 
-<pre><code>    var app = angular.module('plunker', []);
+<pre class='green'><code>    var app = angular.module('plunker', []);
 
     app.controller('MainCtrl', function($scope) {
       $scope.t = [{

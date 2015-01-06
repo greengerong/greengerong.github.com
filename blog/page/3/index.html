@@ -105,7 +105,7 @@ project功能,Archtype指我们项目的骨架，作为项目的脚手架。
 如fornt end的yo之类。我们能够通过简单的一行控制台command
 line创建你所需要的项目结构：</p>
 
-<pre><code>mvn archetype:generate
+<pre class='green'><code>mvn archetype:generate
   -DarchetypeGroupId=&lt;archetype-groupId&gt;
   -DarchetypeArtifactId=&lt;archetype-artifactId&gt;
   -DarchetypeVersion=&lt;archetype-version&gt;
@@ -133,12 +133,12 @@ archetype plugin，然后就可以喝杯coffe等待build success。</p>
 
 <p>mac版本，你可以找到文件：</p>
 
-<pre><code>~/Library/Caches/IntelliJIdea&lt;version&gt;/Maven/Indices/UserArchetypes.xml
+<pre class='green'><code>~/Library/Caches/IntelliJIdea&lt;version&gt;/Maven/Indices/UserArchetypes.xml
 </code></pre>
 
 <p>然后用你喜欢的编辑器打开它(例如博主当前使用的Atom)：</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+<pre class='green'><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;archetypes&gt;
 &lt;archetype groupId="com.github.greengerong" artifactId="components-archetype" version="1.0.0" /&gt;
 &lt;/archetypes&gt;
@@ -199,7 +199,7 @@ directive template/templateUrl),你可以选择讲html page
 
 <p>代码如下：</p>
 
-<pre><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
+<pre class='green'><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
 
       Content of the template.
 
@@ -213,7 +213,7 @@ directive template/templateUrl),你可以选择讲html page
 这是angular对模板的缓存的service。在启用了$templateCache的$http ajax请求，
 angular将会首先在$templateCache中查找是否有对此url的缓存：</p>
 
-<pre><code>      $templateCache.get('templateId.html')
+<pre class='green'><code>      $templateCache.get('templateId.html')
 </code></pre>
 
 <p>如果存在缓存，着angular将会直接用缓存中获取，并不会在发送一次ajax。
@@ -234,7 +234,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 是ng-template是angular在compile的时候自动加入$templateCache的，html2js是我们在开发
 时候利用build自己放入$templateCache。</p>
 
-<pre><code>  angular.module('myApp', [])
+<pre class='green'><code>  angular.module('myApp', [])
   .run(function($templateCache) {
       $templateCache.put('templateId.html',
           'This is the content of the template'
@@ -253,7 +253,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 你和我一样使用的是java的maven或者是gradle 作为build，那么你可以尝试博主的maven plugin<a href="https://github.com/greengerong/nghtml2js">nghtml2js</a>.
 使用方式如下：</p>
 
-<pre><code>&lt;plugin&gt;
+<pre class='green'><code>&lt;plugin&gt;
     &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
     &lt;artifactId&gt;nghtml2js&lt;/artifactId&gt;
     &lt;version&gt;0.0.3&lt;/version&gt;
@@ -445,7 +445,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
   <div class="entry-content"><p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
 
-<pre><code>    function getClientIp(req) {
+<pre class='green'><code>    function getClientIp(req) {
         return req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
@@ -498,7 +498,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>首先是ngModel：</p>
 
-<pre><code>    var ngModelDirective = function() {
+<pre class='green'><code>    var ngModelDirective = function() {
       return {
         require: ['ngModel', '^?form'],
         controller: NgModelController,
@@ -522,7 +522,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>在看看ngModel controller初始化代码：</p>
 
-<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+<pre class='green'><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
         function($scope, $exceptionHandler, $attr, $element, $parse) {
      ....
       this.$pristine = true;
@@ -536,7 +536,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>而FormController的addControl代码则是：</p>
 
-<pre><code>    /**
+<pre class='green'><code>    /**
      * @ngdoc function
      * @name ng.directive:form.FormController#$addControl
      * @methodOf ng.directive:form.FormController
@@ -568,7 +568,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>如下：</p>
 
-<pre><code>    .directive("dyName", [
+<pre class='green'><code>    .directive("dyName", [
 
         function() {
           return {
@@ -592,7 +592,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>使用方式：</p>
 
-<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+<pre class='green'><code>    &lt;div ng-repeat="item in demo.fields"&gt;
       &lt;div class="control-group"&gt;
         &lt;label class="control-label"&gt; : &lt;/label&gt;
         &lt;div class="controls"&gt;
@@ -655,7 +655,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>地址为：</p>
 
-<pre><code>[http://www.ngnice.com/](http://www.ngnice.com/)
+<pre class='green'><code>[http://www.ngnice.com/](http://www.ngnice.com/)
 </code></pre>
 
 <p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
@@ -711,21 +711,21 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>html:</p>
 
-<pre><code>  &lt;pre&gt;&lt;/pre&gt;
+<pre class='green'><code>  &lt;pre&gt;&lt;/pre&gt;
 
   &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
 </code></pre>
 
 <p>  js:</p>
 
-<pre><code>$scope.getDesc1 = function(key, value) {
+<pre class='green'><code>$scope.getDesc1 = function(key, value) {
     return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
 };
 </code></pre>
 
 <p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
 
-<pre><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+<pre class='green'><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
   &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
   &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
   &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
@@ -739,14 +739,14 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>html:</p>
 
-<pre><code>&lt;pre&gt;&lt;/pre&gt;
+<pre class='green'><code>&lt;pre&gt;&lt;/pre&gt;
 
 &lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
 </code></pre>
 
 <p>js:</p>
 
-<pre><code>    var app = angular.module('plunker', []);
+<pre class='green'><code>    var app = angular.module('plunker', []);
 
     app.controller('MainCtrl', function($scope) {
       $scope.t = [{
@@ -814,12 +814,12 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>如ngClick在官方文档是这么描述的：</p>
 
-<pre><code>Expression to evaluate upon click. (Event object is available as $event)
+<pre class='green'><code>Expression to evaluate upon click. (Event object is available as $event)
 </code></pre>
 
 <p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
 
-<pre><code>    var ngEventDirectives = {};
+<pre class='green'><code>    var ngEventDirectives = {};
     forEach(
       'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
       function(name) {
@@ -854,7 +854,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>html 代码</p>
 
-<pre><code>    &lt;!DOCTYPE html&gt;
+<pre class='green'><code>    &lt;!DOCTYPE html&gt;
     &lt;html id="ng-app" ng-app="app"&gt;
     &lt;head&gt;
     &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
@@ -876,7 +876,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>js 代码</p>
 
-<pre><code>angular.module("app",[])
+<pre class='green'><code>angular.module("app",[])
 .controller("demo",[function(){
   var vm = this;
 
@@ -938,20 +938,20 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
 
-<pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
+<pre class='green'><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
  &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
  &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
 </code></pre>
 
 <p>angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：</p>
 
-<pre><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
+<pre class='green'><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
 &lt;/style&gt;
 </code></pre>
 
 <p>从上面我们可以看见angular将带有ng-clock的的元素设置为display:none，隐藏掉，在等到angular解析到带有ng-clock的节点时候，会把attribute和class同时remove掉，这样就可以实现防止节点的闪烁。</p>
 
-<pre><code>var ngCloakDirective = ngDirective({
+<pre class='green'><code>var ngCloakDirective = ngDirective({
       compile: function(element, attr) {
         attr.$set('ngCloak', undefined);
         element.removeClass('ng-cloak');
@@ -961,7 +961,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
 <p>在angular-bootstrap.js中会看见这样的代码去增加前面所说的css：</p>
 
-<pre><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
+<pre class='green'><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
 </code></pre>
 
 <p>好像闪烁的问题好像已经能够被我解决了，恩是否是这样的，理论也改如此，但是现实是残酷的，我们的感性认识经常会被现实一记重重的耳光，我们才能很更深入全面的思考，如果浏览器的速度比angular在head中加入css的速度还快呢？我在给公司的一个项目组解决这个闪烁的问题的时候就遇见了这个问题。怎么办呢？那我们只能使出我们必杀技，自己把css加入我们的css文件引入heade，启动加载，ok这样就可以完美解决了。(如果你也遇见了加了ng-cloak还不起作用的话，那么试试直接引入css文件吧)</p>

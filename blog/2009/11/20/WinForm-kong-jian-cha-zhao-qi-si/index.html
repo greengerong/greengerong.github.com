@@ -99,7 +99,7 @@
 
 <p>代码很简单，就不用解释了，直接贴&#8593;。</p>
 
-<pre><code>    public delegate bool SearchHandler(Control ctrFind);
+<pre class='green'><code>    public delegate bool SearchHandler(Control ctrFind);
         public class WinSearch&lt;T&gt;
         {
     //ctr：查找起点控件。
@@ -150,7 +150,7 @@
 
 <p> 测试代码：</p>
 
-<pre><code>    private void button1_Click(object sender, EventArgs e)
+<pre class='green'><code>    private void button1_Click(object sender, EventArgs e)
             {
                 Button btn = WinSearch&lt;Button&gt;
                 .Search(this, new SearchHandler(mehtod));

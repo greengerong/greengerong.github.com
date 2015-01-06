@@ -113,7 +113,7 @@ directive template/templateUrl),你可以选择讲html page
 
 <p>代码如下：</p>
 
-<pre><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
+<pre class='green'><code>    &lt;script type="text/ng-template" id="/tpl.html"&gt;
 
       Content of the template.
 
@@ -127,7 +127,7 @@ directive template/templateUrl),你可以选择讲html page
 这是angular对模板的缓存的service。在启用了$templateCache的$http ajax请求，
 angular将会首先在$templateCache中查找是否有对此url的缓存：</p>
 
-<pre><code>      $templateCache.get('templateId.html')
+<pre class='green'><code>      $templateCache.get('templateId.html')
 </code></pre>
 
 <p>如果存在缓存，着angular将会直接用缓存中获取，并不会在发送一次ajax。
@@ -148,7 +148,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 是ng-template是angular在compile的时候自动加入$templateCache的，html2js是我们在开发
 时候利用build自己放入$templateCache。</p>
 
-<pre><code>  angular.module('myApp', [])
+<pre class='green'><code>  angular.module('myApp', [])
   .run(function($templateCache) {
       $templateCache.put('templateId.html',
           'This is the content of the template'
@@ -167,7 +167,7 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 你和我一样使用的是java的maven或者是gradle 作为build，那么你可以尝试博主的maven plugin<a href="https://github.com/greengerong/nghtml2js">nghtml2js</a>.
 使用方式如下：</p>
 
-<pre><code>&lt;plugin&gt;
+<pre class='green'><code>&lt;plugin&gt;
     &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
     &lt;artifactId&gt;nghtml2js&lt;/artifactId&gt;
     &lt;version&gt;0.0.3&lt;/version&gt;

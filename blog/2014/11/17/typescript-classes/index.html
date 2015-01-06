@@ -102,7 +102,7 @@
 
 <p>我们先看一个关于class-base的实例：</p>
 
-<pre><code>class Greeter {
+<pre class='green'><code>class Greeter {
     greeting: string;
     constructor(message: string) {
         this.greeting = message;
@@ -125,7 +125,7 @@ var greeter = new Greeter("world");
 
 <p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     name:string;
     constructor(theName: string) { this.name = theName; }
     move(meters: number) {
@@ -168,7 +168,7 @@ tom.move(34);
 
 <p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     private name:string;
     constructor(theName: string) { this.name = theName; }
     move(meters: number) {
@@ -183,7 +183,7 @@ tom.move(34);
 
 <p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     private name:stringParameter properties;
     constructor(theName: string) { this.name = theName; }
 }
@@ -211,7 +211,7 @@ animal = employee; //error: Animal and Employee are not compatible
 
 <p>访问限制关键字public&#8217;和&#8217;private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     constructor(private name: string) { }
     move(meters: number) {
         alert(this.name + " moved " + meters + "m.");
@@ -227,7 +227,7 @@ animal = employee; //error: Animal and Employee are not compatible
 
 <p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
 
-<pre><code>class Employee {
+<pre class='green'><code>class Employee {
     fullName: string;
 }
 
@@ -242,7 +242,7 @@ if (employee.fullName) {
 
 <p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
 
-<pre><code>var passcode = "secret passcode";
+<pre class='green'><code>var passcode = "secret passcode";
 
 class Employee {
     private _fullName: string;
@@ -276,7 +276,7 @@ if (employee.fullName) {
 
 <p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用&#8217;static&#8217; 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的&#8217;this.&lsquo;.</p>
 
-<pre><code>class Grid {
+<pre class='green'><code>class Grid {
     static origin = {x: 0, y: 0};
     calculateDistanceFromOrigin(point: {x: number; y: number;}) {
         var xDist = (point.x - Grid.origin.x);
@@ -299,7 +299,7 @@ alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
 
 <p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
 
-<pre><code>class Greeter {
+<pre class='green'><code>class Greeter {
     greeting: string;
     constructor(message: string) {
         this.greeting = message;
@@ -318,7 +318,7 @@ alert(greeter.greet());
 
 <p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
 
-<pre><code>var Greeter = (function () {
+<pre class='green'><code>var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
     }
@@ -337,7 +337,7 @@ alert(greeter.greet());
 
 <p>让我们对上例稍微做一些修改：</p>
 
-<pre><code>class Greeter {
+<pre class='green'><code>class Greeter {
     static standardGreeting = "Hello, there";
     greeting: string;
     greet() {
@@ -368,7 +368,7 @@ alert(greeter2.greet());
 
 <p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
 
-<pre><code>class Point {
+<pre class='green'><code>class Point {
     x: number;
     y: number;
 }

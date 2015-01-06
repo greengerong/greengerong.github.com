@@ -102,7 +102,7 @@
 
 <p><code>Attribute实现：UnityInjectionAttribute</code></p>
 
-<pre><code>[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)] 
+<pre class='green'><code>[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)] 
 
    public class UnityInjectionAttribute : Attribute 
 
@@ -183,7 +183,7 @@
 
 <p>&nbsp;&nbsp; 同时提供操作辅助方法：ELUnityUtility</p>
 
-<pre><code> public static class ELUnityUtility 
+<pre class='green'><code> public static class ELUnityUtility 
 
    { 
 
@@ -300,7 +300,7 @@
 
 <p><font face="Courier New">（PIAB利用的是透明代理速度较慢所以一般很少使用，当然你也可以实现具体的PIAB AOP方式比如注入MSIL，但我们已经有了很多注入MSIL的AOP框架了，我不准备去造轮子），ELPolicyinjectionAttribute：</font></p>
 
-<pre><code> [AttributeUsage(AttributeTargets.Class)] 
+<pre class='green'><code> [AttributeUsage(AttributeTargets.Class)] 
 
    public class ELPolicyinjectionAttribute : Attribute 
 
@@ -321,7 +321,7 @@
 
 <p>这样：我们的客户端 就可以很简单的使用了：</p>
 
-<pre><code> class Program 
+<pre class='green'><code> class Program 
 
    { 
 
@@ -426,7 +426,7 @@
 
 <p>App1.Config配置：</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+<pre class='green'><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
 
 &lt;configuration&gt; 
 
@@ -475,7 +475,7 @@
 
 <p>{</p>
 
-<pre><code>class Program 
+<pre class='green'><code>class Program 
 
 { 
 

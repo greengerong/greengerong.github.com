@@ -98,7 +98,7 @@
 
 <p>回到Mockito的参数Matcher，Mockito给我们提供了ArgumentMatcher，以供我们来扩展Matcher。下面假设一个增加用户积分的场景：</p>
 
-<pre><code>     public class Game {
+<pre class='green'><code>     public class Game {
         private String type;
         private int rate;
 
@@ -128,7 +128,7 @@
 
 <p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
 
-<pre><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+<pre class='green'><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
     private Object value;
     private Function&lt;T, Object&gt; function;
 
@@ -150,7 +150,7 @@
 
 <p>所以我们的测试可以如下：</p>
 
-<pre><code>    @Test
+<pre class='green'><code>    @Test
     public void should_run_customer_mockito_matcher() throws Exception {
 
         final GameDao gameDao = mock(GameDao.class);

@@ -163,7 +163,7 @@
 <h2><em>maven&nbsp;</em>dependency</h2>
 
 <div class="cnblogs_code">
-<pre><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
+<pre class='green'><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
   <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>com.github.greengerong<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>
   <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>green.monitor<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>
   <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>1.2<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>
@@ -183,7 +183,7 @@
 2：在spring mvc的 ioc context config中启用annotation dirver，如下xml：</p>
 
 <div class="cnblogs_code">
-<pre><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
   <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">beans </span><span style="color: #ff0000;">xmlns</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans"</span><span style="color: #ff0000;">
          xmlns:xsi</span><span style="color: #0000ff;">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #ff0000;">
          xmlns:p</span><span style="color: #0000ff;">="http://www.springframework.org/schema/p"</span><span style="color: #ff0000;">
@@ -221,7 +221,7 @@
 <p>配置文件形如：</p>
 
 <div class="cnblogs_code">
-<pre><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
       <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitoring </span><span style="color: #ff0000;">version</span><span style="color: #0000ff;">="1.0"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="monitor-sample"</span><span style="color: #0000ff;">&gt;</span>
           <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
               <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitor </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #0000ff;">&gt;</span>green.monitor.demo.MockMonitorRunner<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitor</span><span style="color: #0000ff;">&gt;</span>
@@ -313,7 +313,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于代码就不用多说了，简单看看如何使用。</p>
 
-<pre><code>package opencsv.utils;
+<pre class='green'><code>package opencsv.utils;
 
 
 
@@ -414,7 +414,7 @@ public void setAge(int age) {
 
 <p>(1) 基于Annotation映射方式</p>
 
-<pre><code> @Test
+<pre class='green'><code> @Test
 
 public void shouldGetPersonFromCSV() throws Exception {
 
@@ -455,7 +455,7 @@ public void shouldGetPersonFromCSV() throws Exception {
 
 <p>(2) 自定义映射方式&nbsp;</p>
 
-<pre><code>@Test
+<pre class='green'><code>@Test
 
 public void shouldToCsv() throws Exception {
 
@@ -484,7 +484,7 @@ public void shouldToCsv() throws Exception {
 
 <p>2: CSV输出</p>
 
-<pre><code>@Test
+<pre class='green'><code>@Test
 
 public void shouldGetPersonFromCsv() throws Exception {
 
@@ -663,7 +663,7 @@ public void shouldGetPersonFromCsv() throws Exception {
 <h2><span style="font-size: 16px; font-family: 楷体;">View:</span></h2>
 
 <div class="cnblogs_code">
-<pre><span style="color: #008080;">1</span> <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-app</span><span style="color: #0000ff;">="app"</span><span style="color: #ff0000;"> ng-controller</span><span style="color: #0000ff;">="parentCtr"</span><span style="color: #0000ff;">&gt;</span>
+<pre class='green'><span style="color: #008080;">1</span> <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-app</span><span style="color: #0000ff;">="app"</span><span style="color: #ff0000;"> ng-controller</span><span style="color: #0000ff;">="parentCtr"</span><span style="color: #0000ff;">&gt;</span>
 <span style="color: #008080;">2</span>     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">div </span><span style="color: #ff0000;">ng-controller</span><span style="color: #0000ff;">="childCtr1"</span><span style="color: #0000ff;">&gt;</span><span style="color: #000000;">name :
 </span><span style="color: #008080;">3</span>         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">input </span><span style="color: #ff0000;">ng-model</span><span style="color: #0000ff;">="name"</span><span style="color: #ff0000;"> type</span><span style="color: #0000ff;">="text"</span><span style="color: #ff0000;"> ng-change</span><span style="color: #0000ff;">="change(name);"</span> <span style="color: #0000ff;">/&gt;</span>
 <span style="color: #008080;">4</span>     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">div</span><span style="color: #0000ff;">&gt;</span>
@@ -677,7 +677,7 @@ public void shouldGetPersonFromCsv() throws Exception {
 <p><span style="font-size: 16px; font-family: 楷体;">Controller:</span></p>
 
 <div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> angular.module("app", []).controller("parentCtr"<span style="color: #000000;">,
+<pre class='green'><span style="color: #008080;"> 1</span> angular.module("app", []).controller("parentCtr"<span style="color: #000000;">,
 </span><span style="color: #008080;"> 2</span> <span style="color: #0000ff;">function</span><span style="color: #000000;"> ($scope) {
 </span><span style="color: #008080;"> 3</span>     $scope.$on("Ctr1NameChange"<span style="color: #000000;">,
 </span><span style="color: #008080;"> 4</span>  
@@ -865,7 +865,7 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
 <p>&nbsp;&nbsp;&nbsp; 代码很简单：</p>
 
-<pre><code>     var http = require('http');
+<pre class='green'><code>     var http = require('http');
 
     var fs = require('fs');
 
@@ -1007,7 +1007,7 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
 <p>最终生成类为：</p>
 
-<pre><code>     exports.httpStatusCode = { 
+<pre class='green'><code>     exports.httpStatusCode = { 
         "Continue": 100, 
         "SwitchingProtocols": 101, 
         "OK": 200, 
@@ -1060,7 +1060,7 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
 <p>&nbsp;&nbsp;&nbsp; 最后考虑到或许还有很多像我一样懒散的人，所以共享此代码发布到了npm，只需要npm install httpstatuscode，便可以简单实用，如下是一个测试demo：</p>
 
-<pre><code>      var httpStatusCode = require("httpstatuscode").httpStatusCode;
+<pre class='green'><code>      var httpStatusCode = require("httpstatuscode").httpStatusCode;
 
     var toBeEqual = function (actual,expected){
 
@@ -1138,7 +1138,7 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 <p>&nbsp;&nbsp; 下面我们写个菲波基数作为demo尝鲜：完整项目寄宿在github：<a href="https://github.com/greengerong/edge-demo">edge-demo</a>。</p>
 
 <div class="cnblogs_code">
-<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
+<pre class='green'><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
 </span><span style="color: #008080;"> 2</span> 
 <span style="color: #008080;"> 3</span> <span style="color: #0000ff;">var</span> fib =<span style="color: #000000;"> edge.func({
 </span><span style="color: #008080;"> 4</span>     source: <span style="color: #0000ff;">function</span>() {<span style="color: #008000;">/*</span>
@@ -1250,7 +1250,7 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
   <div class="entry-content"><p>   最近在准备Angularjs +node.js demo的时候在我的mac开发中 遇见此错误，如下：</p>
 
-<pre><code>events.js:71
+<pre class='green'><code>events.js:71
         throw arguments[1]; // Unhandled 'error' event
                    ^
 Error: connect ECONNREFUSED
@@ -1260,7 +1260,7 @@ Error: connect ECONNREFUSED
 
 <p>最后在stackoverflow找到解决方案，这主要由于上一次node.js server进程仍然还在运行没关闭掉，所以我们需要杀掉此进程，在mac上操作为：</p>
 
-<pre><code>ps aux | grep node
+<pre class='green'><code>ps aux | grep node
 
 twer    7668  4.3  1.0  42060 10708 pts/1    Sl+  20:36   0:00 
 node server 

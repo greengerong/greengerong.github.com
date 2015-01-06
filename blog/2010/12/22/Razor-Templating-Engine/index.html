@@ -98,7 +98,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面讲的都是一些其主页上面的例子，所以请大家别拍砖。别后面想到有些实际意义的例子在写个具体的运用例子吧。</p>
 
-<pre><code>     public static class Razor 
+<pre class='green'><code>     public static class Razor 
     { 
         public static string Parse(string template, string name = null); 
         public static string Parse&lt;T&gt;(string template, T model, string name = null); 
@@ -112,7 +112,7 @@
 
 <p>1：先来个简单的Template：</p>
 
-<pre><code>static void Main(string[] args) 
+<pre class='green'><code>static void Main(string[] args) 
            { 
                string template = "Hello @Model.Name! Welcome to Razor!"; 
                string result = Razor.Parse(template, new { Name = "World" });         
@@ -129,7 +129,7 @@
 
 <p>2：内部嵌套方法：</p>
 
-<pre><code>string template = @"@helper MyMethod(string name) {
+<pre class='green'><code>string template = @"@helper MyMethod(string name) {
 
     Hello @name
 
@@ -148,7 +148,7 @@ string result = Razor.Parse(template, new { Name = "World" });
 
 <p>还是官方的例子来看看，</p>
 
-<pre><code>static void Main(string[] args) 
+<pre class='green'><code>static void Main(string[] args) 
     { 
         Razor.SetTemplateBaseType(typeof(MyCustomTemplateBase&lt;&gt;));
 

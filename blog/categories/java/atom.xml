@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-06T06:53:46+08:00</updated>
+  <updated>2015-01-06T16:50:11+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -28,6 +28,8 @@
 
 <p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
 
+<p>```java</p>
+
 <pre><code>new Object() {
 
     @Subscribe
@@ -37,11 +39,15 @@
 }
 </code></pre>
 
+<p>```</p>
+
 <p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
 
 <h4>发布</h4>
 
 <p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
+
+<p>```java</p>
 
 <pre><code>final EventBus eventBus = new EventBus();
 eventBus.register(new Object() {
@@ -66,6 +72,8 @@ eventBus.post(1);
 eventBus.post(1L);
 </code></pre>
 
+<p>```</p>
+
 <p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
 
 <p>所以博主建议对于每类时间封装一个特定的事件类型是必要的。</p>
@@ -73,6 +81,8 @@ eventBus.post(1L);
 <h4>DeadEvent</h4>
 
 <p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
+
+<p>```java</p>
 
 <pre><code>final EventBus eventBus = new EventBus();
 eventBus.register(new Object() {
@@ -85,6 +95,8 @@ eventBus.register(new Object() {
 
 eventBus.post(new Object());
 </code></pre>
+
+<p>```</p>
 
 <p>更多Guava博文：</p>
 
@@ -107,12 +119,18 @@ eventBus.post(new Object());
 
 <p>对ListenableFuture添加回调函数：</p>
 
+<p>```java</p>
+
 <pre><code>Futures.addCallback(ListenableFuture&lt;V&gt;, FutureCallback&lt;V&gt;, Executor)
 </code></pre>
+
+<p>```</p>
 
 <p>其中 FutureCallback<V>是一个包含onSuccess(V),onFailure(Throwable)的接口。</p>
 
 <p>使用如：</p>
+
+<p>```java</p>
 
 <pre><code>Futures.addCallback(ListenableFuture, new FutureCallback&lt;Object&gt;() {
 
@@ -126,21 +144,23 @@ eventBus.post(new Object());
 });
 </code></pre>
 
+<p>```</p>
+
 <p>同时Guava中Futures对于Future扩展还有：</p>
 
-<p>transform：对于ListenableFuture的返回值进行转换。</p>
+<ul>
+<li><p>transform：对于ListenableFuture的返回值进行转换。</p></li>
+<li><p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p></li>
+<li><p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p></li>
+<li><p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p></li>
+<li><p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p></li>
+<li><p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p></li>
+</ul>
 
-<p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p>
-
-<p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p>
-
-<p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p>
-
-<p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p>
-
-<p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p>
 
 <p>下边是一个对于Future的测试demo：</p>
+
+<p>```java</p>
 
 <pre><code>@Test
 public void should_test_furture() throws Exception {
@@ -187,6 +207,8 @@ public void should_test_furture() throws Exception {
     System.out.println(transform.get());
 }
 </code></pre>
+
+<p>```</p>
 
 <p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
 

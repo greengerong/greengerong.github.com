@@ -100,7 +100,7 @@
 
 <p>问题确定了，那我们所需要做的就是手动的去触发让IE对Select重绘，尝试了很多办法后最终确认有效的是：首先在options上用原生js去添加一个option，在马上移除掉这个option，所以解决方案如下：</p>
 
-<pre><code>angular.module('ie.select', [])
+<pre class='green'><code>angular.module('ie.select', [])
 .directive('ieSelectFix', [
     function () {
         return {
@@ -125,7 +125,7 @@
 
 <p>使用方式如下：</p>
 
-<pre><code>&lt;select ie-select-fix="options" ng-model="demos" class="form-control"
+<pre class='green'><code>&lt;select ie-select-fix="options" ng-model="demos" class="form-control"
         ng-options="currOption.value as currOption.text for currOption in options"&gt;
     &lt;option value="" default&gt;Select&lt;/option&gt;
 &lt;/select&gt;

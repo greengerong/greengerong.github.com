@@ -100,7 +100,7 @@
 
 <p>首先是ngModel：</p>
 
-<pre><code>    var ngModelDirective = function() {
+<pre class='green'><code>    var ngModelDirective = function() {
       return {
         require: ['ngModel', '^?form'],
         controller: NgModelController,
@@ -124,7 +124,7 @@
 
 <p>在看看ngModel controller初始化代码：</p>
 
-<pre><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+<pre class='green'><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
         function($scope, $exceptionHandler, $attr, $element, $parse) {
      ....
       this.$pristine = true;
@@ -138,7 +138,7 @@
 
 <p>而FormController的addControl代码则是：</p>
 
-<pre><code>    /**
+<pre class='green'><code>    /**
      * @ngdoc function
      * @name ng.directive:form.FormController#$addControl
      * @methodOf ng.directive:form.FormController
@@ -170,7 +170,7 @@
 
 <p>如下：</p>
 
-<pre><code>    .directive("dyName", [
+<pre class='green'><code>    .directive("dyName", [
 
         function() {
           return {
@@ -194,7 +194,7 @@
 
 <p>使用方式：</p>
 
-<pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+<pre class='green'><code>    &lt;div ng-repeat="item in demo.fields"&gt;
       &lt;div class="control-group"&gt;
         &lt;label class="control-label"&gt; : &lt;/label&gt;
         &lt;div class="controls"&gt;

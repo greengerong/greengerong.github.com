@@ -103,7 +103,7 @@
 
 <p>比如代码：</p>
 
-<pre><code>[TestAOPAttribute(Order = 1)]
+<pre class='green'><code>[TestAOPAttribute(Order = 1)]
 
 public Class1 TestMethod1(int i, int j, Class1 c) 
         { 
@@ -151,7 +151,7 @@ public class TestAOPAttribute : Green.AOP.MethodInterceptBase
 
 <p>MatchedMethodInterceptBase是应用于class上匹配该class多个methodattribute基类。rule为匹配规则。</p>
 
-<pre><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
+<pre class='green'><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
 
 public class Class1 
 </code></pre>
@@ -162,7 +162,7 @@ public class Class1
 
 <p>PropertyInterceptBase：属性注入，Action属性标识get，set方法。</p>
 
-<pre><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
+<pre class='green'><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
    public int TestProperty 
    { 
        get; 
@@ -227,7 +227,7 @@ public class Class1
 
 <p>原来代码：</p>
 
-<pre><code> class Program 
+<pre class='green'><code> class Program 
    { 
        static void Main(string[] args) 
        { 
@@ -244,7 +244,7 @@ public class Class1
 
 <p>具体Mono.Cecil Code：</p>
 
-<pre><code>using System; 
+<pre class='green'><code>using System; 
   using System.Collections.Generic; 
   using System.Linq; 
   using System.Text; 
@@ -345,7 +345,7 @@ C#：</p>
 
 <p>Ｃ#:</p>
 
-<pre><code>public void TestVar() { 
+<pre class='green'><code>public void TestVar() { 
     var i = 0;    Console.WriteLine(i); }
 </code></pre>
 
@@ -365,7 +365,7 @@ C#：</p>
 
 <p>Ｃ＃：</p>
 
-<pre><code>public void TestAction() { var i = 1; Func&lt;int,int&gt; f = t =&gt; t+1; i=10; f(i); }
+<pre class='green'><code>public void TestAction() { var i = 1; Func&lt;int,int&gt; f = t =&gt; t+1; i=10; f(i); }
 </code></pre>
 
 <p>反编译后Ｃ＃：</p>
@@ -391,7 +391,7 @@ C#：</p>
 
 <p>原ｃ＃：</p>
 
-<pre><code>    using System;
+<pre class='green'><code>    using System;
 
   using System.Collections.Generic;
 
@@ -511,7 +511,7 @@ C#：</p>
 
 <p>我们先看一下测试xml：</p>
 
-<pre><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+<pre class='green'><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
 &lt;Configuration&gt; 
   &lt;appSettings&gt; 
     &lt;add key="test1" value="123"&gt;&lt;/add&gt; 
@@ -530,7 +530,7 @@ C#：</p>
 
 <p>这是我们可以使用：</p>
 
-<pre><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
+<pre class='green'><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
      { 
          MessageBox.Show(SLConfigManager.Current.GetSection&lt;Class&gt;("Class").ClassID + ""); 
          MessageBox.Show(SLConfigManager.Current.GetAppSettings("test1").ToString()); 
@@ -545,13 +545,13 @@ C#：</p>
 
 <p>在这里我们模拟了AppSettings，和Section（注：这里的section，不需要预申明，在利用xml转化形成的，更利于我们的配置扩展性，使用到了XmlRoot，XmlElement等attribute），在看看我们的Class类：</p>
 
-<pre><code>using System.Xml.Serialization; 
+<pre class='green'><code>using System.Xml.Serialization; 
 </code></pre>
 
 <p>  namespace SilverlightApplication2
   {</p>
 
-<pre><code>  [XmlRoot("Student")] 
+<pre class='green'><code>  [XmlRoot("Student")] 
   public class Student 
   { 
       [XmlElement("Name")] 
@@ -592,7 +592,7 @@ C#：</p>
 
 <p>源码：</p>
 
-<pre><code>using System; 
+<pre class='green'><code>using System; 
 using System.Net; 
 using System.Windows; 
 using System.Windows.Controls; 
@@ -938,7 +938,7 @@ namespace SilverlightApplication2
 
 <p>代码：</p>
 
-<pre><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
+<pre class='green'><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
 </code></pre>
 
 <p>&nbsp;这个奖可以结合ASPOSE.Cells处理我的报表导出Excel的汇总，计算问题：<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/21/Aspose_Cells_Template1.html"><font color="#6699cc">报表中的Excel操作之Aspose.Cells（Excel模板）</font></a> 唯一需要改变的就是D8这个单元汇总格是需要动态变更的，可以利用{r}。{-n}，{c}等来处理。</p>

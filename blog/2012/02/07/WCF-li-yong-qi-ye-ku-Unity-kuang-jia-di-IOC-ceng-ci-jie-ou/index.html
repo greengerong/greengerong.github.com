@@ -102,7 +102,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面就是对InstanceProvider的扩展：</p>
 
-<pre><code>public class ELUnityInstanceProvider : IInstanceProvider 
+<pre class='green'><code>public class ELUnityInstanceProvider : IInstanceProvider 
    { 
        private Type contractType; 
        private string container; 
@@ -187,7 +187,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 下面我们需要已Attribute方式贴在Contract上：</p>
 
-<pre><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
+<pre class='green'><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
    { 
        public string Container 
        { 
@@ -234,7 +234,7 @@
 
 <p> 对于wcf同时我们也该支持配置文件扩展：</p>
 
-<pre><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
+<pre class='green'><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
    { 
        [ConfigurationProperty("Container", IsRequired = false, DefaultValue = "")] 
        public string Container 
@@ -322,7 +322,7 @@ public class ELUnityBehavior : IEndpointBehavior
 
 <p>目前我们已经简单实现了：看看测试：</p>
 
-<pre><code>   Contract：
+<pre class='green'><code>   Contract：
 
    [ServiceContract()] 
    [Green.WCFExtensions.ELUnityBehavior(Container = "test", ConfigFile = "App1.config")]   
@@ -367,7 +367,7 @@ public class HelloService1 : IHelloService
 
 <p>配置app1.config:</p>
 
-<pre><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
+<pre class='green'><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
 &lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloService1,WcfService" &gt; &lt;/register&gt;
 </code></pre>
 

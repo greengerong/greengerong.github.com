@@ -111,7 +111,7 @@
 
 <p>控制台程序：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;using System; 
     using System.Collections.Generic; 
@@ -165,7 +165,7 @@
 
 <p>ExportAttribute 定义如下：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)] 
     public class ExportAttribute : Attribute 
@@ -193,7 +193,7 @@
 
 <p>ImportAttribute 定义：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)] 
         public class ImportAttribute : Attribute, IAttributedImport 
@@ -307,13 +307,13 @@
 
 <p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
 
-<pre>&lt;Tasks&gt;</pre>
+<pre class='green'>&lt;Tasks&gt;</pre>
 
 
-<pre>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
+<pre class='green'>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
 
 
-<pre> &lt;/Tasks&gt;</pre>
+<pre class='green'> &lt;/Tasks&gt;</pre>
 
 
 <h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
@@ -389,7 +389,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 在Linq2Sql的Dbml文件其实就是一个Xml文件，记录着数据库与生成Linq2SqlCode的数据信息，所以转化为TSql没有什么说的。我们需要提取其中的数据库信息，在转化为我们的Tsql，在这里建立了DBTable、DBColumn、DBAssociation三个实体类：</p>
 
-<pre><code>    代码 
+<pre class='green'><code>    代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;  1 using System; 
     using System.Collections.Generic; 
@@ -502,7 +502,7 @@
 
 <p>&nbsp;&nbsp; 建立了一个 将我们的dbml文件xml Document转化为实体类辅助类：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
     using System.Collections.Generic; 
@@ -568,7 +568,7 @@
 
 <p>&nbsp;&nbsp; 在转化为我们的实体类，我们剩下的就是编写我们的CodeSmith模板了（更多知识可以参考<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/27/1836729.html">CodeSmith模板</a>）：</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
 
@@ -631,7 +631,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在控制台调用编译模板以及输出：</p>
 
-<pre><code>    代码 
+<pre class='green'><code>    代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
     using System.Collections.Generic; 
@@ -669,7 +669,7 @@
 
 <p>在上面到我的CodeSmith模板编译辅助类，在上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/1834317.html">通过代码生成机制实现强类型编程-CodeSmith版</a>也有，在这里也附带上：需要引用CodeSmith.Engine.dll.</p>
 
-<pre><code>    代码 
+<pre class='green'><code>    代码 
 
         Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 using System; 
 
@@ -854,7 +854,7 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好直接到主题。首先是数据实体MessageEntry（我到老A的基础上添加了description属性作为代码字段描述）：</p>
 
-<pre><code>       public class MessageEntry 
+<pre class='green'><code>       public class MessageEntry 
         { 
             public string Id { get; private set; } 
             public string Value { get; private set; }        
@@ -885,7 +885,7 @@
 
 <p>Code：</p>
 
-<pre><code>     using System.Collections.Generic; 
+<pre class='green'><code>     using System.Collections.Generic; 
     using System.Linq; 
     using System.Text; 
     using System.Xml; 
@@ -930,7 +930,7 @@
 
 <p> 这下就可以开始写模板了，见下Code：</p>
 
-<pre><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
+<pre class='green'><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
 
     &lt;%@ Import NameSpace="System" %&gt; 
     &lt;%@ Import NameSpace="System.Xml" %&gt; 
@@ -983,7 +983,7 @@
 
 <p>XMl实体用的是老A的：</p>
 
-<pre><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
+<pre class='green'><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
     &lt;messages&gt;   
     &lt;message id="MandatoryField" value="The {0} is mandatory."  category="Validation"  description="description" /&gt;   
     &lt;message id="GreaterThan" value="The {0} must be greater than {1}."  category="Validation" description="description" /&gt;   
@@ -995,7 +995,7 @@
 
 <p>Code：</p>
 
-<pre><code> public static void Main(string[] args) 
+<pre class='green'><code> public static void Main(string[] args) 
        { 
           //    Wolf.Message.Messages.Confirmation.ReallyDelete.Value 
            // test(); 
@@ -1038,7 +1038,7 @@
 
 <p>&nbsp;</p>
 
-<pre><code> using Wolf; 
+<pre class='green'><code> using Wolf; 
 using System; 
 using System.Collections.Generic; 
 namespace Wolf.Message 
@@ -1125,14 +1125,14 @@ namespace Wolf.Message
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 其实思路和上次一样，就是生成Sql，用Linq自身条件组合sql应用，没有什么好说的。组合sql用 EXISTS关键字，组合一个子查询。</p>
 
-<pre><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
+<pre class='green'><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
 </code></pre>
 
 <p>&nbsp;</p>
 
 <p>直接上Code：</p>
 
-<pre><code>/// EXISTS
+<pre class='green'><code>/// EXISTS
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;typeparam name="T"&amp;gt;&amp;lt;/typeparam&amp;gt;
 /// &amp;lt;param name="source"&amp;gt;&amp;lt;/param&amp;gt;
@@ -1165,7 +1165,7 @@ return db.ExecuteCommand(sql, dbparams.ToArray());
 
 <p>&nbsp; 调用方式就很简单了，一个Lamdam表达式，就搞定。比如</p>
 
-<pre><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
+<pre class='green'><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
 </code></pre>
 
 <p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_thumb.png" title="image" alt="image" /></a></p>
@@ -1221,7 +1221,7 @@ return db.ExecuteCommand(sql, dbparams.ToArray());
 
 <p>如代码：</p>
 
-<pre><code>String Sql = "update  ly set re_message='" + TextBox1.Text +    "',re_date=#" + DateTime.Now + "# where ID=" + page_id;
+<pre class='green'><code>String Sql = "update  ly set re_message='" + TextBox1.Text +    "',re_date=#" + DateTime.Now + "# where ID=" + page_id;
 </code></pre>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/10/1823524.html" title="原文首发">原文首发请看这里</a></p>
@@ -1314,7 +1314,7 @@ return db.ExecuteCommand(sql, dbparams.ToArray());
 
 <p>&nbsp;</p>
 
-<pre><code>using System;
+<pre class='green'><code>using System;
 using System.Timers;
 
 public class Timer1
@@ -1398,7 +1398,7 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 
 <p>&nbsp;&nbsp;&nbsp; 赶快进入主题-Code:</p>
 
-<pre><code> /// &lt;summary&gt;
+<pre class='green'><code> /// &lt;summary&gt;
       /// 操作like帮助类，自己增加的；
       /// &lt;/summary&gt;
       public class DynamicQueryableLikeHelper
@@ -1459,7 +1459,7 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 
 <p>&nbsp;</p>
 
-<pre><code>   public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate, params object[] values)
+<pre class='green'><code>   public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate, params object[] values)
       {
           return (IQueryable&lt;T&gt;)Where((IQueryable)source, predicate, false, values);
           //TODO:添加False
@@ -1502,7 +1502,7 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 
 <p>&nbsp;</p>
 
-<pre><code>IQueryable&lt;Orders&gt; q = DataContext.Orders
+<pre class='green'><code>IQueryable&lt;Orders&gt; q = DataContext.Orders
  .Where("ShipCity like @1 and ShipCity like @0 or ShipCity  like 'don' and ShipCity like 'don'
         and ShipCity like 'don'  or EmployeeID1 =1", "test  ", "test").OrderBy("ShipCity");
           //IQueryable&lt;Orders&gt; q =  DataContext.Orders.Where("ShipCity.Contains(@0) ","test");
@@ -1512,7 +1512,7 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 <p>  为了测试多个我邮箱投个懒就把ShipCity like &lsquo;don&rsquo; 赋值了多次。
 输出sql为：&nbsp;</p>
 
-<pre><code>  SELECT [t0].[OrderID], [t0].[CustomerID], [t0].[EmployeeID] AS [EmployeeID1], [t 0].[OrderDate], [t0].[RequiredDate], [t0].[ShippedDate], [t0].[ShipVia], [t0].[F reight], [t0].[ShipName], [t0].[ShipAddress], [t0].[ShipCity], [t0].[ShipRegion] , [t0].[ShipPostalCode], [t0].[ShipCountry] FROM [dbo].[Orders] AS [t0] WHERE (([t0].[ShipCity] LIKE @p0) AND ([t0].[ShipCity] LIKE @p1)) OR (([t0].[Shi pCity] LIKE @p2) AND ([t0].[ShipCity] LIKE @p3) AND ([t0].[ShipCity] LIKE @p4)) OR ([t0].[EmployeeID] = @p5) ORDER BY [t0].[ShipCity]&amp;nbsp;
+<pre class='green'><code>  SELECT [t0].[OrderID], [t0].[CustomerID], [t0].[EmployeeID] AS [EmployeeID1], [t 0].[OrderDate], [t0].[RequiredDate], [t0].[ShippedDate], [t0].[ShipVia], [t0].[F reight], [t0].[ShipName], [t0].[ShipAddress], [t0].[ShipCity], [t0].[ShipRegion] , [t0].[ShipPostalCode], [t0].[ShipCountry] FROM [dbo].[Orders] AS [t0] WHERE (([t0].[ShipCity] LIKE @p0) AND ([t0].[ShipCity] LIKE @p1)) OR (([t0].[Shi pCity] LIKE @p2) AND ([t0].[ShipCity] LIKE @p3) AND ([t0].[ShipCity] LIKE @p4)) OR ([t0].[EmployeeID] = @p5) ORDER BY [t0].[ShipCity]&amp;nbsp;
 </code></pre>
 
 <p>如果在类库中有和你的字符串等冲突就可以用ignoreLike为真，避免我的扩展。</p>

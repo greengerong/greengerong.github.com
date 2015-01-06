@@ -96,7 +96,7 @@
 
 <div class="entry-content"><p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
 
-<pre><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+<pre class='green'><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
       StoreService.listStores().then(function(branches) {
         Contact.retrieveContactInfo().then(function(userInfo) {
             //more code here crossing user and stores data
@@ -109,7 +109,7 @@
 
 <p>代码如下，有详细注释帮助你去理解这段代码：</p>
 
-<pre><code>    describe("Store Controller", function() {
+<pre class='green'><code>    describe("Store Controller", function() {
       var $controller, Contact, StoreService, createController, scope;
 
       beforeEach(function() {

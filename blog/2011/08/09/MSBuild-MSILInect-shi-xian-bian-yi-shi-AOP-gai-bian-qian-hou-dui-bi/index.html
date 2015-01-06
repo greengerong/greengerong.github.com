@@ -100,7 +100,7 @@
 
 <p>比如代码：</p>
 
-<pre><code>[TestAOPAttribute(Order = 1)]
+<pre class='green'><code>[TestAOPAttribute(Order = 1)]
 
 public Class1 TestMethod1(int i, int j, Class1 c) 
         { 
@@ -148,7 +148,7 @@ public class TestAOPAttribute : Green.AOP.MethodInterceptBase
 
 <p>MatchedMethodInterceptBase是应用于class上匹配该class多个methodattribute基类。rule为匹配规则。</p>
 
-<pre><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
+<pre class='green'><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
 
 public class Class1 
 </code></pre>
@@ -159,7 +159,7 @@ public class Class1
 
 <p>PropertyInterceptBase：属性注入，Action属性标识get，set方法。</p>
 
-<pre><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
+<pre class='green'><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
    public int TestProperty 
    { 
        get; 

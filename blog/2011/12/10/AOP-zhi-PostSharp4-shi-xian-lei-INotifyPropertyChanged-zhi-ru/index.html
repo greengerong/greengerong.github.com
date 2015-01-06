@@ -111,7 +111,7 @@
 
 <p>&nbsp;&nbsp; 下面我就看看我们的代码是如何简洁来实现：</p>
 
-<pre><code> using System;
+<pre class='green'><code> using System;
   using System.ComponentModel;
   using PostSharp.Aspects;
   using PostSharp.Aspects.Advices;
@@ -160,7 +160,7 @@
 
 <p>static void Main(string[] args)</p>
 
-<pre><code>    { 
+<pre class='green'><code>    { 
 
          Student stu = new Student(); 
         (stu as INotifyPropertyChanged).PropertyChanged += new PropertyChangedEventHandler(Program_PropertyChanged); 
@@ -179,7 +179,7 @@
 
 <p>实体类：</p>
 
-<pre><code>  [INotifyPropertyChanged] 
+<pre class='green'><code>  [INotifyPropertyChanged] 
    public class Student 
    { 
        public string Name 

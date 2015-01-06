@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ioc | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/ioc/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-06T06:53:46+08:00</updated>
+  <updated>2015-01-06T16:50:11+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -35,6 +35,8 @@
 
 <h4>构造注入</h4>
 
+<p>```java</p>
+
 <pre><code>public class OrderServiceImpl implements OrderService {
     private ItemService itemService;
     private PriceService priceService;
@@ -49,7 +51,11 @@
 }
 </code></pre>
 
+<p>```</p>
+
 <h4>属性注入</h4>
+
+<p>```java</p>
 
 <pre><code>public class OrderServiceImpl implements OrderService {
     private ItemService itemService;
@@ -65,7 +71,11 @@
 }
 </code></pre>
 
+<p>```</p>
+
 <h4>函数(setter)注入</h4>
+
+<p>```java</p>
 
 <pre><code>public class OrderServiceImpl implements OrderService {
     private ItemService itemService;
@@ -85,6 +95,8 @@
 }
 </code></pre>
 
+<p>```</p>
+
 <h2>Module依赖注册</h2>
 
 <p>Guice提供依赖配置类，需要继承至AbstractModule，实现configure方法。在configure方法中我们可以用Binder配置依赖。</p>
@@ -103,6 +115,8 @@
 
 <p>对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：</p>
 
+<p>```java</p>
+
 <pre><code>public void configure() {
     final Binder binder = binder();
 
@@ -117,7 +131,11 @@ public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService 
 }
 </code></pre>
 
+<p>```</p>
+
 <p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
+
+<p>```java</p>
 
 <pre><code>@Provides
 public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
@@ -129,9 +147,13 @@ public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService 
 }
 </code></pre>
 
+<p>```</p>
+
 <h2>Guice实例</h2>
 
 <p>下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
+
+<p>```java</p>
 
 <pre><code>package com.github.greengerong.app;
 
@@ -183,16 +205,24 @@ public class AppModule extends AbstractModule {
 }
 </code></pre>
 
+<p>```</p>
+
 <h2>Guice的使用</h2>
 
 <p>对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：</p>
 
+<p>```java</p>
+
 <pre><code>Injector injector = Guice.createInjector(new AppModule(bundleContext));
 </code></pre>
+
+<p>```</p>
 
 <p>这里可以传入多个module，我们可以利用module分离领域依赖。</p>
 
 <p>Guice api方法：</p>
+
+<p> ```java</p>
 
 <pre><code>public static Injector createInjector(Module... modules) 
 
@@ -202,6 +232,8 @@ public static Injector createInjector(Stage stage, Module... modules)
 
 public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&gt; modules) 
 </code></pre>
+
+<p>```</p>
 
 <p>Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。</p>
 

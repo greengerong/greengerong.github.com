@@ -748,7 +748,7 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
 
 <p>Domain Object：</p>
 
-<pre><code>public class StudenDo 
+<pre class='green'><code>public class StudenDo 
 
 { 
 
@@ -910,7 +910,7 @@ public class Address
 
 <p>Dto：</p>
 
-<pre><code>public class StudenDto 
+<pre class='green'><code>public class StudenDto 
 
    { 
 
@@ -1099,7 +1099,7 @@ public class AddressDto
 
 <p>一：Attribute标注：</p>
 
-<pre><code>        [TestMethod] 
+<pre class='green'><code>        [TestMethod] 
 
      public void AttributeConfig_SimpleMapping_Gen() 
 
@@ -1344,7 +1344,7 @@ public class AddressDto
 
 <p>二：xml配置标注规则：&nbsp;</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+<pre class='green'><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
 
 &lt;AgileMapper&gt; 
 
@@ -1395,7 +1395,7 @@ public class AddressDto
 
 <p>[TestMethod]</p>
 
-<pre><code>    public void XMlConfig_SimpleMapping_Gen() 
+<pre class='green'><code>    public void XMlConfig_SimpleMapping_Gen() 
 
     { 
 
@@ -1542,7 +1542,7 @@ public class AddressDto
 
 <p>测试预备StudentModelForDataRow：</p>
 
-<pre><code>public class StudentModelForDataRow 
+<pre class='green'><code>public class StudentModelForDataRow 
 
   { 
 
@@ -1561,7 +1561,7 @@ public class AddressDto
 
 <p>测试代码：&nbsp;</p>
 
-<pre><code>    [TestMethod] 
+<pre class='green'><code>    [TestMethod] 
 
      public void DataRowConfig_SameTable_DataRowCloneMapping() 
 
@@ -1911,7 +1911,7 @@ public class AddressDto
 
 <p>代码：</p>
 
-<pre><code>        using System; 
+<pre class='green'><code>        using System; 
     using System.Collections.Generic; 
     using System.Linq; 
     using System.Text; 
@@ -2056,7 +2056,7 @@ public class AddressDto
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面就是对InstanceProvider的扩展：</p>
 
-<pre><code>public class ELUnityInstanceProvider : IInstanceProvider 
+<pre class='green'><code>public class ELUnityInstanceProvider : IInstanceProvider 
    { 
        private Type contractType; 
        private string container; 
@@ -2141,7 +2141,7 @@ public class AddressDto
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 下面我们需要已Attribute方式贴在Contract上：</p>
 
-<pre><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
+<pre class='green'><code>  public class ELUnityBehaviorAttribute : Attribute, IContractBehavior 
    { 
        public string Container 
        { 
@@ -2188,7 +2188,7 @@ public class AddressDto
 
 <p> 对于wcf同时我们也该支持配置文件扩展：</p>
 
-<pre><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
+<pre class='green'><code>    public class ELUnityBehaviorElement : BehaviorExtensionElement 
    { 
        [ConfigurationProperty("Container", IsRequired = false, DefaultValue = "")] 
        public string Container 
@@ -2276,7 +2276,7 @@ public class ELUnityBehavior : IEndpointBehavior
 
 <p>目前我们已经简单实现了：看看测试：</p>
 
-<pre><code>   Contract：
+<pre class='green'><code>   Contract：
 
    [ServiceContract()] 
    [Green.WCFExtensions.ELUnityBehavior(Container = "test", ConfigFile = "App1.config")]   
@@ -2321,7 +2321,7 @@ public class HelloService1 : IHelloService
 
 <p>配置app1.config:</p>
 
-<pre><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
+<pre class='green'><code>&lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloServiceProxy,WcfService"  name="proxy"&gt; &lt;/register&gt; 
 &lt;register type="WcfService.IHelloService,WcfService" mapTo="WcfService.HelloService1,WcfService" &gt; &lt;/register&gt;
 </code></pre>
 

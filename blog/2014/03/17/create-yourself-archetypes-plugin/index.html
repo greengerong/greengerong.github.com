@@ -127,7 +127,7 @@ copy到项目目录结构去。</li>
 <ol>
 <li><p>首先在archetype中加入一个pom文件，如下：</p>
 
-<pre><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<pre class='green'><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
       &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
       &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
@@ -148,7 +148,7 @@ copy到项目目录结构去。</li>
 </code></pre></li>
 <li><p>创建archetype-metadata.xml,位于src/main/resources/META-INF/maven/目录下，例如：</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+<pre class='green'><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;archetype-descriptor name="app-server"&gt;
     &lt;fileSets&gt;
         &lt;fileSet filtered="true" encoding="UTF-8"&gt;
@@ -174,7 +174,7 @@ copy到项目目录结构去。</li>
 <ol>
 <li><p>为将创建的项目增加pom.xml文件，以${artifactId} / ${groupId} 变量作为占位符，例如：</p>
 
-<pre><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<pre class='green'><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
       &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
       &lt;groupId&gt;${groupId}&lt;/groupId&gt;
@@ -217,7 +217,7 @@ copy到项目目录结构去。</li>
 
 <p>命令行：</p>
 
-<pre><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
+<pre class='green'><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
 </code></pre></li>
 </ol>
 

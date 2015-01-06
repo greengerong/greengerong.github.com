@@ -199,7 +199,7 @@
 
   <div class="entry-content"><p>本文来自网友sun shine的问题，问题如下：</p>
 
-<pre><code>    您好, 我想求教一个问题.
+<pre class='green'><code>    您好, 我想求教一个问题.
     在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢?
     比如:
     $scope.this.is.a.very.deep.obj = {
@@ -220,14 +220,14 @@
 
 <p>再则对于ng其使用使用的一堆的$watch，实现脏检查，如果你理解这些了，那么我们就可以很容易的实现一套如spring的</p>
 
-<pre><code>&lt;c:set var="xxx" expression="xxx" /&gt;
+<pre class='green'><code>&lt;c:set var="xxx" expression="xxx" /&gt;
 </code></pre>
 
 <p>的tag.</p>
 
 <p>对于实现这类tag，我们最好的方式则是利用ng的directive来实现，代码如下：</p>
 
-<pre><code>        angular.module("greengerong.ui.tag", [])
+<pre class='green'><code>        angular.module("greengerong.ui.tag", [])
           .directive("uiSet", [
             function() {
               return {
@@ -286,7 +286,7 @@
 
   <div class="entry-content"><p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
 
-<pre><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+<pre class='green'><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
       StoreService.listStores().then(function(branches) {
         Contact.retrieveContactInfo().then(function(userInfo) {
             //more code here crossing user and stores data
@@ -299,7 +299,7 @@
 
 <p>代码如下，有详细注释帮助你去理解这段代码：</p>
 
-<pre><code>    describe("Store Controller", function() {
+<pre class='green'><code>    describe("Store Controller", function() {
       var $controller, Contact, StoreService, createController, scope;
 
       beforeEach(function() {
@@ -419,14 +419,14 @@
 
 <p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
 
-<pre><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+<pre class='green'><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
 </code></pre>
 
 <p>正确的解决方案是：</p>
 
 <p>在res/values/strings.xml中定义这个key常量，如下：</p>
 
-<pre><code>    &lt;resources&gt;
+<pre class='green'><code>    &lt;resources&gt;
         &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
         &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
     &lt;/resources&gt;
@@ -434,7 +434,7 @@
 
 <p>使用如下：</p>
 
-<pre><code>    imageView.setTag(R.id.tag_first, "Hello");
+<pre class='green'><code>    imageView.setTag(R.id.tag_first, "Hello");
     imageView.setTag(R.id.tag_second, "Success");
 </code></pre>
 </div>
@@ -487,7 +487,7 @@
 
 <p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
 
-<pre><code>jasmine.getFixtures().fixturesPath = 'base path';
+<pre class='green'><code>jasmine.getFixtures().fixturesPath = 'base path';
 loadFixtures('myfixture.html');
 jasmine.getFixtures().load(...);
 </code></pre>
@@ -498,7 +498,7 @@ jasmine.getFixtures().load(...);
 
 <p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
 
-<pre><code> beforeEach(function() {
+<pre class='green'><code> beforeEach(function() {
     jasmine.Ajax.requests.when = function (url) {
       return this.filter("/jquery/ajax")[0];
     };
@@ -540,7 +540,7 @@ afterEach(function() {
 
 <p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
 
-<pre><code>files: [
+<pre class='green'><code>files: [
     {
       pattern: 'view/**/*.html',
       watched: true,
@@ -561,7 +561,7 @@ afterEach(function() {
 
 <p>测试html fixtures加载：</p>
 
-<pre><code>describe('console html content', function() {
+<pre class='green'><code>describe('console html content', function() {
 
   beforeEach(function() {
     jasmine.getFixtures().fixturesPath = 'base/view/';
@@ -578,7 +578,7 @@ afterEach(function() {
 
 <p>测试mock ajax：</p>
 
-<pre><code>describe('console html content', function() {
+<pre class='green'><code>describe('console html content', function() {
 
   beforeEach(function() {
      jasmine.Ajax.requests.when = function(url) {
@@ -699,7 +699,7 @@ afterEach(function() {
 
 <p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
 
-<pre><code>$http.post("/url", {
+<pre class='green'><code>$http.post("/url", {
       id: 1,
       name: "greengerong"
     }, {
@@ -711,7 +711,7 @@ afterEach(function() {
 
 <p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
 
-<pre><code>id=1&amp;name=greengerong
+<pre class='green'><code>id=1&amp;name=greengerong
 </code></pre>
 
 <p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
@@ -720,7 +720,7 @@ afterEach(function() {
 
 <p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
 
-<pre><code>angular.module("app", [])
+<pre class='green'><code>angular.module("app", [])
 .config(["$httpProvider", function($httpProvider) {
       $httpProvider.defaults.transformRequest = [
         function(request) {
@@ -776,7 +776,7 @@ afterEach(function() {
 
 <p>这是angularjs源码中单元测试的使用browserTrigger的实例：</p>
 
-<pre><code>it('should set the model to empty string when empty option is selected', function() {
+<pre class='green'><code>it('should set the model to empty string when empty option is selected', function() {
     scope.robot = 'x';
     compile('&lt;select ng-model="robot"&gt;' +
               '&lt;option value=""&gt;--select--&lt;/option&gt;' +
@@ -1020,7 +1020,7 @@ copy到项目目录结构去。</li>
 <ol>
 <li><p>首先在archetype中加入一个pom文件，如下：</p>
 
-<pre><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<pre class='green'><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
       &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
       &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
@@ -1041,7 +1041,7 @@ copy到项目目录结构去。</li>
 </code></pre></li>
 <li><p>创建archetype-metadata.xml,位于src/main/resources/META-INF/maven/目录下，例如：</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+<pre class='green'><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;archetype-descriptor name="app-server"&gt;
     &lt;fileSets&gt;
         &lt;fileSet filtered="true" encoding="UTF-8"&gt;
@@ -1067,7 +1067,7 @@ copy到项目目录结构去。</li>
 <ol>
 <li><p>为将创建的项目增加pom.xml文件，以${artifactId} / ${groupId} 变量作为占位符，例如：</p>
 
-<pre><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<pre class='green'><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
       &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
       &lt;groupId&gt;${groupId}&lt;/groupId&gt;
@@ -1110,7 +1110,7 @@ copy到项目目录结构去。</li>
 
 <p>命令行：</p>
 
-<pre><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
+<pre class='green'><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
 </code></pre></li>
 </ol>
 

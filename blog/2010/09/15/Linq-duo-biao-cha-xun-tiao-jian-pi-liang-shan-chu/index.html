@@ -98,14 +98,14 @@
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 其实思路和上次一样，就是生成Sql，用Linq自身条件组合sql应用，没有什么好说的。组合sql用 EXISTS关键字，组合一个子查询。</p>
 
-<pre><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
+<pre class='green'><code> DELETE FROM [TableName]   WHERE   EXISTS(select ..from         [TableName]  where query );
 </code></pre>
 
 <p>&nbsp;</p>
 
 <p>直接上Code：</p>
 
-<pre><code>/// EXISTS
+<pre class='green'><code>/// EXISTS
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;typeparam name="T"&amp;gt;&amp;lt;/typeparam&amp;gt;
 /// &amp;lt;param name="source"&amp;gt;&amp;lt;/param&amp;gt;
@@ -138,7 +138,7 @@ return db.ExecuteCommand(sql, dbparams.ToArray());
 
 <p>&nbsp; 调用方式就很简单了，一个Lamdam表达式，就搞定。比如</p>
 
-<pre><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
+<pre class='green'><code>Console.Write( DataContext.test.Delete(t =&amp;gt; t.id != null||t.name.Contains("qq")&amp;amp;&amp;amp;t.Orders.OrderDate&amp;lt;=DateTime.Now));
 </code></pre>
 
 <p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/Linq_138F4/image_thumb.png" title="image" alt="image" /></a></p>

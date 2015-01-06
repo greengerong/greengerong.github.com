@@ -100,12 +100,12 @@
 
 <p>如ngClick在官方文档是这么描述的：</p>
 
-<pre><code>Expression to evaluate upon click. (Event object is available as $event)
+<pre class='green'><code>Expression to evaluate upon click. (Event object is available as $event)
 </code></pre>
 
 <p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
 
-<pre><code>    var ngEventDirectives = {};
+<pre class='green'><code>    var ngEventDirectives = {};
     forEach(
       'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
       function(name) {
@@ -140,7 +140,7 @@
 
 <p>html 代码</p>
 
-<pre><code>    &lt;!DOCTYPE html&gt;
+<pre class='green'><code>    &lt;!DOCTYPE html&gt;
     &lt;html id="ng-app" ng-app="app"&gt;
     &lt;head&gt;
     &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
@@ -162,7 +162,7 @@
 
 <p>js 代码</p>
 
-<pre><code>angular.module("app",[])
+<pre class='green'><code>angular.module("app",[])
 .controller("demo",[function(){
   var vm = this;
 

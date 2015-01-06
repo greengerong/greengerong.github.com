@@ -102,14 +102,14 @@
 
 <p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
 
-<pre><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+<pre class='green'><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
 </code></pre>
 
 <p>正确的解决方案是：</p>
 
 <p>在res/values/strings.xml中定义这个key常量，如下：</p>
 
-<pre><code>    &lt;resources&gt;
+<pre class='green'><code>    &lt;resources&gt;
         &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
         &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
     &lt;/resources&gt;
@@ -117,7 +117,7 @@
 
 <p>使用如下：</p>
 
-<pre><code>    imageView.setTag(R.id.tag_first, "Hello");
+<pre class='green'><code>    imageView.setTag(R.id.tag_first, "Hello");
     imageView.setTag(R.id.tag_second, "Success");
 </code></pre>
 </div>

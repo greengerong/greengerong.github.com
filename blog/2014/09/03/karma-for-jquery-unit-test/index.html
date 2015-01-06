@@ -106,7 +106,7 @@
 
 <p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
 
-<pre><code>jasmine.getFixtures().fixturesPath = 'base path';
+<pre class='green'><code>jasmine.getFixtures().fixturesPath = 'base path';
 loadFixtures('myfixture.html');
 jasmine.getFixtures().load(...);
 </code></pre>
@@ -117,7 +117,7 @@ jasmine.getFixtures().load(...);
 
 <p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
 
-<pre><code> beforeEach(function() {
+<pre class='green'><code> beforeEach(function() {
     jasmine.Ajax.requests.when = function (url) {
       return this.filter("/jquery/ajax")[0];
     };
@@ -159,7 +159,7 @@ afterEach(function() {
 
 <p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
 
-<pre><code>files: [
+<pre class='green'><code>files: [
     {
       pattern: 'view/**/*.html',
       watched: true,
@@ -180,7 +180,7 @@ afterEach(function() {
 
 <p>测试html fixtures加载：</p>
 
-<pre><code>describe('console html content', function() {
+<pre class='green'><code>describe('console html content', function() {
 
   beforeEach(function() {
     jasmine.getFixtures().fixturesPath = 'base/view/';
@@ -197,7 +197,7 @@ afterEach(function() {
 
 <p>测试mock ajax：</p>
 
-<pre><code>describe('console html content', function() {
+<pre class='green'><code>describe('console html content', function() {
 
   beforeEach(function() {
      jasmine.Ajax.requests.when = function(url) {

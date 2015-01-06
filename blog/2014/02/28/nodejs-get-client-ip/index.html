@@ -96,7 +96,7 @@
 
 <div class="entry-content"><p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
 
-<pre><code>    function getClientIp(req) {
+<pre class='green'><code>    function getClientIp(req) {
         return req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||

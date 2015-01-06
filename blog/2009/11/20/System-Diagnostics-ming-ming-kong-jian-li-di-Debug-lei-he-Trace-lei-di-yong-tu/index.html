@@ -116,7 +116,7 @@ Debug类中所有函数的调用都不会在Release版本里有效。也就是�
 2、 往Form1上拖一个label，并采用其缺省ID。
 3、 在Form1.cs中的Form1类中添加下面的函数代码：</p>
 
-<pre><code>private int time=0;
+<pre class='green'><code>private int time=0;
 protected override void OnPaint(PaintEventArgs e)
 {
     time++;
@@ -141,7 +141,7 @@ protected override void OnResize(EventArgs e)
 1、 打开刚刚的project。
 2、 用下面的代码覆盖刚才第2步的代码：</p>
 
-<pre><code>private void Calculate()
+<pre class='green'><code>private void Calculate()
     {
     int a=1,b=1;
     try
@@ -166,7 +166,7 @@ protected override void OnResize(EventArgs e)
 
 <p>3、 在构造函数Form1()的最后添加下面的代码，将Trace的输出重定向到app.log文件中：</p>
 
-<pre><code>System.Diagnostics.Trace.Listeners.Clear();
+<pre class='green'><code>System.Diagnostics.Trace.Listeners.Clear();
 System.Diagnostics.Trace.AutoFlush=true;
 System.Diagnostics.Trace.Listeners.Add(new  System.Diagnostics.TextWriterTraceListener("app.log"));
 </code></pre>

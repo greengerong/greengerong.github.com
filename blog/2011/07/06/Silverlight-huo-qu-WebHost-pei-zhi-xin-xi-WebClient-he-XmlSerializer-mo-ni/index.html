@@ -110,7 +110,7 @@
 
 <p>我们先看一下测试xml：</p>
 
-<pre><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+<pre class='green'><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
 &lt;Configuration&gt; 
   &lt;appSettings&gt; 
     &lt;add key="test1" value="123"&gt;&lt;/add&gt; 
@@ -129,7 +129,7 @@
 
 <p>这是我们可以使用：</p>
 
-<pre><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
+<pre class='green'><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
      { 
          MessageBox.Show(SLConfigManager.Current.GetSection&lt;Class&gt;("Class").ClassID + ""); 
          MessageBox.Show(SLConfigManager.Current.GetAppSettings("test1").ToString()); 
@@ -144,13 +144,13 @@
 
 <p>在这里我们模拟了AppSettings，和Section（注：这里的section，不需要预申明，在利用xml转化形成的，更利于我们的配置扩展性，使用到了XmlRoot，XmlElement等attribute），在看看我们的Class类：</p>
 
-<pre><code>using System.Xml.Serialization; 
+<pre class='green'><code>using System.Xml.Serialization; 
 </code></pre>
 
 <p>  namespace SilverlightApplication2
   {</p>
 
-<pre><code>  [XmlRoot("Student")] 
+<pre class='green'><code>  [XmlRoot("Student")] 
   public class Student 
   { 
       [XmlElement("Name")] 
@@ -191,7 +191,7 @@
 
 <p>源码：</p>
 
-<pre><code>using System; 
+<pre class='green'><code>using System; 
 using System.Net; 
 using System.Windows; 
 using System.Windows.Controls; 

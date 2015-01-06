@@ -137,7 +137,7 @@
 
 <p>TDD并不是万能的，但是TDD也不是一无是处的，重要的是用方法论的人，引入某同事一句话：</p>
 
-<pre><code>站在教学的角度来讲，我还是很推崇TDD的，TDD是一个很好的思维框架，如果非要教人一个思维框架的话就得教TDD，
+<pre class='green'><code>站在教学的角度来讲，我还是很推崇TDD的，TDD是一个很好的思维框架，如果非要教人一个思维框架的话就得教TDD，
 不然人会瞎碰，不思考，不总结，不结果导向，靠灵感编程，凭直觉设计，撞大运修bug。最糟糕的是因为没有好的习惯
 会接二连三的发生灵异现象。同一道题，习惯不好的人做，总能做出无数种新问题来。而且问题套问题，给他解决要浪费
 我半天时间，如果他学会了TDD出的错只在最近一个引入的变化里，就好纠正多了。甚至他自己都能纠正。
@@ -145,7 +145,7 @@
 
 <p>博主很是赞同该同事的看法，并且作者认为：</p>
 
-<pre><code>tdd重要的不是测试代码本身，是解决问题的思维，也许可以泛化，哪怕没测试，如果能够做到快速验证，反馈，价值的
+<pre class='green'><code>tdd重要的不是测试代码本身，是解决问题的思维，也许可以泛化，哪怕没测试，如果能够做到快速验证，反馈，价值的
 稳定叠加，有足够信心，也未尝不可。也许你会说测试可以cover功能，那么如果只有这一点的话，我更喜欢BDD
 (behavior-driven development)，因为这具有用户最终的使用价值。如果你说快速定位bug，我们我更倾向于BDD
 (bug-driven development，自创的，即时每天出现测试bug，在加一个单元测试cover，覆盖)。这写都是TDD的结果导致的好处所在，而价值反馈思维才是实现TDD背后原理。
@@ -208,55 +208,98 @@ TDD驱使我们以结果导向，使得我们简单设计(并不是无设计)，
 
 <h4>构造注入</h4>
 
-<pre><code>public class OrderServiceImpl implements OrderService {
-    private ItemService itemService;
-    private PriceService priceService;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">,</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    @Inject
-    public OrderServiceImpl(ItemService itemService, PriceService priceService) {
-        this.itemService = itemService;
-        this.priceService = priceService;
-    }
-
-    ...
-}
-</code></pre>
 
 <h4>属性注入</h4>
 
-<pre><code>public class OrderServiceImpl implements OrderService {
-    private ItemService itemService;
-    private PriceService priceService;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">,</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    @Inject
-    public void init(ItemService itemService, PriceService priceService) {
-        this.itemService = itemService;
-        this.priceService = priceService;
-    }
-
-    ...
-}
-</code></pre>
 
 <h4>函数(setter)注入</h4>
 
-<pre><code>public class OrderServiceImpl implements OrderService {
-    private ItemService itemService;
-    private PriceService priceService;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setItemService</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPriceService</span><span class="o">(</span><span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    @Inject
-    public void setItemService(ItemService itemService) {
-        this.itemService = itemService;
-    }
-
-    @Inject
-    public void setPriceService(PriceService priceService) {
-        this.priceService = priceService;
-    } 
-
-    ...
-}
-</code></pre>
 
 <h2>Module依赖注册</h2>
 
@@ -276,98 +319,173 @@ TDD驱使我们以结果导向，使得我们简单设计(并不是无设计)，
 
 <p>对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：</p>
 
-<pre><code>public void configure() {
-    final Binder binder = binder();
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="n">Binder</span> <span class="n">binder</span> <span class="o">=</span> <span class="n">binder</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//TODO: bind named instance;</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Inject</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
+</span><span class='line'>                                                   <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    //TODO: bind named instance;
-    binder.bind(NamedService.class).annotatedWith(Names.named("impl1")).to(NamedServiceImpl1.class);
-    binder.bind(NamedService.class).annotatedWith(Names.named("impl2")).to(NamedServiceImpl2.class);
-}
-
-@Inject
-public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
-                                                 @Named("impl2") NamedService nameService2) {
-}
-</code></pre>
 
 <p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
 
-<pre><code>@Provides
-public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
-                                             @Named("impl2") NamedService nameService2) {
-    final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
-    list.add(nameService1);
-    list.add(nameService2);
-    return list;
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Provides</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
+</span><span class='line'>                                             <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService1</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService2</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Guice实例</h2>
 
 <p>下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
 
-<pre><code>package com.github.greengerong.app;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">greengerong</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * ***************************************</span>
+</span><span class='line'><span class="cm"> * *</span>
+</span><span class='line'><span class="cm"> * Auth: green gerong                     *</span>
+</span><span class='line'><span class="cm"> * Date: 2014                             *</span>
+</span><span class='line'><span class="cm"> * blog: http://greengerong.github.io/    *</span>
+</span><span class='line'><span class="cm"> * github: https://github.com/greengerong *</span>
+</span><span class='line'><span class="cm"> * *</span>
+</span><span class='line'><span class="cm"> * ****************************************</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppModule</span> <span class="kd">extends</span> <span class="n">AbstractModule</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">AppModule</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">AppModule</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">bundleContext</span> <span class="o">=</span> <span class="n">bundleContext</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;enter app module with: %s&quot;</span><span class="o">,</span> <span class="n">bundleContext</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="n">Binder</span> <span class="n">binder</span> <span class="o">=</span> <span class="n">binder</span><span class="o">();</span>
+</span><span class='line'>        <span class="c1">//TODO: bind interface</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">ItemService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">ItemServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">SINGLETON</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">OrderService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">OrderServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">SINGLETON</span><span class="o">);</span>
+</span><span class='line'>        <span class="c1">//TODO: bind self class(without interface or base class)</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">PriceService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">Scopes</span><span class="o">.</span><span class="na">SINGLETON</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//TODO: bind instance not class.</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">RuntimeService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">toInstance</span><span class="o">(</span><span class="k">new</span> <span class="n">RuntimeService</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//TODO: bind named instance;</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Provides</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
+</span><span class='line'>                                                 <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService1</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService2</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-/**
- * ***************************************
- * *
- * Auth: green gerong                     *
- * Date: 2014                             *
- * blog: http://greengerong.github.io/    *
- * github: https://github.com/greengerong *
- * *
- * ****************************************
- */
-public class AppModule extends AbstractModule {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppModule.class);
-    private final BundleContext bundleContext;
-
-    public AppModule(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-        LOGGER.info(String.format("enter app module with: %s", bundleContext));
-    }
-
-    @Override
-    public void configure() {
-        final Binder binder = binder();
-        //TODO: bind interface
-        binder.bind(ItemService.class).to(ItemServiceImpl.class).in(SINGLETON);
-        binder.bind(OrderService.class).to(OrderServiceImpl.class).in(SINGLETON);
-        //TODO: bind self class(without interface or base class)
-        binder.bind(PriceService.class).in(Scopes.SINGLETON);
-
-
-        //TODO: bind instance not class.
-        binder.bind(RuntimeService.class).toInstance(new RuntimeService());
-
-        //TODO: bind named instance;
-        binder.bind(NamedService.class).annotatedWith(Names.named("impl1")).to(NamedServiceImpl1.class);
-        binder.bind(NamedService.class).annotatedWith(Names.named("impl2")).to(NamedServiceImpl2.class);
-    }
-
-    @Provides
-    public List&lt;NamedService&gt; getAllItemServices(@Named("impl1") NamedService nameService1,
-                                                 @Named("impl2") NamedService nameService2) {
-        final ArrayList&lt;NamedService&gt; list = new ArrayList&lt;NamedService&gt;();
-        list.add(nameService1);
-        list.add(nameService2);
-        return list;
-    }
-}
-</code></pre>
 
 <h2>Guice的使用</h2>
 
 <p>对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：</p>
 
-<pre><code>Injector injector = Guice.createInjector(new AppModule(bundleContext));
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">(</span><span class="k">new</span> <span class="n">AppModule</span><span class="o">(</span><span class="n">bundleContext</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>这里可以传入多个module，我们可以利用module分离领域依赖。</p>
 
 <p>Guice api方法：</p>
 
-<pre><code>public static Injector createInjector(Module... modules) 
+<p> &#8220;`java</p>
+
+<pre class='green'><code>public static Injector createInjector(Module... modules) 
 
 public static Injector createInjector(Iterable&lt;? extends Module&gt; modules) 
 
@@ -375,6 +493,8 @@ public static Injector createInjector(Stage stage, Module... modules)
 
 public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&gt; modules) 
 </code></pre>
+
+<p>&#8220;`</p>
 
 <p>Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。</p>
 
@@ -431,14 +551,22 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 
 <p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
 
-<pre><code>new Object() {
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="k">new</span> <span class="nf">Object</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Subscribe</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Integer</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%d from int%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    @Subscribe
-    public void lister(Integer integer) {
-        System.out.printf("%d from int%n", integer);
-    }
-}
-</code></pre>
 
 <p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
 
@@ -446,28 +574,50 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 
 <p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
 
-<pre><code>final EventBus eventBus = new EventBus();
-eventBus.register(new Object() {
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">EventBus</span> <span class="n">eventBus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventBus</span><span class="o">();</span>
+</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Subscribe</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Integer</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from int%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Subscribe</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Number</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from Number%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Subscribe</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Long</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from long%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    @Subscribe
-    public void lister(Integer integer) {
-        System.out.printf("%s from int%n", integer);
-    }
-
-    @Subscribe
-    public void lister(Number integer) {
-        System.out.printf("%s from Number%n", integer);
-    }
-
-    @Subscribe
-    public void lister(Long integer) {
-        System.out.printf("%s from long%n", integer);
-    }
-});
-
-eventBus.post(1);
-eventBus.post(1L);
-</code></pre>
 
 <p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
 
@@ -477,17 +627,28 @@ eventBus.post(1L);
 
 <p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
 
-<pre><code>final EventBus eventBus = new EventBus();
-eventBus.register(new Object() {
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">EventBus</span> <span class="n">eventBus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventBus</span><span class="o">();</span>
+</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Subscribe</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">DeadEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s=%s from dead events%n&quot;</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="na">getSource</span><span class="o">().</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">event</span><span class="o">.</span><span class="na">getEvent</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    @Subscribe
-    public void lister(DeadEvent event) {
-        System.out.printf("%s=%s from dead events%n", event.getSource().getClass(), event.getEvent());
-    }
-});
-
-eventBus.post(new Object());
-</code></pre>
 
 <p>更多Guava博文：</p>
 
@@ -540,86 +701,142 @@ eventBus.post(new Object());
 
 <p>对ListenableFuture添加回调函数：</p>
 
-<pre><code>Futures.addCallback(ListenableFuture&lt;V&gt;, FutureCallback&lt;V&gt;, Executor)
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">ListenableFuture</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;,</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;,</span> <span class="n">Executor</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>其中 FutureCallback<V>是一个包含onSuccess(V),onFailure(Throwable)的接口。</p>
 
 <p>使用如：</p>
 
-<pre><code>Futures.addCallback(ListenableFuture, new FutureCallback&lt;Object&gt;() {
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">ListenableFuture</span><span class="o">,</span> <span class="k">new</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onSuccess with: %s%n&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">thrown</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onFailure %s%n&quot;</span><span class="o">,</span> <span class="n">thrown</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    public void onSuccess(Object result) {
-        System.out.printf("onSuccess with: %s%n", result);
-    }
-
-    public void onFailure(Throwable thrown) {
-        System.out.printf("onFailure %s%n", thrown.getMessage());
-    }
-});
-</code></pre>
 
 <p>同时Guava中Futures对于Future扩展还有：</p>
 
-<p>transform：对于ListenableFuture的返回值进行转换。</p>
+<ul>
+<li><p>transform：对于ListenableFuture的返回值进行转换。</p></li>
+<li><p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p></li>
+<li><p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p></li>
+<li><p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p></li>
+<li><p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p></li>
+<li><p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p></li>
+</ul>
 
-<p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p>
-
-<p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p>
-
-<p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p>
-
-<p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p>
-
-<p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p>
 
 <p>下边是一个对于Future的测试demo：</p>
 
-<pre><code>@Test
-public void should_test_furture() throws Exception {
-    ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_test_furture</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">ListeningExecutorService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">MoreExecutors</span><span class="o">.</span><span class="na">listeningDecorator</span><span class="o">(</span><span class="n">Executors</span><span class="o">.</span><span class="na">newFixedThreadPool</span><span class="o">(</span><span class="mi">10</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ListenableFuture</span> <span class="n">future1</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;call future 1.&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ListenableFuture</span> <span class="n">future2</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;call future 2.&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="c1">//       throw new RuntimeException(&quot;----call future 2.&quot;);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ListenableFuture</span> <span class="n">allFutures</span> <span class="o">=</span> <span class="n">Futures</span><span class="o">.</span><span class="na">allAsList</span><span class="o">(</span><span class="n">future1</span><span class="o">,</span> <span class="n">future2</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ListenableFuture</span> <span class="n">transform</span> <span class="o">=</span> <span class="n">Futures</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">allFutures</span><span class="o">,</span> <span class="k">new</span> <span class="n">AsyncFunction</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;,</span> <span class="n">Boolean</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">ListenableFuture</span> <span class="nf">apply</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">Futures</span><span class="o">.</span><span class="na">immediateFuture</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;success future:%d&quot;</span><span class="o">,</span> <span class="n">results</span><span class="o">.</span><span class="na">size</span><span class="o">()));</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">transform</span><span class="o">,</span> <span class="k">new</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;success with: %s%n&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">thrown</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onFailure%s%n&quot;</span><span class="o">,</span> <span class="n">thrown</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">transform</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    ListenableFuture future1 = service.submit(new Callable&lt;Integer&gt;() {
-        public Integer call() throws InterruptedException {
-            Thread.sleep(1000);
-            System.out.println("call future 1.");
-            return 1;
-        }
-    });
-
-    ListenableFuture future2 = service.submit(new Callable&lt;Integer&gt;() {
-        public Integer call() throws InterruptedException {
-            Thread.sleep(1000);
-            System.out.println("call future 2.");
-    //       throw new RuntimeException("----call future 2.");
-            return 2;
-        }
-    });
-
-    final ListenableFuture allFutures = Futures.allAsList(future1, future2);
-
-    final ListenableFuture transform = Futures.transform(allFutures, new AsyncFunction&lt;List&lt;Integer&gt;, Boolean&gt;() {
-        @Override
-        public ListenableFuture apply(List&lt;Integer&gt; results) throws Exception {
-            return Futures.immediateFuture(String.format("success future:%d", results.size()));
-        }
-    });
-
-    Futures.addCallback(transform, new FutureCallback&lt;Object&gt;() {
-
-        public void onSuccess(Object result) {
-            System.out.println(result.getClass());
-            System.out.printf("success with: %s%n", result);
-        }
-
-        public void onFailure(Throwable thrown) {
-            System.out.printf("onFailure%s%n", thrown.getMessage());
-        }
-    });
-
-    System.out.println(transform.get());
-}
-</code></pre>
 
 <p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
 
@@ -674,76 +891,130 @@ public void should_test_furture() throws Exception {
 
 <p>安装nightmare：</p>
 
-<pre><code>npm install nightmare
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='sh'><span class='line'>npm install nightmare
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>下面我们对比与远程phantomjs的对比：</p>
 
 <p>原phantomjs的代码：</p>
 
-<pre><code>phantom.create(function (ph) {
-  ph.createPage(function (page) {
-    page.open('http://yahoo.com', function (status) {
-      page.evaluate(function () {
-        var el =
-          document.querySelector('input[title="Search"]');
-        el.value = 'github nightmare';
-      }, function (result) {
-        page.evaluate(function () {
-          var el = document.querySelector('.searchsubmit');
-          var event = document.createEvent('MouseEvent');
-          event.initEvent('click', true, false);
-          el.dispatchEvent(event);
-        }, function (result) {
-          ph.exit();
-        });
-      });
-    });
-  });
-});
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">phantom</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">ph</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">ph</span><span class="p">.</span><span class="nx">createPage</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;http://yahoo.com&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span>
+</span><span class='line'>          <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;input[title=&quot;Search&quot;]&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">el</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">&#39;github nightmare&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;.searchsubmit&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">event</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">(</span><span class="s1">&#39;MouseEvent&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">event</span><span class="p">.</span><span class="nx">initEvent</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">el</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">ph</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>nightmare代码：</p>
 
-<pre><code>new Nightmare()
-  .goto('http://yahoo.com')
-  .type('input[title="Search"]', 'github nightmare')
-  .click('.searchsubmit')
-  .run();
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="k">new</span> <span class="nx">Nightmare</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="s1">&#39;http://yahoo.com&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;input[title=&quot;Search&quot;]&#39;</span><span class="p">,</span> <span class="s1">&#39;github nightmare&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="s1">&#39;.searchsubmit&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>一切显而易见，不用多说。</p>
 
 <p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：</p>
 
-<pre><code>/**
- * Login to a Swiftly account.
- *
- * @param {String} email
- * @param {String} password
- */
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Login to a Swiftly account.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * @param {String} email</span>
+</span><span class='line'><span class="cm"> * @param {String} password</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">exports</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nightmare</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">nightmare</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">viewport</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="s1">&#39;https://swiftly.com/login&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;#username&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;#password&#39;</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="s1">&#39;.button--primary&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">wait</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
 
-exports.login = function(email, password){
-  return function(nightmare) {
-    nightmare
-      .viewport(800, 1600)
-      .goto('https://swiftly.com/login')
-        .type('#username', email)
-        .type('#password', password)
-        .click('.button--primary')
-      .wait();
-  };
-};
-</code></pre>
 
 <p>使用代码很简单：</p>
 
-<pre><code>var Swiftly = require('nightmare-swiftly');
-new Nightmare()
-  .use(Swiftly.login(email, password))
-  .use(Swiftly.task(instructions, uploads, path))
-  .run();
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">Swiftly</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nightmare-swiftly&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">new</span> <span class="nx">Nightmare</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Swiftly</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Swiftly</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="nx">instructions</span><span class="p">,</span> <span class="nx">uploads</span><span class="p">,</span> <span class="nx">path</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -790,7 +1061,7 @@ new Nightmare()
 
 <p>我们先看一个关于class-base的实例：</p>
 
-<pre><code>class Greeter {
+<pre class='green'><code>class Greeter {
     greeting: string;
     constructor(message: string) {
         this.greeting = message;
@@ -813,7 +1084,7 @@ var greeter = new Greeter("world");
 
 <p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     name:string;
     constructor(theName: string) { this.name = theName; }
     move(meters: number) {
@@ -856,7 +1127,7 @@ tom.move(34);
 
 <p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     private name:string;
     constructor(theName: string) { this.name = theName; }
     move(meters: number) {
@@ -871,7 +1142,7 @@ tom.move(34);
 
 <p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     private name:stringParameter properties;
     constructor(theName: string) { this.name = theName; }
 }
@@ -899,7 +1170,7 @@ animal = employee; //error: Animal and Employee are not compatible
 
 <p>访问限制关键字public&#8217;和&#8217;private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
 
-<pre><code>class Animal {
+<pre class='green'><code>class Animal {
     constructor(private name: string) { }
     move(meters: number) {
         alert(this.name + " moved " + meters + "m.");
@@ -915,7 +1186,7 @@ animal = employee; //error: Animal and Employee are not compatible
 
 <p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
 
-<pre><code>class Employee {
+<pre class='green'><code>class Employee {
     fullName: string;
 }
 
@@ -930,7 +1201,7 @@ if (employee.fullName) {
 
 <p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
 
-<pre><code>var passcode = "secret passcode";
+<pre class='green'><code>var passcode = "secret passcode";
 
 class Employee {
     private _fullName: string;
@@ -964,7 +1235,7 @@ if (employee.fullName) {
 
 <p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用&#8217;static&#8217; 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的&#8217;this.&lsquo;.</p>
 
-<pre><code>class Grid {
+<pre class='green'><code>class Grid {
     static origin = {x: 0, y: 0};
     calculateDistanceFromOrigin(point: {x: number; y: number;}) {
         var xDist = (point.x - Grid.origin.x);
@@ -987,7 +1258,7 @@ alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
 
 <p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
 
-<pre><code>class Greeter {
+<pre class='green'><code>class Greeter {
     greeting: string;
     constructor(message: string) {
         this.greeting = message;
@@ -1006,7 +1277,7 @@ alert(greeter.greet());
 
 <p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
 
-<pre><code>var Greeter = (function () {
+<pre class='green'><code>var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
     }
@@ -1025,7 +1296,7 @@ alert(greeter.greet());
 
 <p>让我们对上例稍微做一些修改：</p>
 
-<pre><code>class Greeter {
+<pre class='green'><code>class Greeter {
     static standardGreeting = "Hello, there";
     greeting: string;
     greet() {
@@ -1056,7 +1327,7 @@ alert(greeter2.greet());
 
 <p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
 
-<pre><code>class Point {
+<pre class='green'><code>class Point {
     x: number;
     y: number;
 }
@@ -1115,7 +1386,7 @@ var point3d: Point3d = {x: 1, y: 2, z: 3};
 
 <p>理解interface的最好办法，就是写个hello world程序：</p>
 
-<pre><code>function printLabel(labelledObj: {label: string}) {
+<pre class='green'><code>function printLabel(labelledObj: {label: string}) {
   console.log(labelledObj.label);
 }
 
@@ -1127,7 +1398,7 @@ printLabel(myObj);
 
 <p>接下来我们可以进一步简化，声明一个interface来描述一个具有label字符串属性的对象：</p>
 
-<pre><code>interface LabelledValue {
+<pre class='green'><code>interface LabelledValue {
   label: string;
 }
 
@@ -1150,7 +1421,7 @@ printLabel(myObj);
   width?: number;
 }</p>
 
-<pre><code>function createSquare(config: SquareConfig): {color: string; area: number} {
+<pre class='green'><code>function createSquare(config: SquareConfig): {color: string; area: number} {
   var newSquare = {color: "white", area: 100};
   if (config.color) {
     newSquare.color = config.color;
@@ -1168,7 +1439,7 @@ var mySquare = createSquare({color: "black"});
 
 <p>interface的可选属性可以限制那些属性是可用的，这部分能得到类型检查，以及智能感知。例如下例：</p>
 
-<pre><code>interface SquareConfig {
+<pre class='green'><code>interface SquareConfig {
   color?: string;
   width?: number;
 }
@@ -1193,14 +1464,14 @@ var mySquare = createSquare({color: "black"});
 
 <p>下面是定义的interface signature是一个接收两个string的输入参数，并返回boolean的函数类型：</p>
 
-<pre><code>interface SearchFunc {
+<pre class='green'><code>interface SearchFunc {
   (source: string, subString: string): boolean;
 }
 </code></pre>
 
 <p>我也可以使用函数类型的interface去描述我们的数据。下面演示如何将一个相同类型的函数赋值给interface：</p>
 
-<pre><code>var mySearch: SearchFunc;
+<pre class='green'><code>var mySearch: SearchFunc;
 mySearch = function(source: string, subString: string) {
   var result = source.search(subString);
   if (result == -1) {
@@ -1214,7 +1485,7 @@ mySearch = function(source: string, subString: string) {
 
 <p>对于函数类型的interface，并不需要参数名的对应相同，如下例：</p>
 
-<pre><code>var mySearch: SearchFunc;
+<pre class='green'><code>var mySearch: SearchFunc;
 mySearch = function(src: string, sub: string) {
   var result = src.search(sub);
   if (result == -1) {
@@ -1232,7 +1503,7 @@ mySearch = function(src: string, sub: string) {
 
 <p>类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个&#8217;index&#8217;类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：</p>
 
-<pre><code>interface StringArray {
+<pre class='green'><code>interface StringArray {
   [index: number]: string;
 }
 
@@ -1244,7 +1515,7 @@ myArray = ["Bob", "Fred"]
 
 <p>index的类型签名可以描述常用的数组或者是‘dictionary’（字典序）模式，这点会强制所有的属性都需要和其返回值匹配。下例中length属性不匹配这点，所以类型检查会给出一个错误：</p>
 
-<pre><code>interface Dictionary {
+<pre class='green'><code>interface Dictionary {
   [index: string]: string;
   length: number;    // error, the type of 'length' is not a subtype of the indexer
 } 
@@ -1256,7 +1527,7 @@ myArray = ["Bob", "Fred"]
 
 <p>在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：</p>
 
-<pre><code>interface ClockInterface {
+<pre class='green'><code>interface ClockInterface {
     currentTime: Date;
 }
 
@@ -1268,7 +1539,7 @@ class Clock implements ClockInterface  {
 
 <p>同样也可以在interface中实现函数类型的契约，并要求clas实现此函数。如下例的‘setTime’函数：</p>
 
-<pre><code>interface ClockInterface {
+<pre class='green'><code>interface ClockInterface {
     currentTime: Date;
     setTime(d: Date);
 }
@@ -1288,7 +1559,7 @@ class Clock implements ClockInterface  {
 
 <p>当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。</p>
 
-<pre><code>interface ClockInterface {
+<pre class='green'><code>interface ClockInterface {
     new (hour: number, minute: number);
 }
 
@@ -1302,7 +1573,7 @@ class Clock implements ClockInterface  {
 
 <p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
 
-<pre><code>interface ClockStatic {
+<pre class='green'><code>interface ClockStatic {
     new (hour: number, minute: number);
 }
 
@@ -1319,7 +1590,7 @@ var newClock = new cs(7, 30);
 
 <p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
 
-<pre><code>interface Shape {
+<pre class='green'><code>interface Shape {
     color: string;
 }
 
@@ -1334,7 +1605,7 @@ square.sideLength = 10;
 
 <p>一个interface可以同时集成多个interface，实现多个接口成员的合并。</p>
 
-<pre><code>interface Shape {
+<pre class='green'><code>interface Shape {
     color: string;
 }
 
@@ -1358,7 +1629,7 @@ square.penWidth = 5.0;
 
 <p>下面是一个混合式描述函数，对象以及额外属性的实例：</p>
 
-<pre><code>interface Counter {
+<pre class='green'><code>interface Counter {
     (start: number): string;
     interval: number;
     reset(): void;
@@ -1415,21 +1686,21 @@ c.interval = 5.0;
 
 <p>在JavaScript和TypeScript中也具有最基本的逻辑断言值true/false，采用&#8217;boolean&#8217;类型。</p>
 
-<pre><code>var isDone: boolean = false;
+<pre class='green'><code>var isDone: boolean = false;
 </code></pre>
 
 <h4>Number</h4>
 
 <p>如JavaScript，TypeScript所有的数值类型采用浮点型计数，其类型为‘number’。</p>
 
-<pre><code>var height: number = 6;
+<pre class='green'><code>var height: number = 6;
 </code></pre>
 
 <h4>String</h4>
 
 <p>在webpages的JavaScript或者服务端的应用程序最基本的功能就是处理文本数据。在其他语言中大多使用&#8217;string&#8217;去代表文本数据类型。TypeScript和JavaScript一样也是用双引号(&ldquo;)或者单引号包裹文本数据。</p>
 
-<pre><code>var name: string = "bob";
+<pre class='green'><code>var name: string = "bob";
     name = 'smith';
 </code></pre>
 
@@ -1439,37 +1710,37 @@ c.interval = 5.0;
 
 <p>第一种方式，你可以在数据类型之后带上&#8217;[]&lsquo;:</p>
 
-<pre><code>var list:number[] = [1, 2, 3];
+<pre class='green'><code>var list:number[] = [1, 2, 3];
 </code></pre>
 
 <p>第二种方式，也可以采用泛型的数组类型：</p>
 
-<pre><code>var list:Array&lt;number&gt; = [1, 2, 3];
+<pre class='green'><code>var list:Array&lt;number&gt; = [1, 2, 3];
 </code></pre>
 
 <h4>Enum</h4>
 
 <p>TypeScript为JavaScript新增了枚举这种标准的集合数据类型。和在c#中一样，枚举是为一组数值类型一组更友好的名称。</p>
 
-<pre><code>enum Color {Red, Green, Blue};
+<pre class='green'><code>enum Color {Red, Green, Blue};
 var c: Color = Color.Green;
 </code></pre>
 
 <p>默认枚举类型其实数值从0开始，你可以可用手动设置某一个成员的数值。例如我们可以将上文的起始值定为1：</p>
 
-<pre><code>enum Color {Red = 1, Green, Blue};
+<pre class='green'><code>enum Color {Red = 1, Green, Blue};
 var c: Color = Color.Green;
 </code></pre>
 
 <p>或是手动设置全部的枚举成员：</p>
 
-<pre><code>enum Color {Red = 1, Green = 2, Blue = 4};
+<pre class='green'><code>enum Color {Red = 1, Green = 2, Blue = 4};
 var c: Color = Color.Green;
 </code></pre>
 
 <p>枚举类型可以和容易从一个数值类型获取对应枚举名称。例如我们有一个数值类型2，但不确认将匹配哪一个枚举成员，那么我们可以如下使用：</p>
 
-<pre><code>enum Color {Red = 1, Green, Blue};
+<pre class='green'><code>enum Color {Red = 1, Green, Blue};
 var colorName: string = Color[2];
 
 alert(colorName);
@@ -1479,7 +1750,7 @@ alert(colorName);
 
 <p>有时我们需要描述一些我们不知道的什么写进应用的动态数据类型，这可能来自第三方用户或者lib。在这里我们希望该数据不要加入TypeScript的类型检查,是的此值通过编译时检查。为此我们可以采用‘any’类型标注：</p>
 
-<pre><code>var notSure: any = 4;
+<pre class='green'><code>var notSure: any = 4;
 notSure = "maybe a string instead";
 notSure = false; // okay, definitely a boolean
 </code></pre>
@@ -1488,7 +1759,7 @@ notSure = false; // okay, definitely a boolean
 
 <p>&lsquo;any&#8217;类型对于我们只知道部分数据类型，但是不是所有的数据类型的类型系统。如一个混合了多种类型的集合数组。</p>
 
-<pre><code>var list:any[] = [1, true, "free"];
+<pre class='green'><code>var list:any[] = [1, true, "free"];
 
 list[1] = 100;
 </code></pre>
@@ -1497,7 +1768,7 @@ list[1] = 100;
 
 <p>和‘any’相对的数据类型则是’Void‘，它代表没有任何数据类型。我们常用的一个方法没有任何返回值：</p>
 
-<pre><code>function warnUser(): void {
+<pre class='green'><code>function warnUser(): void {
     alert("This is my warning message");
 }
 </code></pre>
@@ -1543,14 +1814,14 @@ list[1] = 100;
 
 <p>今天记录一个在安装vsftpd的时候遇见错误：</p>
 
-<pre><code>500 OOPS: vsftpd: refusing to run with writable root inside chroot ()
+<pre class='green'><code>500 OOPS: vsftpd: refusing to run with writable root inside chroot ()
 </code></pre>
 
 <p>在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制，而这在最近的更新里是不被允许的。要修复这个错误，可以用命令chmod a-w /home/$user去除用户根目录的写权限,或者在vsftpd。conf配置允许writeable。</p>
 
 <p>设置允许writeable为：</p>
 
-<pre><code>allow_writeable_chroot=YES
+<pre class='green'><code>allow_writeable_chroot=YES
 </code></pre>
 
 <p>最简单的方式就是允许writeable。</p>
@@ -1596,7 +1867,7 @@ list[1] = 100;
 
 <p>回到Mockito的参数Matcher，Mockito给我们提供了ArgumentMatcher，以供我们来扩展Matcher。下面假设一个增加用户积分的场景：</p>
 
-<pre><code>     public class Game {
+<pre class='green'><code>     public class Game {
         private String type;
         private int rate;
 
@@ -1626,7 +1897,7 @@ list[1] = 100;
 
 <p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
 
-<pre><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+<pre class='green'><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
     private Object value;
     private Function&lt;T, Object&gt; function;
 
@@ -1648,7 +1919,7 @@ list[1] = 100;
 
 <p>所以我们的测试可以如下：</p>
 
-<pre><code>    @Test
+<pre class='green'><code>    @Test
     public void should_run_customer_mockito_matcher() throws Exception {
 
         final GameDao gameDao = mock(GameDao.class);

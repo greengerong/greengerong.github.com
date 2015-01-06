@@ -103,7 +103,7 @@
 
 <p>程序：</p>
 
-<pre><code>using System; 
+<pre class='green'><code>using System; 
 using System.Collections.Generic; 
 using System.Linq; 
 using System.Text; 
@@ -187,7 +187,7 @@ namespace ConsoleApplication1
 <p>&nbsp;wpf端程序：主要需要在MainWindow中loaded事件订阅消息监听：这里需要System.Windows.Interop.HwndSource的AddHock方法注册
 程序：</p>
 
-<pre><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+<pre class='green'><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
          { 
 
              if (msg == 0x004A) 
@@ -315,7 +315,7 @@ namespace ConsoleApplication1
 
 <p>好了，也晚了。附我的测试代码，：</p>
 
-<pre><code>&lt;html&gt; 
+<pre class='green'><code>&lt;html&gt; 
   &lt;head&gt; 
   &lt;/head&gt; 
   &lt;body&gt; 
@@ -592,7 +592,7 @@ http://www.CodeHighlighter.com/
 
 <p>1：CodeDom Code:</p>
 
-<pre><code>using System; 
+<pre class='green'><code>using System; 
 using System.Text; 
 using System.CodeDom; 
 using System.IO;
@@ -661,7 +661,7 @@ namespace RazorDemo
 
 <p>2:T4 Code：</p>
 
-<pre><code>&lt;#@ template language="C#" #&gt;
+<pre class='green'><code>&lt;#@ template language="C#" #&gt;
 
 using System; 
 namespace WolfT4 {   
@@ -753,7 +753,7 @@ namespace WolfT4 {
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面讲的都是一些其主页上面的例子，所以请大家别拍砖。别后面想到有些实际意义的例子在写个具体的运用例子吧。</p>
 
-<pre><code>     public static class Razor 
+<pre class='green'><code>     public static class Razor 
     { 
         public static string Parse(string template, string name = null); 
         public static string Parse&lt;T&gt;(string template, T model, string name = null); 
@@ -767,7 +767,7 @@ namespace WolfT4 {
 
 <p>1：先来个简单的Template：</p>
 
-<pre><code>static void Main(string[] args) 
+<pre class='green'><code>static void Main(string[] args) 
            { 
                string template = "Hello @Model.Name! Welcome to Razor!"; 
                string result = Razor.Parse(template, new { Name = "World" });         
@@ -784,7 +784,7 @@ namespace WolfT4 {
 
 <p>2：内部嵌套方法：</p>
 
-<pre><code>string template = @"@helper MyMethod(string name) {
+<pre class='green'><code>string template = @"@helper MyMethod(string name) {
 
     Hello @name
 
@@ -803,7 +803,7 @@ string result = Razor.Parse(template, new { Name = "World" });
 
 <p>还是官方的例子来看看，</p>
 
-<pre><code>static void Main(string[] args) 
+<pre class='green'><code>static void Main(string[] args) 
     { 
         Razor.SetTemplateBaseType(typeof(MyCustomTemplateBase&lt;&gt;));
 
@@ -878,13 +878,13 @@ public string Parse&lt;T&gt;(string template, T model, string name = null，Acti
 如果想去掉自动添加&lt;P&gt;的代码就可以在这里设置
 默认是</p>
 
-<pre><code>FCKConfig.EnterMode = 'p' ;   // p | div | br
+<pre class='green'><code>FCKConfig.EnterMode = 'p' ;   // p | div | br
 FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 </code></pre>
 
 <p>改成</p>
 
-<pre><code>FCKConfig.EnterMode = '' ;   // p | div | br
+<pre class='green'><code>FCKConfig.EnterMode = '' ;   // p | div | br
 FCKConfig.ShiftEnterMode = 'br' ; // p | div | br   
 </code></pre>
 
@@ -933,7 +933,7 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
 <p>&nbsp;&nbsp;&nbsp; 按时间来说我接触的首先是c这门古老的语言，也是他带着我走上了这条程序之路。在刚学完C的时候我一个非科班的师弟（当时大一下期）在校程序大赛中拿的大奖，树立的我软件的梦想，虽然在毕业后有些徘徊，但是在学生期间对我的程序学习之路是很大的鼓励，当时我还学习的C的一些高级编程Socket等（现在已忘的差不多了），还参加了学校的单片机创新课题用C Show了一下，哈哈。下面是我当时的最后综合实验程序-多种排序集合：</p>
 
-<pre><code> #include&lt;stdio.h&gt; 
+<pre class='green'><code> #include&lt;stdio.h&gt; 
         #define M  20
 
         void disp1(int *a,int n) 
@@ -1097,7 +1097,7 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
 <p>&nbsp; 接着我学习的汇编这门更古老的语言的，个人感觉汇编若只是说语法和学习，并不难。在这里也贴出我学习时候的一个打字游戏的小Code.</p>
 
-<pre><code>    ;;;;任意掉落字符,按空格和ESC暂停并再ESC结束,空格继续;; 
+<pre class='green'><code>    ;;;;任意掉落字符,按空格和ESC暂停并再ESC结束,空格继续;; 
     .model small 
     clear_screen macro op1,op2,op3,op4 ;清屏宏定义   
     push ax 
@@ -1479,7 +1479,7 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
   <div class="entry-content"><p>&nbsp; 这里只是几个f#简单的算法应用，请各位别怕砖。</p>
 
-<pre><code>    代码
+<pre class='green'><code>    代码
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 // Learn more about F# at http://fsharp.net
 
@@ -1592,7 +1592,7 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 在这里我写了一个简单异常输出信息的扩展类。
 代码具体如下：&nbsp;&nbsp;&nbsp;</p>
 
-<pre><code>     代码 
+<pre class='green'><code>     代码 
 
     Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;public class OutPutExceptionEx
         {

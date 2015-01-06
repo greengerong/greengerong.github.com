@@ -105,7 +105,7 @@
 <p>&nbsp;&nbsp;&nbsp; Javascript中鸭子型的实现：</p>
 
 <div class="cnblogs_code">
-<pre><span style="color: #0000ff;">function</span><span style="color: #000000;"> log(logger){
+<pre class='green'><span style="color: #0000ff;">function</span><span style="color: #000000;"> log(logger){
 
        logger.log(&ldquo;hello world&rdquo;)；
 
@@ -128,7 +128,7 @@ log({log:</span><span style="color: #0000ff;">function</span><span style="color:
 <p>我们还可以显示的定义在消费者方法中，形如&nbsp;</p>
 
 <div class="cnblogs_code">
-<pre>func SomeFunction(logger <span style="color: #0000ff;">interface</span>{Log(<span style="color: #0000ff;">string</span><span style="color: #000000;">)}){
+<pre class='green'>func SomeFunction(logger <span style="color: #0000ff;">interface</span>{Log(<span style="color: #0000ff;">string</span><span style="color: #000000;">)}){
 
     logger.Log(&ldquo;hello world, I am go lang&rdquo;).
 
@@ -141,7 +141,7 @@ log({log:</span><span style="color: #0000ff;">function</span><span style="color:
 <p>实现提供者：</p>
 
 <div class="cnblogs_code">
-<pre>type S <span style="color: #0000ff;">struct</span><span style="color: #000000;"> { }
+<pre class='green'>type S <span style="color: #0000ff;">struct</span><span style="color: #000000;"> { }
 
 func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="color: #0000ff;">string</span><span style="color: #000000;">) {
 
@@ -160,7 +160,7 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
 <p>Go还有一种叫做空接口，能够容纳万物的东西;</p>
 
 <div class="cnblogs_code">
-<pre>func log(any <span style="color: #0000ff;">interface</span>{}) <span style="color: #0000ff;">int</span><span style="color: #000000;"> {
+<pre class='green'>func log(any <span style="color: #0000ff;">interface</span>{}) <span style="color: #0000ff;">int</span><span style="color: #000000;"> {
 
     </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> any.(I).Get()
 

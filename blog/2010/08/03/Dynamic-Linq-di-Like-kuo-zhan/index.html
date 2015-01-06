@@ -98,7 +98,7 @@
 
 <p>&nbsp;&nbsp;&nbsp; 赶快进入主题-Code:</p>
 
-<pre><code> /// &lt;summary&gt;
+<pre class='green'><code> /// &lt;summary&gt;
       /// 操作like帮助类，自己增加的；
       /// &lt;/summary&gt;
       public class DynamicQueryableLikeHelper
@@ -159,7 +159,7 @@
 
 <p>&nbsp;</p>
 
-<pre><code>   public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate, params object[] values)
+<pre class='green'><code>   public static IQueryable&lt;T&gt; Where&lt;T&gt;(this IQueryable&lt;T&gt; source, string predicate, params object[] values)
       {
           return (IQueryable&lt;T&gt;)Where((IQueryable)source, predicate, false, values);
           //TODO:添加False
@@ -202,7 +202,7 @@
 
 <p>&nbsp;</p>
 
-<pre><code>IQueryable&lt;Orders&gt; q = DataContext.Orders
+<pre class='green'><code>IQueryable&lt;Orders&gt; q = DataContext.Orders
  .Where("ShipCity like @1 and ShipCity like @0 or ShipCity  like 'don' and ShipCity like 'don'
         and ShipCity like 'don'  or EmployeeID1 =1", "test  ", "test").OrderBy("ShipCity");
           //IQueryable&lt;Orders&gt; q =  DataContext.Orders.Where("ShipCity.Contains(@0) ","test");
@@ -212,7 +212,7 @@
 <p>  为了测试多个我邮箱投个懒就把ShipCity like &lsquo;don&rsquo; 赋值了多次。
 输出sql为：&nbsp;</p>
 
-<pre><code>  SELECT [t0].[OrderID], [t0].[CustomerID], [t0].[EmployeeID] AS [EmployeeID1], [t 0].[OrderDate], [t0].[RequiredDate], [t0].[ShippedDate], [t0].[ShipVia], [t0].[F reight], [t0].[ShipName], [t0].[ShipAddress], [t0].[ShipCity], [t0].[ShipRegion] , [t0].[ShipPostalCode], [t0].[ShipCountry] FROM [dbo].[Orders] AS [t0] WHERE (([t0].[ShipCity] LIKE @p0) AND ([t0].[ShipCity] LIKE @p1)) OR (([t0].[Shi pCity] LIKE @p2) AND ([t0].[ShipCity] LIKE @p3) AND ([t0].[ShipCity] LIKE @p4)) OR ([t0].[EmployeeID] = @p5) ORDER BY [t0].[ShipCity]&amp;nbsp;
+<pre class='green'><code>  SELECT [t0].[OrderID], [t0].[CustomerID], [t0].[EmployeeID] AS [EmployeeID1], [t 0].[OrderDate], [t0].[RequiredDate], [t0].[ShippedDate], [t0].[ShipVia], [t0].[F reight], [t0].[ShipName], [t0].[ShipAddress], [t0].[ShipCity], [t0].[ShipRegion] , [t0].[ShipPostalCode], [t0].[ShipCountry] FROM [dbo].[Orders] AS [t0] WHERE (([t0].[ShipCity] LIKE @p0) AND ([t0].[ShipCity] LIKE @p1)) OR (([t0].[Shi pCity] LIKE @p2) AND ([t0].[ShipCity] LIKE @p3) AND ([t0].[ShipCity] LIKE @p4)) OR ([t0].[EmployeeID] = @p5) ORDER BY [t0].[ShipCity]&amp;nbsp;
 </code></pre>
 
 <p>如果在类库中有和你的字符串等冲突就可以用ignoreLike为真，避免我的扩展。</p>

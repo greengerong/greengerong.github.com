@@ -102,7 +102,7 @@
 
 <p>理解interface的最好办法，就是写个hello world程序：</p>
 
-<pre><code>function printLabel(labelledObj: {label: string}) {
+<pre class='green'><code>function printLabel(labelledObj: {label: string}) {
   console.log(labelledObj.label);
 }
 
@@ -114,7 +114,7 @@ printLabel(myObj);
 
 <p>接下来我们可以进一步简化，声明一个interface来描述一个具有label字符串属性的对象：</p>
 
-<pre><code>interface LabelledValue {
+<pre class='green'><code>interface LabelledValue {
   label: string;
 }
 
@@ -137,7 +137,7 @@ printLabel(myObj);
   width?: number;
 }</p>
 
-<pre><code>function createSquare(config: SquareConfig): {color: string; area: number} {
+<pre class='green'><code>function createSquare(config: SquareConfig): {color: string; area: number} {
   var newSquare = {color: "white", area: 100};
   if (config.color) {
     newSquare.color = config.color;
@@ -155,7 +155,7 @@ var mySquare = createSquare({color: "black"});
 
 <p>interface的可选属性可以限制那些属性是可用的，这部分能得到类型检查，以及智能感知。例如下例：</p>
 
-<pre><code>interface SquareConfig {
+<pre class='green'><code>interface SquareConfig {
   color?: string;
   width?: number;
 }
@@ -180,14 +180,14 @@ var mySquare = createSquare({color: "black"});
 
 <p>下面是定义的interface signature是一个接收两个string的输入参数，并返回boolean的函数类型：</p>
 
-<pre><code>interface SearchFunc {
+<pre class='green'><code>interface SearchFunc {
   (source: string, subString: string): boolean;
 }
 </code></pre>
 
 <p>我也可以使用函数类型的interface去描述我们的数据。下面演示如何将一个相同类型的函数赋值给interface：</p>
 
-<pre><code>var mySearch: SearchFunc;
+<pre class='green'><code>var mySearch: SearchFunc;
 mySearch = function(source: string, subString: string) {
   var result = source.search(subString);
   if (result == -1) {
@@ -201,7 +201,7 @@ mySearch = function(source: string, subString: string) {
 
 <p>对于函数类型的interface，并不需要参数名的对应相同，如下例：</p>
 
-<pre><code>var mySearch: SearchFunc;
+<pre class='green'><code>var mySearch: SearchFunc;
 mySearch = function(src: string, sub: string) {
   var result = src.search(sub);
   if (result == -1) {
@@ -219,7 +219,7 @@ mySearch = function(src: string, sub: string) {
 
 <p>类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个&#8217;index&#8217;类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：</p>
 
-<pre><code>interface StringArray {
+<pre class='green'><code>interface StringArray {
   [index: number]: string;
 }
 
@@ -231,7 +231,7 @@ myArray = ["Bob", "Fred"]
 
 <p>index的类型签名可以描述常用的数组或者是‘dictionary’（字典序）模式，这点会强制所有的属性都需要和其返回值匹配。下例中length属性不匹配这点，所以类型检查会给出一个错误：</p>
 
-<pre><code>interface Dictionary {
+<pre class='green'><code>interface Dictionary {
   [index: string]: string;
   length: number;    // error, the type of 'length' is not a subtype of the indexer
 } 
@@ -243,7 +243,7 @@ myArray = ["Bob", "Fred"]
 
 <p>在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：</p>
 
-<pre><code>interface ClockInterface {
+<pre class='green'><code>interface ClockInterface {
     currentTime: Date;
 }
 
@@ -255,7 +255,7 @@ class Clock implements ClockInterface  {
 
 <p>同样也可以在interface中实现函数类型的契约，并要求clas实现此函数。如下例的‘setTime’函数：</p>
 
-<pre><code>interface ClockInterface {
+<pre class='green'><code>interface ClockInterface {
     currentTime: Date;
     setTime(d: Date);
 }
@@ -275,7 +275,7 @@ class Clock implements ClockInterface  {
 
 <p>当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。</p>
 
-<pre><code>interface ClockInterface {
+<pre class='green'><code>interface ClockInterface {
     new (hour: number, minute: number);
 }
 
@@ -289,7 +289,7 @@ class Clock implements ClockInterface  {
 
 <p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
 
-<pre><code>interface ClockStatic {
+<pre class='green'><code>interface ClockStatic {
     new (hour: number, minute: number);
 }
 
@@ -306,7 +306,7 @@ var newClock = new cs(7, 30);
 
 <p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
 
-<pre><code>interface Shape {
+<pre class='green'><code>interface Shape {
     color: string;
 }
 
@@ -321,7 +321,7 @@ square.sideLength = 10;
 
 <p>一个interface可以同时集成多个interface，实现多个接口成员的合并。</p>
 
-<pre><code>interface Shape {
+<pre class='green'><code>interface Shape {
     color: string;
 }
 
@@ -345,7 +345,7 @@ square.penWidth = 5.0;
 
 <p>下面是一个混合式描述函数，对象以及额外属性的实例：</p>
 
-<pre><code>interface Counter {
+<pre class='green'><code>interface Counter {
     (start: number): string;
     interval: number;
     reset(): void;

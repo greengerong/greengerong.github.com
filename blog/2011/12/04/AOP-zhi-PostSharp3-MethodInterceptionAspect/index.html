@@ -114,7 +114,7 @@
 
 <p>我们这里只采用简单思路在方法进入禁止按钮可用，方法执行完成后恢复可用状态。我们将使监听winform事件处理方法，按钮来自EventHandle的第一个参数Sender。</p>
 
-<pre><code>[Serializable] 
+<pre class='green'><code>[Serializable] 
     public class UnMutipleTriggerAttribute : MethodInterceptionAspect 
     { 
 
@@ -150,7 +150,7 @@ public override bool CompileTimeValidate(System.Reflection.MethodBase method)
 
 <p>测试在button点击方法加上attribute：</p>
 
-<pre><code> [UnMutipleTriggerAttribute] 
+<pre class='green'><code> [UnMutipleTriggerAttribute] 
       private void Save(object sender, EventArgs e) 
       { 
           System.Threading.Thread.Sleep(2000); 

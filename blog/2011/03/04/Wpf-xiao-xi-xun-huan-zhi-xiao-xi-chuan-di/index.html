@@ -100,7 +100,7 @@
 
 <p>程序：</p>
 
-<pre><code>using System; 
+<pre class='green'><code>using System; 
 using System.Collections.Generic; 
 using System.Linq; 
 using System.Text; 
@@ -184,7 +184,7 @@ namespace ConsoleApplication1
 <p>&nbsp;wpf端程序：主要需要在MainWindow中loaded事件订阅消息监听：这里需要System.Windows.Interop.HwndSource的AddHock方法注册
 程序：</p>
 
-<pre><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+<pre class='green'><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
          { 
 
              if (msg == 0x004A) 
