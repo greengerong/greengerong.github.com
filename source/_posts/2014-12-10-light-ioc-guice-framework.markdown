@@ -18,6 +18,7 @@ Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目�
 
 ####构造注入
 
+```java  
 	public class OrderServiceImpl implements OrderService {
 	    private ItemService itemService;
 	    private PriceService priceService;
@@ -31,8 +32,11 @@ Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目�
 	    ...
 	}
 
+```
+
 ####属性注入
 
+```java 
 	public class OrderServiceImpl implements OrderService {
 	    private ItemService itemService;
 	    private PriceService priceService;
@@ -45,9 +49,11 @@ Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目�
 
 	    ...
 	}
+```
 
 ####函数(setter)注入
 
+```java 
 	public class OrderServiceImpl implements OrderService {
 	    private ItemService itemService;
 	    private PriceService priceService;
@@ -65,6 +71,7 @@ Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目�
 	    ...
 	}
 
+```
 
 ##Module依赖注册
 
@@ -81,6 +88,7 @@ Binder利用链式形成一套独具语义的DSL，如：
 
 对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：
 
+```java 
  	public void configure() {
         final Binder binder = binder();
         
@@ -93,9 +101,11 @@ Binder利用链式形成一套独具语义的DSL，如：
 	public List<NamedService> getAllItemServices(@Named("impl1") NamedService nameService1,
 	                                                 @Named("impl2") NamedService nameService2) {
 	}
+```
 
 Guice也可以利用@Provides标注注入方法来运行时注入：如
 
+```java 
     @Provides
     public List<NamedService> getAllItemServices(@Named("impl1") NamedService nameService1,
                                                  @Named("impl2") NamedService nameService2) {
@@ -104,10 +114,12 @@ Guice也可以利用@Provides标注注入方法来运行时注入：如
         list.add(nameService2);
         return list;
     }
+```
 
 ##Guice实例
 下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见[github ](https://github.com/greengerong/guice-demo).
 
+```java 
 	package com.github.greengerong.app;
 
 	/**
@@ -156,17 +168,22 @@ Guice也可以利用@Provides标注注入方法来运行时注入：如
 	        return list;
 	    }
 	}
+```
 
 ##Guice的使用
 
 对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：
 
+```java
+
 	Injector injector = Guice.createInjector(new AppModule(bundleContext));
+```
 
 这里可以传入多个module，我们可以利用module分离领域依赖。
 
 Guice api方法：
- 	
+ 
+ ```java 	
  	public static Injector createInjector(Module... modules) 
 
     public static Injector createInjector(Iterable<? extends Module> modules) 
@@ -174,6 +191,7 @@ Guice api方法：
     public static Injector createInjector(Stage stage, Module... modules)
 
     public static Injector createInjector(Stage stage, Iterable<? extends Module> modules) 
+```
 
 Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。
 

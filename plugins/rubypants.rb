@@ -317,9 +317,10 @@ class RubyPants < String
         result << t
       end
     }
-
+    
     # Done
-    result
+    #covert all code block <pre> to add 'green' class
+    result.gsub("<pre>", "<pre class='green'>")
   end
 
   protected

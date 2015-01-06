@@ -11,12 +11,15 @@ Guava为Java并行编程Future提供了很多有用扩展，其主要接口为Li
 
 对ListenableFuture添加回调函数：
 
+```java
 	Futures.addCallback(ListenableFuture<V>, FutureCallback<V>, Executor)
+```
 
 其中 FutureCallback<V>是一个包含onSuccess(V),onFailure(Throwable)的接口。
 
 使用如：
 
+```java
 	Futures.addCallback(ListenableFuture, new FutureCallback<Object>() {
 
         public void onSuccess(Object result) {
@@ -27,23 +30,25 @@ Guava为Java并行编程Future提供了很多有用扩展，其主要接口为Li
             System.out.printf("onFailure %s%n", thrown.getMessage());
         }
     });
+```
 
 同时Guava中Futures对于Future扩展还有：
 
-transform：对于ListenableFuture的返回值进行转换。
+* transform：对于ListenableFuture的返回值进行转换。
 
-allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。
+* allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。
 
-successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。
+* successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。
 
-immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。
+* immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。
 
-makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易
+* makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易
 
-JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。
+* JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。
 
 下边是一个对于Future的测试demo：
 
+```java
 	@Test
 	public void should_test_furture() throws Exception {
 	    ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
@@ -88,6 +93,7 @@ JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future�
 
 	    System.out.println(transform.get());
 	}
+```
 
    官方资料主页：[https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained](https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained)
 

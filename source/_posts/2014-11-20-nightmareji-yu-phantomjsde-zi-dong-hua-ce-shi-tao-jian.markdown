@@ -11,12 +11,15 @@ categories: [nightmare, phantomjs]
 
 安装nightmare：
 
+```sh
 	npm install nightmare
+```
 
 下面我们对比与远程phantomjs的对比：
 
 原phantomjs的代码：
 
+```js
 	phantom.create(function (ph) {
 	  ph.createPage(function (page) {
 	    page.open('http://yahoo.com', function (status) {
@@ -37,19 +40,23 @@ categories: [nightmare, phantomjs]
 	    });
 	  });
 	});
+```
 
 nightmare代码：
 
+```js
 	new Nightmare()
 	  .goto('http://yahoo.com')
 	  .type('input[title="Search"]', 'github nightmare')
 	  .click('.searchsubmit')
 	  .run();
+```
 
 一切显而易见，不用多说。
 
 nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：
 
+```js
 	/**
 	 * Login to a Swiftly account.
 	 *
@@ -68,13 +75,15 @@ nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高�
 	      .wait();
 	  };
 	};
+```
 
 使用代码很简单：
 
+```js
 	var Swiftly = require('nightmare-swiftly');
 	new Nightmare()
 	  .use(Swiftly.login(email, password))
 	  .use(Swiftly.task(instructions, uploads, path))
 	  .run();
 
-
+```
