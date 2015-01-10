@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-10T12:58:18+08:00</updated>
+  <updated>2015-01-10T13:06:21+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -24,20 +24,13 @@
 
 <p>首先我们来看看下面我们经常遇见的一个案例：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="err">题目：</span>
-</span><span class='line'><span class="err">对于一个如下定义</span><span class="n">List</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span><span class="n">of</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">,</span> <span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="err">“</span><span class="mi">3</span><span class="err">”</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">按照’</span><span class="o">,</span><span class="err">’分割，并过滤掉</span><span class="kc">null</span><span class="err">。</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='green'><code>题目：
+对于一个如下定义List
 
+   List&lt;String&gt; list =of("1", "2", null, “3”);
+
+按照’,’分割，并过滤掉null。
+</code></pre>
 
 <p>如果不用第三方库，如common-lange，Guava，用原生java，我们将怎么继续？</p>
 
@@ -105,40 +98,24 @@
 
 <h4>MapJoinner</h4>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'>     <span class="err">题目：</span>
-</span><span class='line'>  <span class="err">生产一个查询</span><span class="nl">id:</span> <span class="mi">123</span><span class="o">,</span><span class="nl">name:</span> <span class="n">green</span><span class="err">的学生信息的</span><span class="n">url</span><span class="err">。</span>
-</span><span class='line'><span class="err">、、、</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">利用</span><span class="n">Guava</span><span class="err">的</span><span class="n">MapJoinner</span><span class="err">的代码如下：</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>java</p>
-
-<pre class='green'><code>Joiner.on("&amp;").withKeyValueSeparator("=").join(ImmutableMap.of("id", "123", "name", "green"));
+<pre class='green'><code>题目：
+生产一个查询id: 123,name: green的学生信息的url。
 </code></pre>
 
+<p>利用Guava的MapJoinner的代码如下：</p>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="err">这里采用了</span><span class="n">on</span><span class="err">传入</span><span class="n">map</span> <span class="n">item</span><span class="err">之间分隔符，以及</span><span class="n">withKeyValueSeparator</span><span class="err">传递</span><span class="n">map</span><span class="err">项</span><span class="n">key</span><span class="o">/</span><span class="n">value</span><span class="err">之间的分隔符。所以能够很简单的实现，不用我们在去实现一个的</span><span class="k">for</span><span class="err">循环代码。</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">####</span><span class="n">MapSplitter</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="n">Joiner</span><span class="o">.</span><span class="na">on</span><span class="o">(</span><span class="s">&quot;&amp;&quot;</span><span class="o">).</span><span class="na">withKeyValueSeparator</span><span class="o">(</span><span class="s">&quot;=&quot;</span><span class="o">).</span><span class="na">join</span><span class="o">(</span><span class="n">ImmutableMap</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;id&quot;</span><span class="o">,</span> <span class="s">&quot;123&quot;</span><span class="o">,</span> <span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;green&quot;</span><span class="o">));</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>java</p>
+<p>这里采用了on传入map item之间分隔符，以及withKeyValueSeparator传递map项key/value之间的分隔符。所以能够很简单的实现，不用我们在去实现一个的for循环代码。</p>
+
+<h4>MapSplitter</h4>
 
 <pre class='green'><code>题目：
 对url中的查询字符串"id=123&amp;name=green"进行分割
 </code></pre>
-
-<p>、、、</p>
 
 <p>利用Guava的MapSplitter的代码如下：</p>
 
