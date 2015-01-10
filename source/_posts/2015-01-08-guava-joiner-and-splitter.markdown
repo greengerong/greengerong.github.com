@@ -37,7 +37,7 @@ categories:
 	}
 ```
 
-是不是很简单，但是繁琐，而且这里还有个坑，我们使用append的方式，子啊每次for完成后，我们必须去修正remove最后的分隔符：builder.setLength(builder.length() delimiter.length());
+是不是很简单，但是繁琐，而且这里还有个坑，我们使用append的方式，在每次for完成后，我们必须去修正remove最后的分隔符：builder.setLength(builder.length() delimiter.length());
 
 Guava版本呢？
 
@@ -52,7 +52,7 @@ Guava版本呢？
 
 我们不在考虑更多的细节，并且很有语义的告诉代码的阅读者，用什么分隔符，需要过滤null值再join。
 
-*note*:当然我们也可以用common-lange来很简单的完成：StringUtils.join(stringList, delimiter).但是个人推荐尽量使用Guava替代common-lange，因为Guava还有更多的有用方法，后续会陆续介绍，还有更有语义。
+*note*:当然我们也可以用common-lange来很简单的完成：StringUtils.join(stringList, delimiter).但是个人推荐尽量使用Guava替代common-lange，因为Guava还有更多的有用方法，后续会陆续介绍，还有就是Guava的API相对更有语意一点。。
 
 ##Splitter
 
