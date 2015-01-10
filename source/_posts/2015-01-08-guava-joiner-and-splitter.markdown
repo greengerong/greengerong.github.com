@@ -10,14 +10,12 @@ categories:
 ##Joiner
 首先我们来看看下面我们经常遇见的一个案例：
 
-```java
 	题目：
 	对于一个如下定义List
 
 	   List<String> list =of("1", "2", null, “3”);
 
 	按照’,’分割，并过滤掉null。
-```
 
 如果不用第三方库，如common-lange，Guava，用原生java，我们将怎么继续？
 
@@ -65,10 +63,8 @@ Guava版本呢？
 
 ####MapJoinner
 
-```java
  	题目：
 	生产一个查询id: 123,name: green的学生信息的url。
-、、、
 
 利用Guava的MapJoinner的代码如下：
 
@@ -83,10 +79,8 @@ Guava版本呢？
 
 ####MapSplitter
 
-```java
     题目：
 	对url中的查询字符串"id=123&name=green"进行分割
-、、、
 
 利用Guava的MapSplitter的代码如下：
 
