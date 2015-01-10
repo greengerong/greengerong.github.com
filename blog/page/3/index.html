@@ -9,10 +9,8 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="Maven archetype plugin为我们提供了方便的创建
-project功能,Archtype指我们项目的骨架，作为项目的脚手架。
-如fornt end的yo之类。我们能够通过简单的一行控制台command
-line创建你所需要的项目结构： mvn archetype:generate &hellip;">
+  <meta name="description" content="在上篇Intellij修改archetype Plugin配置
+中我们已经简单介绍了关于archetype的作用。 简单来说maven archetype插件就是创建项目的脚手架,通过命令行或者IDE集成简化项目创建的工作。例如： org.apache.maven.archetypes:maven &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +66,184 @@ line创建你所需要的项目结构： mvn archetype:generate &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-17T05:14:21+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/17/create-yourself-archetypes-plugin/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上篇<a href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
+中我们已经简单介绍了关于archetype的作用。</p>
+
+<p>简单来说maven archetype插件就是创建项目的脚手架,通过命令行或者IDE集成简化项目创建的工作。例如：</p>
+
+<ul>
+<li>org.apache.maven.archetypes:maven-archetype-quickstart</li>
+<li>org.apache.maven.archetypes:maven-archetype-site</li>
+<li>org.apache.maven.archetypes:maven-archetype-webapp</li>
+<li>以及spring或者第三方提供了一些archetype plugin。</li>
+</ul>
+
+
+<p>同时maven archetype插件也是一个简单的maven artifact，它包含了创建项目所需要的所有资源。
+主要分为几类原型信息：</p>
+
+<ul>
+<li>archetype描述文件(src/main/resources/META-INF/maven/archetype.xml),这为<a href="http://maven.apache.org/plugins/maven-archetype-plugin-1.0-alpha-7/">archetype 1.0</a>,
+包含所有创建项目的文件信息和路径信息。在(archetype 2.0)[<a href="http://maven.apache.org/archetype/maven-archetype-plugin/">http://maven.apache.org/archetype/maven-archetype-plugin/</a>]增加了更灵活的archetype-metadata.xml(src/main/resources/META-INF/maven/下),
+archetype元数据信息，并且完全支持1.0.</li>
+<li>项目的原型文件(src/main/resources/archetype-resources/之下)，将会被archetype插件
+copy到项目目录结构去。</li>
+<li>创建项目的pom文件(src/main/resources/archetype-resources下)</li>
+<li>archetype pom文件，在archetype项目根目录下。</li>
+</ul>
+
+
+<h4>创建archetype插件</h4>
+
+<ol>
+<li><p>首先在archetype中加入一个pom文件，如下：</p>
+
+<pre class='green'><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+      &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
+      &lt;artifactId&gt;component&lt;/artifactId&gt;
+      &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+      &lt;packaging&gt;jar&lt;/packaging&gt;
+
+      &lt;name&gt;component&lt;/name&gt;
+      &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+
+      &lt;properties&gt;
+          &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+      &lt;/properties&gt;
+
+      &lt;dependencies&gt;
+      &lt;/dependencies&gt;
+&lt;/project&gt;
+</code></pre></li>
+<li><p>创建archetype-metadata.xml,位于src/main/resources/META-INF/maven/目录下，例如：</p>
+
+<pre class='green'><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;archetype-descriptor name="app-server"&gt;
+    &lt;fileSets&gt;
+        &lt;fileSet filtered="true" encoding="UTF-8"&gt;
+            &lt;directory&gt;src/main/java&lt;/directory&gt;
+            &lt;includes&gt;
+                &lt;include&gt;**/*.**&lt;/include&gt;
+            &lt;/includes&gt;
+        &lt;/fileSet&gt;
+        &lt;fileSet filtered="true" encoding="UTF-8"&gt;
+            &lt;directory&gt;src/test/java&lt;/directory&gt;
+            &lt;includes&gt;
+                &lt;include&gt;**/*.**&lt;/include&gt;
+            &lt;/includes&gt;
+        &lt;/fileSet&gt;
+    &lt;/fileSets&gt;
+&lt;/archetype-descriptor&gt;
+</code></pre></li>
+</ol>
+
+
+<p>更多配置信息参考<a href="https://maven.apache.org/archetype/archetype-common/archetype-descriptor.html">archetype-descriptor</a>.</p>
+
+<ol>
+<li><p>为将创建的项目增加pom.xml文件，以${artifactId} / ${groupId} 变量作为占位符，例如：</p>
+
+<pre class='green'><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+      &lt;groupId&gt;${groupId}&lt;/groupId&gt;
+      &lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;
+      &lt;version&gt;${version}&lt;/version&gt;
+      &lt;packaging&gt;jar&lt;/packaging&gt;
+
+      &lt;name&gt;${artifactId}&lt;/name&gt;
+
+      &lt;properties&gt;
+          &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+      &lt;/properties&gt;
+
+      &lt;dependencies&gt;
+          &lt;dependency&gt;
+              &lt;groupId&gt;junit&lt;/groupId&gt;
+              &lt;artifactId&gt;junit&lt;/artifactId&gt;
+              &lt;version&gt;4.11&lt;/version&gt;
+              &lt;scope&gt;test&lt;/scope&gt;
+          &lt;/dependency&gt;
+      &lt;/dependencies&gt;
+
+      &lt;build&gt;
+          &lt;pluginManagement&gt;
+              &lt;plugins&gt;
+                  &lt;plugin&gt;
+                      &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                      &lt;configuration&gt;
+                          &lt;source&gt;1.6&lt;/source&gt;
+                          &lt;target&gt;1.6&lt;/target&gt;
+                      &lt;/configuration&gt;
+                  &lt;/plugin&gt;
+              &lt;/plugins&gt;
+          &lt;/pluginManagement&gt;
+      &lt;/build&gt;
+  &lt;/project&gt;
+</code></pre></li>
+<li><p>接下来在archetype项目下install plugin：mvn clean install.</p></li>
+<li><p>利用已有archetype plugin创建项目：</p>
+
+<p>命令行：</p>
+
+<pre class='green'><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
+</code></pre></li>
+</ol>
+
+
+<p>  intellij选择增加archetype plugin：
+  <img src="/images/blog_img/Intellij-archetype-plugin.png" alt="/images/blog_img/Intellij-archetype-plugin.png" /></p>
+
+<p>对于删除intellij测试archetype信息，请参见<a href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>.</p>
+
+<p>注意：</p>
+
+<ul>
+<li><p>如果你也需要文件名字或者目录名字，则需要用特殊变量__artifactId__(双下划线)作为占位符。</p>
+
+<p> 本文demo,请移到到github <a href="https://github.com/greengerong/maven-archetypes-demo">maven-archetypes-demo</a>.</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -903,77 +1079,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/27/angular-ngcloak-new/">ngCloak 实现 Angular 初始化闪烁最佳实践</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/12/27/angular-ngcloak-new/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak-new/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }}  ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM ready完会才回去解析html view Template，所以对于Chrome这类快速的浏览器你会看见有闪烁的情况出现。而对于IE7，8这类解析稍慢的浏览器大部分情况下是不会出现这个问题的。</p>
-
-<p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
-
-<pre class='green'><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
- &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
- &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：</p>
-
-<pre class='green'><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
-&lt;/style&gt;
-</code></pre>
-
-<p>从上面我们可以看见angular将带有ng-clock的的元素设置为display:none，隐藏掉，在等到angular解析到带有ng-clock的节点时候，会把attribute和class同时remove掉，这样就可以实现防止节点的闪烁。</p>
-
-<pre class='green'><code>var ngCloakDirective = ngDirective({
-      compile: function(element, attr) {
-        attr.$set('ngCloak', undefined);
-        element.removeClass('ng-cloak');
-      }
-});
-</code></pre>
-
-<p>在angular-bootstrap.js中会看见这样的代码去增加前面所说的css：</p>
-
-<pre class='green'><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
-</code></pre>
-
-<p>好像闪烁的问题好像已经能够被我解决了，恩是否是这样的，理论也改如此，但是现实是残酷的，我们的感性认识经常会被现实一记重重的耳光，我们才能很更深入全面的思考，如果浏览器的速度比angular在head中加入css的速度还快呢？我在给公司的一个项目组解决这个闪烁的问题的时候就遇见了这个问题。怎么办呢？那我们只能使出我们必杀技，自己把css加入我们的css文件引入heade，启动加载，ok这样就可以完美解决了。(如果你也遇见了加了ng-cloak还不起作用的话，那么试试直接引入css文件吧)</p>
-
-<p>到这里关于ng-cloak的原理和解决方案已经完成，欢迎继续关注angular的后续经验篇分享。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1007,6 +1112,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">guava之Joiner 和 Splitter</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
       </li>
     
@@ -1032,10 +1141,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
       </li>
     
   </ul>

@@ -9,7 +9,14 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="2014年我一直从事在敏捷实践咨询项目，这也是我颇有收获的一年，特别是咨询项目的每一点改变，不管是代码质量的提高，还是自组织团队的建设，都能让我们感到欣慰。涉及人的问题都是复杂问题，改变人，改变一个组织是个更复杂问题，这里可能涉及很多的非技术，非能力问题。 &hellip;">
+  <meta name="description" content="最近在给客户准备一个Guava的分享，所以会陆续的更新关于Guava更多的细节分享。本文将记录Guava中得字符串处理Joiner(连接)和Splitter(分割)处理。 Joiner 首先我们来看看下面我们经常遇见的一个案例： 1
+2
+3
+4
+5
+6
+题目：
+对于一个如下定义List List& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +72,174 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/08/guava-joiner-and-splitter/">guava之Joiner 和 Splitter</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-08T08:09:19+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/01/08/guava-joiner-and-splitter/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/01/08/guava-joiner-and-splitter/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近在给客户准备一个Guava的分享，所以会陆续的更新关于Guava更多的细节分享。本文将记录Guava中得字符串处理Joiner(连接)和Splitter(分割)处理。</p>
+
+<h2>Joiner</h2>
+
+<p>首先我们来看看下面我们经常遇见的一个案例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="err">题目：</span>
+</span><span class='line'><span class="err">对于一个如下定义</span><span class="n">List</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span><span class="n">of</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">,</span> <span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="err">“</span><span class="mi">3</span><span class="err">”</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">按照’</span><span class="o">,</span><span class="err">’分割，并过滤掉</span><span class="kc">null</span><span class="err">。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果不用第三方库，如common-lange，Guava，用原生java，我们将怎么继续？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">join</span><span class="o">(</span><span class="n">List</span> <span class="n">stringList</span><span class="o">,</span> <span class="n">String</span> <span class="n">delimiter</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>    <span class="n">StringBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="err"> </span>    <span class="k">for</span> <span class="o">(</span><span class="n">Object</span> <span class="n">item</span> <span class="o">:</span> <span class="n">stringList</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">item</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>            <span class="n">builder</span>
+</span><span class='line'>             <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">item</span><span class="o">)</span>
+</span><span class='line'>             <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">delimiter</span><span class="o">);</span><span class="err"> </span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'><span class="err"> </span>    <span class="o">}</span><span class="err"> </span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">builder</span><span class="o">.</span><span class="na">setLength</span><span class="o">(</span><span class="n">builder</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="n">delimiter</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="err"> </span>   <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span><span class="err"> </span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>是不是很简单，但是繁琐，而且这里还有个坑，我们使用append的方式，子啊每次for完成后，我们必须去修正remove最后的分隔符：builder.setLength(builder.length() delimiter.length());</p>
+
+<p>Guava版本呢？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">joinByGuava</span><span class="o">(</span><span class="n">List</span> <span class="n">stringList</span><span class="o">,</span> <span class="n">String</span> <span class="n">delimiter</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>      <span class="k">return</span>    <span class="n">Joiner</span>
+</span><span class='line'>                 <span class="o">.</span><span class="na">on</span><span class="o">(</span><span class="n">delimiter</span><span class="o">)</span>
+</span><span class='line'>                 <span class="o">.</span><span class="na">skipNulls</span><span class="o">()</span>
+</span><span class='line'>                 <span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">stringList</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们不在考虑更多的细节，并且很有语义的告诉代码的阅读者，用什么分隔符，需要过滤null值再join。</p>
+
+<p><em>note</em>:当然我们也可以用common-lange来很简单的完成：StringUtils.join(stringList, delimiter).但是个人推荐尽量使用Guava替代common-lange，因为Guava还有更多的有用方法，后续会陆续介绍，还有更有语义。</p>
+
+<h2>Splitter</h2>
+
+<h2>MapJoinner和MapSplitter</h2>
+
+<p>对于MapJoinner和MapSplitter的最好案例就是url的param编码。</p>
+
+<h4>MapJoinner</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'>     <span class="err">题目：</span>
+</span><span class='line'>  <span class="err">生产一个查询</span><span class="nl">id:</span> <span class="mi">123</span><span class="o">,</span><span class="nl">name:</span> <span class="n">green</span><span class="err">的学生信息的</span><span class="n">url</span><span class="err">。</span>
+</span><span class='line'><span class="err">、、、</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">利用</span><span class="n">Guava</span><span class="err">的</span><span class="n">MapJoinner</span><span class="err">的代码如下：</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>java</p>
+
+<pre class='green'><code>Joiner.on("&amp;").withKeyValueSeparator("=").join(ImmutableMap.of("id", "123", "name", "green"));
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="err">这里采用了</span><span class="n">on</span><span class="err">传入</span><span class="n">map</span> <span class="n">item</span><span class="err">之间分隔符，以及</span><span class="n">withKeyValueSeparator</span><span class="err">传递</span><span class="n">map</span><span class="err">项</span><span class="n">key</span><span class="o">/</span><span class="n">value</span><span class="err">之间的分隔符。所以能够很简单的实现，不用我们在去实现一个的</span><span class="k">for</span><span class="err">循环代码。</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">####</span><span class="n">MapSplitter</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>java</p>
+
+<pre class='green'><code>题目：
+对url中的查询字符串"id=123&amp;name=green"进行分割
+</code></pre>
+
+<p>、、、</p>
+
+<p>利用Guava的MapSplitter的代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">join</span> <span class="o">=</span> <span class="n">Splitter</span><span class="o">.</span><span class="na">on</span><span class="o">(</span><span class="s">&quot;&amp;&quot;</span><span class="o">).</span><span class="na">withKeyValueSeparator</span><span class="o">(</span><span class="s">&quot;=&quot;</span><span class="o">).</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;id=123&amp;name=green&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里同样利用on传入字符串的第一分隔符，withKeyValueSeparator传入项的分隔符，产生map的key/value项，其结果是一个{id=123, name=green}的Map对象。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1832,123 +2007,6 @@ list[1] = 100;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-12T13:53:13+08:00" pubdate data-updated="true">Nov 12<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/11/12/mockito-custom-verify-matcher/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/12/mockito-custom-verify-matcher/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在TDD开发中，也许我们会遇见对一些重要的无返回值的行为测试，比如在用户的积分DB中增加用户的积分，这个行为对于我们的业务具有重要的价值，所以我们也希望能测试覆盖这部分业务价值。这个时候我们就得使用mockito带来的verify断言，但verify的参数断言主要有eq，或者any常见的方式。有时我们也希望能够断言对象的一部分属性，比如上文的积分数值，对于不同的场景增加的用户积分可能不同。</p>
-
-<p>回到Mockito的参数Matcher，Mockito给我们提供了ArgumentMatcher，以供我们来扩展Matcher。下面假设一个增加用户积分的场景：</p>
-
-<pre class='green'><code>     public class Game {
-        private String type;
-        private int rate;
-
-        public Game(String type, int rate) {
-            this.type = type;
-            this.rate = rate;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public int getRate() {
-            return rate;
-        }
-
-    }
-
-    public class GameDao {
-        public void addRate(Game game) {
-            //TODO: insert to db
-        }
-    }
-</code></pre>
-
-<p>我们希望能够对verify GameDao调用了addRate，并且是积分rate为特定值。</p>
-
-<p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
-
-<pre class='green'><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
-    private Object value;
-    private Function&lt;T, Object&gt; function;
-
-    public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
-        this.value = value;
-        this.function = getProperty;
-    }
-
-    public static &lt;F&gt; PartyMatcher&lt;F&gt; partyMatcher(Function&lt;F, Object&gt; getProperty, Object value) {
-        return new PartyMatcher&lt;F&gt;(getProperty, value);
-    }
-
-    @Override
-    public boolean matches(Object o) {
-        return function.apply((T) o).equals(value);
-    }
-}
-</code></pre>
-
-<p>所以我们的测试可以如下：</p>
-
-<pre class='green'><code>    @Test
-    public void should_run_customer_mockito_matcher() throws Exception {
-
-        final GameDao gameDao = mock(GameDao.class);
-        gameDao.addRate(new Game("签到", 7));
-
-        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
-            @Override
-            public Object apply(Game game) {
-                return game.getRate();
-            }
-        }, 7)));
-
-        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
-            @Override
-            public Object apply(Game game) {
-                return game.getType();
-            }
-        }, "签到")));
-    }
-</code></pre>
-
-<p>Mockito给我们提供了很多关于Matcher扩展的方法，本文只是ArgumentMatcher的实例。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1980,6 +2038,10 @@ list[1] = 100;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">guava之Joiner 和 Splitter</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
       </li>
     
@@ -2005,10 +2067,6 @@ list[1] = 100;
     
       <li class="post">
         <a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a>
       </li>
     
   </ul>
