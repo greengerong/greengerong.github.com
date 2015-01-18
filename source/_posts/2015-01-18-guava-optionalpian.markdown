@@ -84,12 +84,19 @@ Sir C. A. R. Hoare也曾说过：
 ##Optional API
 
 *. OptionalObject.isPresent(): 返回对象是否有值。
+
 *. Optional.absent(): 返回一个空Optional对象,isPresent() 将会返回false
+
 *. Optional.of(): 创Optional对象，输入参数不能为null
+
 *. Optional.fromNullable(): 创Optional对象，输入可以为null
+
 *. OptionalObject.asSet(): 和Optional对象值合并，如果为null则返回size为0的Set
+
 *. OptionalObject.or(): 和Optional对象值合并，如果为null为空加则返回or参数作为默认值
+
 *. OptionalObject.orNull(): 和Optional对象值合并，如果为null为空加则返回Null作为默认值
+
 
 上面的api都是我们在使用Optional的时候最常用的方法属性方法，注意如果我们创建了Optional对象，但是没有判断isPresent()是否存在，就直接get这是会抛异常的，这属于乱用Optional情况，和直接用Null并没什么差别。
 
