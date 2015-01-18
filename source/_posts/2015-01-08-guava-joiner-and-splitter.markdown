@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "guava之Joiner 和 Splitter"
+title: "Guava之Joiner 和 Splitter"
 date: 2015-01-08 08:09:19 +0800
 comments: true
-categories: 
+categories:  [Guava, Java]
 ---
 最近在给客户准备一个Guava的分享，所以会陆续的更新关于Guava更多的细节分享。本文将记录Guava中得字符串处理Joiner(连接)和Splitter(分割)处理。
 
