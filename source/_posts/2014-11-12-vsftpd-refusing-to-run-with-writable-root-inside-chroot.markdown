@@ -6,7 +6,7 @@ comments: true
 categories: [vsftpd]
 ---
 
-![vsftpd](images/blog_img/vsftpd.jpg)
+![vsftpd](/images/blog_img/vsftpd.jpg)
 
 今天记录一个在安装vsftpd的时候遇见错误：
 
