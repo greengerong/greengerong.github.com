@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Vsftpd | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/vsftpd/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-25T20:33:43+08:00</updated>
+  <updated>2015-01-25T20:35:06+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -18,7 +18,7 @@
     <link href="http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/"/>
     <updated>2014-11-12T19:38:05+08:00</updated>
     <id>http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot</id>
-    <content type="html"><![CDATA[<p><img src="images/blog_img/vsftpd.jpg" alt="vsftpd" /></p>
+    <content type="html"><![CDATA[<p><img src="/images/blog_img/vsftpd.jpg" alt="vsftpd" /></p>
 
 <p>今天记录一个在安装vsftpd的时候遇见错误：</p>
 
