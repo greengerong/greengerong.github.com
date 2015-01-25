@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="今天记录一个在安装vsftpd的时候遇见错误： 500 OOPS: vsftpd: refusing to run with writable root inside chroot () 在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制， &hellip;">
+  <meta name="description" content="对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。 Boolean &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,136 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-13T19:53:50+08:00" pubdate data-updated="true">Nov 13<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/11/13/typescript-basic-types/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/13/typescript-basic-types/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。</p>
+
+<h4>Boolean</h4>
+
+<p>在JavaScript和TypeScript中也具有最基本的逻辑断言值true/false，采用&#8217;boolean&#8217;类型。</p>
+
+<pre class='green'><code>var isDone: boolean = false;
+</code></pre>
+
+<h4>Number</h4>
+
+<p>如JavaScript，TypeScript所有的数值类型采用浮点型计数，其类型为‘number’。</p>
+
+<pre class='green'><code>var height: number = 6;
+</code></pre>
+
+<h4>String</h4>
+
+<p>在webpages的JavaScript或者服务端的应用程序最基本的功能就是处理文本数据。在其他语言中大多使用&#8217;string&#8217;去代表文本数据类型。TypeScript和JavaScript一样也是用双引号(&ldquo;)或者单引号包裹文本数据。</p>
+
+<pre class='green'><code>var name: string = "bob";
+    name = 'smith';
+</code></pre>
+
+<h4>Array</h4>
+
+<p>在TypeScript中如JavaScript一样允许我们操结合操作。数组类型可以使用下边两种方式之一。</p>
+
+<p>第一种方式，你可以在数据类型之后带上&#8217;[]&lsquo;:</p>
+
+<pre class='green'><code>var list:number[] = [1, 2, 3];
+</code></pre>
+
+<p>第二种方式，也可以采用泛型的数组类型：</p>
+
+<pre class='green'><code>var list:Array&lt;number&gt; = [1, 2, 3];
+</code></pre>
+
+<h4>Enum</h4>
+
+<p>TypeScript为JavaScript新增了枚举这种标准的集合数据类型。和在c#中一样，枚举是为一组数值类型一组更友好的名称。</p>
+
+<pre class='green'><code>enum Color {Red, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>默认枚举类型其实数值从0开始，你可以可用手动设置某一个成员的数值。例如我们可以将上文的起始值定为1：</p>
+
+<pre class='green'><code>enum Color {Red = 1, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>或是手动设置全部的枚举成员：</p>
+
+<pre class='green'><code>enum Color {Red = 1, Green = 2, Blue = 4};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>枚举类型可以和容易从一个数值类型获取对应枚举名称。例如我们有一个数值类型2，但不确认将匹配哪一个枚举成员，那么我们可以如下使用：</p>
+
+<pre class='green'><code>enum Color {Red = 1, Green, Blue};
+var colorName: string = Color[2];
+
+alert(colorName);
+</code></pre>
+
+<h4>Any</h4>
+
+<p>有时我们需要描述一些我们不知道的什么写进应用的动态数据类型，这可能来自第三方用户或者lib。在这里我们希望该数据不要加入TypeScript的类型检查,是的此值通过编译时检查。为此我们可以采用‘any’类型标注：</p>
+
+<pre class='green'><code>var notSure: any = 4;
+notSure = "maybe a string instead";
+notSure = false; // okay, definitely a boolean
+</code></pre>
+
+<p>‘any’类型是一种强大的兼容存在的JavaScript库的类型系统。他允许跳过TypeScript的编译时类型的检查。</p>
+
+<p>&lsquo;any&#8217;类型对于我们只知道部分数据类型，但是不是所有的数据类型的类型系统。如一个混合了多种类型的集合数组。</p>
+
+<pre class='green'><code>var list:any[] = [1, true, "free"];
+
+list[1] = 100;
+</code></pre>
+
+<h4>Void</h4>
+
+<p>和‘any’相对的数据类型则是’Void‘，它代表没有任何数据类型。我们常用的一个方法没有任何返回值：</p>
+
+<pre class='green'><code>function warnUser(): void {
+    alert("This is my warning message");
+}
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -973,115 +1103,6 @@ afterEach(function() {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/18/ddd-practice/">软件架构设计模式简述</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-18T19:07:08+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/03/18/ddd-practice/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/18/ddd-practice/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在软件开发设计中我们经常会面对业务分析，提取领域问题，从而实现软件架构设计。关于
-软件架构设计Martin Fowler在2004出版的<a href="http://book.douban.com/subject/4826290/">《企业应用架构模式》</a>中
-概括了四种方式的架构模式。它们分别为事务性脚本，表驱动模式，活动记录模式，领域驱动设计。前两者事务性脚本，表驱动模式作为
-面向过程方式架构设计，后两者为面向对象架构设计。它们适合于不同的业务场景，它们也各有长短。</p>
-
-<h4>事务脚本模式</h4>
-
-<p>事务脚本模式是架构设计中最简单的架构模式，面向过程模式。该模式以用户的操作，UI表现为起点，设计业务组件，
-即业务逻辑将直接映射到用户界面的操作。这通常是从表现层逻辑出发，表现层需要什么那么业务层就提供什么，
-直到数据层。针对每一个用户的新功能都需要新增一个从UI到关系数据库的分支流程。其适用于逻辑不是
-很复杂或者变化不会太大的稳定的应用系统开发。其不需要付出与业务无关的额外代价，并且在现代可见即可得的IDE
-结合，能够很快的进行快速应用开发（RAD）。但是这种优势，也是其最大的劣势，程序中充满了IF-else，
-switch-case之类的逻辑或者大量的static的方法，每个功能都是一个程序分支，这对代码无法重用。
-编码不易于维护，对复杂项目和变化需求不适应。</p>
-
-<h4>表驱动模式</h4>
-
-<p>表驱动模式为每个数据库表定义一个表模块类，包含操作该数据的所有行为方法。作为一个容器，将数据
-和行为组织在一起。其对数据的粒度针对于数据表，而非数据行，因此需要以集合或者表(DataTable)传递数据信息。
-表驱动模式基于对象但是完全由数据库驱动开发，在业务模型和数据库关系模型显著差异的情况下，应对需求，
-并不是那么适合。但是在.net中提供的一些列如强类型DataSet等IDE的辅助下自动生成大量的代码，
-也是一个不错的选择，因为部分数据库的操作趋于自动化。表驱动模式没有太过于关注业务逻辑，而是关注数据库
-表结构。而业务逻辑和领域问题才是软件核心，所以对于复杂的场景也存在不能很好的胜任。</p>
-
-<h4>活动记录模式</h4>
-
-<p>活动记录模式是一个以数据库表一行Row为对象，并且对象中包含行为和数据的模式方法。其数据对象
-很大程度的接近数据库表结构。在活动记录模式中对象通常也包含架构设计和扩展对象的CRUD(增删改查)的行为，以及数据验证等业
-务规则。对于业务不是很复杂，对象关系与关系模型映射不具有很大差异情况，活动记录模式会运用的
-很好。活动模式比较简单化设计，在现行的如Linq to sql，ActiveRecord框架，
-spring JDBC(Active Record),Ruby On Rails之类的框架之下，
-将针对问题领域不是太过复杂的中小型项目十分有用，而且能做到快速，并且有较好设计的架构设计和扩展。
-但是其模式和数据库表结构的过度的相互依赖，导致若你修改
-数据库结构，你不得不同时修改对象以及相关逻辑。如果不能保证数据库关系模型和对象模式的很大程度
-的相似这就进入的困境，无法解决对象和数据库结构的映射。</p>
-
-<h4>领域驱动设计(DDD)</h4>
-
-<p>在我们所述前面的几种架构模式都是在项目开始站在了以数据为中心的角度，而不是业务本身的问题领域。
-而领域驱动设计模式是着重关注于系统的业务问题领域，首先开始为领域对象设计。与活动记录模式来说，
-领域模型完全反映于问题领域业务概念模型逻辑，与数据库，持久化机制完成独立，其推崇持久化透明（POCO）。
-其可以充分利用面向对象设计，不受持久化机制的任何约束。其为完全由业务驱动出来的。但是其最大的优势如上
-各个模式一样也是其最大的劣势领域对象模型与关系模型具有天然的阻抗，领域实体对象早晚会需要映射到
-持久化机制，有时我们必须等为了这种阻抗而让步。在当前有NHibearnate,EF,Fluent NHibearnate这类
-ORM(Object Relation Mapping)框架辅助。</p>
-
-<p>领域驱动设计是Eric Evans于2004年在<a href="http://book.douban.com/subject/5344973/">《领域驱动设计：软件核心复杂性应对之道》</a>
-首先提出的，简称DDD.其实际为面向对象分析设计(OOAD)的延伸，利用面向对象思想进行分析设计，对系统逻辑严格
-分层，对领域对象的的职责划分。领域逻辑按照职责和内聚的划分在不同的领域对象上，对象不再是单纯的数据载体，而应该
-是一个具有行为，逻辑的富对象。</p>
-
-<p>同时领域驱动设计中分层架构也是很重要的一部分，这是分离关注点(SOC)的体现。按照职责对每一层次划分。大体分为
-表现层，业务逻辑层，仓储层，领域层，以及基本出设施层。以及后来所倡导的CQRS(读写分离).在层次之间为了应对面向对象设计
-所有存在领域模型(DO)，然而我们常用的存储却是关系类型(PO),所以还存在ORM(Object Relation Mapping).以及为了更好的
-适应UI的表现存在视图对象(VO，有时我们简单VO的存在直接用数据传输对象(DTO)代替)，所以存在DTO Mapping，在这里的VO或者DTO，往往
-都是一层简单getter,setter的数据载体。</p>
-
-<p>在领域驱动设计中还包含工作单元(UOW))，仓储，值类型,实体，聚合根，领域事件，领域边界，以及领域跟踪一类的概念，关于这些更多的知识
-请参考<a href="http://book.douban.com/subject/4826290/">《企业应用架构模式》</a>，以及<a href="http://book.douban.com/subject/25844633/">实现领域驱动设计</a></p>
-
-<p>最后推荐最新的领域驱动设计书籍资料：此书被DDD鼻祖Eric Evans誉为继其开山之作后，近十年内第一本将DDD落到具体(接地气)的经典书籍。</p>
-
-<p><img src="http://img5.douban.com/lpic/s27236377.jpg" alt="实现领域驱动设计" /></p>
-
-<ul>
-<li><a href="http://www.amazon.cn/%E5%AE%9E%E7%8E%B0%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1-%E6%B2%83%E6%81%A9%E2%80%A2%E5%BC%97%E5%86%9C/dp/B00IYTVWA6/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1395749901&amp;sr=1-1">亚马逊</a></li>
-<li><a href="http://product.dangdang.com/23439300.html#ddclick?act=click&amp;pos=23439300_0_1_p&amp;cat=01.00.00.00.00.00&amp;key=%CE%D6%B6%F7.%B8%A5%C5%A9&amp;qinfo=&amp;pinfo=1_1_72&amp;minfo=&amp;ninfo=&amp;custid=&amp;permid=20140309205553118327545287259908607&amp;ref=http%3A%2F%2Fproduct.dangdang.com%2F23439300.html&amp;rcount=&amp;type=&amp;t=1395231961000">当当</a></li>
-<li><a href="http://item.jd.com/1100303441.html">京东</a></li>
-<li><a href="http://book.douban.com/subject/25844633/">豆瓣</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1115,6 +1136,10 @@ ORM(Object Relation Mapping)框架辅助。</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/25/ngnice-showcase-he-guice/">Ngnice-国内ng学习网站</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
       </li>
     
@@ -1140,10 +1165,6 @@ ORM(Object Relation Mapping)框架辅助。</p>
     
       <li class="post">
         <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
       </li>
     
   </ul>

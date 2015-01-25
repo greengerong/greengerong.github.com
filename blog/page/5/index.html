@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="Sublime command for mac : execute those command: sudo ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime &hellip;">
+  <meta name="description" content="&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为： ----------------------------------------------------- at org.apache. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,96 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">记录maven java.lang.String Cannot Be Cast to XX Error</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:java;gutter:false;">-----------------------------------------------------
+
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:225)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
+         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:145)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:84)
+         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:59)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.singleThreadedBuild(LifecycleStarter.java:183)
+         at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:161)
+         at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:319)
+         at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:156)
+         at org.jvnet.hudson.maven3.launcher.Maven3Launcher.main(Maven3Launcher.java:79)
+         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+         at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+         at java.lang.reflect.Method.invoke(Method.java:601)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launchStandard(Launcher.java:329)
+         at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:239)
+         at org.jvnet.hudson.maven3.agent.Maven3Main.launch(Maven3Main.java:146)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:127)
+         at hudson.maven.Maven3Builder.call(Maven3Builder.java:74)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:118)
+         at hudson.remoting.UserRequest.perform(UserRequest.java:48)
+         at hudson.remoting.Request$2.run(Request.java:326)
+         at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)
+         at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+         at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
+         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+         at java.lang.Thread.run(Thread.java:722)
+Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibility occured while executing [group id]:[artifact id]:[version]:start: java.lang.String cannot be cast to java.io.File
+-----------------------------------------------------
+</pre>
+</div>
+
+
+<p>&nbsp; &nbsp; &nbsp; 在花费了我大半的时间，将本地环境的maven，jdk等设为和ci一致后最后定位到maven的版本问题，其终究原因是因为maven在3.0.3才支持配置参数为泛型集合(List&lt;T&gt;,Set&lt;T&gt;&hellip;)，在3.0.2及一下本班不支持此写法。</p>
+
+<p>&nbsp; &nbsp; &nbsp;修改次error的方法有两种：</p>
+
+<ol>
+<li>将ci Server的maven更新到3.0.3以上。(但是在我们的ci server更新有些困难，还有本人认为如果写一个plugin只能工作的固定version，这和一个废物差不多，所以选择了第二种方法)。</li>
+<li>将泛型集合List&lt;T&gt;改为Array T[]。（项目中某大神写的List&lt;File&gt;我轻易的改为File[].在执行前改为Arrays.asList(XXX)）;</li>
+</ol>
+
+
+<p>&nbsp; &nbsp; &nbsp;一切搞定。在此记录希望对于遇见同类问题的人有所帮助。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/09/10/3313515.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -992,274 +1082,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/">利用Node.js为Node.js生成HttpStatusCode辅助类并发布到npm</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/09/li-yong-Node-js-wei-Node-js-sheng-cheng-HttpStatusCode-fu-zhu-lei-bing-fa-bu-dao-npm/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 作为一个好的Restfull Api不仅在于service url的语义,可读性,幂等,正交，作为http状态码也很重要，一个好的Http Status Code给使用者一个很好的响应，比如200表示正常成功，201表示创建成功，409冲突，404资源不存在等等。所以在做一个基于node.js+mongodb+angularjs的demo时发现node.js express没有提供相应的辅助类，但是本人不喜欢将201,404这类毫无语言层次语义的东西到处充斥着，所以最后决定自己写一个，但是同时本人也很懒，不喜欢做重复的苦力活，怎么办？那就从我最熟悉的c#中HttpStatusCode枚举中copy出来吧，最后为了简便在mac上所以采用了利用node.js去解析msdn关于httpstatuscode的文档生成node.js的辅助类。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 代码很简单：</p>
-
-<pre class='green'><code>     var http = require('http');
-
-    var fs = require('fs');
-
-    var $ = require('jquery');
-
-    var output = "httpStatusCode/index.js";
-
-    (function(){
-
-
-
-        String.format = function() {
-
-            var s = arguments[0];
-
-            for (var i = 0; i &lt; arguments.length - 1; i++) {
-
-                var reg = new RegExp("\\{" + i + "\\}", "gm");
-
-                s = s.replace(reg, arguments[i + 1]);
-
-            }
-
-            return s;
-
-        };
-
-
-
-
-        var options = {
-
-            host:'msdn.microsoft.com',
-
-            port:80,
-
-            path:'/zh-cn/library/system.net.httpstatuscode.aspx'
-
-        };
-
-
-
-
-        http.get(options,function (response) {
-
-            var html = "";
-
-            response.on("data",function (chunk) {
-
-                html += chunk;
-
-            }).on("end", function () {
-
-                handler(html);
-
-            }).on('error', function (e) {
-
-                console.log("Got error: " + e.message);
-
-            });
-
-
-
-
-        function getHttpStatusCode(htmlString) {
-
-            var $doc = $(html);
-
-            var rows = $doc.find("table#memberList tr:gt(0)");
-
-            var status = {};
-
-            rows.each(function(i,row){
-
-                status[$(row).find("td:eq(1)").text()] = 
-
-                    parseInt($(row).find("td:eq(2)").text().match(/\d+/).toString());
-
-            });
-
-           return status;
-
-        };
-
-
-
-        function generateCode(status){
-
-           var code = "";
-
-           code += "exports.httpStatusCode = " + JSON.stringify(status) + ";";
-
-           return code;
-
-        };
-
-
-
-        function writeFile(code){
-
-            fs.writeFile(output, code, function(err) {
-
-                if(err) {
-
-                    console.log(err);
-
-                } else {
-
-                    console.log("The file was saved " + output + "!");
-
-                }
-
-            }); 
-
-        };
-
-
-
-
-        function handler(html){
-
-           var status = getHttpStatusCode(html);
-
-           var code = generateCode(status);
-
-           writeFile(code);
-
-        };
-
-
-
-
-      });
-
-    })();
-</code></pre>
-
-<p>代码寄宿在github：<a href="https://github.com/greengerong/node-httpstatuscode" title="https://github.com/greengerong/node-httpstatuscode">https://github.com/greengerong/node-httpstatuscode</a></p>
-
-<p>最终生成类为：</p>
-
-<pre class='green'><code>     exports.httpStatusCode = { 
-        "Continue": 100, 
-        "SwitchingProtocols": 101, 
-        "OK": 200, 
-        "Created": 201, 
-        "Accepted": 202, 
-        "NonAuthoritativeInformation": 203, 
-        "NoContent": 204, 
-        "ResetContent": 205, 
-        "PartialContent": 206, 
-        "MultipleChoices": 300, 
-        "Ambiguous": 300, 
-        "MovedPermanently": 301, 
-        "Moved": 301, 
-        "Found": 302, 
-        "Redirect": 302, 
-        "SeeOther": 303, 
-        "RedirectMethod": 303, 
-        "NotModified": 304, 
-        "UseProxy": 305, 
-        "Unused": 306, 
-        "TemporaryRedirect": 307, 
-        "RedirectKeepVerb": 307, 
-        "BadRequest": 400, 
-        "Unauthorized": 401, 
-        "PaymentRequired": 402, 
-        "Forbidden": 403, 
-        "NotFound": 404, 
-        "MethodNotAllowed": 405, 
-        "NotAcceptable": 406, 
-        "ProxyAuthenticationRequired": 407, 
-        "RequestTimeout": 408, 
-        "Conflict": 409, 
-        "Gone": 410, 
-        "LengthRequired": 411, 
-        "PreconditionFailed": 412, 
-        "RequestEntityTooLarge": 413, 
-        "RequestUriTooLong": 414, 
-        "UnsupportedMediaType": 415, 
-        "RequestedRangeNotSatisfiable": 416, 
-        "ExpectationFailed": 417, 
-        "UpgradeRequired": 426, 
-        "InternalServerError": 500, 
-        "NotImplemented": 501, 
-        "BadGateway": 502, 
-        "ServiceUnavailable": 503, 
-        "GatewayTimeout": 504, 
-        "HttpVersionNotSupported": 505 
-    };
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 最后考虑到或许还有很多像我一样懒散的人，所以共享此代码发布到了npm，只需要npm install httpstatuscode，便可以简单实用，如下是一个测试demo：</p>
-
-<pre class='green'><code>      var httpStatusCode = require("httpstatuscode").httpStatusCode;
-
-    var toBeEqual = function (actual,expected){
-
-        if(actual !== expected){
-
-         throw (actual + " not equal " + expected);
-
-        }
-
-    };
-
-    toBeEqual(httpStatusCode.OK,200);
-
-    toBeEqual(httpStatusCode.Created,201);
-
-    toBeEqual(httpStatusCode.BadRequest,400);
-
-    toBeEqual(httpStatusCode.InternalServerError,500);
-
-
-
-
-    console.log(httpStatusCode);
-
-    console.log("success");
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp; 懒人的文章总是代码多余文字，希望代码能说明一切，感谢各位能阅读此随笔。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/09/3009205.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -1293,6 +1115,10 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/25/ngnice-showcase-he-guice/">Ngnice-国内ng学习网站</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
       </li>
     
@@ -1318,10 +1144,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
     
       <li class="post">
         <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a>
       </li>
     
   </ul>

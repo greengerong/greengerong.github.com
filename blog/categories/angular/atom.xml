@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-24T23:21:26+08:00</updated>
+  <updated>2015-01-25T20:16:32+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,36 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ngnice-国内ng学习网站]]></title>
+    <link href="http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guice/"/>
+    <updated>2015-01-25T10:43:40+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guice</id>
+    <content type="html"><![CDATA[<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/AngularJS-large.png" alt="angular" /></p>
+
+<p>今天给angular新手介绍一个国内开源的ng学习网站<a href="http://www.ngnice.com/,%E8%BF%99%E6%98%AF%E6%9C%89%E4%B8%80%E6%89%B9ng%E7%88%B1%E5%A5%BD%E8%80%85%E5%9C%A8%E9%9B%AA%E7%8B%BC%E5%A4%A7%E5%8F%94%E7%9A%84%E5%B8%A6%E9%A2%86%E4%B8%8B%E5%85%B1%E5%90%8C%E5%BC%80%E5%8F%91%E5%AE%8C%E6%88%90%EF%BC%8C%E8%87%B4%E5%8A%9B%E4%BA%8E%E5%B8%AE%E5%8A%A9%E6%9B%B4%E5%A4%9A%E7%9A%84ng%E6%96%B0%E4%BA%BA%EF%BC%8C%E4%BB%96%E4%BB%AC%E5%88%86%E5%88%AB%E6%98%AF:">http://www.ngnice.com/,%E8%BF%99%E6%98%AF%E6%9C%89%E4%B8%80%E6%89%B9ng%E7%88%B1%E5%A5%BD%E8%80%85%E5%9C%A8%E9%9B%AA%E7%8B%BC%E5%A4%A7%E5%8F%94%E7%9A%84%E5%B8%A6%E9%A2%86%E4%B8%8B%E5%85%B1%E5%90%8C%E5%BC%80%E5%8F%91%E5%AE%8C%E6%88%90%EF%BC%8C%E8%87%B4%E5%8A%9B%E4%BA%8E%E5%B8%AE%E5%8A%A9%E6%9B%B4%E5%A4%9A%E7%9A%84ng%E6%96%B0%E4%BA%BA%EF%BC%8C%E4%BB%96%E4%BB%AC%E5%88%86%E5%88%AB%E6%98%AF:</a></p>
+
+<pre><code>ckken，grahamle，NigelYao，asnowwolf，lightma，joeylin，FrankyYang，lrrluo， why520crazy，破狼,二当家, Ken, zxsoft, why520crazy, playing，天猪、jacobdong、以及一批后加入或审校为记名的社区爱好者功能完成的。[这里排名不分先后]
+</code></pre>
+
+<p>在ngnice还在逐步完善中，目前完成的，对angular使用有用的模块主要分为3栏：ng文章、angular中文指南、ng案例展示</p>
+
+<p>ng文章：主要由国内一批国内早期的ng高手组成，为大家记录ng的坑、使用方式、以及ng原理之类的文章。地址为：<a href="http://www.ngnice.com/">http://www.ngnice.com/</a></p>
+
+<p><img src="images/blog_img/ng-%E6%96%87%E7%AB%A0.png" alt="ng文章" /></p>
+
+<p>angular中文指南：这是在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。先已经完成：地址为<a href="http://www.ngnice.com/docs/guide%E3%80%82">http://www.ngnice.com/docs/guide%E3%80%82</a></p>
+
+<p><img src="images/blog_img/ng-%E6%8C%87%E5%8D%97.png" alt="ng文章" /></p>
+
+<p>ng案例展示：这也是ngnice中对大家最有帮助的一块，这里收集了大家日常开发中会遇见的很多案例，如：进度条、html5表单、angular图表、数据表格展示德不等有用案例。这里的目的是展示angular的案例，并让大家能够直接copy到自己的项目中直接应用。地址为：<a href="http://www.ngnice.com/showcase/#/home/about%E3%80%82">http://www.ngnice.com/showcase/#/home/about%E3%80%82</a></p>
+
+<p><img src="images/blog_img/ng-showcase.png" alt="ng文章" /></p>
+
+<p>目前由于进入年底等各种原因我们暂停了一些开发，我们将会在后边继续完善更多的案例和文章分享。同时也希望爱好分享，希望交流的ng爱好者期待你能加入我们的ngShowcase开发组(qq群：278252889，注：这是不会给你解决任何ng问题，只供开发组使用)。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[解决ng界面长表达式(ui-set)]]></title>
@@ -316,25 +346,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     &lt;/executions&gt;
 &lt;/plugin&gt;
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angular Ng-model类型格式转化]]></title>
-    <link href="http://greengerong.github.io/blog/2013/12/15/angular-model--format/"/>
-    <updated>2013-12-15T00:00:00+08:00</updated>
-    <id>http://greengerong.github.io/blog/2013/12/15/angular-model--format</id>
-    <content type="html"><![CDATA[<p>在angular开发中我们经常会遇见输入框中的string的值，却想在scope上的model表现为整型、浮点、货币，或者在radio的value是一个true,false的Boolean类型，一组check box的vlue组成一个Array的数组类型，因为我们的后台程序的model设计接口如此。你是否还在后台应用程序或者ajax提交前做mapper，还在重复着着伪angular的做法？</p>
-
-<p>在本人github创建了一个开源项目<a href="https://github.com/greengerong/ngmodel-format">https://github.com/greengerong/ngmodel-format</a>,为了让我们能够轻易的对付这些琐事，你可以在demo下得html或者middle way的测试中看见其使用方法，同时如果不满足你的需求，你仍然可以很简单的扩展你需要的功能：你需要的只是在你的module的run阶段注入modelFormatConfig的constant service 加入所需的key值，加上自己的formatter，parser，isEmpty方法，如果你仍然想继续深入的对用户的输入进行一些控制的话，也可以加入keyDown时间去stopPropagation，preventDefault一些key值。</p>
-
-<p>下面我们看看其相应的使用方式：</p>
-
-<p>请移步到<a href="http://jsbin.com/uJUrANa/1/watch?html,js,output">http://jsbin.com/uJUrANa/1/watch?html,js,output</a>，由于嵌入iframe对样式存在影响，所以暂不嵌入</p>
-
-<p>注意由于在jsbin拒绝引入github text/plain的文件 所以这里是直接把源码贴进去了的，如果使用的话最好是使用github上的，这里的代码是不会更新的。</p>
-
-<p>在jsbin demo上你能够很清楚的看见使用方式。那么我就不用在废话多说了，哈哈。有问题可以提交github issue。</p>
 ]]></content>
   </entry>
   
