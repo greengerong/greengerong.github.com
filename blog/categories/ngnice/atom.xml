@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ngnice | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/ngnice/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-25T20:24:15+08:00</updated>
+  <updated>2015-01-25T20:26:06+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,12 +20,12 @@
     <id>http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guice</id>
     <content type="html"><![CDATA[<p><img src="images/blog_img/ng-logo.png" alt="angular" /></p>
 
-<p>今天给angular新手介绍一个国内开源的ng学习网站<a href="http://www.ngnice.com/">http://www.ngnice.com/</a>这是有一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是:</p>
+<p>今天给angular新手介绍一个国内开源的ng学习网站<a href="http://www.ngnice.com/">http://www.ngnice.com/</a>这是由一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是:</p>
 
-<pre><code>ckken，grahamle，NigelYao，asnowwolf，lightma，joeylin，FrankyYang，lrrluo， why520crazy，破狼,二当家, Ken, zxsoft, why520crazy, playing，天猪、jacobdong、以及一批后加入或审校为记名的社区爱好者功能完成的。[这里排名不分先后]
+<pre><code>ckken，grahamle，NigelYao，asnowwolf，lightma，joeylin，FrankyYang，lrrluo， why520crazy，破狼,二当家, Ken, zxsoft, why520crazy, playing，天猪、jacobdong、以及一批后加入或审校未记名的社区爱好者功能完成的。[这里排名不分先后]
 </code></pre>
 
-<p>在ngnice还在逐步完善中，目前完成的，对angular使用有用的模块主要分为3栏：ng文章、angular中文指南、ng案例展示</p>
+<p>再ngnice还在逐步完善中，目前完成的重要模块主要分为3栏：ng文章、angular中文指南、ng案例展示</p>
 
 <p>ng文章：主要由国内一批国内早期的ng高手组成，为大家记录ng的坑、使用方式、以及ng原理之类的文章。地址为：<a href="http://www.ngnice.com/">http://www.ngnice.com/</a></p>
 
