@@ -18,11 +18,11 @@ ng文章：主要由国内一批国内早期的ng高手组成，为大家记录n
 
 ![ng文章](images/blog_img/ng-文章.png)
 
-angular中文指南：这是在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。先已经完成：地址为http://www.ngnice.com/docs/guide。
+angular中文指南：这是在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。先已经完成：地址为[http://www.ngnice.com/docs/guide](http://www.ngnice.com/docs/guide)。
 
 ![ng文章](images/blog_img/ng-指南.png)
 
-ng案例展示：这也是ngnice中对大家最有帮助的一块，这里收集了大家日常开发中会遇见的很多案例，如：进度条、html5表单、angular图表、数据表格展示德不等有用案例。这里的目的是展示angular的案例，并让大家能够直接copy到自己的项目中直接应用。地址为：http://www.ngnice.com/showcase/#/home/about。
+ng案例展示：这也是ngnice中对大家最有帮助的一块，这里收集了大家日常开发中会遇见的很多案例，如：进度条、html5表单、angular图表、数据表格展示德不等有用案例。这里的目的是展示angular的案例，并让大家能够直接copy到自己的项目中直接应用。地址为：[http://www.ngnice.com/showcase/#/home/about](http://www.ngnice.com/showcase/#/home/about)。
 
 ![ng文章](images/blog_img/ng-showcase.png)
 
