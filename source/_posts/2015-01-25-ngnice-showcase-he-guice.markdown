@@ -14,7 +14,7 @@ categories: [ngnice, angular]
 
 在ngnice还在逐步完善中，目前完成的，对angular使用有用的模块主要分为3栏：ng文章、angular中文指南、ng案例展示
 
-ng文章：主要由国内一批国内早期的ng高手组成，为大家记录ng的坑、使用方式、以及ng原理之类的文章。地址为：http://www.ngnice.com/
+ng文章：主要由国内一批国内早期的ng高手组成，为大家记录ng的坑、使用方式、以及ng原理之类的文章。地址为：[http://www.ngnice.com/](http://www.ngnice.com/)
 
 ![ng文章](images/blog_img/ng-文章.png)
 
