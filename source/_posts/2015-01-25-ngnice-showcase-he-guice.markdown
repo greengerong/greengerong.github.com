@@ -6,9 +6,9 @@ comments: true
 categories: [ngnice, angular]
 ---
 
-![angular](http://images.cnblogs.com/cnblogs_com/whitewolf/AngularJS-large.png)
+![angular](images/blog_img/ng-logo.png)
 
-今天给angular新手介绍一个国内开源的ng学习网站[http://www.ngnice.com/](http://www.ngnice.com/)这是有一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是:
+今天给angular新手介绍一个国内开源的ng学习网站[http://www.ngnice.com/](http://www.ngnice.com/)这是由一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是:
 
 	ckken，grahamle，NigelYao，asnowwolf，lightma，joeylin，FrankyYang，lrrluo， why520crazy，破狼,二当家, Ken, zxsoft, why520crazy, playing，天猪、jacobdong、以及一批后加入或审校为记名的社区爱好者功能完成的。[这里排名不分先后]
 
