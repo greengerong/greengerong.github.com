@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-01-25T20:35:06+08:00</updated>
+  <updated>2015-01-25T20:42:49+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Ngnice-国内ng学习网站]]></title>
-    <link href="http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guice/"/>
+    <link href="http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guide/"/>
     <updated>2015-01-25T10:43:40+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guice</id>
+    <id>http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guide</id>
     <content type="html"><![CDATA[<p><img src="http://greengerong.github.io/images/blog_img/ng-logo.png" alt="angular" /></p>
 
 <p>今天给angular新手介绍一个国内开源的ng学习网站<a href="http://www.ngnice.com/">http://www.ngnice.com/</a>这是由一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是:</p>
