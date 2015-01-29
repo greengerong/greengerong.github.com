@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为： ----------------------------------------------------- at org.apache. &hellip;">
+  <meta name="description" content="最近遇见angularjs 在IE上当使用ng-options作为select的选项数据源，并且被套在ng-switch（ng-transclude）之类的，当angular上得ng-options数据源model改变后，在IE上并不渲染。 在一阵的测试和阅读相关文档后最后确认为：因为ng- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,84 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-08T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近遇见angularjs 在IE上当使用ng-options作为select的选项数据源，并且被套在ng-switch（ng-transclude）之类的，当angular上得ng-options数据源model改变后，在IE上并不渲染。</p>
+
+<p>在一阵的测试和阅读相关文档后最后确认为：因为ng-switch（ng-transclude）是为了使其scope为原来的父scope，在父scope上生成了DOM后才克隆(cloneNode)到指定的指令位置。然而IE在对于select克隆的节点，不会主动去触发重绘，所以才有了上面的issue。</p>
+
+<p>问题确定了，那我们所需要做的就是手动的去触发让IE对Select重绘，尝试了很多办法后最终确认有效的是：首先在options上用原生js去添加一个option，在马上移除掉这个option，所以解决方案如下：</p>
+
+<pre class='green'><code>angular.module('ie.select', [])
+.directive('ieSelectFix', [
+    function () {
+        return {
+            restrict: 'A',
+            require: 'select',
+            link: function (scope, element, attributes) {
+                var isIE = document.attachEvent;
+                if (!isIE) return;
+
+                var control = element[0];
+                scope.$watch(attributes.ieSelectFix, function () {
+                    //it should be use javascript way, not jquery way.
+                    var option = document.createElement("option");
+                    control.add(option, null);
+                    control.remove(control.options.length - 1);
+                });
+            }
+        }
+    }
+]);
+</code></pre>
+
+<p>使用方式如下：</p>
+
+<pre class='green'><code>&lt;select ie-select-fix="options" ng-model="demos" class="form-control"
+        ng-options="currOption.value as currOption.text for currOption in options"&gt;
+    &lt;option value="" default&gt;Select&lt;/option&gt;
+&lt;/select&gt;
+</code></pre>
+
+<p>我也在我的github专门创建了一个针对angularjs在IE上issue的项目，收录了这个指令，在后续也会加入我所遇见的angularjs关于ie的issue，也希望大家帮助完善这个项目，让我们的angularjs程序在IE工作的更美好，让我们这些辛苦的程序猿也少一点加班时间，多一点陪家人，泡咖啡的时间。哈哈。</p>
+
+<p>github项目地址：<a href="https://github.com/greengerong/angular-ie-enhancer">https://github.com/greengerong/angular-ie-enhancer</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -970,118 +1048,6 @@ public void shouldGetPersonFromCsv() throws Exception {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">利用Travis CI 让你的github项目持续构建(Node.js为例)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis CI每天运行超过4000次完整构建。对于做开源项目或者github的使用者，如果你的项目还没有加入Travis CI构建队列，那么我真的想对你说out了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面是本人的构建历史：</p>
-
-<p>&nbsp;<img src="http://images.cnitblog.com/blog/63184/201304/14093241-01c09362fb72431dabed0cb6635a0fdb.png" alt="" /></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp; 搭建Travis CI build，需要你有个github账号和github项目：</p>
-
-<p>1：用github账号登陆<a href="http://travis-ci.org">Travis CI</a>.</p>
-
-<h5>2 :在右上角你的账户名点击进入 account，在Repositories tab页点击Sync now同步你的github项目，</h5>
-
-<p>3：选中项目将默认的off改变为on开启项目的持续集成。</p>
-
-<p>4：在你项目的根目录建立一个.travis.yml文件，内容为：</p>
-
-<p>language: node_js</p>
-
-<p>node_js:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.4&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.6</p>
-
-<p>5: 在打开你的node.js的package.json文件，确保加入script/test节点：</p>
-
-<p>&ldquo;scripts&rdquo;: {</p>
-
-<p>&nbsp; &nbsp; &ldquo;test&rdquo;: &ldquo;XXXX&rdquo;</p>
-
-<p>&nbsp; },</p>
-
-<p>这里你可惜选择mak或者jasmine-node等node.js测试框架的测试命令。并且可以把依赖加入package的depends</p>
-
-<p>6：在你项目中运行npm test，确保正常工作。</p>
-
-<p>7： check in你的code到github，代开tracivs
-ci界面等待其同步并运行你的build构建。</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp; 如果你需要将你的build构建状态放在一个显眼的位置或者项目readme，你可以在首页My Repositories中找到项目并设置中复制状态图片code，形如：</p>
-
-<p><code>markdown
-  [![Build Status]([https://travis-ci.org/greengerong/
-  qing.png?branch=master)](https://travis-ci.org/greengerong/
-  qing](https://travis-ci.org/greengerong/qing.png?
-  branch=master)%5D(https://travis-ci.org/greengerong/qing))
- </code></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;
-Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<a href="http://about.travis-ci.org/docs/">Travis Docs</a>.</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在上面提到的travis.yml文件中我们还可以加入build前后执行脚本，形如：</p>
-
-<p>before_script:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_1&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_2</p>
-
-<p>after_script:&nbsp;&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_1&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_2</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; &nbsp;将你的开源项目加入Travis CI队列吧，很容易让你的项目加入持续集成，持续构建队列。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/14/3019838.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -1115,6 +1081,10 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW新版技术雷达中文版发布</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
       </li>
     
@@ -1140,10 +1110,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
     
       <li class="post">
         <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a>
       </li>
     
   </ul>
