@@ -36,7 +36,9 @@ thoughtworks技术雷达是以独特的形式记录ThoughtWorks技术顾问委�
 
 
 另外本期thoughtworks技术雷达也基于大家的反馈加强了互动性:
+
 * [雷达A到Z](http://engage.thoughtworks.com/f00pP0n05H00bD0QQQEgO07):你现在可以在雷达上浏览任何曾经出现在雷达历史里的条目，你也可以直接搜索一项你感兴趣的技术。
+
 * [消退的条目](http://engage.thoughtworks.com/lpDQh000nb5O0E0P70Q0I0Q):那些曾经出现在早期技术雷达但现在已经消失的条目，现在会被清晰地标注为消退状态。
 
 希望技术雷达能够激励各位看官思考自己或者项目的技术选择，同时在可能的情况下提升您或者你项目团队的技术能力。 更希望您去"[建立个人或者项目技术雷达](http://engage.thoughtworks.com/I0b0JQ50n7OiQP0Q0p0DE00)".
