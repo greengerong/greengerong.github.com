@@ -6,6 +6,7 @@ comments: true
 categories: [Tech Radar]
 ---
 ![tw技术雷达](/images/blog_img/tw-技术雷达.png)
+
 今天thoughtworks 2015新版技术雷达pdf发布了，你可以从这里下载[http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP](http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP)，在这里你可以了解到我们都在用什么技术，那些技术是推荐的，那么技术是不再推荐的。
 
 ##thoughtworks技术雷达
