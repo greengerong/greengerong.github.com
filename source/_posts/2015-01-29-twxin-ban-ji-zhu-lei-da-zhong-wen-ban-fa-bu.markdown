@@ -5,7 +5,8 @@ date: 2015-01-29 09:55:53 +0800
 comments: true
 categories: [Tech Radar]
 ---
-今天thoughtworks 2015新版技术雷达pdf发布了，你可以从这里下载http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP，在这里你可以了解到我们都在用什么技术，那些技术是推荐的，那么技术是不再推荐的。
+![tw技术雷达](/images/blog_img/tw-技术雷达.png)
+今天thoughtworks 2015新版技术雷达pdf发布了，你可以从这里下载[http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP](http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP)，在这里你可以了解到我们都在用什么技术，那些技术是推荐的，那么技术是不再推荐的。
 
 ##thoughtworks技术雷达
 thoughtworks技术雷达是以独特的形式记录ThoughtWorks技术顾问委员会的讨论结果，为从首席信息官到开发人员在内的各路利益相关方提供价值。这些内容只是简要的总结，但建议您探究这些技术以了解更多细节。这个雷达是图形性质的，把各种技术项目归类为技术、工具、平台和语言及框架四个象限。 
