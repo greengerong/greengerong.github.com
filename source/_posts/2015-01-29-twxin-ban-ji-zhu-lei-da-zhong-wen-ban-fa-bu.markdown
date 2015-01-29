@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "TW新版技术雷达中文版发布"
+title: "TW2015技术雷达中文版发布"
 date: 2015-01-29 09:55:53 +0800
 comments: true
 categories: [Tech Radar]
