@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-03-14T17:54:43+08:00</updated>
+  <updated>2015-03-14T17:55:26+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -122,6 +122,8 @@ GROUP BY field
 </code></pre>
 
 <p>这样返回数据满足我们的需求了。</p>
+
+<hr />
 
 <p>下面我们来分析下这句SQL，</p>
 
