@@ -146,11 +146,12 @@ SQL:
 	WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
 	GROUP BY field
 
-下过如上。
+效果如上。
 
 对于sql行列转置可以简述为分为两部分：
 
 1. 利用条件逻辑(mysql： IF， sql server： case ... when ..)将 需要倒置的数据变为列。
 2. 利用聚合函数(sum、max、min...)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。
+
 
 
