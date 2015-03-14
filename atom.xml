@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-03-07T16:41:06+08:00</updated>
+  <updated>2015-03-14T17:50:19+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,174 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SQL 行列倒置]]></title>
+    <link href="http://greengerong.github.io/blog/2015/03/14/sql-xing-lie-dao-zhi/"/>
+    <updated>2015-03-14T17:06:28+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/03/14/sql-xing-lie-dao-zhi</id>
+    <content type="html"><![CDATA[<p>SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。</p>
+
+<p>首先我们需要创建数据库Schema：</p>
+
+<pre class='green'><code>    CREATE TABLE Chart
+        (`createTime` DateTime, `kpi` varchar(30), `field` varchar(30), `value` double);
+
+    INSERT INTO Chart
+        (`createTime`,`kpi`, `field`, `value`)
+    VALUES
+        ("2015-02-01 12:00:00", 'disk', 'disk', 20),
+        ("2015-02-01 12:15:00", 'disk', 'disk', 30),
+        ("2015-02-01 12:20:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:30:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:35:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:40:00", 'disk', 'disk', 25),
+
+        ("2015-02-01 12:00:00", 'disk', 'disk-all', 20),
+        ("2015-02-01 12:20:00", 'disk', 'disk-all', 30),
+        ("2015-02-01 12:25:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:30:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:35:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:40:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:40:00", 'cpu', 'cpu-all', 25),
+        ("2015-02-01 12:40:00", 'cpu', 'cpu', 25)
+    ;
+</code></pre>
+
+<p>在这里字段分别代表：createTime = 数据采集时间，kpi = 数据采集指标，field = 作为指标的小类(一个kpi可以包含多个field)，value = 采集的数据</p>
+
+<p>当我们创建好了数据结构，下面因为我们希望获取出所有的 固定时间范围内的特定kpi的数据，注意因为可能一个kpi中的多个field，但是某些field漏采了部分时间的数据，所以这里我们需要补充异常点0. 并由于EChart这类图表库，希望我们输入的是横轴和纵轴为两个独立的数组对象表示。所以我们需要如下：</p>
+
+<pre class='green'><code>option = {
+    ....
+
+    xAxis : [
+        {
+            type : 'category',
+            boundaryGap : false,
+            data : ['周一','周二','周三','周四','周五','周六','周日']
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value',
+            axisLabel : {
+                formatter: '{value} °C'
+            }
+        }
+    ],
+    series : [
+        {
+            ....
+            data:[11, 11, 15, 13, 12, 13, 10]
+        },
+        {
+           ....
+            data:[11, 11, 15, 13, 12, 13, 10]
+        }
+    ]
+};
+</code></pre>
+
+<p>取出横轴比较容易，如下：</p>
+
+<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>但是纵轴如果我们以同样方式取出，可能存在需要我们自动程序补值，并且需要保证每项数据和横轴对应，所以我们的程序处理会比较复杂，如下：</p>
+
+<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>结果为：</p>
+
+<pre class='green'><code>createTime  kpi field   value
+February, 01 2015 12:00:00  disk    disk    20
+February, 01 2015 12:15:00  disk    disk    30
+February, 01 2015 12:20:00  disk    disk    25
+February, 01 2015 12:00:00  disk    disk-all    20
+February, 01 2015 12:20:00  disk    disk-all    30
+February, 01 2015 12:25:00  disk    disk-all    25
+</code></pre>
+
+<p>有没有其他方案更佳的呢？当然那就是本文要说的sql的倒置，如果我们能够把返回数据转换为如下：</p>
+
+<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
+disk         20                            30                     25                       0
+disk-all     20                             0                     30                       25
+</code></pre>
+
+<p>那么程序就很好处理了。在上面我们已经能够取出所有的横轴数据并排序，接下来我们将可以很简单的做到行列倒置：如下：</p>
+
+<pre class='green'><code>SELECT field,
+SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
+SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
+SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
+SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
+GROUP BY field
+</code></pre>
+
+<p>这样返回数据满足我们的需求了。</p>
+
+<p>下面我们来分析下这句SQL，</p>
+
+<ol>
+<li>首先我们利用‘IF(createTime = &lsquo;2015-02-01 12:00:00&rsquo;, value, 0)’来处理插值，并对每行数据转为以时间为列数据,并可以利用IF来补’0‘，将会如下：</li>
+</ol>
+
+
+<p>SQL：</p>
+
+<pre class='green'><code>SELECT field,
+IF(createTime = '2015-02-01 12:00:00', value, 0) as '2015-02-01 12:00:00',
+IF(createTime = '2015-02-01 12:15:00', value, 0) as '2015-02-01 12:15:00',
+IF(createTime = '2015-02-01 12:20:00', value, 0) as '2015-02-01 12:20:00',
+IF(createTime = '2015-02-01 12:25:00', value, 0) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>结果为：</p>
+
+<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
+disk               20                       0                       0                       0
+disk                0                       30                      0                       0
+disk                0                       0                       25                      0
+disk-all            20                      0                       0                       0
+disk-all            0                       0                       30                      0
+disk-all            0                       0                       0                       25
+</code></pre>
+
+<ol>
+<li>这下我们就可以利用sql的聚合函数sum和group by来聚合数据行：</li>
+</ol>
+
+
+<p>SQL:</p>
+
+<pre class='green'><code>SELECT field,
+SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
+SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
+SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
+SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
+GROUP BY field
+</code></pre>
+
+<p>下过如上。</p>
+
+<p>对于sql行列转置可以简述为分为两部分：</p>
+
+<ol>
+<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when ..)将 需要倒置的数据变为列。</li>
+<li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[TW2015技术雷达中文版发布]]></title>
@@ -2394,57 +2562,6 @@ afterEach(function() {
 </code></pre>
 
 <p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ng Http Request/response格式转换]]></title>
-    <link href="http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest/"/>
-    <updated>2014-09-02T22:59:05+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/09/02/ng-http-transformrequest</id>
-    <content type="html"><![CDATA[<p>angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$http默认request/response格式转化方式。</p>
-
-<p>所幸的是ng $http给我们提供了多种可用方式转化数据格式(下面demo将以form提交方式为例):</p>
-
-<p>***对于部分单独的http request设置：</p>
-
-<p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
-
-<pre class='green'><code>$http.post("/url", {
-      id: 1,
-      name: "greengerong"
-    }, {
-      transformRequest: function(request) {
-        return $.param(request);
-    }
-});
-</code></pre>
-
-<p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
-
-<pre class='green'><code>id=1&amp;name=greengerong
-</code></pre>
-
-<p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
-
-<p>***对于整个app的http request设置：</p>
-
-<p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
-
-<pre class='green'><code>angular.module("app", [])
-.config(["$httpProvider", function($httpProvider) {
-      $httpProvider.defaults.transformRequest = [
-        function(request) {
-          return $.param(request);
-        }
-      ];
-    }
-]);
-</code></pre>
-
-<p>这样我们就可以轻易的转化为form提交方式。</p>
-
-<p>同样$http也为我们提供了transformResponse方式，我们也可以创建自己的response转化，比如json之前加入自定义前缀防止json array攻击等等。</p>
 ]]></content>
   </entry>
   

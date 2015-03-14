@@ -9,7 +9,8 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="Excel转化货币数字为中文大写：例如： 效果图： 代码： =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[ &hellip;">
+  <meta name="description" content="在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。 解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
+默认是 PK%.U27:TABLE%，U27表示截取27个字符。改成PK% &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +66,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">PD设计中表名过长，自动生成的主外键名截取的问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。</p>
+
+<p>解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
+默认是 <span style="color: red">PK<em>%.U27:TABLE%</span>，<span style="color: red">U27</span>表示截取27个字符。改成PK</em>%TABLE%主键名就不会被截取了。</p>
+
+<p>其他键同理：找到相应的ConstName Value去掉U.\d:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/27/1996786.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -961,126 +1008,6 @@ namespace WolfT4 {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/22/Razor-Templating-Engine/">Razor Templating Engine</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-12-22T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/12/22/Razor-Templating-Engine/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/12/22/Razor-Templating-Engine/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 最近遇到html模板解析，我完全可以用MS的T4模板或者是StringTemplate等其他的模板来做，但是出于尝试和对Razor语发的感兴趣，便翻了翻Razor模板的资料，其CodePlex主页<a href="http://razorengine.codeplex.com/" title="http://razorengine.codeplex.com/">http://razorengine.codeplex.com/</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面讲的都是一些其主页上面的例子，所以请大家别拍砖。别后面想到有些实际意义的例子在写个具体的运用例子吧。</p>
-
-<pre class='green'><code>     public static class Razor 
-    { 
-        public static string Parse(string template, string name = null); 
-        public static string Parse&lt;T&gt;(string template, T model, string name = null); 
-        public static void SetLanguageProvider(ILanguageProvider provider); 
-        public static void SetMarkupParser(MarkupParser parser); 
-        public static void SetTemplateBaseType(Type type); 
-    }
-</code></pre>
-
-<p>在Razor这个静态类中最重要的方法当然是我们的Parse方法了，其有两个重载，在第二个重载在我们可以传入Template的Model，了解asp.net mvc都会知道这个Model。同时我们可以用SetLanguageProvider方法传入LanguageProvider（C#、VB）等，SetTemplateBaseType传入模板BaseType（可能是我们的自定义类型）。</p>
-
-<p>1：先来个简单的Template：</p>
-
-<pre class='green'><code>static void Main(string[] args) 
-           { 
-               string template = "Hello @Model.Name! Welcome to Razor!"; 
-               string result = Razor.Parse(template, new { Name = "World" });         
-               Console.WriteLine(result); 
-               Console.Read(); 
-           }
-</code></pre>
-
-<p>输出结果：</p>
-
-<p>Hello World! Welcome to Razor!</p>
-
-<p>在这里我们传入的是new { Name = &ldquo;World&rdquo; }的匿名对象的Model。</p>
-
-<p>2：内部嵌套方法：</p>
-
-<pre class='green'><code>string template = @"@helper MyMethod(string name) {
-
-    Hello @name
-
-}
-
-@MyMethod(Model.Name)! Welcome to Razor!"; 
-
-string result = Razor.Parse(template, new { Name = "World" });
-</code></pre>
-
-<p> 输出同样是上边的结果，但是注意这里的与上面不同的是在{}中间的空格等是不会忽略的。我的理解是同样是一个模板的形式吧。</p>
-
-<p>3：传递模板参数：</p>
-
-<p>在传递参数的情况下我们可以采用自定义类，继承至TemplateBase 或者TemplateBase&lt;T&gt;，后者是带Model的情形。</p>
-
-<p>还是官方的例子来看看，</p>
-
-<pre class='green'><code>static void Main(string[] args) 
-    { 
-        Razor.SetTemplateBaseType(typeof(MyCustomTemplateBase&lt;&gt;));
-
-        string template = "My name in UPPER CASE is: @ToUpperCase(Model.Name)"; 
-        string result = Razor.Parse(template, new { Name = "Matt" });
-
-        Console.WriteLine(result); 
-        Console.Read(); 
-    } 
-} 
-public abstract class MyCustomTemplateBase&lt;T&gt; : TemplateBase&lt;T&gt; 
-{ 
-    public string ToUpperCase(string name) 
-    { 
-        return name.ToUpper(); 
-    } 
-}
-</code></pre>
-
-<p>输出结果为：My name in UPPER CASE is: MATT。</p>
-
-<p>在我们的MyCustomTemplateBase&lt;T&gt;抽象类中我们可以像MVC一样定义一些辅助属性和方法，像html、Request、Response等辅助类等</p>
-
-<p>有事我们需要自定义一些非modle的非static property给Template，我的考虑是在TemplateService 中的重写Parse方法中初始化Action：
-public string Parse&lt;T&gt;(string template, T model, string name = null，Action&lt;ITemplate&lt;dynamic&gt;&gt; initAction);</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/22/1913718.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/12/">&larr; Older</a>
@@ -1114,6 +1041,10 @@ public string Parse&lt;T&gt;(string template, T model, string name = null，Acti
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
       </li>
     
@@ -1139,10 +1070,6 @@ public string Parse&lt;T&gt;(string template, T model, string name = null，Acti
     
       <li class="post">
         <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a>
       </li>
     
   </ul>

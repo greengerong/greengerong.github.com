@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步angularjs移除不必要的$watch. 也是一次偶然的机会，在Angular. &hellip;">
+  <meta name="description" content="在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,159 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/21/angular-form-addControl/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/21/angular-form-addControl/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
+
+<p>下面且让我们先来从angular源码中看起如下：</p>
+
+<p>首先是ngModel：</p>
+
+<pre class='green'><code>    var ngModelDirective = function() {
+      return {
+        require: ['ngModel', '^?form'],
+        controller: NgModelController,
+        link: function(scope, element, attr, ctrls) {
+          // notify others, especially parent forms
+
+          var modelCtrl = ctrls[0],
+              formCtrl = ctrls[1] || nullFormCtrl;
+
+          formCtrl.$addControl(modelCtrl);
+
+          scope.$on('$destroy', function() {
+            formCtrl.$removeControl(modelCtrl);
+          });
+        }
+      };
+    };
+</code></pre>
+
+<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
+
+<p>在看看ngModel controller初始化代码：</p>
+
+<pre class='green'><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+        function($scope, $exceptionHandler, $attr, $element, $parse) {
+     ....
+      this.$pristine = true;
+      this.$dirty = false;
+      this.$valid = true;
+      this.$invalid = false;
+      this.$name = $attr.name;
+</code></pre>
+
+<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
+
+<p>而FormController的addControl代码则是：</p>
+
+<pre class='green'><code>    /**
+     * @ngdoc function
+     * @name ng.directive:form.FormController#$addControl
+     * @methodOf ng.directive:form.FormController
+     *
+     * @description
+     * Register a control with the form.
+     *
+     * Input elements using ngModelController do this automatically when they are linked.
+     */
+    form.$addControl = function(control) {
+      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
+      // and not added to the scope.  Now we throw an error.
+      assertNotHasOwnProperty(control.$name, 'input');
+      controls.push(control);
+
+      if (control.$name) {
+        form[control.$name] = control;
+      }
+    };
+</code></pre>
+
+<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
+
+<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
+
+<h3>手动注册form controller</h3>
+
+<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
+
+<p>如下：</p>
+
+<pre class='green'><code>    .directive("dyName", [
+
+        function() {
+          return {
+            require: "ngModel",
+            link: function(scope, elm, iAttrs, ngModelCtr) {
+              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
+              var formController = elm.controller('form') || {
+                $addControl: angular.noop
+              };
+              formController.$addControl(ngModelCtr);
+
+              scope.$on('$destroy', function() {
+                formController.$removeControl(ngModelCtr);
+              });
+
+            }
+          };
+        }
+      ])
+</code></pre>
+
+<p>使用方式：</p>
+
+<pre class='green'><code>    &lt;div ng-repeat="item in demo.fields"&gt;
+      &lt;div class="control-group"&gt;
+        &lt;label class="control-label"&gt; : &lt;/label&gt;
+        &lt;div class="controls"&gt;
+          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
+
+<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
+
+<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -923,83 +1076,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/08/prerender-seo-for-single-page-application/">prerender-SPA程序的SEO优化策略</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-08T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/12/08/prerender-seo-for-single-page-application/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/08/prerender-seo-for-single-page-application/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>随着web2.0的兴起，ajax的时代已经成为了事实，更如今Knockout,backbone, angular,ember前端MDV(model driver view)框架强势而来，Single Page Application已经为大家所熟悉了。如今常见的SPA程序，restfull和前端MDV之类的框架能够实实在在的减少我们的代码开发量，让我更多的注意力关注在真正的业务逻辑上。在众多前端MDV框架从博客中可以看出来笔者还是钟爱于angular，然而服务端平台的选择的话：在.net平台笔者会首选webapi+oData,jvm平台spring restfull。</p>
-
-<p>但是相应带来的是搜索引擎优化(SEO)是个难题，因为爬虫不会去执行JavaScript。现在很幸运的是在Google推出angular之后，也给出了一些解决方案：<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">Google&rsquo;s ajax crawling protocol</a>.此协议现在已被Google和bing所实现。</p>
-
-<p>在协议中规定，搜索引擎会把带有#!someurl的链接转换为<em>escaped_fragment</em>=someurl访问解析，例如：</p>
-
-<pre class='green'><code>www.example.com/ajax.html#!key=value
-</code></pre>
-
-<p>将会变为</p>
-
-<pre class='green'><code>www.example.com/ajax.html?_escaped_fragment_=key=value
-</code></pre>
-
-<p>所以如果我们需要更好的SEO的支持的话，我们可以从现在开始把我们程序中的#变为#！,特别angular程序，因为框架原生支持对#！的解析。</p>
-
-<p>基于这个协议和phantomjs(headless的浏览器内核)我们的SPA SEO工具 <a href="http://prerender.io/">prerender(http://prerender.io/)</a>应运而生，在官方和社区的支持下，现在已经有node.js express,ruby on rails,java,asp.net,php,python主流框架和nginx之类的支持。</p>
-
-<p>prerender架构流程图如下：</p>
-
-<p><img src="/images/blog_img/prerender.jpg" alt="/images/blog_img/prerender.jpg" /></p>
-
-<p>prerender分为两个部分一部分为后端云服务和应用程序客户端，客户端主要拦截来自爬虫的请求在转发到后端云服务处理返回处理后并且去掉多余script/css的html在返回给爬虫。</p>
-
-<p>后端云服务（nodejs项目），利用phantomjs这个无ui headless的浏览器内核加载页面地址，并等到页面解析后获取document html，并处理去掉无用的部分返回到前段客户端程序。</p>
-
-<p>而前段程序则为不同语言框架而实现的不同拦截器，如java的filter，asp.net mvc的HttpModule，主要任务为拦截请求并转发给后端云服务处理。其拦截规则为：</p>
-
-<ol>
-<li>检查url中是否带有<em>escaped_fragment</em>或者请求user-agent是已知或者配置的爬虫user-agent</li>
-<li>确认拦截的不是js,css之类的资源文件</li>
-<li>在确认url是在白名单中（可选如果配置的白名单的话）</li>
-<li>确认不应该在黑名单中(可选如果配置了黑名单的话)</li>
-</ol>
-
-
-<p>注：最好值配置黑名单或者白名单中的一种方式。</p>
-
-<p>有了prerender，因为SEO而放弃SPA不再是理由了，关于prerender的任何issue大家可以及时提出，让它更加完善。具体关于如何使用和测试请转向主页和各个client程序页面，<a href="http://prerender.io/">http://prerender.io/</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1033,6 +1109,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
       </li>
     
@@ -1058,10 +1138,6 @@
     
       <li class="post">
         <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a>
       </li>
     
   </ul>
