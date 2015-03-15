@@ -252,7 +252,7 @@ GROUP BY field
 <p>对于sql行列转置可以简述为分为两部分：</p>
 
 <ol>
-<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when ..)将 需要倒置的数据变为列。</li>
+<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when(sql server 2005开始支持数据透视表pivot) ..)将 需要倒置的数据变为列。</li>
 <li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
 </ol>
 
