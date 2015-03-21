@@ -86,7 +86,7 @@ ReflectionUtil中包含以下几种功能：
 
 比较常用的做法有以下两种：
 
-1. 强制FooChild传入自己的class类型(这也是比较常用的做法)：
+####强制FooChild传入自己的class类型(这也是比较常用的做法)：
 
 
 	public abstract class Foo<T> {
@@ -106,7 +106,7 @@ ReflectionUtil中包含以下几种功能：
 	} 
 
 
-2. 利用反射获取：
+####利用反射获取：
 
 
 	public static Type[] getParameterizedTypes(Object object) {
