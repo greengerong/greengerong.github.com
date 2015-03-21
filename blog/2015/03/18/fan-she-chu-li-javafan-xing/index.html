@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>(翻译)反射处理java泛型 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="当我们声明了一个泛型的接口或类，或需要一个子类继承至这个泛型类，而我们又希望利用反射获取这些泛型参数信息。这就是本文将要介绍的ReflectionUtil就是为了解决这类问题的辅助工具类，为java.lang.reflect标准库的工具类。它提供了便捷的访问泛型对象类型(java.reflect. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2015/03/18/fan-she-chu-li-javafan-xing">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">(翻译)反射处理java泛型</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-18T21:08:30+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2015</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>当我们声明了一个泛型的接口或类，或需要一个子类继承至这个泛型类，而我们又希望利用反射获取这些泛型参数信息。这就是本文将要介绍的<strong>ReflectionUtil</strong>就是为了解决这类问题的辅助工具类，为<strong>java.lang.reflect</strong>标准库的工具类。它提供了便捷的访问泛型对象类型(java.reflect.Type)的反射方法。</p>
+
+<p>本文假设你已经了解java反射知识，并能熟练的应用。如果还不了解java反射知识，那么你可以先移步到<a href="http://docs.oracle.com/javase/tutorial/reflect">Oracel反射课程</a>,这可能是你开始学习反射的好起点.</p>
+
+<p>ReflectionUtil中包含以下几种功能：</p>
+
+<ol>
+<li>通过Type获取对象class;</li>
+<li>通过Type创建对象;</li>
+<li>获取泛型对象的泛型化参数;</li>
+<li>检查对象是否存在默认构造函数;</li>
+<li>获取指定类型中的特定field类型;</li>
+<li>获取指定类型中的特定method返回类型;</li>
+<li>根据字符串标示获取枚举常量;</li>
+<li>ReflectionUtil下载地址.</li>
+</ol>
+
+
+<h2>通过Type获取对象class</h2>
+
+<pre class='green'><code>private static final String TYPE_NAME_PREFIX = "class ";
+
+public static String getClassName(Type type) {
+    if (type==null) {
+        return "";
+    }
+    String className = type.toString();
+    if (className.startsWith(TYPE_NAME_PREFIX)) {
+        className = className.substring(TYPE_NAME_PREFIX.length());
+    }
+    return className;
+}
+
+public static Class&lt;?&gt; getClass(Type type) 
+            throws ClassNotFoundException {
+    String className = getClassName(type);
+    if (className==null || className.isEmpty()) {
+        return null;
+    }
+    return Class.forName(className);
+}
+</code></pre>
+
+<p>方法ReflectionUtil#getClass(Type)实现了从<strong>java.lang.reflect.Type</strong>获取<strong>java.lang.Class</strong>对象名称。这里利用了Type的toString方法获取所在类型的class。如<strong>&ldquo;class some.package.Foo&rdquo;</strong>,截取后部分class名称，在利用<strong>Class.forName(String)</strong>获取class对象。</p>
+
+<h1>通过Type创建对象</h1>
+
+<pre class='green'><code>public static Object newInstance(Type type) 
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    Class&lt;?&gt; clazz = getClass(type);
+    if (clazz==null) {
+        return null;
+    }
+    return clazz.newInstance();
+}
+</code></pre>
+
+<p>方法ReflectionUtil#newInstance(Type type)实现根据Type构造对象实例。在这里输入的Type不能是抽象类、接口、数组类型、以及基础类型、Void否则会发生InstantiationException异常。</p>
+
+<h1>获取泛型对象的泛型化参数</h1>
+
+<p>首先假设我们有如下两个对象：</p>
+
+<pre class='green'><code>public abstract class Foo&lt;T&gt; {
+    //content
+}
+
+public class FooChild extends Foo&lt;Bar&gt; {
+    //content
+} 
+</code></pre>
+
+<p>怎么获取子类在Foo中传入的泛型Class<T>类型呢？</p>
+
+<p>比较常用的做法有以下两种：</p>
+
+<ol>
+<li><p>强制FooChild传入自己的class类型(这也是比较常用的做法)：</p>
+
+<p> public abstract class Foo<T> {
+     private Class<T> tClass;</p>
+
+<pre class='green'><code> public Foo(Class&lt;T&gt; tClass) {
+     this.tClass = tClass;
+ }
+ //content
+</code></pre>
+
+<p> }</p>
+
+<p> public class FooChild extends Foo<Bar> {
+     public FooChild() {
+         super(FooChild.class);
+     }
+     //content
+ }</p></li>
+<li><p>利用反射获取：</p>
+
+<p> public static Type[] getParameterizedTypes(Object object) {
+     Type superclassType = object.getClass().getGenericSuperclass();
+     if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+         return null;
+     }
+     return ((ParameterizedType)superclassType).getActualTypeArguments();
+ }</p></li>
+</ol>
+
+
+<p>方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。</p>
+
+<p>为了Foo得到T的类型我们将会如下使用此方法：</p>
+
+<pre class='green'><code>...
+Type[] parameterizedTypes = ReflectionUtil.getParameterizedTypes(this);
+Class&lt;T&gt; clazz = (Class&lt;T&gt;)ReflectionUtil.getClass(parameterizedTypes[0]);
+...
+</code></pre>
+
+<p><strong>注意</strong>:</p>
+
+<p>在java.lang.reflect.ParameterizedType#getActualTypeArguments() documentation:的文档中你能看见如下文字：</p>
+
+<pre class='green'><code>in some cases, the returned array can be empty. This can occur. if this type represents a non-parameterized type nested within a parameterized type.
+</code></pre>
+
+<p>当传入的对象为非泛型类型，则会返回空数组形式。</p>
+
+<h1>检查对象是否存在默认构造函数</h1>
+
+<pre class='green'><code>public static boolean hasDefaultConstructor(Class&lt;?&gt; clazz) throws SecurityException {
+    Class&lt;?&gt;[] empty = {};
+    try {
+        clazz.getConstructor(empty);
+    } catch (NoSuchMethodException e) {
+        return false;
+    }
+    return true;
+}
+</code></pre>
+
+<p>方法ReflectionUtil#hasDefaultConstructor利用java.lang.reflect.Constructor检查是否存在默认的无参构造函数。</p>
+
+<h1>获取指定类型中的特定field类型</h1>
+
+<p>public static Class&lt;?> getFieldClass(Class&lt;?> clazz, String name) {</p>
+
+<pre class='green'><code>if (clazz==null || name==null || name.isEmpty()) {
+    return null;
+}
+name = name.toLowerCase();
+Class&lt;?&gt; propertyClass = null;
+for (Field field : clazz.getDeclaredFields()) {
+    field.setAccessible(true);
+    if (field.getName().equals(name)) {
+        propertyClass = field.getType();
+        break;
+    }
+}
+return propertyClass;
+</code></pre>
+
+<p>}</p>
+
+<p>在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class&lt;?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class&lt;?>, String) 利用<strong>Class#getDeclaredFields()</strong>获取字段并循环比较<strong>ava.lang.reflect.Field#getName()</strong>字段名称，返回字段所对应的类型对象。</p>
+
+<h1>获取指定类型中的特定method返回类型</h1>
+
+<pre class='green'><code>public static Class&lt;?&gt; getMethodReturnType(Class&lt;?&gt; clazz, String name) {
+    if (clazz==null || name==null || name.isEmpty()) {
+        return null;
+    }   
+
+    name = name.toLowerCase();
+    Class&lt;?&gt; returnType = null;
+
+    for (Method method : clazz.getDeclaredMethods()) {
+        if (method.getName().equals(name)) {
+            returnType = method.getReturnType();
+            break;
+        }
+    }
+
+    return returnType;
+}
+</code></pre>
+
+<p>方法ReflectionUtil#getMethodReturnType(Class&lt;?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class&lt;?>, String)利用<strong>Class#getDeclaredMethods()</strong>并以<strong>ava.lang.reflect.Method#getName()</strong>比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).</p>
+
+<h1>根据字符串标示获取枚举常量</h1>
+
+<pre class='green'><code>@SuppressWarnings({ "unchecked", "rawtypes" })
+public static Object getEnumConstant(Class&lt;?&gt; clazz, String name) {
+    if (clazz==null || name==null || name.isEmpty()) {
+        return null;
+    }
+    return Enum.valueOf((Class&lt;Enum&gt;)clazz, name);
+}
+</code></pre>
+
+<p>方法ReflectionUtil#getEnumConstant(Class&lt;?>, String)为利用制定的枚举类型和枚举名称获取其对象。这里的名称必须和存在的枚举常量匹配。</p>
+
+<h1>ReflectionUtil下载地址</h1>
+
+<p>你可以从这里下载(ReflectionUtil.java)(<a href="http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java">http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java</a>).</p>
+
+<p>原英文版地址： <a href="http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/">http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-18T21:08:30+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/14/sql-xing-lie-dao-zhi/" title="Previous Post: SQL 行列倒置">&laquo; SQL 行列倒置</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+    <li><a href="http://www.davenkin.me/">无知者云</a></li>
+    <li><a href="http://agiledon.github.io/">简单文本</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2015/03/18/fan-she-chu-li-javafan-xing/';
+        var disqus_url = 'http://greengerong.github.io/blog/2015/03/18/fan-she-chu-li-javafan-xing/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

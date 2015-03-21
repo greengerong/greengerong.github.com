@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 前阵写了Linq的单表生成相对Sql执行的批量删除，总觉得删除条件太局限了，并且又不能屏蔽linq的级联条件，这很容易误导一些人。所以想了应该还是要支持才好。呵呵。 &nbsp;&nbsp;&nbsp;&nbsp; &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一直想写一个Code生成系列，但写到CodeSimth，发觉在TerryLee 和努力学习的小熊 两位大牛的博客里讲很详尽，所以就像写些示例方面的，但是苦于没有想到写些什么。最近Artech写了两篇从数据到代码 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,277 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban/">通过代码生成机制实现强类型编程-CodeSimth版</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-25T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/09/25/tong-guo-dai-ma-sheng-cheng-ji-zhi-shi-xian-qiang-lei-xing-bian-cheng-CodeSimth-ban/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一直想写一个Code生成系列，但写到CodeSimth，发觉在<a href="http://terrylee.cnblogs.com/archive/2005/12/28/306254.aspx">TerryLee</a> 和<a href="http://www.cnblogs.com/Bear-Study-Hard/category/43725.html">努力学习的小熊</a> 两位大牛的博客里讲很详尽，所以就像写些示例方面的，但是苦于没有想到写些什么。最近<a href="http://www.cnblogs.com/artech/">Artech</a>写了两篇<a href="http://www.cnblogs.com/artech/archive/2010/09/16/1827499.html">从数据到代码&#8212;&#8212;通过代码生成机制实现强类型编程&mdash;上篇和下篇</a>，大牛写得是CodeDom的，今天我就想借借大牛的示例写个CodeSimth版的，希望<a href="http://www.cnblogs.com/artech/">Artech</a>不要怪我，呵呵。我的Code生成技术已经写了CodeDom的见<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/09/1774279.html">CodeDom系列目录</a>，欢迎各位园友指教。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好直接到主题。首先是数据实体MessageEntry（我到老A的基础上添加了description属性作为代码字段描述）：</p>
+
+<pre class='green'><code>       public class MessageEntry 
+        { 
+            public string Id { get; private set; } 
+            public string Value { get; private set; }        
+            public string Description { get; private set; } 
+            public MessageEntry(string id, string value) 
+            { 
+                this.Id = id; 
+                this.Value = value;         
+            } 
+
+            public MessageEntry(string id, string value, string description) 
+            { 
+                this.Id = id; 
+                this.Value = value; 
+                this.Description = description; 
+            } 
+
+            public string Format(params object[] args) 
+            { 
+                return string.Format(this.Value, args); 
+            } 
+        } 
+</code></pre>
+
+<p>在我的机子上的CodeSimth是2..0版本的所以不能使用Linq命名空间，我又想利用这个空间，比较快捷，所以我就在先3.0转化为</p>
+
+<p>Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;实体再传入模板：</p>
+
+<p>Code：</p>
+
+<pre class='green'><code>     using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+    using System.Xml; 
+    using System.Xml.Linq; 
+
+    namespace Wolf 
+    { 
+        public class MessageCodeGenerator 
+        { 
+            public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; GeneratorCode(string  path) 
+            { 
+                return GeneratorCode(XElement.Load(path)); 
+            } 
+            public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; GeneratorCode(XElement root) 
+            { 
+
+                var elemts = root.Elements("message").GroupBy(e =&gt; ((XAttribute)e.Attribute("category")).Value); 
+                Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;  dict = new Dictionary&lt;string, List&lt;MessageEntry&gt;&gt;(); 
+                foreach (var item in elemts) 
+                { 
+                    List&lt;MessageEntry&gt; list = new List&lt;MessageEntry&gt;(); 
+                    foreach (var g in item) 
+                    { 
+                        if (g.Attribute("description") != null) 
+                        { 
+                            list.Add(new MessageEntry(((XAttribute)g.Attribute("id")).Value, ((XAttribute)g.Attribute("value")).Value, ((XAttribute)g.Attribute("description")).Value)); 
+                        } 
+                        else 
+                        { 
+                            list.Add(new MessageEntry(((XAttribute)g.Attribute("id")).Value, ((XAttribute)g.Attribute("value")).Value)); 
+                        } 
+
+                    } 
+                    dict.Add(item.Key.ToString(), list); 
+                } 
+                return dict; 
+
+            } 
+        } 
+    }
+</code></pre>
+
+<p> 这下就可以开始写模板了，见下Code：</p>
+
+<pre class='green'><code>      &lt;%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="Template description here." %&gt; 
+
+    &lt;%@ Import NameSpace="System" %&gt; 
+    &lt;%@ Import NameSpace="System.Xml" %&gt; 
+    &lt;%@ Import NameSpace="System.Text" %&gt; 
+    &lt;%@ Import NameSpace="System.Collections.Generic" %&gt; 
+    &lt;%@ Import NameSpace="Wolf" %&gt; 
+    &lt;%@ Assembly Name="Wolf" %&gt; 
+
+    &lt;script runat="template"&gt; 
+
+    private Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; dict; 
+    public Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; Generator 
+    { 
+        get 
+        { 
+            return dict; 
+        } 
+        set 
+        { 
+            dict=value; 
+        } 
+    } 
+
+    public string GeneratorCode() 
+            {            
+                string str = "using Wolf;\r\nusing System;\r\nusing System.Collections.Generic;\r\nnamespace Wolf.Message\r\n{ \r\n   public class Messages\r\n    {\r\n"; 
+                foreach (string catage in Generator.Keys) 
+                { 
+                    str += "        public class  "+catage + "\r\n        {        \r\n"; 
+                    foreach (Wolf.MessageEntry entry in Generator[catage]) 
+                    { 
+                        str += "\r\n            /// &lt;summary&gt;" + 
+                        "\r\n            ///" + entry.Description + 
+                        "\r\n            /// &lt;/summary&gt;" + 
+                        "\r\n            public static Wolf.MessageEntry " + entry.Id + " = new MessageEntry(\"" + entry.Id + "\", \"" + entry.Value +"\", \"" + entry.Value +"\");\r\n"; 
+                    } 
+                    str += "\r\n        }\r\n\r\n"; 
+
+                } 
+                str += "\r\n    }\r\n}"; 
+                return str; 
+            } 
+
+    &lt;/script&gt; 
+    //Copyright (C) Wolf.  All rights reserved. 
+    &lt;%=  GeneratorCode()%&gt;
+</code></pre>
+
+<p>很简单，就不说了，如果有问题请留言，其中命名空间完全可以以属性方式传入。</p>
+
+<p>XMl实体用的是老A的：</p>
+
+<pre class='green'><code> &lt;?xml version="1.0" encoding="utf-8" ?&gt;  
+    &lt;messages&gt;   
+    &lt;message id="MandatoryField" value="The {0} is mandatory."  category="Validation"  description="description" /&gt;   
+    &lt;message id="GreaterThan" value="The {0} must be greater than {1}."  category="Validation" description="description" /&gt;   
+    &lt;message id="ReallyDelete" value="Do you really want to delete the {0}."  category="Confirmation" description="description" /&gt;  
+&lt;/messages&gt;
+</code></pre>
+
+<p>我想脱离CodeSimth工具，所以在建立了一个控制台程序，引用CodeSmith.Engine.dll程序集。</p>
+
+<p>Code：</p>
+
+<pre class='green'><code> public static void Main(string[] args) 
+       { 
+          //    Wolf.Message.Messages.Confirmation.ReallyDelete.Value 
+           // test(); 
+           CodeTemplate template = CompileTemplate(@"E:\MyApp\LinqTest\ConsoleApplication1\MessageCodeGenerator.cst",s=&gt;Console.WriteLine(s)); 
+           if (template != null) 
+           { 
+               template.SetProperty("_MessageFilePath", ""); 
+               Wolf.MessageCodeGenerator gen = new MessageCodeGenerator(); 
+      Dictionary&lt;string, List&lt;MessageEntry&gt;&gt; dict = gen.GeneratorCode(@"E:\MyApp\LinqTest\ConsoleApplication1\Sample.xml"); 
+               template.SetProperty("Generator", dict); 
+               template.RenderToFile("gen.cs", true); 
+              // System.Diagnostics.Process.Start("gen.cs"); 
+           } 
+          // Console.Read(); 
+
+       }
+
+       public static CodeTemplate CompileTemplate(string templateName,Action&lt;string&gt; errorWriter) 
+       { 
+           CodeTemplateCompiler compiler = new CodeTemplateCompiler(templateName); 
+           compiler.Compile(); 
+
+           if (compiler.Errors.Count == 0) 
+           { 
+               return compiler.CreateInstance(); 
+           } 
+           else 
+           { 
+               for (int i = 0; i &lt; compiler.Errors.Count; i++) 
+               { 
+                   errorWriter(compiler.Errors[i].ToString()); 
+               } 
+               return null; 
+           } 
+
+       }
+</code></pre>
+
+<p>生成后的代码：</p>
+
+<p>&nbsp;</p>
+
+<pre class='green'><code> using Wolf; 
+using System; 
+using System.Collections.Generic; 
+namespace Wolf.Message 
+{ 
+    public class Messages 
+    { 
+        public class Validation 
+        { 
+
+            /// &lt;summary&gt; 
+            ///description 
+            /// &lt;/summary&gt; 
+            public static Wolf.MessageEntry MandatoryField = new MessageEntry("MandatoryField", 
+
+"The {0} is mandatory.", "The {0} is mandatory."); 
+
+            /// &lt;summary&gt; 
+            ///description 
+            /// &lt;/summary&gt; 
+            public static Wolf.MessageEntry GreaterThan = new MessageEntry("GreaterThan", 
+
+"The {0} must be greater than {1}.", "The {0} must be greater than {1}."); 
+
+        } 
+
+        public class Confirmation 
+        { 
+
+            /// &lt;summary&gt; 
+            ///description 
+            /// &lt;/summary&gt; 
+            public static Wolf.MessageEntry ReallyDelete = new MessageEntry("ReallyDelete", 
+
+"Do you really want to delete the {0}.", "Do you really want to delete the {0}."); 
+
+        } 
+
+    } 
+}
+</code></pre>
+
+<p>ok，全部完成。同时你也可以完全集成与VS中利用VSX Vs扩展，可以参考<a href="http://www.cnblogs.com/default/archive/2010/02/26/1674582.html">明年我18 的VSX系列</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/09/25/CodeSimthNamedCMessage.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -999,572 +1270,6 @@ if( r ) alert('You entered ' + r);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/">jQuery之筛选函数</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-05-01T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/05/01/jQuery-zhi-shai-xuan-han-shu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; jQuery的筛选函数提供了串联、查找和过滤函数，为我们的jQuery对象操作带来了很多的方便，今天我们就来温习下jQuery带来的这些筛选函数。</p>
-
-<hr />
-
-<h2>1：串联函数：</h2>
-
-<hr />
-
-<p>（1）：andSelf()</p>
-
-<p>return：jQuery；</p>
-
-<p>explain：</p>
-
-<p>加入先前所选的加入当前元素中</p>
-
-<p>对于筛选或查找后的元素，要加入先前所选元素时将会很有用。</p>
-
-<p>test：</p>
-
-<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
-
-<p>example：</p>
-
-<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).andSelf().addClass(&#8220;class1&#8221;);</p>
-
-<p>result：</p>
-
-<p>&lt;div&gt;&lt;p class=&#8221;class1&#8221;&gt;test&lt;/p&gt;&lt;/div&gt;</p>
-
-<hr />
-
-<p>(2):end()</p>
-
-<p>return :jQuery;</p>
-
-<p>explain:</p>
-
-<p>回到最近的一个&#8221;破坏性&#8221;操作之前。即，将匹配的元素列表变为前一次的状态。</p>
-
-<p>如果之前没有破坏性操作，则返回一个空集。所谓的&#8221;破坏性&#8221;就是指任何改变所匹配的jQuery元素的操作。这包括在 Traversing 中任何返回一个jQuery对象的函数&mdash;&lsquo;add&rsquo;, &lsquo;andSelf&rsquo;, &lsquo;children&rsquo;, &lsquo;filter&rsquo;, &lsquo;find&rsquo;, &lsquo;map&rsquo;, &lsquo;next&rsquo;, &lsquo;nextAll&rsquo;, &lsquo;not&rsquo;, &lsquo;parent&rsquo;, &lsquo;parents&rsquo;, &lsquo;prev&rsquo;, &lsquo;prevAll&rsquo;, &lsquo;siblings&rsquo; and &lsquo;slice&rsquo;&mdash;再加上 Manipulation 中的 &lsquo;clone&#8217;。</p>
-
-<p>test:</p>
-
-<p>&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;div&#8221;).find(&#8220;p&#8221;).end();</p>
-
-<p>//$(&#8220;div&#8221;).find(&#8220;p&#8221;)：&lt;p&gt;test&lt;/p&gt;</p>
-
-<p>result:&lt;div&gt;&lt;p&gt;test&lt;/p&gt;&lt;/div&gt;</p>
-
-<hr />
-
-<h2>2:查找函数:</h2>
-
-<hr />
-
-<p>(1):add(exp);</p>
-
-<p>return :jQuery;</p>
-
-<p>explain:</p>
-
-<p>把与表达式匹配的元素添加到jQuery对象中。这个函数可以用于连接分别与两个表达式匹配的元素结果集。</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;test1&lt;/p&gt;&lt;a&gt;test2&lt;/a&gt;</p>
-
-<p>example：</p>
-
-<p>$(&#8220;p&#8221;).add(&#8220;a&#8221;);</p>
-
-<p>result:</p>
-
-<p>[&lt;p&gt;test1&lt;/p&gt;,&lt;a&gt;test2&lt;/a&gt;]//数组</p>
-
-<hr />
-
-<p>(2):children([expr]);</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>取得一个包含匹配的元素集合中每一个元素的所有子元素的元素集合。</p>
-
-<p>可以通过可选的表达式来过滤所匹配的子元素。注意：parents()将查找所有祖辈元素，而children()之考虑子元素而不考虑所有后代元素。</p>
-
-<p>test:</p>
-
-<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;div&#8221;).children();</p>
-
-<p>result:&lt;span&gt;Hello Again&lt;/span&gt;</p>
-
-<hr />
-
-<p>(3):find(expr)</p>
-
-<p>return:jquery</p>
-
-<p>explain:</p>
-
-<p>搜索所有与指定表达式匹配的元素。这个函数是找出正在处理的元素的后代元素的好方法。</p>
-
-<p>所有搜索都依靠jQuery表达式来完成。这个表达式可以使用CSS1-3的选择器语法来写。</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;, how are you?&lt;/p&gt;</p>
-
-<p>example:</p>
-
-<p>$(&ldquo;p&rdquo;).find(&ldquo;span&rdquo;);</p>
-
-<p>result:&lt;span&gt;Hello&lt;/span&gt;</p>
-
-<hr />
-
-<p>(4):next([expr])</p>
-
-<p>return :jquery</p>
-
-<p>explain:</p>
-
-<p>取得一个包含匹配的元素集合中每一个元素紧邻的后面同辈元素的元素集合。</p>
-
-<p>这个函数只返回后面那个紧邻的同辈元素，而不是后面所有的同辈元素（可以使用nextAll）。可以用一个可选的表达式进行筛选。</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;a&gt;h1&lt;/a&gt;&lt;/p&gt;;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;span&#8221;).next();</p>
-
-<p>result:&lt;a&gt;h1&lt;/a&gt;;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(5):nextAll([expr])</p>
-
-<p>return:jQuery</p>
-
-<p>explain:查找当前元素之后所有的同辈元素。</p>
-
-<p>test:&lt;div&gt;h1&lt;/div&gt;&lt;div&gt;h2&lt;/div&gt;&lt;div&gt;h3&lt;/div&gt;;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;div:first&#8221;).nextAll();</p>
-
-<p>result:&lt;div&gt;h2&lt;div&gt;,&lt;div&gt;h3&lt;/div&gt;;:</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>(6):offsetParent()</p>
-
-<p>&nbsp;</p>
-
-<p>return :jQuery</p>
-
-<p>explain:</p>
-
-<p>返回第一个匹配元素用于定位的父节点。</p>
-
-<p>这返回父元素中第一个其position设为relative或者absolute的元素。此方法仅对可见元素有效。</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>(7):parent([expr])</p>
-
-<p>&nbsp;</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>取得一个包含着所有匹配元素的唯一父元素的元素集合。</p>
-
-<p>你可以使用可选的表达式来筛选。</p>
-
-<p>test:</p>
-
-<p>&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;p&#8221;).parent();</p>
-
-<p>result:&lt;div&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello&lt;/p&gt;&lt;/div&gt;;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>(8):parents([expr])</p>
-
-<p>&nbsp;</p>
-
-<p>return:jquery;</p>
-
-<p>explain:取得一个包含着所有匹配元素的祖先元素的元素集合（不包含根元素）。</p>
-
-<p>test:</p>
-
-<p>&lt;body&gt;&lt;div&gt;&lt;p&gt;&lt;span&gt;Hello&lt;/span&gt;&lt;/p&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;/body&gt;</p>
-
-<p>example:$(&#8220;span&#8221;).parents(&#8220;p&#8221;);</p>
-
-<p>result:&lt;p&gt;&lt;span&gt;&lt;Hello&gt;&lt;/span&gt;&lt;/p&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(9):prev([expr])</p>
-
-<p>return:jquery</p>
-
-<p>explain:</p>
-
-<p>取得一个包含匹配的元素集合中每一个元素紧邻的前一个同辈元素的元素集合。</p>
-
-<p>可以用一个可选的表达式进行筛选。只有紧邻的同辈元素会被匹配到，而不是前面所有的同辈元素。</p>
-
-<p>test:</p>
-
-<p>&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;p&#8221;).prev();</p>
-
-<p>result:&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(9):prevAll([expr])</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>查找当前元素之前所有的同辈元素;</p>
-
-<p>test:</p>
-
-<p>&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;div:last&#8221;).prevAll();</p>
-
-<p>result:&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(10):siblings([expr])</p>
-
-<p>return :jquery</p>
-
-<p>explain:</p>
-
-<p>取得一个包含匹配的元素集合中每一个元素的所有唯一同辈元素的元素集合。</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;Hello&lt;/p&gt;&lt;div&gt;&lt;span&gt;Hello Again&lt;/span&gt;&lt;/div&gt;&lt;p&gt;And Again&lt;/p&gt;</p>
-
-<p>example:$(&ldquo;div&rdquo;).siblings()</p>
-
-<p>result:</p>
-
-<p>[ &lt;p&gt;Hello&lt;/p&gt;, &lt;p&gt;And Again&lt;/p&gt; ]</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<h2>3:过滤函数：</h2>
-
-<hr />
-
-<p>(1):eq(insex);</p>
-
-<p>return:jQuery</p>
-
-<p>explain:获取第N个元素.这个元素的位置是从0算起。</p>
-
-<p>test:&lt;p&gt; This is just a test.&lt;/p&gt; &lt;p&gt; So is this&lt;/p&gt;</p>
-
-<p>example:$(&#8220;p&#8221;).eq(1);</p>
-
-<p>result:&lt;p&gt; So is this&lt;/p&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(2):filter(expr)</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>筛选出与指定表达式匹配的元素集合。</p>
-
-<p>这个方法用于缩小匹配的范围。用逗号分隔多个表达式</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;Hello Again&lt;/p&gt;&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
-
-<p>example:</p>
-
-<p>$(&ldquo;p&rdquo;).filter(&ldquo;.selected&rdquo;);</p>
-
-<p>result:</p>
-
-<p>&lt;p class=&ldquo;selected&rdquo;&gt;And Again&lt;/p&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(3):filter(fn)</p>
-
-<p>return:jquery</p>
-
-<p>explain:</p>
-
-<p>筛选出与指定函数返回值匹配的元素集合</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;&lt;ol&gt;&lt;li&gt;Hello&lt;/li&gt;&lt;/ol&gt;&lt;/p&gt;&lt;p&gt;How are you?&lt;/p&gt;</p>
-
-<p>example:</p>
-
-<p>$(&ldquo;p&rdquo;).filter(function(index) {
-&nbsp; return $(&ldquo;ol&rdquo;, this).length == 0;
-});</p>
-
-<p>result:</p>
-
-<p>&lt;p&gt;How are you?&lt;/p&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(4):hasClass(class)</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>检查当前的元素是否含有某个特定的类，如果有，则返回true。这其实就是 is(&ldquo;.&rdquo; + class)。</p>
-
-<p>test:</p>
-
-<p>&lt;div class=&ldquo;protected&rdquo;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;</p>
-
-<p>example:</p>
-
-<p>$(&#8220;div&#8221;).hasClass(&ldquo;protected&rdquo;)</p>
-
-<p>result:</p>
-
-<p>true</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(5):is(expr)</p>
-
-<p>return:jquery</p>
-
-<p>explain:</p>
-
-<p>用一个表达式来检查当前选择的元素集合，如果其中至少有一个元素符合这个给定的表达式就返回true。</p>
-
-<p>test:</p>
-
-<p>&lt;form&gt;&lt;input type=&ldquo;checkbox&rdquo; /&gt;&lt;/form&gt;</p>
-
-<p>explam:</p>
-
-<p>$(&ldquo;input[type=&lsquo;checkbox&rsquo;]&rdquo;).parent().is(&ldquo;form&rdquo;)</p>
-
-<p>result:</p>
-
-<p>true;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(6):map(callback)</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>将一组元素转换成其他数组（不论是否是元素数组);</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;&lt;b&gt;Values: &lt;/b&gt;&lt;/p&gt;
-&lt;form&gt;
-&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;name&rdquo; value=&ldquo;John&rdquo;/&gt;
-&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;password&rdquo; value=&ldquo;password&rdquo;/&gt;
-&nbsp; &lt;input type=&ldquo;text&rdquo; name=&ldquo;url&rdquo; value=&ldquo;<a href="http://ejohn.org/">http://ejohn.org/</a>&rdquo;/&gt;
-&lt;/form&gt;</p>
-
-<p>explam:</p>
-
-<p>$(&ldquo;p&rdquo;).append( $(&ldquo;input&rdquo;).map(function(){
-&nbsp; return $(this).val();
-}).get().join(&ldquo;, &rdquo;) );</p>
-
-<p>result:</p>
-
-<p>&lt;p&gt;John, password, <a href="http://ejohn.org/&amp;lt;/p&amp;gt;">http://ejohn.org/&amp;lt;/p&amp;gt;</a></p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(7):not(expr)</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>删除与指定表达式匹配的元素</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p id=&ldquo;selected&rdquo;&gt;Hello Again&lt;/p&gt;</p>
-
-<p>example:</p>
-
-<p>$(&ldquo;p&rdquo;).not( $(&ldquo;#selected&rdquo;)[0] )</p>
-
-<p>result:</p>
-
-<p>&lt;p&gt;Hello&lt;/p&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;</p>
-
-<p>(8):slice(start,[end])</p>
-
-<p>return:jQuery</p>
-
-<p>explain:</p>
-
-<p>选取一个匹配的子集;</p>
-
-<p>test:</p>
-
-<p>&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;cruel&lt;/p&gt;&lt;p&gt;World&lt;/p&gt;</p>
-
-<p>example:</p>
-
-<p>$(&ldquo;p&rdquo;).slice(0, 1).wrapInner(&ldquo;&lt;b&gt;&lt;/b&gt;&rdquo;);</p>
-
-<p>result:</p>
-
-<p>&lt;p&gt;&lt;b&gt;Hello&lt;/b&gt;&lt;/p&gt;</p>
-
-<p>&nbsp;</p>
-
-<hr />
-
-<p>&nbsp;本博客中同类文章还有，请见：<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html"><font color="#6699cc">我jQuery系列之目录汇总</font></a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/05/01/1725700.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/14/">&larr; Older</a>
@@ -1598,6 +1303,10 @@ if( r ) alert('You entered ' + r);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
       </li>
     
@@ -1623,10 +1332,6 @@ if( r ) alert('You entered ' + r);
     
       <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
       </li>
     
   </ul>

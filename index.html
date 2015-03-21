@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。 首先我们需要创建数据库Schema： CREATE TABLE Chart &hellip;">
+  <meta name="description" content="当我们声明了一个泛型的接口或类，或需要一个子类继承至这个泛型类，而我们又希望利用反射获取这些泛型参数信息。这就是本文将要介绍的ReflectionUtil就是为了解决这类问题的辅助工具类，为java.lang.reflect标准库的工具类。它提供了便捷的访问泛型对象类型(java.reflect. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,250 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-18T21:08:30+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/03/18/fan-she-chu-li-javafan-xing/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>当我们声明了一个泛型的接口或类，或需要一个子类继承至这个泛型类，而我们又希望利用反射获取这些泛型参数信息。这就是本文将要介绍的<strong>ReflectionUtil</strong>就是为了解决这类问题的辅助工具类，为<strong>java.lang.reflect</strong>标准库的工具类。它提供了便捷的访问泛型对象类型(java.reflect.Type)的反射方法。</p>
+
+<p>本文假设你已经了解java反射知识，并能熟练的应用。如果还不了解java反射知识，那么你可以先移步到<a href="http://docs.oracle.com/javase/tutorial/reflect">Oracel反射课程</a>,这可能是你开始学习反射的好起点.</p>
+
+<p>ReflectionUtil中包含以下几种功能：</p>
+
+<ol>
+<li>通过Type获取对象class;</li>
+<li>通过Type创建对象;</li>
+<li>获取泛型对象的泛型化参数;</li>
+<li>检查对象是否存在默认构造函数;</li>
+<li>获取指定类型中的特定field类型;</li>
+<li>获取指定类型中的特定method返回类型;</li>
+<li>根据字符串标示获取枚举常量;</li>
+<li>ReflectionUtil下载地址.</li>
+</ol>
+
+
+<h2>通过Type获取对象class</h2>
+
+<pre class='green'><code>private static final String TYPE_NAME_PREFIX = "class ";
+
+public static String getClassName(Type type) {
+    if (type==null) {
+        return "";
+    }
+    String className = type.toString();
+    if (className.startsWith(TYPE_NAME_PREFIX)) {
+        className = className.substring(TYPE_NAME_PREFIX.length());
+    }
+    return className;
+}
+
+public static Class&lt;?&gt; getClass(Type type) 
+            throws ClassNotFoundException {
+    String className = getClassName(type);
+    if (className==null || className.isEmpty()) {
+        return null;
+    }
+    return Class.forName(className);
+}
+</code></pre>
+
+<p>方法ReflectionUtil#getClass(Type)实现了从<strong>java.lang.reflect.Type</strong>获取<strong>java.lang.Class</strong>对象名称。这里利用了Type的toString方法获取所在类型的class。如<strong>&ldquo;class some.package.Foo&rdquo;</strong>,截取后部分class名称，在利用<strong>Class.forName(String)</strong>获取class对象。</p>
+
+<h1>通过Type创建对象</h1>
+
+<pre class='green'><code>public static Object newInstance(Type type) 
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    Class&lt;?&gt; clazz = getClass(type);
+    if (clazz==null) {
+        return null;
+    }
+    return clazz.newInstance();
+}
+</code></pre>
+
+<p>方法ReflectionUtil#newInstance(Type type)实现根据Type构造对象实例。在这里输入的Type不能是抽象类、接口、数组类型、以及基础类型、Void否则会发生InstantiationException异常。</p>
+
+<h1>获取泛型对象的泛型化参数</h1>
+
+<p>首先假设我们有如下两个对象：</p>
+
+<pre class='green'><code>public abstract class Foo&lt;T&gt; {
+    //content
+}
+
+public class FooChild extends Foo&lt;Bar&gt; {
+    //content
+} 
+</code></pre>
+
+<p>怎么获取子类在Foo中传入的泛型Class<T>类型呢？</p>
+
+<p>比较常用的做法有以下两种：</p>
+
+<ol>
+<li><p>强制FooChild传入自己的class类型(这也是比较常用的做法)：</p>
+
+<p> public abstract class Foo<T> {
+     private Class<T> tClass;</p>
+
+<pre class='green'><code> public Foo(Class&lt;T&gt; tClass) {
+     this.tClass = tClass;
+ }
+ //content
+</code></pre>
+
+<p> }</p>
+
+<p> public class FooChild extends Foo<Bar> {
+     public FooChild() {
+         super(FooChild.class);
+     }
+     //content
+ }</p></li>
+<li><p>利用反射获取：</p>
+
+<p> public static Type[] getParameterizedTypes(Object object) {
+     Type superclassType = object.getClass().getGenericSuperclass();
+     if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+         return null;
+     }
+     return ((ParameterizedType)superclassType).getActualTypeArguments();
+ }</p></li>
+</ol>
+
+
+<p>方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。</p>
+
+<p>为了Foo得到T的类型我们将会如下使用此方法：</p>
+
+<pre class='green'><code>...
+Type[] parameterizedTypes = ReflectionUtil.getParameterizedTypes(this);
+Class&lt;T&gt; clazz = (Class&lt;T&gt;)ReflectionUtil.getClass(parameterizedTypes[0]);
+...
+</code></pre>
+
+<p><strong>注意</strong>:</p>
+
+<p>在java.lang.reflect.ParameterizedType#getActualTypeArguments() documentation:的文档中你能看见如下文字：</p>
+
+<pre class='green'><code>in some cases, the returned array can be empty. This can occur. if this type represents a non-parameterized type nested within a parameterized type.
+</code></pre>
+
+<p>当传入的对象为非泛型类型，则会返回空数组形式。</p>
+
+<h1>检查对象是否存在默认构造函数</h1>
+
+<pre class='green'><code>public static boolean hasDefaultConstructor(Class&lt;?&gt; clazz) throws SecurityException {
+    Class&lt;?&gt;[] empty = {};
+    try {
+        clazz.getConstructor(empty);
+    } catch (NoSuchMethodException e) {
+        return false;
+    }
+    return true;
+}
+</code></pre>
+
+<p>方法ReflectionUtil#hasDefaultConstructor利用java.lang.reflect.Constructor检查是否存在默认的无参构造函数。</p>
+
+<h1>获取指定类型中的特定field类型</h1>
+
+<p>public static Class&lt;?> getFieldClass(Class&lt;?> clazz, String name) {</p>
+
+<pre class='green'><code>if (clazz==null || name==null || name.isEmpty()) {
+    return null;
+}
+name = name.toLowerCase();
+Class&lt;?&gt; propertyClass = null;
+for (Field field : clazz.getDeclaredFields()) {
+    field.setAccessible(true);
+    if (field.getName().equals(name)) {
+        propertyClass = field.getType();
+        break;
+    }
+}
+return propertyClass;
+</code></pre>
+
+<p>}</p>
+
+<p>在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class&lt;?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class&lt;?>, String) 利用<strong>Class#getDeclaredFields()</strong>获取字段并循环比较<strong>ava.lang.reflect.Field#getName()</strong>字段名称，返回字段所对应的类型对象。</p>
+
+<h1>获取指定类型中的特定method返回类型</h1>
+
+<pre class='green'><code>public static Class&lt;?&gt; getMethodReturnType(Class&lt;?&gt; clazz, String name) {
+    if (clazz==null || name==null || name.isEmpty()) {
+        return null;
+    }   
+
+    name = name.toLowerCase();
+    Class&lt;?&gt; returnType = null;
+
+    for (Method method : clazz.getDeclaredMethods()) {
+        if (method.getName().equals(name)) {
+            returnType = method.getReturnType();
+            break;
+        }
+    }
+
+    return returnType;
+}
+</code></pre>
+
+<p>方法ReflectionUtil#getMethodReturnType(Class&lt;?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class&lt;?>, String)利用<strong>Class#getDeclaredMethods()</strong>并以<strong>ava.lang.reflect.Method#getName()</strong>比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).</p>
+
+<h1>根据字符串标示获取枚举常量</h1>
+
+<pre class='green'><code>@SuppressWarnings({ "unchecked", "rawtypes" })
+public static Object getEnumConstant(Class&lt;?&gt; clazz, String name) {
+    if (clazz==null || name==null || name.isEmpty()) {
+        return null;
+    }
+    return Enum.valueOf((Class&lt;Enum&gt;)clazz, name);
+}
+</code></pre>
+
+<p>方法ReflectionUtil#getEnumConstant(Class&lt;?>, String)为利用制定的枚举类型和枚举名称获取其对象。这里的名称必须和存在的枚举常量匹配。</p>
+
+<h1>ReflectionUtil下载地址</h1>
+
+<p>你可以从这里下载(ReflectionUtil.java)(<a href="http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java">http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java</a>).</p>
+
+<p>原英文版地址： <a href="http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/">http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1531,174 +1775,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-20T18:58:15+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type&hellip;等简单的常用e2e测试动作封装，使得其语义清晰，简洁。其官方在<a href="http://www.nightmarejs.org/">http://www.nightmarejs.org/</a>.</p>
-
-<p>如果你的项目测试不需要想需求和测试人员理解，那么基于nightmare测试或许是一个好的选择，你的降低测试代码的成本，以及测试套件的部署。我们可以选择基于jasmine-node等作为测试套件集成。</p>
-
-<p>安装nightmare：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre class='green'><code class='sh'><span class='line'>npm install nightmare
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>下面我们对比与远程phantomjs的对比：</p>
-
-<p>原phantomjs的代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">phantom</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">ph</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">ph</span><span class="p">.</span><span class="nx">createPage</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;http://yahoo.com&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span>
-</span><span class='line'>          <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;input[title=&quot;Search&quot;]&#39;</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">el</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">&#39;github nightmare&#39;</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>          <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;.searchsubmit&#39;</span><span class="p">);</span>
-</span><span class='line'>          <span class="kd">var</span> <span class="nx">event</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">(</span><span class="s1">&#39;MouseEvent&#39;</span><span class="p">);</span>
-</span><span class='line'>          <span class="nx">event</span><span class="p">.</span><span class="nx">initEvent</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-</span><span class='line'>          <span class="nx">el</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">ph</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>nightmare代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="k">new</span> <span class="nx">Nightmare</span><span class="p">()</span>
-</span><span class='line'>  <span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="s1">&#39;http://yahoo.com&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;input[title=&quot;Search&quot;]&#39;</span><span class="p">,</span> <span class="s1">&#39;github nightmare&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="s1">&#39;.searchsubmit&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一切显而易见，不用多说。</p>
-
-<p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * Login to a Swiftly account.</span>
-</span><span class='line'><span class="cm"> *</span>
-</span><span class='line'><span class="cm"> * @param {String} email</span>
-</span><span class='line'><span class="cm"> * @param {String} password</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">exports</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">){</span>
-</span><span class='line'>  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nightmare</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">nightmare</span>
-</span><span class='line'>      <span class="p">.</span><span class="nx">viewport</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="s1">&#39;https://swiftly.com/login&#39;</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;#username&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;#password&#39;</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="s1">&#39;.button--primary&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">.</span><span class="nx">wait</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用代码很简单：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">Swiftly</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nightmare-swiftly&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">new</span> <span class="nx">Nightmare</span><span class="p">()</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Swiftly</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Swiftly</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="nx">instructions</span><span class="p">,</span> <span class="nx">uploads</span><span class="p">,</span> <span class="nx">path</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1730,6 +1806,10 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
       </li>
     
@@ -1755,10 +1835,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
     
       <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
       </li>
     
   </ul>

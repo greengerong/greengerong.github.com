@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="随着web2.0的兴起，ajax的时代已经成为了事实，更如今Knockout,backbone, angular,ember前端MDV(model driver view)框架强势而来，Single Page Application已经为大家所熟悉了。如今常见的SPA程序， &hellip;">
+  <meta name="description" content="最近在node.js项目开发中，遇见生成PDF的需求，当然生成PDF不是一个新意的需求；我可以选择利用开源的pdfkit或者其他node pdf模块，或者通过edge.js调用.net/python下的pdf库去做生成pdf。但是在我看来对于这些东西不管如何也需要花费我们太多的时间( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,139 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/">生成PDF的新选择-Phantomjs</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/12/10/use-phantomjs-to-get-pdf/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/10/use-phantomjs-to-get-pdf/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近在node.js项目开发中，遇见生成PDF的需求，当然生成PDF不是一个新意的需求；我可以选择利用开源的pdfkit或者其他node pdf模块，或者通过edge.js调用.net/python下的pdf库去做生成pdf。但是在我看来对于这些东西不管如何也需要花费我们太多的时间(pdf报表的内容报表很复杂)，不如把所有的画图实现逻辑推向大家所熟悉的html+css来的简洁，快速，这样对于pdf格式变化和图形计算逻辑的变化推到ejs、jade之类的模板引擎，对于以后的修改维护扩展是个很不错的选择。所以选择phantomjs加载页面生成PDF对于我来说不是个不错的选择，同时对于html+css我所需要兼容的仅有webkit一种浏览器，没有厌恶的浏览器兼容性顾虑。所以说做就做，我在项目上花了半个小时配置phantomjs的自动化脚本（在各环境能够自动勾践），以及实现了一个简单页面的PDF转化。</p>
+
+<p>rasterize.js（来自官方pdf demo）：</p>
+
+<pre class='green'><code>var page = require('webpage').create(),
+        system = require('system'),
+        address, output, size;
+
+    if (system.args.length &lt; 3 || system.args.length &gt; 5) {
+        console.log('Usage: rasterize.js URL filename [paperwidth*paperheight|paperformat] [zoom]');
+        console.log('  paper (pdf output) examples: "5in*7.5in", "10cm*20cm", "A4", "Letter"');
+        phantom.exit(1);
+    } else {
+        address = system.args[1];
+        output = system.args[2];
+        page.viewportSize = { width: 600, height: 600 };
+        if (system.args.length &gt; 3 &amp;&amp; system.args[2].substr(-4) === ".pdf") {
+            size = system.args[3].split('*');
+            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '0px' }
+                : { format: system.args[3], orientation: 'portrait', margin: '1cm' };
+        }
+        if (system.args.length &gt; 4) {
+            page.zoomFactor = system.args[4];
+        }
+        page.open(address, function (status) {
+            if (status !== 'success') {
+                console.log('Unable to load the address!');
+                phantom.exit();
+            } else {
+                window.setTimeout(function () {
+                    page.render(output);
+                    phantom.exit();
+                });
+            }
+        });
+    }
+</code></pre>
+
+<p>在node调用端，使用exec调用命令行输入得到文件并返回到node response流：</p>
+
+<p>guid utils:</p>
+
+<pre class='green'><code>    'use strict';
+
+    var guid = function () {
+        var uid = 0;
+        this.newId = function () {
+            uid = uid % 1000;
+            var now = new Date();
+            var utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+            return utc.getTime() + uid++;
+        }
+    }
+
+    exports.utils = {
+        guid: new guid()
+    };
+</code></pre>
+
+<p>pdfutil:</p>
+
+<pre class='green'><code>    'use strict';
+
+    var exec = require('child_process').exec;
+    var utils = require('./utils').utils;
+    var nodeUtil = require('util');
+
+    var outPut = function (id, req, res) {
+        var path = nodeUtil.format("tmp/%s.pdf", utils.guid.newId());
+        var port = req.app.settings.port;
+        var pdfUrl = nodeUtil.format("%s://%s%s/pdf/%s", req.protocol, req.host, ( port == 80 || port == 443 ? '' : ':' + port ), id);
+
+        exec(nodeUtil.format("phantomjs tool/rasterize.js %s %s A4", pdfUrl, path), function (error, stdout, stderr) {
+            if (error || stderr) {
+                res.send(500, error || stderr);
+                return;
+            }
+            res.set('Content-Type', 'application/pdf');
+            res.download(path);
+        });
+
+    };
+
+    exports.pdfUtils = {
+        outPut: outPut
+    };
+</code></pre>
+
+<p>响应的代码也可以很好的转换为java/c#&hellip;的命令行调用来得到pdf并推送到response流中。一切都这么简单搞定。</p>
+
+<p>node也有node-phantom模块，但是用它生成的pdf样式有点怪，所以最后还是坚持采用了exec方式去做。</p>
+
+<p>还有就是phantomjs生成PDF不会把css的背景色和北京图片带进去，所以对于这块专门利用了纯色图片img标签，并position:relative或者absolute去定位文字.这点还好因为这个页面上用户不会看的，</p>
+
+<p>文章也到此结尾，希望多多交流，继续关注，谢谢大家。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -985,53 +1118,6 @@ public void shouldGetPersonFromCsv() throws Exception {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">闲谈简单设计(KISS)疑惑</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&#160;&#160;&#160;&#160;&#160;&#160; 忙碌了一年了项目又到了交互了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到”合适”的”完美”的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人同意规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
-
-<p>&#160;&#160;&#160; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为”简约”，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说“拥抱变化”，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
-
-<p>&#160;&#160;&#160;&#160;&#160; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
-
-<p>&#160;&#160;&#160;&#160; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的“简单设计”，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是”简单设计“却没有足够的重构力度，抑或完全的优先设计，不不断的持续改进，逐步细化，做到“简约而不简单”记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/27/3048250.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -1065,6 +1151,10 @@ public void shouldGetPersonFromCsv() throws Exception {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
       </li>
     
@@ -1090,10 +1180,6 @@ public void shouldGetPersonFromCsv() throws Exception {
     
       <li class="post">
         <a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a>
       </li>
     
   </ul>
