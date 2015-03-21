@@ -51,7 +51,7 @@ ReflectionUtil中包含以下几种功能：
 方法ReflectionUtil#getClass(Type)实现了从**java.lang.reflect.Type**获取**java.lang.Class**对象名称。这里利用了Type的toString方法获取所在类型的class。如**"class some.package.Foo"**,截取后部分class名称，在利用**Class.forName(String)**获取class对象。
 
 
-#通过Type创建对象
+##通过Type创建对象
 
 
 	public static Object newInstance(Type type) 
@@ -67,7 +67,7 @@ ReflectionUtil中包含以下几种功能：
 方法ReflectionUtil#newInstance(Type type)实现根据Type构造对象实例。在这里输入的Type不能是抽象类、接口、数组类型、以及基础类型、Void否则会发生InstantiationException异常。
 
 
-#获取泛型对象的泛型化参数
+##获取泛型对象的泛型化参数
 
 首先假设我们有如下两个对象：
 
@@ -142,7 +142,7 @@ ReflectionUtil中包含以下几种功能：
 当传入的对象为非泛型类型，则会返回空数组形式。
 
 
-#检查对象是否存在默认构造函数
+##检查对象是否存在默认构造函数
 
 
 	public static boolean hasDefaultConstructor(Class<?> clazz) throws SecurityException {
@@ -158,7 +158,7 @@ ReflectionUtil中包含以下几种功能：
 
 方法ReflectionUtil#hasDefaultConstructor利用java.lang.reflect.Constructor检查是否存在默认的无参构造函数。
 
-#获取指定类型中的特定field类型
+##获取指定类型中的特定field类型
 
 
 public static Class<?> getFieldClass(Class<?> clazz, String name) {
@@ -180,7 +180,7 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 
 在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class<?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class<?>, String) 利用**Class#getDeclaredFields()**获取字段并循环比较**ava.lang.reflect.Field#getName()**字段名称，返回字段所对应的类型对象。
 
-#获取指定类型中的特定method返回类型
+##获取指定类型中的特定method返回类型
 
 
 	public static Class<?> getMethodReturnType(Class<?> clazz, String name) {
@@ -205,7 +205,7 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 方法ReflectionUtil#getMethodReturnType(Class<?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class<?>, String)利用**Class#getDeclaredMethods()**并以**ava.lang.reflect.Method#getName()**比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).
 
 
-#根据字符串标示获取枚举常量
+##根据字符串标示获取枚举常量
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -219,7 +219,7 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 
 方法ReflectionUtil#getEnumConstant(Class<?>, String)为利用制定的枚举类型和枚举名称获取其对象。这里的名称必须和存在的枚举常量匹配。
 
-#ReflectionUtil下载地址
+##ReflectionUtil下载地址
 
 你可以从这里下载(ReflectionUtil.java)(http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java).
 
