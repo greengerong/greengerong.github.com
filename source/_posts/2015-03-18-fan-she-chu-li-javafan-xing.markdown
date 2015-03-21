@@ -117,7 +117,7 @@ ReflectionUtil中包含以下几种功能：
 	    return ((ParameterizedType)superclassType).getActualTypeArguments();
 	}
 
-	
+
 方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。
 
 为了Foo得到T的类型我们将会如下使用此方法：
@@ -134,7 +134,8 @@ ReflectionUtil中包含以下几种功能：
 在java.lang.reflect.ParameterizedType#getActualTypeArguments() documentation:的文档中你能看见如下文字：
 
 
-	in some cases, the returned array can be empty. This can occur. if this type represents a non-parameterized type nested within a parameterized type.
+	in some cases, the returned array can be empty. This can occur. if this type represents 
+	a non-parameterized type nested within a parameterized type.
 
 
 当传入的对象为非泛型类型，则会返回空数组形式。
@@ -176,7 +177,7 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 }
 
 
-在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class<?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class<?>, String) 利用**Class#getDeclaredFields()**获取字段并循环比较**ava.lang.reflect.Field#getName()**字段名称，返回字段所对应的类型对象。
+在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class<?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class<?>, String) 利用**Class#getDeclaredFields()**获取字段并循环比较**java.lang.reflect.Field#getName()**字段名称，返回字段所对应的类型对象。
 
 ##获取指定类型中的特定method返回类型
 
@@ -200,7 +201,7 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 	}
 
 
-方法ReflectionUtil#getMethodReturnType(Class<?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class<?>, String)利用**Class#getDeclaredMethods()**并以**ava.lang.reflect.Method#getName()**比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).
+方法ReflectionUtil#getMethodReturnType(Class<?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class<?>, String)利用**Class#getDeclaredMethods()**并以**java.lang.reflect.Method#getName()**比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).
 
 
 ##根据字符串标示获取枚举常量
