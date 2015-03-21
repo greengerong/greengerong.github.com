@@ -220,6 +220,5 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 
 ##ReflectionUtil下载地址
 
-你可以从这里下载(ReflectionUtil.java)(http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java).
-
+你可以从这里下载[ReflectionUtil.java](http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java).
 原英文版地址： http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/
