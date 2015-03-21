@@ -71,6 +71,7 @@ ReflectionUtil中包含以下几种功能：
 
 首先假设我们有如下两个对象：
 
+
 	public abstract class Foo<T> {
 	    //content
 	}
@@ -80,11 +81,13 @@ ReflectionUtil中包含以下几种功能：
 	} 
 
 
+
 怎么获取子类在Foo中传入的泛型Class<T>类型呢？
 
 比较常用的做法有以下两种：
 
 1. 强制FooChild传入自己的class类型(这也是比较常用的做法)：
+
 
 	public abstract class Foo<T> {
 	    private Class<T> tClass;    
@@ -103,7 +106,9 @@ ReflectionUtil中包含以下几种功能：
 	} 
 
 
+
 2. 利用反射获取：
+
 
 	public static Type[] getParameterizedTypes(Object object) {
 	    Type superclassType = object.getClass().getGenericSuperclass();
@@ -113,20 +118,26 @@ ReflectionUtil中包含以下几种功能：
 	    return ((ParameterizedType)superclassType).getActualTypeArguments();
 	}
 
+
+
 方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。
 
 为了Foo得到T的类型我们将会如下使用此方法：
+
 
 	...
 	Type[] parameterizedTypes = ReflectionUtil.getParameterizedTypes(this);
 	Class<T> clazz = (Class<T>)ReflectionUtil.getClass(parameterizedTypes[0]);
 	...
 
+
 **注意**:
 
 在java.lang.reflect.ParameterizedType#getActualTypeArguments() documentation:的文档中你能看见如下文字：
 
+
 	in some cases, the returned array can be empty. This can occur. if this type represents a non-parameterized type nested within a parameterized type.
+
 
 当传入的对象为非泛型类型，则会返回空数组形式。
 
@@ -144,9 +155,11 @@ ReflectionUtil中包含以下几种功能：
 	    return true;
 	}
 
+
 方法ReflectionUtil#hasDefaultConstructor利用java.lang.reflect.Constructor检查是否存在默认的无参构造函数。
 
 #获取指定类型中的特定field类型
+
 
 public static Class<?> getFieldClass(Class<?> clazz, String name) {
     if (clazz==null || name==null || name.isEmpty()) {
@@ -164,9 +177,11 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
     return propertyClass;
 }
 
+
 在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class<?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class<?>, String) 利用**Class#getDeclaredFields()**获取字段并循环比较**ava.lang.reflect.Field#getName()**字段名称，返回字段所对应的类型对象。
 
 #获取指定类型中的特定method返回类型
+
 
 	public static Class<?> getMethodReturnType(Class<?> clazz, String name) {
 	    if (clazz==null || name==null || name.isEmpty()) {
@@ -186,10 +201,12 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 	    return returnType;
 	}
 
+
 方法ReflectionUtil#getMethodReturnType(Class<?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class<?>, String)利用**Class#getDeclaredMethods()**并以**ava.lang.reflect.Method#getName()**比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).
 
 
 #根据字符串标示获取枚举常量
+
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object getEnumConstant(Class<?> clazz, String name) {
@@ -198,6 +215,7 @@ public static Class<?> getFieldClass(Class<?> clazz, String name) {
 	    }
 	    return Enum.valueOf((Class<Enum>)clazz, name);
 	}
+
 
 方法ReflectionUtil#getEnumConstant(Class<?>, String)为利用制定的枚举类型和枚举名称获取其对象。这里的名称必须和存在的枚举常量匹配。
 
