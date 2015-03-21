@@ -170,37 +170,35 @@ public class FooChild extends Foo&lt;Bar&gt; {
 
 <p>比较常用的做法有以下两种：</p>
 
-<ol>
-<li><p>强制FooChild传入自己的class类型(这也是比较常用的做法)：</p>
+<h4>强制FooChild传入自己的class类型(这也是比较常用的做法)：</h4>
 
-<p> public abstract class Foo<T> {
-     private Class<T> tClass;</p>
+<pre class='green'><code>public abstract class Foo&lt;T&gt; {
+    private Class&lt;T&gt; tClass;    
 
-<pre class='green'><code> public Foo(Class&lt;T&gt; tClass) {
-     this.tClass = tClass;
- }
- //content
+    public Foo(Class&lt;T&gt; tClass) {
+        this.tClass = tClass;
+    }
+    //content
+}
+
+public class FooChild extends Foo&lt;Bar&gt; {
+    public FooChild() {
+        super(FooChild.class);
+    }
+    //content
+} 
 </code></pre>
 
-<p> }</p>
+<h4>利用反射获取：</h4>
 
-<p> public class FooChild extends Foo<Bar> {
-     public FooChild() {
-         super(FooChild.class);
-     }
-     //content
- }</p></li>
-<li><p>利用反射获取：</p>
-
-<p> public static Type[] getParameterizedTypes(Object object) {
-     Type superclassType = object.getClass().getGenericSuperclass();
-     if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
-         return null;
-     }
-     return ((ParameterizedType)superclassType).getActualTypeArguments();
- }</p></li>
-</ol>
-
+<pre class='green'><code>public static Type[] getParameterizedTypes(Object object) {
+    Type superclassType = object.getClass().getGenericSuperclass();
+    if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+        return null;
+    }
+    return ((ParameterizedType)superclassType).getActualTypeArguments();
+}
+</code></pre>
 
 <p>方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。</p>
 
