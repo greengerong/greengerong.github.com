@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-03-21T14:02:11+08:00</updated>
+  <updated>2015-03-21T14:14:06+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -38,42 +38,73 @@
 
 <h2>通过Type获取对象class</h2>
 
-<pre class='green'><code>private static final String TYPE_NAME_PREFIX = "class ";
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TYPE_NAME_PREFIX</span> <span class="o">=</span> <span class="s">&quot;class &quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getClassName</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">==</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">className</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">TYPE_NAME_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">className</span> <span class="o">=</span> <span class="n">className</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">TYPE_NAME_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">className</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getClass</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'>            <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">getClassName</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">className</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">className</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-public static String getClassName(Type type) {
-    if (type==null) {
-        return "";
-    }
-    String className = type.toString();
-    if (className.startsWith(TYPE_NAME_PREFIX)) {
-        className = className.substring(TYPE_NAME_PREFIX.length());
-    }
-    return className;
-}
-
-public static Class&lt;?&gt; getClass(Type type) 
-            throws ClassNotFoundException {
-    String className = getClassName(type);
-    if (className==null || className.isEmpty()) {
-        return null;
-    }
-    return Class.forName(className);
-}
-</code></pre>
 
 <p>方法ReflectionUtil#getClass(Type)实现了从<strong>java.lang.reflect.Type</strong>获取<strong>java.lang.Class</strong>对象名称。这里利用了Type的toString方法获取所在类型的class。如<strong>&ldquo;class some.package.Foo&rdquo;</strong>,截取后部分class名称，在利用<strong>Class.forName(String)</strong>获取class对象。</p>
 
 <h2>通过Type创建对象</h2>
 
-<pre class='green'><code>public static Object newInstance(Type type) 
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-    Class&lt;?&gt; clazz = getClass(type);
-    if (clazz==null) {
-        return null;
-    }
-    return clazz.newInstance();
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Object</span> <span class="nf">newInstance</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'>        <span class="kd">throws</span> <span class="n">ClassNotFoundException</span><span class="o">,</span> <span class="n">InstantiationException</span><span class="o">,</span> <span class="n">IllegalAccessException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="n">getClass</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">clazz</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>方法ReflectionUtil#newInstance(Type type)实现根据Type构造对象实例。在这里输入的Type不能是抽象类、接口、数组类型、以及基础类型、Void否则会发生InstantiationException异常。</p>
 
@@ -81,14 +112,22 @@ public static Class&lt;?&gt; getClass(Type type)
 
 <p>首先假设我们有如下两个对象：</p>
 
-<pre class='green'><code>public abstract class Foo&lt;T&gt; {
-    //content
-}
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FooChild</span> <span class="kd">extends</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-public class FooChild extends Foo&lt;Bar&gt; {
-    //content
-} 
-</code></pre>
 
 <p>怎么获取子类在Foo中传入的泛型Class<T>类型呢？</p>
 
@@ -96,43 +135,72 @@ public class FooChild extends Foo&lt;Bar&gt; {
 
 <h4>强制FooChild传入自己的class类型(这也是比较常用的做法)：</h4>
 
-<pre class='green'><code>public abstract class Foo&lt;T&gt; {
-    private Class&lt;T&gt; tClass;    
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">tClass</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">Foo</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">tClass</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">tClass</span> <span class="o">=</span> <span class="n">tClass</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FooChild</span> <span class="kd">extends</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">FooChild</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="n">FooChild</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    public Foo(Class&lt;T&gt; tClass) {
-        this.tClass = tClass;
-    }
-    //content
-}
-
-public class FooChild extends Foo&lt;Bar&gt; {
-    public FooChild() {
-        super(FooChild.class);
-    }
-    //content
-} 
-</code></pre>
 
 <h4>利用反射获取：</h4>
 
-<pre class='green'><code>public static Type[] getParameterizedTypes(Object object) {
-    Type superclassType = object.getClass().getGenericSuperclass();
-    if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
-        return null;
-    }
-    return ((ParameterizedType)superclassType).getActualTypeArguments();
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Type</span><span class="o">[]</span> <span class="nf">getParameterizedTypes</span><span class="o">(</span><span class="n">Object</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Type</span> <span class="n">superclassType</span> <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getGenericSuperclass</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">ParameterizedType</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">superclassType</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="o">((</span><span class="n">ParameterizedType</span><span class="o">)</span><span class="n">superclassType</span><span class="o">).</span><span class="na">getActualTypeArguments</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。</p>
 
 <p>为了Foo得到T的类型我们将会如下使用此方法：</p>
 
-<pre class='green'><code>...
-Type[] parameterizedTypes = ReflectionUtil.getParameterizedTypes(this);
-Class&lt;T&gt; clazz = (Class&lt;T&gt;)ReflectionUtil.getClass(parameterizedTypes[0]);
-...
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="n">Type</span><span class="o">[]</span> <span class="n">parameterizedTypes</span> <span class="o">=</span> <span class="n">ReflectionUtil</span><span class="o">.</span><span class="na">getParameterizedTypes</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;)</span><span class="n">ReflectionUtil</span><span class="o">.</span><span class="na">getClass</span><span class="o">(</span><span class="n">parameterizedTypes</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><strong>注意</strong>:</p>
 
@@ -146,75 +214,125 @@ a non-parameterized type nested within a parameterized type.
 
 <h2>检查对象是否存在默认构造函数</h2>
 
-<pre class='green'><code>public static boolean hasDefaultConstructor(Class&lt;?&gt; clazz) throws SecurityException {
-    Class&lt;?&gt;[] empty = {};
-    try {
-        clazz.getConstructor(empty);
-    } catch (NoSuchMethodException e) {
-        return false;
-    }
-    return true;
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">hasDefaultConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SecurityException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">empty</span> <span class="o">=</span> <span class="o">{};</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">clazz</span><span class="o">.</span><span class="na">getConstructor</span><span class="o">(</span><span class="n">empty</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>方法ReflectionUtil#hasDefaultConstructor利用java.lang.reflect.Constructor检查是否存在默认的无参构造函数。</p>
 
 <h2>获取指定类型中的特定field类型</h2>
 
-<p>public static Class&lt;?> getFieldClass(Class&lt;?> clazz, String name) {</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getFieldClass</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">propertyClass</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Field</span> <span class="n">field</span> <span class="o">:</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredFields</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">field</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">propertyClass</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">getType</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">propertyClass</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<pre class='green'><code>if (clazz==null || name==null || name.isEmpty()) {
-    return null;
-}
-name = name.toLowerCase();
-Class&lt;?&gt; propertyClass = null;
-for (Field field : clazz.getDeclaredFields()) {
-    field.setAccessible(true);
-    if (field.getName().equals(name)) {
-        propertyClass = field.getType();
-        break;
-    }
-}
-return propertyClass;
-</code></pre>
-
-<p>}</p>
 
 <p>在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class&lt;?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class&lt;?>, String) 利用<strong>Class#getDeclaredFields()</strong>获取字段并循环比较<strong>java.lang.reflect.Field#getName()</strong>字段名称，返回字段所对应的类型对象。</p>
 
 <h2>获取指定类型中的特定method返回类型</h2>
 
-<pre class='green'><code>public static Class&lt;?&gt; getMethodReturnType(Class&lt;?&gt; clazz, String name) {
-    if (clazz==null || name==null || name.isEmpty()) {
-        return null;
-    }   
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getMethodReturnType</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">returnType</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Method</span> <span class="n">method</span> <span class="o">:</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">returnType</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">getReturnType</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">returnType</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    name = name.toLowerCase();
-    Class&lt;?&gt; returnType = null;
-
-    for (Method method : clazz.getDeclaredMethods()) {
-        if (method.getName().equals(name)) {
-            returnType = method.getReturnType();
-            break;
-        }
-    }
-
-    return returnType;
-}
-</code></pre>
 
 <p>方法ReflectionUtil#getMethodReturnType(Class&lt;?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class&lt;?>, String)利用<strong>Class#getDeclaredMethods()</strong>并以<strong>java.lang.reflect.Method#getName()</strong>比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).</p>
 
 <h2>根据字符串标示获取枚举常量</h2>
 
-<pre class='green'><code>@SuppressWarnings({ "unchecked", "rawtypes" })
-public static Object getEnumConstant(Class&lt;?&gt; clazz, String name) {
-    if (clazz==null || name==null || name.isEmpty()) {
-        return null;
-    }
-    return Enum.valueOf((Class&lt;Enum&gt;)clazz, name);
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">({</span> <span class="s">&quot;unchecked&quot;</span><span class="o">,</span> <span class="s">&quot;rawtypes&quot;</span> <span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Object</span> <span class="nf">getEnumConstant</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Enum</span><span class="o">.</span><span class="na">valueOf</span><span class="o">((</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">Enum</span><span class="o">&gt;)</span><span class="n">clazz</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>方法ReflectionUtil#getEnumConstant(Class&lt;?>, String)为利用制定的枚举类型和枚举名称获取其对象。这里的名称必须和存在的枚举常量匹配。</p>
 
