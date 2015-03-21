@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-03-21T13:52:28+08:00</updated>
+  <updated>2015-03-21T13:54:51+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -140,7 +140,8 @@ Class&lt;T&gt; clazz = (Class&lt;T&gt;)ReflectionUtil.getClass(parameterizedType
 
 <p>在java.lang.reflect.ParameterizedType#getActualTypeArguments() documentation:的文档中你能看见如下文字：</p>
 
-<pre class='green'><code>in some cases, the returned array can be empty. This can occur. if this type represents a non-parameterized type nested within a parameterized type.
+<pre class='green'><code>in some cases, the returned array can be empty. This can occur. if this type represents 
+a non-parameterized type nested within a parameterized type.
 </code></pre>
 
 <p>当传入的对象为非泛型类型，则会返回空数组形式。</p>
@@ -181,7 +182,7 @@ return propertyClass;
 
 <p>}</p>
 
-<p>在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class&lt;?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class&lt;?>, String) 利用<strong>Class#getDeclaredFields()</strong>获取字段并循环比较<strong>ava.lang.reflect.Field#getName()</strong>字段名称，返回字段所对应的类型对象。</p>
+<p>在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class&lt;?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class&lt;?>, String) 利用<strong>Class#getDeclaredFields()</strong>获取字段并循环比较<strong>java.lang.reflect.Field#getName()</strong>字段名称，返回字段所对应的类型对象。</p>
 
 <h2>获取指定类型中的特定method返回类型</h2>
 
@@ -204,7 +205,7 @@ return propertyClass;
 }
 </code></pre>
 
-<p>方法ReflectionUtil#getMethodReturnType(Class&lt;?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class&lt;?>, String)利用<strong>Class#getDeclaredMethods()</strong>并以<strong>ava.lang.reflect.Method#getName()</strong>比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).</p>
+<p>方法ReflectionUtil#getMethodReturnType(Class&lt;?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class&lt;?>, String)利用<strong>Class#getDeclaredMethods()</strong>并以<strong>java.lang.reflect.Method#getName()</strong>比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).</p>
 
 <h2>根据字符串标示获取枚举常量</h2>
 
