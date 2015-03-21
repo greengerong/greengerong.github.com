@@ -75,7 +75,7 @@ ReflectionUtil中包含以下几种功能：
 	public abstract class Foo<T> {
 	    //content
 	}
-	 
+
 	public class FooChild extends Foo<Bar> {
 	    //content
 	} 
@@ -91,20 +91,19 @@ ReflectionUtil中包含以下几种功能：
 
 	public abstract class Foo<T> {
 	    private Class<T> tClass;    
-	 
+
 	    public Foo(Class<T> tClass) {
 	        this.tClass = tClass;
 	    }
 	    //content
 	}
-	 
+
 	public class FooChild extends Foo<Bar> {
 	    public FooChild() {
 	        super(FooChild.class);
 	    }
 	    //content
 	} 
-
 
 
 2. 利用反射获取：
@@ -118,8 +117,7 @@ ReflectionUtil中包含以下几种功能：
 	    return ((ParameterizedType)superclassType).getActualTypeArguments();
 	}
 
-
-
+	
 方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。
 
 为了Foo得到T的类型我们将会如下使用此方法：
