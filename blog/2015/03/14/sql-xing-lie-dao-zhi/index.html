@@ -256,6 +256,21 @@ GROUP BY field
 <li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
 </ol>
 
+
+<p>我们也可以将上面两次请求合并为一次，这就需要mysql的动态拼接，如下：</p>
+
+<pre class='green'><code>SELECT 
+@time_sql := group_concat("SUM(IF(createTime = '", t.createTime, "', value, 0)) AS '" , t.createTime, "'")  
+FROM (
+ SELECT DISTINCT createTime FROM Chart ORDER BY createTime
+) AS t;
+
+ set @v_sql = CONCAT("SELECT field", IF(ISNULL(@time_sql) , " ", CONCAT(", ", @time_sql)) ," FROM Chart GROUP BY field");
+
+prepare stmt from @v_sql; 
+EXECUTE stmt;   
+deallocate prepare stmt; 
+</code></pre>
 </div>
 
 
