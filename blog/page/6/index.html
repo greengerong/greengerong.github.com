@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,216 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">隐藏在mock之后的‘快感’</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo;独立&ldquo;的过度。 在前边转载过《软件开发中没有所谓正确的方法》，当你把某一种方法论作为银弹使用的时候，早晚魔鬼会伴随在你身边。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock给我带来了感知，剥离了类与类之间的依赖，有助于我们更好的工作在当前的关注点 .但同时由于太多的对场景的假设，导致这块代码成为了信息的孤岛，甚至很多时候不得不用mock的第二特性verify，order，以至于你的测试关心的不再是代码存在的business逻辑，而倾向代码层面的设计实现，这就把你单元测试推向了&ldquo;白盒测试&ldquo;的位置，导致测试变为脆弱的测试。每当简单的重构导致内部的变化，你的测试也必须随着改变。</p>
+
+<p>&nbsp; &nbsp; &nbsp;鄙人认为作为一个好的测试而言，在一次合法的简单重构之下，是不需要修改测试的，因为你修改的只是内部实现，而不是business的改变，如果你边改测试边重构或者重构后挂到一大堆测试，这意味这你的测试不是一个稳定的测试或者你不是一次合法的重构（也许redesign，override）。</p>
+
+<p>&nbsp; &nbsp; &nbsp;在同事的项目中对mock的极端到了对简单的View Object 也采用builder模式，可是内部却全是mock given。在我看来而言View Object只是一个简单的数据载体，不存在行为逻辑，我们毫无必要去做mock，mock该是针对假设，而应该尽量避免对状态mock。在同事的项目中导致需要写一个测试之前，作为测试的准备given ，必须理解存在代码的实现，因为你需要一堆given，比如对于person对象，如果你在实现中需要得到account则：</p>
+
+<p>given(person.getAccount()).willReturn(some account);</p>
+
+<p>&nbsp; &nbsp; &nbsp;导致我需要了解实现需要什么property，如果我需要新的的property也许只是简单的把某个&ldquo;依恋情结&rdquo;放入了object，测试也需要被修改，导致重构者对自己的重构并不那么自信，这将影响重构成为日常行为，随着堆积的&rdquo;坏味道&ldquo;这将一点一点的侵蚀你的代码，项目慢慢的也许会不能的不可控。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock并不是一个坏的东西，结果的好坏在于使用的人，团队 的意识，如果是mock anywhere或者杜绝mock走向两个任意的极端都将是一个错误的抉择。</p>
+
+<p>&nbsp; &nbsp; &nbsp;Mock更多的使用场景为对外界资源解依赖增强感知能力，以及对无响应的重要business的验证，后者长体现于一个没有返回子void的method，但是method比如增加用户积分，记录用户信息等的。然而对于有响应的business，我需要的不是mock而应该是assert，对于测试来说对于business来说应试是我的输入应该得到我预期的响应，而非我verify某个行为发生了，那么其结果一定就正确，当然对于实现来说这是成立的，但是从测试的价值来说这厮无意义的，这将是一个脆弱的测试，我认为一个好的测试将是&ldquo;黑盒测试&ldquo;，是一个business的描述，对一份约定，契约的阐述。</p>
+
+<p>&nbsp; &nbsp; &nbsp; 附言，如果你因为测试的速度，独立性来为自己的mock证明，那将是无意义的，不是每一个测试都必须在黄金法则内（0.1s），如果你对外部依赖，耗时依赖的分离，这我相信将不再是问题所在，测试的优化将是另一个有趣的话题，将不是本文内容之列。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/29/3107019.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">集成服务监控器-green.monitor发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常，在这里浪费了大量时间，在笔者为所在项目建立了一个第三方集成服务监控的Monitor，去实时监控项目所依赖的所有集成服务，数据库。现在开源在github <a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a>，在其sample目录下有个使用demo。</p>
+
+<h2><em>maven&nbsp;</em>dependency</h2>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>com.github.greengerong<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>green.monitor<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>1.2<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<h2>demo效果如下：</h2>
+
+<p><img src="http://images.cnitblog.com/blog/63184/201305/26183719-93e330e6d3b04c219f0ea423b973a356.png" alt="" /></p>
+
+<h1>建立自己的monitor：</h1>
+
+<p>1：首先在你spring mvc web project 的 pom文件中引 入green-monitor的dependency。(spring 3.0以上)
+2：在spring mvc的 ioc context config中启用annotation dirver，如下xml：</p>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">beans </span><span style="color: #ff0000;">xmlns</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans"</span><span style="color: #ff0000;">
+         xmlns:xsi</span><span style="color: #0000ff;">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #ff0000;">
+         xmlns:p</span><span style="color: #0000ff;">="http://www.springframework.org/schema/p"</span><span style="color: #ff0000;">
+         xmlns:mvc</span><span style="color: #0000ff;">="http://www.springframework.org/schema/mvc"</span><span style="color: #ff0000;">
+         xmlns:context</span><span style="color: #0000ff;">="http://www.springframework.org/schema/context"</span><span style="color: #ff0000;">
+         xmlns:util</span><span style="color: #0000ff;">="http://www.springframework.org/schema/util"</span><span style="color: #ff0000;">
+         xsi:schemaLocation</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"</span><span style="color: #0000ff;">&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">mvc:annotation-driven</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">context:component-scan </span><span style="color: #ff0000;">base-package</span><span style="color: #0000ff;">="green.monitor"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">id</span><span style="color: #0000ff;">="viewResolver"</span><span style="color: #ff0000;"> class</span><span style="color: #0000ff;">="org.springframework.web.servlet.view.InternalResourceViewResolver"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="prefix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>/WEB-INF/pages/<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="suffix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>.jsp<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">bean</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">beans</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>3:在项目resources(mian/resources)下建立monitor-config.xml。如果需要 在不同环境配置不同信息，可以在运行机器上加入key为appenv的环境变量，程序会根据不同agent加载monitor-config.[appenv].xml配置文件.或者利用mavn，gradle这类构建工具按环境输出配置信息。</p>
+
+<p>配置文件形如：</p>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitoring </span><span style="color: #ff0000;">version</span><span style="color: #0000ff;">="1.0"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="monitor-sample"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitor </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #0000ff;">&gt;</span>green.monitor.demo.MockMonitorRunner<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitor</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="hello service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/hello<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=success<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for hello service.should be success.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="error service 2"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=must be failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for error service.should be failed.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="Random failed Service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This monitor will be random failed!<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitoring</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>这样你就可以运行monitor了，url为host + &ldquo;/monitor&rdquo;</p>
+
+<h1>扩展</h1>
+
+<p>1：扩展runner 同时monitor为你提供了自我特定需求扩展的机会，在xml config中你应该主意到了有个monitor的配置节，这里就可以配置你自定义runner（其实现MonitorRunner接口),配置节name则作为后边item的引用name。</p>
+
+<p>系统默认加入了web-service,dababase,http-connection3个常用runner。具体使用请看demo。
+2：系统提供了service为基于spring restfull api,所以你可以在其他地方展示该monitor状况。(在下一个版本将提供jsonp的跨域处理)。</p>
+
+<p>&nbsp; &nbsp;monitor project repo:&nbsp;<a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/26/3100241.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1068,291 +1278,6 @@ grep --color=auto node
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie/">Angularjs开发一些经验总结</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-24T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/24/Angularjs-kai-fa-yi-xie-jing-yan-zong-jie/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在去年到今年参与了2个使用Angularjs作为客户端开发框架的项目开发。主要利用asp.net web api作为restfull服务提供框架和angularjs结合。Angularjs作为html的扩展，旨在建立一个丰富的动态web应用，通过Directive建立一套html扩展的DSL模型，利用PM模式变形MVVM（在网上很多称MVC模式，本人认为在angular0.8是属于经典MVC模式，但在1.0把scope独立注入过后，更倾向于MVVM模式，这将会后续随笔中写道）简化前端开发和使得前端业务逻辑得以分离，view和表现逻辑的分离，更便于维护，扩展。Angularjs本来就是采用TDD开发的，提供了一套单元测试组件和End 2 End的测试框架。Angularjs的的强大之处在于提供了一套内似WPF，Silverlight的强大数据绑定和格式化，过滤组件，这也是MVVM模式所必备的条件；再加之IOC的注入机制，使得不能业务逻辑的分离，服务代码的更大程度抽象重用。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在这节随便中将讨论的angularjs开发的一些基本准则，为什么会有这篇随便呢，因为看见一些项目对于angularjs的乱用。</p>
-
-<p>&nbsp; 1：不要一个page一个God似无所不能的controller包含所有页面逻辑。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Angularjs ng-controller旨在将业务逻辑的区分，更推荐按照业务逻辑的划分controller，做到业务功能的高内聚，controller的单一原则SRP。</p>
-
-<p>&nbsp; 2：View中包含尽量少的逻辑。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 就像jsp，asp这类服务端模板引擎一样，我们应该把尽量少的逻辑放在view中，因为这样会导致view和逻辑的紧耦合性，view在软件开发中是最易变化的，而表现层逻辑却相对于view是相对稳定的行为。同时也导致的view中的逻辑不能被自动化测试，持续集成所覆盖，这将导致以后修改重构和模块的集成的痛苦。很明显的就是太多的angularjs的ng-switch，ng-when和页面计算表达式等等。</p>
-
-<p>3：注意一些特殊的节点式的angularjs directive，因为在IE7上这是不被认识的，因为IE的严格XML模式。如果你想make ie7 happy，</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 1：请注意导入json2或者json3的js</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 2：xmlns:ng命令空间和节点element式directive。</p>
-
-<blockquote><p>&lt;html xmlns:ng=&ldquo;<a href="http://angularjs.org">http://angularjs.org</a>&rdquo;&gt;</p>
-
-<p>&lt;head&gt;</p>
-
-<p>&lt;!&mdash;[if lte IE 8]&gt;</p>
-
-<p>&lt;script&gt;</p>
-
-<p>document.createElement(&lsquo;ng-include&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng-pluralize&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng-view&rsquo;);</p>
-
-<p>&nbsp;</p>
-
-<p>// Optionally these for CSS</p>
-
-<p>document.createElement(&lsquo;ng:include&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng:pluralize&rsquo;);</p>
-
-<p>document.createElement(&lsquo;ng:view&rsquo;);</p>
-
-<p>&lt;/script&gt;</p>
-
-<p>&lt;![endif]&mdash;&gt;</p>
-
-<p>&lt;/head&gt;</p></blockquote>
-
-<p>&nbsp; &nbsp; 3:除官网介绍的几个注意点之外 需要将</p>
-
-<pre class='green'><code>&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;lt;div &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;ng-app&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"xxx"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;gt;
-
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;`改为&lt;/pre&gt;
-&lt;pre class="prettyprint"&gt;`&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;lt;div &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;id&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"ng-app" &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;&lt;span class="atn"&gt;ng-app&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;&lt;span class="pun"&gt;=&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;&lt;span class="atv"&gt;"xxx"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&lt;span class="tag"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;`&lt;/pre&gt;
-
-&amp;nbsp;另外注意html 头部要引入（否则会进入坑爹的quirk模式）
-
-&lt;pre class="prettyprint"&gt;`&lt;span class="dec"&gt;&lt;span class="dec"&gt;&lt;span class="dec"&gt;&lt;span class="dec"&gt;&amp;lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
-</code></pre>
-
-<p>&nbsp;</p>
-
-<p>4：在controller和service中绝对不能出现html的DOM和CSS代码。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这会导致逻辑的混杂耦合，对于angularjs自身的绑定对html操作，很多时候你会分不清是view的影响源，导致修复bug，和新增功能，重构的艰难，常常出现很多的诡异行为。最好的实践模式则是把必须的dom，css操作移向angular的Directive，或者view中。在angularjs模式中只有directive和view才能出现dom和css的逻辑操作。</p>
-
-<p>&nbsp; 5：controller中公用的逻辑推向service（factory，value，config)，采用IOC的注入，提高代码的重用度，修改的单一点，开闭原则。</p>
-
-<p>&nbsp; 6：controller应该只包含业务逻辑，对于数据模型的格式化过滤尽量交给angular框架filter等处理。</p>
-
-<p>7：viewmodel中最好建立一个通用属性比如vm，它承载view渲染的最小量化model，对于model的变形事件则在vm之外scope之上。这才是MVVM推荐方式。事件相当于WPF中的command，负责模型事件的传递修改模型，从而从模型的改变通知view的强制更新（WPF中model必须实现INotifyPropertyChange接口）。同时这样vm属性也便于数据的填充和收集回发服务端。</p>
-
-<p>8：IOC注入优先，注有助于良好的设计，逻辑的可重用和单元的可测试性，面向对象的&ldquo;开闭原则&rdquo;，修改的单一点。</p>
-
-<p>9：良好的分层设计，对于服view的交互采用controller通过viewmode（scope）的推送，服务器的交互推向service层次，利用angularjs的$resource或者$http获取更新数据model，与服务端交互。层次属于纵向分割，将一类功能逻辑的接口放在一起，架构层次，而model则从业务的逻辑横向分离。</p>
-
-<p>10：服务端的服务的接口需要考虑表现层客户端的应用提供，这是一个良好的SOA服务设计的准则，这里不用多余的描述，具体请移步<a href="http://www.cnblogs.com/whitewolf/category/379884.html">架构篇</a>。</p>
-
-<p>11：如果你的公司应用了敏捷开发则，TDD的开发是必备的，angularjs本也是解决javascript测试驱动开发项目。</p>
-
-<p>&nbsp;12：scope的纯净性，scope上的每一个函数和属性必须为view所用（事件传递或者属性绑定），不用的可以作为工具函数或者service处置.</p>
-
-<p>&nbsp;13：对controller之间如果不是强依赖，只是弱引用则最好用事件$emit,$on,<span style="font-size: 16px; font-family: 楷体;">$broadcast</span>,是的controller之间低耦合（<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/16/3024843.html">Angularjs Controller 间通信机制</a>）。</p>
-
-<p>&nbsp;14：angularjs的的模块管理参见<a href="http://kb.cnblogs.com/page/176541/">如何组织大型JavaScript应用中的代码？</a>.</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp; 最后想说说angularjs也不是银弹，并不是万能的，不是所有的项目都适合应用，它适用于CRUD的应用系统，内置了一些默认规则（惯例优先），对于表现层频繁交互的项目不适用，对于一些特殊的项目比如spring hdiv的项目也不是那么友好，或者就是你希望兼容更多的IE8一下的版本的应用系统，同样也不实用。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/24/2979344.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/">JavaScript 函数replace揭秘</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;在JavaScript中replace函数作为字符串替换函数，这是一个威力强大的字符串操作函数，对于常见字符串操作的推荐用法。这篇随笔就来更加深入的理解它。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; replace函数接受两个参数,第一个参数为字符串或正则表达式，第一个参数同样可以接受一个字符串，还可能是一个函数。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先对于第一个参数为字符串的我们不再需要多说&#8221;I am a boy&#8221;.replace(&ldquo;boy&rdquo;,&ldquo;girl&rdquo;),输出：&#8221;I am a girl&#8221;。在这里想说的是第一个参数为正则的情形。对于正则表达式来说首先会根据是否全局的（全局//g）决定替换行为，如果是全部的则替换全部替换，非全局的只有替换首个匹配的字符串。例如：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">"Ha Ha".replace(/\b\w+\b/g, "He")  // He He
-
-"Ha Ha".replace(/\b\w+\b/, "He")  //He Ha
-</pre>
-</div>
-
-
-<p>1:第二个参数为字符串：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 对于正则replace约定了一个特殊标记符$：</p>
-
-<ol>
-<li>$i (i:1-99) : 表示从左到右正则子表达式所匹配的文本。</li>
-<li>$&amp;:表示与正则表达式匹配的全文本。</li>
-<li>$<code>(</code>:切换技能键)：表示匹配字符串的左边文本。</li>
-<li>$&rsquo;(&lsquo;:单引号)：表示匹配字符串的右边文本。</li>
-<li>$$：表示$转移。</li>
-</ol>
-
-
-<p>下面来几个demo:</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">"boy &amp; girl".replace(/(\w+)\s*&amp;\s*(\w+)/g,"$2 &amp; $1") //girl &amp; boy
-
-"boy".replace(/\w+/g,"$&amp;-$&amp;") // boy-boy
-
-"javascript".replace(/script/,"$&amp; != $`") //javascript != java
-
-"javascript".replace(/java/,"$&amp;$' is ") // javascript is script
-</pre>
-</div>
-
-
-<p>2：第二个参数为函数：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;在ECMAScript3推荐使用函数方式，实现于JavaScript1.2.当replace方法执行的时候每次都会调用该函数，返回值作为替换的新值。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 函数参数的规定：</p>
-
-<ol>
-<li>第一个参数为每次匹配的全文本（$&amp;）。</li>
-<li>中间参数为子表达式匹配字符串，个数不限.( $i (i:1-99))</li>
-<li>倒数第二个参数为匹配文本字符串的匹配下标位置。</li>
-<li>最后一个参数表示字符串本身。</li>
-</ol>
-
-
-<p>这就是本文所要说replace威力强大的地方，理论的东西都是干货，我们需要示例解决一切空洞的问题：</p>
-
-<p>1：字符串首字母大写：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">String.prototype.capitalize = function(){
-
-    return this.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase();
-
-    } );
-
-};
-</pre>
-</div>
-
-
-<p>console.log(&ldquo;i am a boy !&rdquo;.capitalize())</p>
-
-<p>输出：I Am A Boy !</p>
-
-<p>2:对字符串&ldquo;张三56分， 李四74分， 王五92分， 赵六84分&rdquo;的分数提取汇总，算出平均分并输出每个人的平均分差距。</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">var s = "张三56分， 李四74分， 王五92分， 赵六84分";
-
-var a = s.match(/\d+/g);
-
-var sum = 0;
-
-for(var i = 0 ; i &lt; a.length; i++){
-
-            sum += parseFloat(a[i]);
-
-}
-
-var avg = sum / a.length;
-
-function f(){
-
-            var n = parseFloat(arguments[1]);
-
-            return n + "分" + "(" + ((n &gt; avg) ? ("超出平均分" + (n - avg)) :
-
-                        ("低于平均分" + (avg - n))) + "分)";
-
-}
-
-var result = s.replace(/(\d+)分/g, f);
-
-console.log(result);
-</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>输出：</p>
-
-<p>张三56分(低于平均分20.5分)， 李四74分(低于平均分2.5分)， 王五92分(超出平均分15.5分)， 赵六84分(超出平均分7.5分)</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JavaScript的replace函数再加上正则的高级应用，JavaScript的replace将会发回更大的威力所在，在这里将不再深入正则高级应用断言之类的。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/14/2958720.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1386,6 +1311,14 @@ console.log(result);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
@@ -1407,14 +1340,6 @@ console.log(result);
     
       <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
       </li>
     
   </ul>

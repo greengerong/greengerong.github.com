@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; 在上几章我们讨论了方法属性字段的aspect，现在我们再来看看事件机制的aspect。和字段，属性location一样，在c#中字段也可以转化为方法名为add，remove的方法处理，所以对于事件的aspect，同样类似于我们的方法。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,352 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/">AOP之PostSharp6-EventInterceptionAspect(事件异步调用)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-13T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/13/AOP-zhi-PostSharp6-EventInterceptionAspect-shi-jian-yi-bu-tiao-yong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在上几章我们讨论了方法属性字段的aspect，现在我们再来看看事件机制的aspect。和字段，属性location一样，在c#中字段也可以转化为方法名为add，remove的方法处理，所以对于事件的aspect，同样类似于我们的方法。我们先看看EventInterceptionAspect的定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947164625.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947198892.png" title="image" alt="image" /></a></p>
+
+<p>aspect类包含我们对于事件aspect所必要的注册，取消，调用的注入。</p>
+
+<p>其参数定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947203069.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947226648.png" title="image" alt="image" /></a></p>
+
+<p>为我们提供了，ProceedAddHandler，ProceedInvokeHandler，ProceedRemoveHandler的事件处理代理。同样包含来自AdviceArgs的Instance对象。</p>
+
+<p>&nbsp; 对于事件aspect的例子真的不好想，在这里我们只是简单的做个事件变为异步调用的代码作为demo：</p>
+
+<pre class='green'><code> [Serializable]
+    public class AsynEventAspectAttribute : PostSharp.Aspects.EventInterceptionAspect
+    {
+
+        public override void OnInvokeHandler(PostSharp.Aspects.EventInterceptionArgs args)
+        {
+            var th = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(new Action&lt;object&gt;((obj) =&gt;
+                {
+                    System.Threading.Thread.Sleep(new Random().Next(1000));
+                    try
+                    {
+                        args.ProceedInvokeHandler();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        args.ProceedRemoveHandler();
+                    }
+                })));
+            th.Start();
+        }
+    }
+</code></pre>
+
+<p>&nbsp;测试代码：</p>
+
+<pre class='green'><code> namespace PostSharpDemo 
+{ 
+    public class TestAsyncAspect 
+    { 
+        [AsynEventAspectAttribute] 
+        public event EventHandler SomeEvent = null; 
+
+        public void OnSomeEvent() 
+        { 
+            if (SomeEvent != null) 
+            { 
+
+                SomeEvent(this, EventArgs.Empty); 
+            } 
+        } 
+    } 
+}
+
+class Program 
+    { 
+        static void Main(string[] args) 
+        {
+
+TestAsyncAspect pro = new TestAsyncAspect(); 
+          for (int i = 0; i &lt; 10; i++) 
+          { 
+              pro.SomeEvent += new EventHandler(pro_SomeEvent); 
+          } 
+          pro.OnSomeEvent(); 
+    //      pro.SomeEvent -= new EventHandler(pro_SomeEvent); 
+          Console.WriteLine("主线程完了！"); 
+          Console.Read(); 
+      } 
+
+      static void pro_SomeEvent(object sender, EventArgs e) 
+      { 
+          Console.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId); 
+      }    
+
+}
+</code></pre>
+
+<p>&nbsp;效果图如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947247402.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112131947264536.png" title="image" alt="image" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/">AOP之PostSharp5-LocationInterceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这节我们要讨论的是PostSharp的LocationInterceptionAspect，PostSharp官方把Property和Field成为Location。所以LocationInterceptionAspect就是为了实现Property和Field的拦截。在我们前面讨论了关于方法OnMethodBoundaryAspect的aspect，我们很容易想到，在c#中Property就是一个编译时分为Get和Set两个方法，对于property的aspect就类似于了我们的Method的aspect。而对于Field的aspect同样可以转换为对Property的aspect。</p>
+
+<p>下面我们用反编译工具来证实一下我的说法.</p>
+
+<p>代码：</p>
+
+<pre class='green'><code>    [LazyLoad("test", "test")] 
+     private string TestField;
+</code></pre>
+
+<p>编译后：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144511133.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445152198.png" title="image" alt="image" /></a></p>
+
+<p>我们在来看看LocationInterceptionAspect定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445172495.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445215649.png" title="image" alt="image" /></a></p>
+
+<p>其OnGetvalue和OnSetValue是我们主要拦截的方法，起参数LocationInterceptionArgs定义：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445276277.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445362807.png" title="image" alt="image" /></a></p>
+
+<p>同样给也拥有来自父类AdviceArgs的Instance对象，对于对象级Location为所在对象，静态则为null；</p>
+
+<p>LocationInterceptionAspect的使用方法和我们的OnMethodBoundaryAspect和类似，使用方式也一样，对于使用对不重要，鄙人觉得更重要的是我们的设计思想。</p>
+
+<p>我暂时能想到的很好的LocationInterceptionAspect使用场景则是LazyLoad，对于3.5表达式的出现，我们到处都可以简单这个词，在c#类库中也加入了这个类。</p>
+
+<p>这里我们只是做一个简单的演示demo，根据attribute上制定的类型的方法延时加载对象，废话不说了上code：</p>
+
+<p>  [Serializable]</p>
+
+<pre class='green'><code>   public class LazyLoadAttribute : LocationInterceptionAspect 
+   { 
+       public string MethodName 
+       { 
+           get; 
+           private set; 
+       } 
+
+       public string PrivoderFullName 
+       { 
+           get; 
+           private set; 
+       } 
+
+       public LazyLoadAttribute(string MethodName, string PrivoderFullName) 
+       { 
+           Green.Utility.Guard.ArgumentNotNullOrEmpty(MethodName, "MethodName"); 
+           Green.Utility.Guard.ArgumentNotNullOrEmpty(PrivoderFullName, "PrivoderFullName"); 
+           this.MethodName = MethodName; 
+           this.PrivoderFullName = PrivoderFullName; 
+       } 
+
+       public override void OnGetValue(LocationInterceptionArgs args) 
+       { 
+           if (args.GetCurrentValue() == null) 
+           { 
+               Console.WriteLine("Loading...."); 
+               var value = this.LoadProperty(args.Instance); 
+               if (value != null) 
+               {                    
+                   args.Value = value; 
+                   args.ProceedSetValue(); 
+               } 
+           } 
+           args.ProceedGetValue(); 
+       } 
+
+       private object LoadProperty(object p) 
+       { 
+           var type = Type.GetType(this.PrivoderFullName);//具体加载程序集需要自定义需求，这里仅为了测试简化。 
+           if (type != null) 
+           { 
+               var method = type.GetMethod(this.MethodName); 
+               if (method != null) 
+               { 
+                   object[] ps = null; 
+                   if (p != null) 
+                   { 
+                       ps = new object[] { p }; 
+                   } 
+                   object entity = null; 
+                   if (!method.IsStatic) 
+                   { 
+                       entity = System.Activator.CreateInstance(type); 
+                   } 
+                   return method.Invoke(entity, ps); 
+               } 
+           } 
+           return null; 
+       } 
+   }
+</code></pre>
+
+<p>测试code：</p>
+
+<pre class='green'><code>class Program 
+   {       
+       static void Main(string[] args) 
+       {            
+
+           /* 
+            * demo4*/ 
+
+           Student stu = new Student(); 
+           stu.ID = 10; 
+           Console.WriteLine(stu.Name); 
+           Console.WriteLine(stu.Name); 
+
+           Console.WriteLine(Student.TestStaticProperty); 
+           Console.WriteLine(Student.TestStaticProperty); 
+           Console.Read(); 
+       }
+
+public static string TextLazyLoadStaticMenthod(Student stu) 
+      { 
+          return "Student" + stu.ID; 
+      } 
+
+      public string TextLazyLoadInstacnceMenthod(Student stu) 
+      { 
+          return "Student" + stu.ID; 
+      } 
+
+      public string TextLazyLoadStaticPropertyMenthod() 
+      { 
+          return "测试"; 
+      } 
+  }
+
+public class Student 
+   { 
+      // [LazyLoad("TextLazyLoadStaticMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       [LazyLoad("TextLazyLoadInstacnceMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       public string Name 
+       { get; set; } 
+       public string Sex 
+       { get; set; } 
+
+       [LazyLoad("TextLazyLoadStaticPropertyMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
+       public static string TestStaticProperty 
+       { get; set; } 
+
+       public int ID 
+       { get; set; } 
+   }
+</code></pre>
+
+<div class="cnblogs_code" onclick="cnblogs_code_show('c8e815c6-3301-42ff-93ea-f8f84b47d5b3')">效果图片如下：</div>
+
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144540238.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445444222.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">dmeo</a></p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1444,248 +1790,6 @@ public class TestCallHandlerAttribute : HandlerAttribute
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/">MSBuild + MSILInect实现编译时AOP-改变前后对比</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/08/09/MSBuild-MSILInect-shi-xian-bian-yi-shi-AOP-gai-bian-qian-hou-dui-bi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 实现静态AOP，就需要我们在预编译时期，修改IL实现对代码逻辑的修改。Mono.Cecil就是一个很好的IL解析和注入框架，参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a>。</p>
-
-<p>&nbsp; 我的思路为：在编译时将加有继承制MethodInterceptBaseAttribute标签的原方法，重新组装成一个方法（并加上[<a href="http://www.aisto.com/roeder/dotnet/Default.aspx?Target=code://mscorlib:2.0.0.0:b77a5c561934e089/System.Runtime.CompilerServices.CompilerGeneratedAttribute/.ctor(">CompilerGenerated</a>)]标签），在加入横切注入接口前后代码，调用此方法。</p>
-
-<p>比如代码：</p>
-
-<pre class='green'><code>[TestAOPAttribute(Order = 1)]
-
-public Class1 TestMethod1(int i, int j, Class1 c) 
-        { 
-            Console.WriteLine("ok"); 
-            return new Class1(); 
-        }
-
-public class TestAOPAttribute : Green.AOP.MethodInterceptBase 
-    { 
-
-        #region IMethodInject Members 
-
-        public override bool Executeing(Green.AOP.MethodExecutionEventArgs args) 
-        { 
-            Console.WriteLine(this.GetType() + ":" + "Executeing"); 
-            return true; 
-        } 
-
-        public override Green.AOP.ExceptionStrategy Exceptioned(Green.AOP.MethodExecutionEventArgs args) 
-        { 
-            Console.WriteLine(this.GetType() + ":" + "Exceptioned"); 
-            return Green.AOP.ExceptionStrategy.Handle; 
-        } 
-
-        public override void ExecuteSuccess(Green.AOP.MethodExecutionEventArgs args) 
-        { 
-            Console.WriteLine(this.GetType() + ":" + "ExecuteSuccess"); 
-        } 
-
-        #endregion 
-
-        #region IMethodInject Members 
-
-               #endregion 
-    }
-</code></pre>
-
-<p>将会转化（实际注入IL，这里反编译为了c#代码，更清晰）为：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313329255.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313392150.png" title="12" alt="12" /></a></p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313397449.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313416379.png" title="image" alt="image" /></a></p>
-
-<p>从这里你就会清晰的明白这里实现静态注入了机制和原理了。我们需要做的目的就是从IL出发改变原来代码逻辑，注入我们的截取代码。使用Mono.Cecil具体代码在程序包MethodILInjectTask中。</p>
-
-<p>MatchedMethodInterceptBase是应用于class上匹配该class多个methodattribute基类。rule为匹配规则。</p>
-
-<pre class='green'><code>[TestAOP2Attribute(Rule = "TestMethod1*")]
-
-public class Class1 
-</code></pre>
-
-<p>&nbsp;&nbsp; <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313445558.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313488651.png" title="image" alt="image" /></a></p>
-
-<p>这里需要对于继承制该基类的标示class的所有满足rule的方法进行注入。</p>
-
-<p>PropertyInterceptBase：属性注入，Action属性标识get，set方法。</p>
-
-<pre class='green'><code>[TestAOPPropertyGetAttribute(Action = PropertyInterceptAction.Get)] 
-   public int TestProperty 
-   { 
-       get; 
-       set; 
-   }
-</code></pre>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313514766.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201108/201108092313565383.png" title="image" alt="image" /></a></p>
-
-<p>属性注入找出标示property，更具action选择get，set方法注入IL逻辑。</p>
-
-<p>现在对于方法中获取attribute通过反射，性能存在一定问题。完全可以在class中注入属性，延时加载，Dictionary类级缓存来减少这方面损失，还暂时没考虑加入。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 不是很会写blog，所以有什么不明白的可留言，上一篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html" title="发布于2011-08-09 14:05"><font color="#3d81ee">MSBuild + MSILInect实现编译时AOP之预览</font></a>，由于时间写的没头没尾的，估计大家都看的很迷茫，迷茫该怎么写。关于IL注入Mono.Cecil可以参见<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a>和官方<a href="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>。还有必须对MSIL具有一定了解（相同与Emit的IL注入）</p>
-
-<p>&nbsp;&nbsp; 附带：<a href="http://files.cnblogs.com/whitewolf/ConsoleApplication1.rar" title="源码下载">源码下载</a></a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/07/28/bian-yi-shi-MSIL-zhu-ru-shi-jian-Mono-Cecil-1/">编译时MSIL注入&#8211;实践Mono Cecil(1)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-28T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/07/28/bian-yi-shi-MSIL-zhu-ru-shi-jian-Mono-Cecil-1/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/28/bian-yi-shi-MSIL-zhu-ru-shi-jian-Mono-Cecil-1/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp; 紧接上两篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html">浅谈.NET编译时注入（C#&mdash;&gt;IL）</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>，在第一篇中我们简单研究了c#语法糖和PostSharp的MSIl注入，紧接第二篇中我们介绍了自定义MSBuild编译任务（记得有位老兄发链接用 MSBuild自动发布Silverlight xap ，我想说的我做的是自定义编译任务，不是什么发布，MSBuild本就是一个发布工具）。之所以在此前介绍编译Task是因为我讲介绍的就是利用MSBuild和MSILInject制作静态注入式AOP，想成熟的产品PostSharp，当然我也不会去重造轮子，但需要明白起原理和自动化注入时机。废话不多说，今天将请出我们的MSIL注入的好东西：Mono.Cecil.官方网站<a href="http://www.mono-project.com/Cecil" title="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>，他是一个强大的MSIL 注入工具，在我们的Reflector插件Reflexil（动态修改程序集插件，很好用，我已经尝试多次）就有他的身影出现。还有如大名鼎鼎的<a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a>，<a href="http://www.linqpad.net/">LINQPad</a>，<a href="http://www.janetdev.org/">Ja.NET</a>等等（可以参见<a href="https://github.com/jbevain/cecil/wiki/Users" title="https://github.com/jbevain/cecil/wiki/Users">https://github.com/jbevain/cecil/wiki/Users</a>）。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在本节我们需要看看这个Mono.Cecil，先来一个简单的认识。</p>
-
-<p>我来在我们的方法执行前后加入我们的输出信息：</p>
-
-<p>原来代码：</p>
-
-<pre class='green'><code> class Program 
-   { 
-       static void Main(string[] args) 
-       { 
-           Console.WriteLine("破浪Blog：http://www.cnblogs.com/whitewolf/"); 
-       } 
-   }
-</code></pre>
-
-<p>任务：</p>
-
-<p>1我将在方法执行前后添加一个Console.WriteLine(&ldquo;Method start&#8230;&rdquo;);</p>
-
-<p>2方法最后添加Console.WriteLine(&ldquo;Method finish&#8230;&#8220;）；</p>
-
-<p>具体Mono.Cecil Code：</p>
-
-<pre class='green'><code>using System; 
-  using System.Collections.Generic; 
-  using System.Linq; 
-  using System.Text; 
-  using Mono.Cecil; 
-  using Mono.Cecil.Cil; 
-
-  namespace BlogSample 
-  { 
-      class Program 
-      { 
-          static void Main(string[] args) 
-          { 
-              AssemblyDefinition assembiy = AssemblyFactory.GetAssembly(args[0]); 
-              foreach (Mono.Cecil.TypeDefinition item in assembiy.MainModule.Types) 
-              { 
-                  foreach (MethodDefinition method in item.Methods) 
-                  { 
-                      if (method.Name.Equals("Main")) 
-                      { 
-
-                          var ins = method.Body.Instructions[0]; 
-                          var worker = method.Body.CilWorker; 
-                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method start…")); 
-                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
-                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
-                          ins = method.Body.Instructions[method.Body.Instructions.Count - 1]; 
-
-                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method finish…")); 
-                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
-                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
-                          break; 
-                      } 
-                  } 
-
-              } 
-
-              AssemblyFactory.SaveAssembly(assembiy, "IL_" + args[0]); 
-              Console.Read(); 
-          } 
-      } 
-  }
-</code></pre>
-
-<p>DOS运行结果：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128456040.jpg" title="无标题" alt="image" /></p>
-
-<p>我们在来看看反编译后的MSIL</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128509350.png" title="image" alt="image" />
-C#：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128529675.png" title="image" alt="image" />
-&nbsp;&nbsp;&nbsp; 在这最后我们可以想一下，如果我们利用Mono.Cecil可以干些什么事情，能做的当然很多，我首先想尝试的了与上一节<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>结合PostSharp一样的静态注入AOP框架。还能做什么的就要靠大家发挥大家聪明的才智。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -1719,6 +1823,14 @@ C#：</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
@@ -1740,14 +1852,6 @@ C#：</p>
     
       <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
       </li>
     
   </ul>

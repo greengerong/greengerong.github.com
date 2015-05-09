@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面简述了从服务层到数据层参见架构设计目录。剩下了表现层，一个再好的中间层表现也必须有一个用户界面，提供和用户交互，将用户行为输入转化为系统操作，进入后台逻辑。在当下RAD（快速应用开发）工具的支持下， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Resharper是一款很优秀的重构工具，已经习惯了Resharper快捷键，利用Resharper做重构，TDD开发，很爽。唯一缺点就是低配置机器上速度很慢，容易拖死VS， 为此我我专门把我的本本换成6G内存， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,139 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/14/XUnit-pei-zhi-Resharper-kuai-jie-jian/">XUnit配置Resharper快捷键</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/07/14/XUnit-pei-zhi-Resharper-kuai-jie-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/07/14/XUnit-pei-zhi-Resharper-kuai-jie-jian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Resharper是一款很优秀的重构工具，已经习惯了Resharper快捷键，利用Resharper做重构，TDD开发，很爽。唯一缺点就是低配置机器上速度很慢，容易拖死VS，</p>
+
+<p>为此我我专门把我的本本换成6G内存，现在感觉顺畅多了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 回到正题，我在项目中运用了XUnit，但是VS和Resharper对其快捷键都还不能默认支持，所以在网上找到扩展Resharper使其支持Xunit，步骤如下：</p>
+
+<ol>
+<li>关闭所有VS。</li>
+<li>在<a href="http://xunitcontrib.codeplex.com/" title="http://xunitcontrib.codeplex.com/">http://xunitcontrib.codeplex.com/</a>下载xUnit.net Contrib</li>
+<li>把目录中的xunitcontrib.runner.resharper.Resharper版本号拷贝到C:\Program Files\JetBrains\ReSharper\Resharper版本号\bin\plugins 下（其中的plugins可能需要手动建立）。同样你也可以拷贝到&lt;RoamingAppData&gt;\JetBrains\ReSharper\Resharper版本号\vs版本号\plugins</li>
+<li>拷贝resharper.external.annotations\xunit.xml到C:\Program Files\JetBrains\ReSharper\Resharper版本号\bin\ExternalAnnotations目录下。</li>
+<li>开启VS。</li>
+<li> ReSharper &ndash;&gt; Live Templates &ndash;&gt;&ldquo;Import&rdquo; 导入xunit-ae.xml或者xunit-xe.xml。xunit-xe.xml和xunit-ae.xml对XUnit断言语句的扩展简化，xunit-xe.xml以x开头，比如xe =&gt; Assert.Equal，而xunit-ae.xml则以a开头，比如ae =&gt; Assert.Equal。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp; 最后大功告成。</p>
+
+<p>更多信息参见<a href="http://xunitcontrib.codeplex.com/" title="http://xunitcontrib.codeplex.com/">http://xunitcontrib.codeplex.com/</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/14/2591904.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/">读Clean Code - 数据结构和对象</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 最近在上下班挤公交的时间细阅Clean Code（代码整洁之道），再次佩服Bob大叔幽默的文笔，独到的观点和理解视角。最让我耳目一新的是Bob大叔对数据结构和对象的解释。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 总的说来数据结构指的就是数据的载体，暴露数据，而几乎没有有意义的行为，你应该在尖叫这不是贫血类？的确这和我们的贫血类很相似。最常见的应用在分布式服务，以wcf，webservice，reset之类的分布式服务中不可或缺的数据传输对象（DTO）模式，DTO（Request/Response）就是一个很典型的数据载体，只存在简单的get，set属性，并且更倾向于作为值对象存在。而对象则刚好相反作为面向对象的产物，必须封装隐藏数据，而暴露出行为接口，DDD中领域模型倾向于对象不仅在数据更多暴露行为操作自己或者关联状态。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 虽然数据结构和对象之间看是细微的差别却导致了不同的本质区别：使用数据结构的代码便于在不改动现在数据结构的前提下添加新的行为（函数），面向对象代码则便于不改动现 有函数的前提下添加新的类。换句话说就是数据结构难以添加新的的数据类型，因为需要改动所有函数，面向对象的代码则难以添加新的函数，因为需要修改所有的类。在任何一个复杂的系统都会同时存在数据结构和对象，我们需要判断的是我们需要的是需要添加的新的数据类型还是新的行为函数。</p>
+
+<p> 在则就是迪米特法则，或被译为最小知识原则，不和陌生人说话：模块不应该了解他所操作的对象的内部情形，关于对象的隐藏，更细致的理解为一个对象A的方法f，应该也只能调用对象为下列范围内：</p>
+
+<ol>
+<li>对象A的属性字段</li>
+<li>对象A持有的对象</li>
+<li>方法参数传入的对象</li>
+<li>在方法f中定义的临时对象</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 方法不应和任何调用方法返回的对象操作，换句话之和朋友说话，不和陌生人说话。比如：ctxt.getOptions().getSearchDir().getAbsolutePath()，就是迪米特法则的反例模式。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 但当前迪米特法则的前提是对象，如果是数据结构，没有什么行为，则他们自然会暴露其内部数据结构，迪米特法则也失效了。</p>
+
+<p>&nbsp;&nbsp; &nbsp; 隐藏作为面向对象主要特性中的最重要特性，封装隐藏是面向对象中最重要的特性，一个好的面向对象代码肯定是对对象的内部细节做到很好的隐藏封装，封装过后才有是多态，委派之类的。一个好的面向对象的代码一定是具有很好的隐藏封装，易于测试，不稳定因素往往集中在一处很小或者固定的位置，不稳定因素的变更不会导致更大面积的修改扩散。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 最后推荐下一本书籍，值得在空闲时间看看，不能保证看完代码就一定写出整洁的代码，做到童子军军规&#8220;每次签入的代码比签出的更整洁&#8221;，更不会像优美的散文，这需要在项目实践中不断练习发现，但对代码质量意思有着引导作用。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 总感觉自己的技术还差得很远，所以我总是约束自己抽出可用的时间看些书籍，从不同的视角，不同的领域或者一些思想的提升和沉淀。</p>
+
+<p>关于面向对象原则随笔还有：</p>
+
+<ol>
+<li>&nbsp;<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/12/2588896.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -705,163 +838,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Interface继承至System.Object？</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-23T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp; 这其实是个很基础的问题，在我们学习C#类型的时候第一句就是所有的对象都继承至System.Object。今天一个同事问我Interface继承之System.Object。所以才有了本文。</p>
-
-<p>&nbsp; 在这里我只从几个方面简单的说明：</p>
-
-<p>&nbsp; 1：从语义：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; Interface在oo中表示一组行为的集合，是高层次的抽象，契约，一种稳定的表现。好比我们生活的公司和员工之间的合同，双方都必须遵循。所以我们的接口必须是一个干净纯洁的体系。加入interface继承之System.Object，这以为这是不是，Interface有Equal，ToString等方法？这明显破坏了接口的干净体系。</p>
-
-<p>2：实践（C#）：</p>
-
-<p>&nbsp;&nbsp; 如果interface继承之System.Object，这我们可以从System.Type获取其基类：</p>
-
-<p>如下测试：</p>
-
-<p>public interface Itest{}</p>
-
-<p>public class test{}</p>
-
-<p>typeof(Itest).BaseTye//为null</p>
-
-<p>typeof(test).BaseType//System.Object.</p>
-
-<p>3:我们从IL指令来看（这也是最有力的证明）：</p>
-
-<p>我们先写一个接口和一个类，他们都是空实现：</p>
-
-<p>namespace ConsoleApplication1  <br/>
-{   <br/>
-&nbsp;&nbsp;&nbsp; public class test   <br/>
-&nbsp;&nbsp;&nbsp; {   <br/>
-&nbsp;&nbsp;&nbsp; }</p>
-
-<p>&nbsp;&nbsp;&nbsp; public interface Itest  <br/>
-&nbsp;&nbsp;&nbsp; {   <br/>
-&nbsp;&nbsp;&nbsp; }   <br/>
-}</p>
-
-<p>&nbsp;</p>
-
-<p>在反编译查看IL：</p>
-
-<p>test clas:</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004187699.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/20120523000419947.png" title="image" alt="image" /></a></p>
-
-<p>而interface Itest的IL：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004197566.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205230004208405.png" title="image" alt="image" /></a></p>
-
-<p>从上面两个IL比较我们可以清晰的看出来class有显示的extends [mscorlib]System.Object，而接口没有，本篇的答案到这里你应该很清晰吧。这里还需要说明的是他们都是class，说明都是一种类型，而interface是一种特殊的类型。</p>
-
-<p>接口能定义什么？接口能定义行为（方法），无参属性（属性，又称守信），有参属性（索引），不能定义私例字段，定义都是对编译器都是一组方法行为。</p>
-
-<p>&nbsp;&nbsp; 在最后我们在来说说前面说的&#8220;所有的对象都继承至System.Object&#8221;，这是真的嘛？在c#的编译过程中为我们提供了一个选项NOAUTOINHERIT，是的我们可以为自定义类型去掉默认的System.Object的基类。这就打破了System.Object创世之祖的戒律。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/23/2514123.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/">SOA面向服务架构简述</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-22T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上篇中我们简单谈了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>，在这里我们将继续服务层的架构，在本节我们将重点在于分布式服务。在分布式系统中表现层和业务逻辑层 并不处于同一物理部署，所以我们必须存在分布式服务，以契约方式发布于网络中，我们的关注点在于服务，面向服务编程，这种通过组合业务逻辑暴露可用服务的架构叫做面向服务架构（SOA）。</p>
-
-<p>&nbsp;&nbsp;&nbsp; SOA强调一个松耦合，基于宏服务的架构，通过契约暴露给服务消费者可用的服务交互。SOA是以服务为组成构建，原则有：</p>
-
-<ol>
-<li>边界清晰：
-&nbsp;&nbsp;&nbsp; 服务层是消费者交互到系统业务的唯一入口,所有我们的服务必须能够被消费者所理解,以及最好处理Request/Response基于消息交换RPC调用,职责明确单一.还有我们更希望我们的服务为作用明确的,CQS(命令-查询分离原则).</li>
-<li>服务的自治性
-&nbsp;&nbsp;&nbsp; 服务自治主要表现在每个服务都是独立的，其系统部署，管理监控都是独立的。自治体现了服务的松耦合，但并不是服务就是一个孤岛，其可以通过消息交换消费其他服务。</li>
-<li>使用契约（接口和数据载体），而非实现
-&nbsp;&nbsp;&nbsp;&nbsp; 这也是面向对象设计第一原则。在我们的服务设计中SOA一个重要目标就是互操作，基于SOAP等标准协议实现跨平台互操作，可能存在异构系统。所以我们该选择接口而不是语言具体的类以及基于消息交互。服务对于开发就是一些列行为的组合，数据契约就是数据迁移对象，数据载体。契约使得我们并不关心服务的内部实现，而只关心提供了那些服务，服务的签名如何，怎么调用之类的。</li>
-<li>兼容性基于策越
-对于消费者来说服务是否能满足他的需求，这需要服务语义兼容，语义兼容也应该通过可访问方式暴露。是的服务可发现。</li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp; ＳＯＡ是一种设计原则规范，其目标在于为复杂系统提供互操作性和以服务为基础组件构造系统逻辑。把具体的业务逻辑和流程屏蔽，暴露出用户可用的行为集合。ＳＯＡ是一中原则而非集体技术。wcf，webservice是具体ＳＯＡ技术。同时ＳＯＡ也不是我们的目标，客户是不与关心我们采用ｓｏａ与否，这只是我们对系统的一种解决方案。</p>
-
-<p>SOA优势在于给我们提供更好的代码重用，版本控制，安全控制，扩展延伸性。同时降低和服务的耦合，交互必须依赖于服务契约和数据契约，并不关心服务的内部实现。在我们的版本升级，修改过程中可以完全可以重新实现替换原有服务，并不会影响消费程序的使用。</p>
-
-<p>最后我们必须的说下当下流行的restfull，通常我们认为这是一种风格，而非架构，是由Roy Thomas Fielding在其博士论文 《Architectural Styles and the Design of Network-based Software Architectures》中提出REST是英文Representational State Transfer的缩写，中文翻译为&#8220;表述性状态转移&#8221;。是一种基于ｗｅｂ的架构，它很好的利用http协议的ｍｅｔｈｏｄ。根据不同的ｍｅｔｈｏｄ表示对资源的不同语义操作。其核心在于将发布在网络的一切事物归属为资源，每个资源定位于一个资源定位符（ＵＲＩ）。以及无状态，缓存，分层架构。在微软最新的WCF resetfull，web api应用框架。以及wcf ria ，wcf data service，需要的注意的是微软同时候加入的自己的oData协议（开元数据协议）。</p>
-
-<p>最后说一点：我觉得不管是服务或者resetfull服务我们都必须定义契约，依赖于契约，虽然微软的而技术允许我们直接寄宿服务类，但是对于服务的扩展和延伸而言，说这句话的原因在于我最近看见一些直接寄宿服务类的resetfull架构。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -895,6 +871,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
@@ -916,14 +900,6 @@
     
       <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
       </li>
     
   </ul>

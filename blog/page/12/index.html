@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp; 今天遇见一个win7下程序运行权限问题(需要对目录下文件有读写权限)：网上google下得到解决方案有,现记录下： 一： &nbsp;&nbsp; windows 7和vista提高的系统的安全性，同时需要明确指定&#8220;以管理员身份运行&#8221; &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 几天遇见一个问题需要检查某个wpf程序是否已经运行，如果没有运行则启动传递参数，如果已运行则需要直接传递消息。在没有运行 情况下传递参数很简单，我们只需要Process cmd窗口启动并传递参数，在程序中处理。但是如果程序已经启动有点麻烦， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,354 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/">Wpf消息循环之消息传递</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/04/Wpf-xiao-xi-xun-huan-zhi-xiao-xi-chuan-di/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 几天遇见一个问题需要检查某个wpf程序是否已经运行，如果没有运行则启动传递参数，如果已运行则需要直接传递消息。在没有运行 情况下传递参数很简单，我们只需要Process cmd窗口启动并传递参数，在程序中处理。但是如果程序已经启动有点麻烦，凭着我曾winform的经验第一时间想到的是win32 api&nbsp; SendMessage,我们的C#程序只需要DllImport就可以调用了。经过一番查找和对wpf window和DispatcherObject的Reflector，花了我大半天终于找到了System.Windows.Interop.HwndSource中有AddHock方法可以添加对win32消息机制的监听。这下就很好办了我们只需要注册MainWindow的这个时间，来监听win32消息处理我们的0x004A消息。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 控制台代码，主要应用的FindWindow 这个win32方法查找我们的窗体，SendMessage发送我们的消息，和winform没有什么差别，对于win32的使用你可以参考<a href="http://www.cnblogs.com/speeding/">毒龙的程序人生</a> 的<a href="http://www.cnblogs.com/speeding/archive/2004/10/24/56033.html">关于C#中实现两个应用程序消息通讯的问题</a>。难得查win32 Api直接copy，借来用用。</p>
+
+<p>程序：</p>
+
+<pre class='green'><code>using System; 
+using System.Collections.Generic; 
+using System.Linq; 
+using System.Text; 
+using System.Runtime.InteropServices; 
+
+namespace ConsoleApplication1 
+{ 
+    class Program 
+    { 
+        static void Main(string[] args) 
+        { 
+            string ch = ""; 
+            while (ch.ToLower() != "q") 
+            { 
+
+                if (!SendMessage("Window1", @"Hello,I am from Console Program:" + ch)) 
+                { 
+                   Console.WriteLine("no window");
+
+                }; 
+                ch = Console.ReadLine(); 
+            } 
+        } 
+
+        public static bool SendMessage(string windowName, string strMsg) 
+        { 
+            if (strMsg == null) return true; 
+            IntPtr hwnd = (IntPtr)FindWindow(null, windowName   ); 
+            if (hwnd != IntPtr.Zero) 
+            { 
+                CopyDataStruct cds; 
+                cds.dwData = IntPtr.Zero; 
+                cds.lpData = strMsg; 
+                cds.cbData = System.Text.Encoding.Default.GetBytes(strMsg).Length + 1; 
+                int fromWindowHandler = 0; 
+                SendMessage(hwnd, 0x004A, fromWindowHandler, ref  cds); 
+                return true; 
+            } 
+            return false; 
+        } 
+
+        [DllImport("User32.dll", EntryPoint = "FindWindow")] 
+        private static extern int FindWindow(string lpClassName, string lpWindowName); 
+
+        [DllImport("User32.dll", EntryPoint = "SendMessage")] 
+
+        private static extern int SendMessage 
+
+        ( 
+
+        IntPtr hWnd, 
+
+        int Msg, 
+
+        int wParam, 
+
+        ref  CopyDataStruct lParam 
+
+        ); 
+
+    } 
+
+    [StructLayout(LayoutKind.Sequential)] 
+
+    public struct CopyDataStruct 
+    { 
+
+        public IntPtr dwData; 
+
+        public int cbData; 
+
+        [MarshalAs(UnmanagedType.LPStr)] 
+
+        public string lpData; 
+
+    } 
+
+}
+</code></pre>
+
+<p>&nbsp;wpf端程序：主要需要在MainWindow中loaded事件订阅消息监听：这里需要System.Windows.Interop.HwndSource的AddHock方法注册
+程序：</p>
+
+<pre class='green'><code>  IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+         { 
+
+             if (msg == 0x004A) 
+             { 
+
+                 CopyDataStruct cds = (CopyDataStruct)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(CopyDataStruct)); 
+
+                 MessageBox.Show(cds.lpData); 
+                 this.Visibility = Visibility.Visible; 
+             } 
+
+             return hwnd; 
+
+         } 
+
+         private void Window_Loaded(object sender, RoutedEventArgs e) 
+         {           
+
+             (PresentationSource.FromVisual(this) as System.Windows.Interop.HwndSource).AddHook(new System.Windows.Interop.HwndSourceHook(WndProc)); 
+         }
+</code></pre>
+
+<p>截个图：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248312846.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201103/201103042248334156.jpg" title="GDVCJ_1PZO7SU((~1}41XSG" alt="GDVCJ_1PZO7SU((~1}41XSG" /></a></p>
+
+<p>很简单的东西结果被MS封装的不知哪里去，让我查了半天（其实应该是我的无知吧，不管怎么解决了就是心情舒畅了）；</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1971300.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/02/html5-Canvas-hui-tu/">html5-Canvas绘图</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-02T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/02/html5-Canvas-hui-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/02/html5-Canvas-hui-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在html5中我觉得最重要的就是引入了Canvas，使得我们可以在web中绘制各种图形。给人感觉单在这点上有点模糊我们web和桌面程序的感觉。在html5外web中也有基于xml的绘图如：VML、SVG。而Canvas为基于像素的绘图。Canvas是一个相当于画板的html节点，我们必须以js操作绘图。</p>
+
+<p>如下：</p>
+
+<p>&lt;canvas id=&ldquo;myCanvas&rdquo; width=&ldquo;600&rdquo; height=&ldquo;300&rdquo;&gt;你的浏览器还不支持哦&lt;/canvas&gt;定义。</p>
+
+<p>我们可以获取canvas对象为var c=document.getElementById(&ldquo;myCanvas&rdquo;);其应有js属性方法如下列举：</p>
+
+<p>1：绘制渲染对象，c.getContext(&ldquo;2d&rdquo;),获取2d绘图对象，无论我们调用多少次获取的对象都将是相同的对象。</p>
+
+<p>2：绘制方法：</p>
+
+<p>clecrRect(left,top,width,height)清除制定矩形区域，</p>
+
+<p>fillRect(left,top,width,height)绘制矩形，并以fillStyle填充。</p>
+
+<p>fillText（text,x,y）绘制文字；</p>
+
+<p>strokeRect(left,top,width,height)绘制矩形，以strokeStyle绘制边界。</p>
+
+<p>beginPath():开启路径的绘制,重置path为初始状态；</p>
+
+<p>closePath():绘制路径path结束，它会绘制一个闭合的区间，添加一条起始位置到当前坐标的闭合曲线；</p>
+
+<p>moveTo（x，y）：设置绘图其实坐标。</p>
+
+<p>lineTo(x，y);绘制从当前其实位置到x，y直线。</p>
+
+<p>fill（），stroke（），clip（）：在完成绘制的最后的填充和边界轮廓，剪辑区域。</p>
+
+<p>arc（）：绘制弧,圆心位置、起始弧度、终止弧度来指定圆弧的位置和大小；</p>
+
+<p>rect():矩形路径;</p>
+
+<p>drawImage（Imag img）：绘制图片；</p>
+
+<p>quadraticCurveTo():二次样条曲线路径,参数两个控制点；</p>
+
+<p>bezierCurveTo（）：贝塞尔曲线，参数三个控制点；</p>
+
+<p>createImageData,getImageData，putImageData:为Canvas中像素数据。ImageData为记录width、height、和数据 data，其中data为我们色素的记录为</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; argb，所以数组大小长度为width<em>height</em>4，顺序分别为rgba。getImageData为获取矩形区域像素，而putImageData则为设置矩形区域像素；</p>
+
+<p>&#8230; and so on！</p>
+
+<p>3：坐标变换：</p>
+
+<p>translate（x,y）：平移变换，原点移动到坐标（x，y）；</p>
+
+<p>rotate（a）：旋转变换，旋转a度角；</p>
+
+<p>scale（x，y）：伸缩变换；</p>
+
+<p>save（），restore（）：提供和一个堆栈，保存和恢复绘图状态，save将当前绘图状态压入堆栈，restore出栈，恢复绘图状态；</p>
+
+<p>&#8230; and so on！</p>
+
+<p>好了，也晚了。附我的测试代码，：</p>
+
+<pre class='green'><code>&lt;html&gt; 
+  &lt;head&gt; 
+  &lt;/head&gt; 
+  &lt;body&gt; 
+  &lt;canvas id="myCanvas" width="600" height="300"&gt;你的浏览器还不支持哦&lt;/canvas&gt; 
+  &lt;script type="text/javascript"&gt; 
+
+  var width,height,top,left; 
+  width=height=100; 
+  top=left=5; 
+  var x=10; 
+  var y=10; 
+
+  var c=document.getElementById("myCanvas"); 
+
+  var maxwidth=c.width-5; 
+  var maxheight=c.height-5; 
+  var cxt=c.getContext("2d"); 
+  cxt.strokeStyle="#00f"; 
+  cxt.strokeRect(0,0,c.width,c.height); 
+
+  var img=new Image(); 
+  img.src="1.gif"; 
+  var MyInterval=null; 
+  start(); 
+  function Refresh(){ 
+  cxt.clearRect(left,top,width,height); 
+  if((left+x)&gt;(maxwidth-width)||left+x&lt;0){ 
+  x=-x; 
+  } 
+
+  if((top+y)&gt;(maxheight-height)||top+y&lt;0){ 
+  y=-y; 
+  } 
+
+  left=left+x;    
+  top=top+y; 
+  cxt.drawImage(img,left,top,width,height); 
+  cxt.font="20pt 宋体"; 
+  cxt.fillText("破狼",left,top+25); 
+
+  } 
+
+  function start(){ 
+  if(MyInterval==null){ 
+  MyInterval=setInterval("Refresh()",100); 
+  } 
+  } 
+
+  function stop(){ 
+  if(MyInterval!=null){ 
+  clearInterval(MyInterval); 
+  MyInterval=null; 
+  } 
+  } 
+  function InRectangle(x,y,rectx,recty,rwidth,rheight){ 
+  return (x&gt;=rectx&amp;&amp;x&lt;=rectx+rwidth)&amp;&amp;(y&gt;=recty&amp;&amp;y&lt;=recty+rheight) 
+  } 
+  c.onmouseover=function(e){ 
+  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
+  stop(); 
+  } 
+
+  c.onmouseout=function(e){ 
+  start(); 
+  } 
+
+  c.onmousemove=function(e){ 
+  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
+  if(MyInterval!=null){ 
+  stop(); 
+  } 
+  }else{ 
+  start(); 
+  } 
+  } 
+
+  } 
+  &lt;/script&gt; 
+  &lt;/body&gt; 
+  &lt;/html&gt;
+</code></pre>
+
+<p>参考火狐html文档：<a href="https://developer.mozilla.org/en/HTML/HTML5" title="https://developer.mozilla.org/en/HTML/HTML5">https://developer.mozilla.org/en/HTML/HTML5</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 我的html5系列：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1968512.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1322,294 +1670,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/11/11/MEF-xue-xi-bi-ji/">MEF学习笔记</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-11-11T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/11/11/MEF-xue-xi-bi-ji/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/11/MEF-xue-xi-bi-ji/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式;</p>
-
-<p>&nbsp;&nbsp; MEF 为我们提供了一种运行时的扩展，具体应用在对象的实例化。它有目录（AssemblyCatalog）和容器（CompositionContainer）组成，他有输入输出（Exports和Imports）元数据标记，在对象实例化的时候会自动匹配这个契约。</p>
-
-<p>下面是官方的一个展示图：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled_thumb.png" title="untitled" alt="untitled" /></a></p>
-
-<p>由CompositionContainer来管理我们的多个可组合部件。</p>
-
-<p>下面我们来一个简单的示例来初步了解MEF:</p>
-
-<p>控制台程序：</p>
-
-<pre class='green'><code>     代码 
-
-    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;using System; 
-    using System.Collections.Generic; 
-    using System.Linq; 
-    using System.Text; 
-    using System.ComponentModel.Composition;//添加引用 
-
-
-
-    namespace MEFTest 
-    { 
-        public interface ILog 
-        { 
-            void Write(string message); 
-        } 
-
-        [System.ComponentModel.Composition.Export(typeof(ILog))] 
-        public class ConsoleLog:ILog 
-        { 
-            public void Write(string message) 
-            { 
-                Console.WriteLine("Hello:"+message); 
-            } 
-        } 
-        class Program 
-        { 
-            [System.ComponentModel.Composition.Import(typeof(ILog))] 
-            public ILog Log; 
-            static void Main(string[] args) 
-            { 
-                Program pro = new Program(); 
-                pro.Init(); 
-                pro.Log.Write("Test"); 
-                Console.Read(); 
-            }
-
-            public void Init() 
-            { 
-                var assem = System.Reflection.Assembly.GetExecutingAssembly();//当前程序集 
-                var assemcat = new System.ComponentModel.Composition.Hosting.AssemblyCatalog(assem);//构建目录 
-                var container = new System.ComponentModel.Composition.Hosting.CompositionContainer(assemcat);//构建容器 
-                container.ComposeParts(this);//这是一个System.ComponentModel.Composition.AttributedModelServices 的扩展方法。 
-            } 
-        } 
-    }
-</code></pre>
-
-<p>输出为：</p>
-
-<p>Hello:Test</p>
-
-<p>ExportAttribute 定义如下：</p>
-
-<pre class='green'><code>     代码 
-
-    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)] 
-    public class ExportAttribute : Attribute 
-    { 
-
-        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
-
-        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
-
-        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
-        public ExportAttribute(Type contractType); 
-
-        public ExportAttribute(string contractName, Type contractType);
-
-
-        public string ContractName { get; } 
-
-        public Type ContractType { get; } 
-    }
-</code></pre>
-
-<p>从他的定义我们可以知道他可以运用于我们的类、方法、属性、字段，并且可以多继承，但是不存在从父类的继承特性。</p>
-
-<p>他有三种不同的标记方式方式.在MEF中这里标记为可以导出，即注入到Import。</p>
-
-<p>ImportAttribute 定义：</p>
-
-<pre class='green'><code>     代码 
-
-    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)] 
-        public class ImportAttribute : Attribute, IAttributedImport 
-        { 
-
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
-            public ImportAttribute(); 
-
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
-            public ImportAttribute(string contractName); 
-
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
-            public ImportAttribute(Type contractType); 
-
-            public ImportAttribute(string contractName, Type contractType); 
-
-            public bool AllowDefault { get; set; }
-
-            public bool AllowRecomposition { get; set; } 
-
-            public string ContractName { get; } 
-
-            public Type ContractType { get; } 
-
-            public CreationPolicy RequiredCreationPolicy { get; set; } 
-        }
-</code></pre>
-
-<p>&nbsp;同上Export,这里标记为可被Export注入的接口点。</p>
-
-<p>今天就写到这里了，希望大家多多指教，大家一起共同进步。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/11/MEF1.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">(翻译)31天Windows Phone学习-1-项目模板</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>的 <a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">31 Days of Windows Phone</a> 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习，所以准备拿来对Windows Phone 7的简单入门学习。并翻译出来供像我一样的菜鸟学习，我的E文并不好，所以翻译难免会有一些不对的忘大家原谅和多多指教。说道E文又想起大学时，就是因为这个E文让我少的了一大笔奖学金，哎。翻译这个系列，也顺便提高一下我的E文吧，呵呵。</p>
-
-<p>&nbsp;&nbsp; 步入正题：今天是我们Windows Phone学习的第一天，是一些关于项目模板的。</p>
-
-<p>&nbsp; 首先： 在学习Windows Phone7之前我们假设你已经对Microsoft 的Silverlight有了一定的了解，如果你还不了解，你也可以参考作者的&nbsp; 20天Silverlight这个系列&nbsp; ，讲解的都是一些Silverlight的基础级知识。</p>
-
-<p>&nbsp; 再者我们假设你已经安装了Microsoft 所有Windows Phone Tools，如果你没有安装，你可以从这里下载<a href="http://developer.windowsphone.com/">http://developer.windowsphone.com/</a>，从这里我们会获得Visual Studio 2010 for Windows Phone和 Expression Blend 4 for&nbsp; Windows Phone。如果在你的机子已经安装了官方的正式版，你仅需要更新添加一些新的模板。</p>
-
-<p>&nbsp;&nbsp; 在今天我们会预览一下Visual Studio 2010为我们的Windows Phone应用程序生成的默认模板。</p>
-
-<p><img src="http://www.jeffblankenburg.com/image.axd?picture=NewProject.png" title="NewProject" alt="NewProject" /></p>
-
-<h4><font style="font-weight: bold">Solution Explorer：</font></h4>
-
-<p>下面是vs2010默认为我们生成的解决方案，我不准备详细介绍各个文件，你可以从<a target="_blank"><a href="http://bit.ly/8XcWaO"><font color="#3d81ee">安装上所有Tools</font></a>&nbsp;</a>并自己尝试，比较简单。</p>
-
-<h4><img src="http://www.jeffblankenburg.com/image.axd?picture=SolutionExplorer.png" title="SolutionExplorer" alt="SolutionExplorer" /></h4>
-
-<h4><font style="font-weight: bold">ApplicationIcon.png:</font></h4>
-
-<p>&nbsp; 是Phone application List现实的图标，你也可以替换成你想要的图标。</p>
-
-<h4><font style="font-weight: bold">App.xaml：</font></h4>
-
-<h4>&nbsp; 有点像ASP.NET web.config 文件，保存了我们应用程序的常用数据和设置，我更喜欢防止我的style在这里，但这不是必须的。</h4>
-
-<h4><font style="font-weight: bold">App.xaml.cs：</font></h4>
-
-<p>是前一文件（App.xaml）的Code-Behind文件，和前一个文件一起定义我们应用程序的入口点，初始化应用程序级别的全局静态资源(StaticResource)和启动程序的页面。</p>
-
-<h4><font style="font-weight: bold">AssemblyInfo.cs：</font></h4>
-
-<p>定义了我们应用程序的程序集信息，入 版本，名称等。个人觉得和我们的WinForm、Asp.net程序应该差不多。</p>
-
-<h4><font style="font-weight: bold">Background.png：</font></h4>
-
-<p>是我们应用程启动时的屏幕背景，我们也可以替换为你需要的图标。</p>
-
-<h4><font style="font-weight: bold">MainPage.xaml：</font></h4>
-
-<p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
-
-<pre class='green'>&lt;Tasks&gt;</pre>
-
-
-<pre class='green'>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
-
-
-<pre class='green'> &lt;/Tasks&gt;</pre>
-
-
-<h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
-
-<p>前一个文件(MainPage.xaml)的Code-Behind文件，在这里需要我们编辑页面启动页面的Code.</p>
-
-<h4><font style="font-weight: bold">SplashScreenImage.jpg:</font></h4>
-
-<p>应用程序加载图标（即：我的应用程序启动，第一个页面还没有显示时）。我们也可以替换这个图标。在这里只是为了让我们的用户了解程序正在加载。</p>
-
-<h4><font style="font-weight: bold">WMAppManifest.xml：</font></h4>
-
-<p>用于定义我们应用程序打包的文件(manifest)。 Silverlight程序最终会打成xap包（zip格式），里面包含了程序需要用到的所有资源（例如图片，声音文件等等），和依赖 的第三方DLL等等。AppManifest.xml文件用于定义打包的结构。</p>
-
-<p>&nbsp;</p>
-
-<p>第一天学习很简单，就到这里的作者给我们提供了Code下载，其实我觉得没有必要。所以偷个懒了。</p>
-
-<p>本文E文原文：<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
-
-<p>关于Windows Phone的一些学习资料：</p>
-
-<p>1：首先是翻译的原文：&nbsp;<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>博客<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
-
-<p>2: 园友<a href="#">306Room</a>的一起学Windows Phone系列<a href="http://www.cnblogs.com/randylee/category/258713.html" title="http://www.cnblogs.com/randylee/category/258713.html">http://www.cnblogs.com/randylee/category/258713.html</a></p>
-
-<p>3：<a href="http://windowsteamblog.com/windows_phone/" title="http://windowsteamblog.com/windows_phone/">http://windowsteamblog.com/windows_phone/</a></p>
-
-<p>4：<a href="http://create.msdn.com/en-US/" title="http://create.msdn.com/en-US/">http://create.msdn.com/en-US/</a></p>
-
-<p>还有其他的我在后续看见了，也会一一不上。也希望大家给我提供一些学习资料，共同进步。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/10/1873273.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/13/">&larr; Older</a>
@@ -1643,6 +1703,14 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
@@ -1664,14 +1732,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
     
       <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
       </li>
     
   </ul>

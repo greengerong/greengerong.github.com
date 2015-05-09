@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-04-12T15:15:35+08:00</updated>
+  <updated>2015-05-09T23:20:10+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,1433 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[前端JavaScript规范]]></title>
+    <link href="http://greengerong.github.io/blog/2015/05/09/qian-duan-javascriptgui-fan/"/>
+    <updated>2015-05-09T23:18:20+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/05/09/qian-duan-javascriptgui-fan</id>
+    <content type="html"><![CDATA[<h1>JavaScript规范</h1>
+
+<h2><a name='TOC'>目录</a></h2>
+
+<ol>
+<li> <a href="#types">类型</a></li>
+<li> <a href="#objects">对象</a></li>
+<li> <a href="#arrays">数组</a></li>
+<li> <a href="#strings">字符串</a></li>
+<li> <a href="#functions">函数</a></li>
+<li> <a href="#properties">属性</a></li>
+<li> <a href="#variables">变量</a></li>
+<li> <a href="#conditionals">条件表达式和等号</a></li>
+<li> <a href="#blocks">块</a></li>
+<li> <a href="#comments">注释</a></li>
+<li> <a href="#whitespace">空白</a></li>
+<li> <a href="#commas">逗号</a></li>
+<li> <a href="#semicolons">分号</a></li>
+<li> <a href="#type-coercion">类型转换</a></li>
+<li> <a href="#naming-conventions">命名约定</a></li>
+<li> <a href="#accessors">存取器</a></li>
+<li> <a href="#constructors">构造器</a></li>
+<li> <a href="#events">事件</a></li>
+<li> <a href="#modules">模块</a></li>
+<li> <a href="#jquery">jQuery</a></li>
+<li> <a href="#es5">ES5 兼容性</a></li>
+<li> <a href="#html-css-js">HTML、CSS、JavaScript分离</a></li>
+<li> <a href="#jshint">使用jsHint</a></li>
+<li> <a href="#tools">前端工具</a></li>
+</ol>
+
+
+<h2><a name='types'>类型</a></h2>
+
+<ul>
+<li><p><strong>原始值</strong>: 相当于传值(JavaScript对象都提供了字面量)，使用字面量创建对象。</p>
+
+<ul>
+<li><code>string</code></li>
+<li><code>number</code></li>
+<li><code>boolean</code></li>
+<li><code>null</code></li>
+<li><code>undefined</code></li>
+</ul>
+
+
+<p>&#8220;`javascript
+var foo = 1,
+    bar = foo;</p>
+
+<p>bar = 9;</p>
+
+<p>console.log(foo, bar); // => 1, 9
+&#8220;`</p></li>
+<li><p><strong>复杂类型</strong>: 相当于传引用</p>
+
+<ul>
+<li><code>object</code></li>
+<li><code>array</code></li>
+<li><code>function</code></li>
+</ul>
+
+
+<p>&#8220;`javascript
+var foo = [1, 2],
+    bar = foo;</p>
+
+<p>bar[0] = 9;</p>
+
+<p>console.log(foo[0], bar[0]); // => 9, 9
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='objects'>对象</a></h2>
+
+<ul>
+<li><p>使用字面值创建对象</p>
+
+<p>&#8220;`javascript
+// bad
+var item = new Object();</p>
+
+<p>// good
+var item = {};
+&#8220;`</p></li>
+<li><p>不要使用保留字 <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Reserved_Words">reserved words</a> 作为键</p>
+
+<p>&#8220;`javascript
+// bad
+var superman = {
+  class: &lsquo;superhero&rsquo;,
+  default: { clark: &lsquo;kent&rsquo; },
+  private: true
+};</p>
+
+<p>// good
+var superman = {
+  klass: &lsquo;superhero&rsquo;,
+  defaults: { clark: &lsquo;kent&rsquo; },
+  hidden: true
+};
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='arrays'>数组</a></h2>
+
+<ul>
+<li><p>使用字面值创建数组</p>
+
+<p>&#8220;`javascript
+// bad
+var items = new Array();</p>
+
+<p>// good
+var items = [];
+&#8220;`</p></li>
+<li><p>如果你不知道数组的长度，使用push</p>
+
+<p>&#8220;`javascript
+var someStack = [];</p>
+
+<p>// bad
+someStack[someStack.length] = &lsquo;abracadabra&rsquo;;</p>
+
+<p>// good
+someStack.push(&lsquo;abracadabra&rsquo;);
+&#8220;`</p></li>
+<li><p>当你需要拷贝数组时使用slice. <a href="http://jsperf.com/converting-arguments-to-an-array/7">jsPerf</a></p>
+
+<p>&#8220;`javascript
+var len = items.length,
+    itemsCopy = [],
+    i;</p>
+
+<p>// bad
+for (i = 0; i &lt; len; i++) {
+  itemsCopy[i] = items[i];
+}</p>
+
+<p>// good
+itemsCopy = items.slice();
+&#8220;`</p></li>
+<li><p>使用slice将类数组的对象转成数组.</p>
+
+<p><code>javascript
+function trigger() {
+  var args = [].slice.apply(arguments);
+  ...
+}
+</code></p></li>
+</ul>
+
+
+<h2><a name='strings'>字符串</a></h2>
+
+<ul>
+<li><p>对字符串使用单引号 <code>''</code>(因为大多时候我们的字符串。特别html会出现<code>"</code>)</p>
+
+<p>&#8220;`javascript
+// bad
+var name = &ldquo;Bob Parr&rdquo;;</p>
+
+<p>// good
+var name = &lsquo;Bob Parr&rsquo;;</p>
+
+<p>// bad
+var fullName = &ldquo;Bob &rdquo; + this.lastName;</p>
+
+<p>// good
+var fullName = &lsquo;Bob &rsquo; + this.lastName;
+&#8220;`</p></li>
+<li><p>超过80(也有规定140的，项目具体可制定)个字符的字符串应该使用字符串连接换行</p></li>
+<li><p>注: 如果过度使用，长字符串连接可能会对性能有影响. <a href="http://jsperf.com/ya-string-concat">jsPerf</a> &amp; <a href="https://github.com/airbnb/javascript/issues/40">Discussion</a></p>
+
+<p>&#8220;`javascript
+// bad
+var errorMessage = &lsquo;This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.&rsquo;;</p>
+
+<p>// bad
+var errorMessage = &lsquo;This is a super long error that \
+was thrown because of Batman. \
+When you stop to think about \
+how Batman had anything to do \
+with this, you would get nowhere \
+fast.&rsquo;;</p>
+
+<p>// good
+var errorMessage = &lsquo;This is a super long error that &rsquo; +
+  &lsquo;was thrown because of Batman.&rsquo; +
+  &lsquo;When you stop to think about &rsquo; +
+  &lsquo;how Batman had anything to do &rsquo; +
+  &lsquo;with this, you would get nowhere &rsquo; +
+  &lsquo;fast.&rsquo;;
+&#8220;`</p></li>
+<li><p>编程时使用join而不是字符串连接来构建字符串，特别是IE: <a href="http://jsperf.com/string-vs-array-concat/2">jsPerf</a>.</p>
+
+<p>&#8220;`javascript
+var items,
+    messages,
+    length, i;</p>
+
+<p>messages = [{
+    state: &lsquo;success&rsquo;,
+    message: &lsquo;This one worked.&rsquo;
+},{
+    state: &lsquo;success&rsquo;,
+    message: &lsquo;This one worked as well.&rsquo;
+},{
+    state: &lsquo;error&rsquo;,
+    message: &lsquo;This one did not work.&rsquo;
+}];</p>
+
+<p>length = messages.length;</p>
+
+<p>// bad
+function inbox(messages) {
+  items = &lsquo;<ul>&rsquo;;</p>
+
+<p>  for (i = 0; i &lt; length; i++) {
+    items += &lsquo;<li>&rsquo; + messages[i].message + &lsquo;</li>&rsquo;;
+  }</p>
+
+<p>  return items + &lsquo;</ul>&rsquo;;
+}</p>
+
+<p>// good
+function inbox(messages) {
+  items = [];</p>
+
+<p>  for (i = 0; i &lt; length; i++) {
+    items[i] = messages[i].message;
+  }</p>
+
+<p>  return &lsquo;<ul><li>&rsquo; + items.join(&lsquo;</li><li>&rsquo;) + &lsquo;</li></ul>&rsquo;;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='functions'>函数</a></h2>
+
+<ul>
+<li><p>函数表达式:</p>
+
+<p>&#8220;`javascript
+// 匿名函数表达式
+var anonymous = function() {
+  return true;
+};</p>
+
+<p>// 有名函数表达式
+var named = function named() {
+  return true;
+};</p>
+
+<p>// 立即调用函数表达式
+(function() {
+  console.log(&lsquo;Welcome to the Internet. Please follow me.&rsquo;);
+})();
+&#8220;`</p></li>
+<li><p>绝对不要在一个非函数块里声明一个函数，把那个函数赋给一个变量。浏览器允许你这么做，但是它们解析不同。</p></li>
+<li><p><strong>注:</strong> ECMA-262定义把<code>块</code>定义为一组语句，函数声明不是一个语句。<a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97">阅读ECMA-262对这个问题的说明</a>.</p>
+
+<p>&#8220;`javascript
+// bad
+if (currentUser) {
+  function test() {
+    console.log(&lsquo;Nope.&rsquo;);
+  }
+}</p>
+
+<p>// good
+if (currentUser) {
+  var test = function test() {
+    console.log(&lsquo;Yup.&rsquo;);
+  };
+}
+&#8220;`</p></li>
+<li><p>绝对不要把参数命名为 <code>arguments</code>, 这将会逾越函数作用域内传过来的 <code>arguments</code> 对象.</p>
+
+<p>&#8220;`javascript
+// bad
+function nope(name, options, arguments) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+function yup(name, options, args) {
+  // &hellip;stuff&hellip;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='properties'>属性</a></h2>
+
+<ul>
+<li><p>当使用变量和特殊非法变量名时，访问属性时可以使用中括号(<code>.</code> 优先).</p>
+
+<p>&#8220;`javascript
+var luke = {
+  jedi: true,
+  age: 28
+};</p>
+
+<p>function getProp(prop) {
+  return luke[prop];
+}</p>
+
+<p>var isJedi = getProp(&lsquo;jedi&rsquo;);
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='variables'>变量</a></h2>
+
+<ul>
+<li><p>总是使用 <code>var</code> 来声明变量，如果不这么做将导致产生全局变量，我们要避免污染全局命名空间。</p>
+
+<p>&#8220;`javascript
+// bad
+superPower = new SuperPower();</p>
+
+<p>// good
+var superPower = new SuperPower();
+&#8220;`</p></li>
+<li><p>使用一个 <code>var</code> 以及新行声明多个变量，缩进4个空格。</p>
+
+<p>&#8220;`javascript
+// bad
+var items = getItems();
+var goSportsTeam = true;
+var dragonball = &lsquo;z&rsquo;;</p>
+
+<p>// good
+var items = getItems(),
+    goSportsTeam = true,
+    dragonball = &lsquo;z&rsquo;;
+&#8220;`</p></li>
+<li><p>最后再声明未赋值的变量，当你想引用之前已赋值变量的时候很有用。</p>
+
+<p>&#8220;`javascript
+// bad
+var i, len, dragonball,
+    items = getItems(),
+    goSportsTeam = true;</p>
+
+<p>// bad
+var i, items = getItems(),
+    dragonball,
+    goSportsTeam = true,
+    len;</p>
+
+<p>// good
+var items = getItems(),
+    goSportsTeam = true,
+    dragonball,
+    length,
+    i;
+&#8220;`</p></li>
+<li><p>在作用域顶部声明变量，避免变量声明和赋值引起的相关问题。</p>
+
+<p>&#8220;`javascript
+// bad
+function() {
+  test();
+  console.log(&lsquo;doing stuff..&rsquo;);</p>
+
+<p>  //..other stuff..</p>
+
+<p>  var name = getName();</p>
+
+<p>  if (name === &lsquo;test&rsquo;) {
+    return false;
+  }</p>
+
+<p>  return name;
+}</p>
+
+<p>// good
+function() {
+  var name = getName();</p>
+
+<p>  test();
+  console.log(&lsquo;doing stuff..&rsquo;);</p>
+
+<p>  //..other stuff..</p>
+
+<p>  if (name === &lsquo;test&rsquo;) {
+    return false;
+  }</p>
+
+<p>  return name;
+}</p>
+
+<p>// bad
+function() {
+  var name = getName();</p>
+
+<p>  if (!arguments.length) {
+    return false;
+  }</p>
+
+<p>  return true;
+}</p>
+
+<p>// good
+function() {
+  if (!arguments.length) {
+    return false;
+  }</p>
+
+<p>  var name = getName();</p>
+
+<p>  return true;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='conditionals'>条件表达式和等号</a></h2>
+
+<ul>
+<li>合理使用 <code>===</code> 和 <code>!==</code> 以及 <code>==</code> 和 <code>!=</code>.</li>
+<li>合理使用表达式逻辑操作运算.</li>
+<li><p>条件表达式的强制类型转换遵循以下规则：</p>
+
+<ul>
+<li><strong>对象</strong> 被计算为 <strong>true</strong></li>
+<li><strong>Undefined</strong> 被计算为 <strong>false</strong></li>
+<li><strong>Null</strong> 被计算为 <strong>false</strong></li>
+<li><strong>布尔值</strong> 被计算为 <strong>布尔的值</strong></li>
+<li><strong>数字</strong> 如果是 <strong>+0, -0, or NaN</strong> 被计算为 <strong>false</strong> , 否则为 <strong>true</strong></li>
+<li><strong>字符串</strong> 如果是空字符串 <code>''</code> 则被计算为 <strong>false</strong>, 否则为 <strong>true</strong></li>
+</ul>
+
+
+<p><code>javascript
+if ([0]) {
+  // true
+  // An array is an object, objects evaluate to true
+}
+</code></p></li>
+<li><p>使用快捷方式.</p>
+
+<p>`&ldquo;javascript
+// bad
+if (name !== &rdquo;) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+if (name) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// bad
+if (collection.length > 0) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+if (collection.length) {
+  // &hellip;stuff&hellip;
+}
+&#8220;`</p></li>
+<li><p>阅读 <a href="http://javascriptweblog.wordpress.com/2011/02/07/truth-equality-and-javascript/#more-2108">Truth Equality and JavaScript</a> 了解更多</p></li>
+</ul>
+
+
+<h2><a name='blocks'>块</a></h2>
+
+<ul>
+<li><p>给所有多行的块使用大括号</p>
+
+<p>&#8220;`javascript
+// bad
+if (test)
+  return false;</p>
+
+<p>// good
+if (test) return false;</p>
+
+<p>// good
+if (test) {
+  return false;
+}</p>
+
+<p>// bad
+function() { return false; }</p>
+
+<p>// good
+function() {
+  return false;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='comments'>注释</a></h2>
+
+<ul>
+<li><p>使用 <code>/** ... */</code> 进行多行注释，包括描述，指定类型以及参数值和返回值</p>
+
+<p>&#8220;`javascript
+// bad
+// make() returns a new element
+// based on the passed in tag name
+//
+// @param <String> tag
+// @return <Element> element
+function make(tag) {</p>
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  return element;
+}</p>
+
+<p>// good
+/**</p>
+
+<ul>
+<li>make() returns a new element</li>
+<li>based on the passed in tag name
+*</li>
+<li>@param <String> tag</li>
+<li>@return <Element> element
+*/
+function make(tag) {</li>
+</ul>
+
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  return element;
+}
+&#8220;`</p></li>
+<li><p>使用 <code>//</code> 进行单行注释，在评论对象的上面进行单行注释，注释前放一个空行.</p>
+
+<p>&#8220;`javascript
+// bad
+var active = true;  // is current tab</p>
+
+<p>// good
+// is current tab
+var active = true;</p>
+
+<p>// bad
+function getType() {
+  console.log(&lsquo;fetching type&hellip;&rsquo;);
+  // set the default type to &lsquo;no type&rsquo;
+  var type = this._type || &lsquo;no type&rsquo;;</p>
+
+<p>  return type;
+}</p>
+
+<p>// good
+function getType() {
+  console.log(&lsquo;fetching type&hellip;&rsquo;);</p>
+
+<p>  // set the default type to &lsquo;no type&rsquo;
+  var type = this._type || &lsquo;no type&rsquo;;</p>
+
+<p>  return type;
+}
+&#8220;`</p></li>
+<li><p>如果你有一个问题需要重新来看一下或如果你建议一个需要被实现的解决方法的话需要在你的注释前面加上 <code>FIXME</code> 或 <code>TODO</code> 帮助其他人迅速理解</p>
+
+<p>&#8220;`javascript
+function Calculator() {</p>
+
+<p>  // FIXME: shouldn&rsquo;t use a global here
+  total = 0;</p>
+
+<p>  return this;
+}
+&#8220;`</p>
+
+<p>&#8220;`javascript
+function Calculator() {</p>
+
+<p>  // TODO: total should be configurable by an options param
+  this.total = 0;</p>
+
+<p>  return this;
+}
+&#8220;`</p></li>
+<li>满足规范的文档，在需要文档的时候，可以尝试<a href="http://usejsdoc.org/">jsdoc</a>.</li>
+</ul>
+
+
+<h2><a name='whitespace'>空白</a></h2>
+
+<ul>
+<li>缩进、格式化能帮助团队更快得定位修复代码BUG.</li>
+<li><p>将tab设为4个空格</p>
+
+<p>&#8220;`javascript
+// bad
+function() {
+∙∙var name;
+}</p>
+
+<p>// bad
+function() {
+∙var name;
+}</p>
+
+<p>// good
+function() {
+∙∙∙∙var name;
+}
+&#8220;`</p></li>
+<li><p>大括号前放一个空格</p>
+
+<p>&#8220;`javascript
+// bad
+function test(){
+  console.log(&lsquo;test&rsquo;);
+}</p>
+
+<p>// good
+function test() {
+  console.log(&lsquo;test&rsquo;);
+}</p>
+
+<p>// bad
+dog.set(&lsquo;attr&rsquo;,{
+  age: &lsquo;1 year&rsquo;,
+  breed: &lsquo;Bernese Mountain Dog&rsquo;
+});</p>
+
+<p>// good
+dog.set(&lsquo;attr&rsquo;, {
+  age: &lsquo;1 year&rsquo;,
+  breed: &lsquo;Bernese Mountain Dog&rsquo;
+});
+&#8220;`</p></li>
+<li><p>在做长方法链时使用缩进.</p>
+
+<p>&#8220;`javascript
+// bad
+$(&lsquo;#items&rsquo;).find(&lsquo;.selected&rsquo;).highlight().end().find(&lsquo;.open&rsquo;).updateCount();</p>
+
+<p>// good
+$(&lsquo;#items&rsquo;)
+  .find(&lsquo;.selected&rsquo;)
+    .highlight()
+    .end()
+  .find(&lsquo;.open&rsquo;)
+    .updateCount();</p>
+
+<p>// bad
+var leds = stage.selectAll(&lsquo;.led&rsquo;).data(data).enter().append(&lsquo;svg:svg&rsquo;).class(&lsquo;led&rsquo;, true)
+    .attr(&lsquo;width&rsquo;,  (radius + margin) * 2).append(&lsquo;svg:g&rsquo;)
+    .attr(&lsquo;transform&rsquo;, &lsquo;translate(&rsquo; + (radius + margin) + &lsquo;,&rsquo; + (radius + margin) + &lsquo;)&rsquo;)
+    .call(tron.led);</p>
+
+<p>// good
+var leds = stage.selectAll(&lsquo;.led&rsquo;)
+    .data(data)
+  .enter().append(&lsquo;svg:svg&rsquo;)
+    .class(&lsquo;led&rsquo;, true)
+    .attr(&lsquo;width&rsquo;,  (radius + margin) * 2)
+  .append(&lsquo;svg:g&rsquo;)
+    .attr(&lsquo;transform&rsquo;, &lsquo;translate(&rsquo; + (radius + margin) + &lsquo;,&rsquo; + (radius + margin) + &lsquo;)&rsquo;)
+    .call(tron.led);
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='commas'>逗号</a></h2>
+
+<ul>
+<li><p>不要将逗号放前面</p>
+
+<p>&#8220;`javascript
+// bad
+var once
+  , upon
+  , aTime;</p>
+
+<p>// good
+var once,
+    upon,
+    aTime;</p>
+
+<p>// bad
+var hero = {
+    firstName: &lsquo;Bob&rsquo;
+  , lastName: &lsquo;Parr&rsquo;
+  , heroName: &lsquo;Mr. Incredible&rsquo;
+  , superPower: &lsquo;strength&rsquo;
+};</p>
+
+<p>// good
+var hero = {
+  firstName: &lsquo;Bob&rsquo;,
+  lastName: &lsquo;Parr&rsquo;,
+  heroName: &lsquo;Mr. Incredible&rsquo;,
+  superPower: &lsquo;strength&rsquo;
+};
+&#8220;`</p></li>
+<li><p>不要加多余的逗号，这可能会在IE下引起错误，同时如果多一个逗号某些ES3的实现会计算多数组的长度。</p>
+
+<p>&#8220;`javascript
+// bad
+var hero = {
+  firstName: &lsquo;Kevin&rsquo;,
+  lastName: &lsquo;Flynn&rsquo;,
+};</p>
+
+<p>var heroes = [
+  &lsquo;Batman&rsquo;,
+  &lsquo;Superman&rsquo;,
+];</p>
+
+<p>// good
+var hero = {
+  firstName: &lsquo;Kevin&rsquo;,
+  lastName: &lsquo;Flynn&rsquo;
+};</p>
+
+<p>var heroes = [
+  &lsquo;Batman&rsquo;,
+  &lsquo;Superman&rsquo;
+];
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='semicolons'>分号</a></h2>
+
+<ul>
+<li><p>语句结束一定要加分号</p>
+
+<p>&#8220;`javascript
+// bad
+(function() {
+  var name = &lsquo;Skywalker&rsquo;
+  return name
+})()</p>
+
+<p>// good
+(function() {
+  var name = &lsquo;Skywalker&rsquo;;
+  return name;
+})();</p>
+
+<p>// good
+;(function() {
+  var name = &lsquo;Skywalker&rsquo;;
+  return name;
+})();
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='type-coercion'>类型转换</a></h2>
+
+<ul>
+<li>在语句的开始执行类型转换.</li>
+<li><p>字符串:</p>
+
+<p>&#8220;`javascript
+//  => this.reviewScore = 9;</p>
+
+<p>// bad
+var totalScore = this.reviewScore + &lsquo;&rsquo;;</p>
+
+<p>// good
+var totalScore = &lsquo;&rsquo; + this.reviewScore;</p>
+
+<p>// bad
+var totalScore = &lsquo;&rsquo; + this.reviewScore + &lsquo; total score&rsquo;;</p>
+
+<p>// good
+var totalScore = this.reviewScore + &lsquo; total score&rsquo;;
+&#8220;`</p></li>
+<li><p>对数字使用 <code>parseInt</code> 并且总是带上类型转换的基数.，如<code>parseInt(value, 10)</code></p>
+
+<p>&#8220;`javascript
+var inputValue = &lsquo;4&rsquo;;</p>
+
+<p>// bad
+var val = new Number(inputValue);</p>
+
+<p>// bad
+var val = +inputValue;</p>
+
+<p>// bad
+var val = inputValue >> 0;</p>
+
+<p>// bad
+var val = parseInt(inputValue);</p>
+
+<p>// good
+var val = Number(inputValue);</p>
+
+<p>// good
+var val = parseInt(inputValue, 10);</p>
+
+<p>// good
+/**</p>
+
+<ul>
+<li>parseInt was the reason my code was slow.</li>
+<li>Bitshifting the String to coerce it to a</li>
+<li>Number made it a lot faster.
+*/
+var val = inputValue >> 0;
+&#8220;`</li>
+</ul>
+</li>
+<li><p>布尔值:</p>
+
+<p>&#8220;`javascript
+var age = 0;</p>
+
+<p>// bad
+var hasAge = new Boolean(age);</p>
+
+<p>// good
+var hasAge = Boolean(age);</p>
+
+<p>// good
+var hasAge = !!age;
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='naming-conventions'>命名约定</a></h2>
+
+<ul>
+<li><p>避免单个字符名，让你的变量名有描述意义。</p>
+
+<p>&#8220;`javascript
+// bad
+function q() {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+function query() {
+  // ..stuff..
+}
+&#8220;`</p></li>
+<li><p>当命名对象、函数和实例时使用驼峰命名规则</p>
+
+<p>&#8220;`javascript
+// bad
+var OBJEcttsssss = {};
+var this_is_my_object = {};
+var this-is-my-object = {};
+function c() {};
+var u = new user({
+  name: &lsquo;Bob Parr&rsquo;
+});</p>
+
+<p>// good
+var thisIsMyObject = {};
+function thisIsMyFunction() {};
+var user = new User({
+  name: &lsquo;Bob Parr&rsquo;
+});
+&#8220;`</p></li>
+<li><p>当命名构造函数或类时使用驼峰式大写</p>
+
+<p>&#8220;`javascript
+// bad
+function user(options) {
+  this.name = options.name;
+}</p>
+
+<p>var bad = new user({
+  name: &lsquo;nope&rsquo;
+});</p>
+
+<p>// good
+function User(options) {
+  this.name = options.name;
+}</p>
+
+<p>var good = new User({
+  name: &lsquo;yup&rsquo;
+});
+&#8220;`</p></li>
+<li><p>命名私有属性时前面加个下划线 <code>_</code></p>
+
+<p>&#8220;`javascript
+// bad
+this.<strong>firstName</strong> = &lsquo;Panda&rsquo;;
+this.firstName_ = &lsquo;Panda&rsquo;;</p>
+
+<p>// good
+this._firstName = &lsquo;Panda&rsquo;;
+&#8220;`</p></li>
+<li><p>当保存对 <code>this</code> 的引用时使用 <code>self(python 风格)</code>,避免<code>this issue</code>.Angular建议使用<code>vm(MVVM模式中view-model)</code></p>
+
+<p><code>javascript
+// good
+function() {
+  var self = this;
+  return function() {
+    console.log(self);
+  };
+}
+</code></p></li>
+</ul>
+
+
+<h2><a name='accessors'>存取器</a></h2>
+
+<ul>
+<li>属性的存取器函数不是必需的</li>
+<li><p>如果你确实有存取器函数的话使用getVal() 和 setVal(&lsquo;hello&rsquo;),<code>java getter、setter风格</code>或者<code>jQuery风格</code></p></li>
+<li><p>如果属性是布尔值，使用isVal() 或 hasVal()</p>
+
+<p>&#8220;`javascript
+// bad
+if (!dragon.age()) {
+  return false;
+}</p>
+
+<p>// good
+if (!dragon.hasAge()) {
+  return false;
+}
+&#8220;`</p></li>
+<li><p>可以创建get()和set()函数，但是要保持一致</p>
+
+<p>&#8220;`javascript
+function Jedi(options) {
+  options || (options = {});
+  var lightsaber = options.lightsaber || &lsquo;blue&rsquo;;
+  this.set(&lsquo;lightsaber&rsquo;, lightsaber);
+}</p>
+
+<p>Jedi.prototype.set = function(key, val) {
+  this[key] = val;
+};</p>
+
+<p>Jedi.prototype.get = function(key) {
+  return this[key];
+};
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='constructors'>构造器</a></h2>
+
+<ul>
+<li><p>给对象原型分配方法，而不是用一个新的对象覆盖原型，覆盖原型会使继承出现问题。</p>
+
+<p>&#8220;`javascript
+function Jedi() {
+  console.log(&lsquo;new jedi&rsquo;);
+}</p>
+
+<p>// bad
+Jedi.prototype = {
+  fight: function fight() {
+    console.log(&lsquo;fighting&rsquo;);
+  },</p>
+
+<p>  block: function block() {
+    console.log(&lsquo;blocking&rsquo;);
+  }
+};</p>
+
+<p>// good
+Jedi.prototype.fight = function fight() {
+  console.log(&lsquo;fighting&rsquo;);
+};</p>
+
+<p>Jedi.prototype.block = function block() {
+  console.log(&lsquo;blocking&rsquo;);
+};
+&#8220;`</p></li>
+<li><p>方法可以返回 <code>this</code> 帮助方法可链。</p>
+
+<p>&#8220;`javascript
+// bad
+Jedi.prototype.jump = function() {
+  this.jumping = true;
+  return true;
+};</p>
+
+<p>Jedi.prototype.setHeight = function(height) {
+  this.height = height;
+};</p>
+
+<p>var luke = new Jedi();
+luke.jump(); // => true
+luke.setHeight(20) // => undefined</p>
+
+<p>// good
+Jedi.prototype.jump = function() {
+  this.jumping = true;
+  return this;
+};</p>
+
+<p>Jedi.prototype.setHeight = function(height) {
+  this.height = height;
+  return this;
+};</p>
+
+<p>var luke = new Jedi();</p>
+
+<p>luke.jump()
+  .setHeight(20);
+&#8220;`</p></li>
+<li><p>可以写一个自定义的toString()方法，但是确保它工作正常并且不会有副作用。</p>
+
+<p>&#8220;`javascript
+function Jedi(options) {
+  options || (options = {});
+  this.name = options.name || &lsquo;no name&rsquo;;
+}</p>
+
+<p>Jedi.prototype.getName = function getName() {
+  return this.name;
+};</p>
+
+<p>Jedi.prototype.toString = function toString() {
+  return &lsquo;Jedi &ndash; &rsquo; + this.getName();
+};
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='events'>事件</a></h2>
+
+<ul>
+<li><p>当给事件附加数据时，传入一个哈希而不是原始值，这可以让后面的贡献者加入更多数据到事件数据里而不用找出并更新那个事件的事件处理器</p>
+
+<p>&#8220;`js
+// bad
+$(this).trigger(&lsquo;listingUpdated&rsquo;, listing.id);</p>
+
+<p>&hellip;</p>
+
+<p>$(this).on(&lsquo;listingUpdated&rsquo;, function(e, listingId) {
+  // do something with listingId
+});
+&#8220;`</p>
+
+<p>更好:</p>
+
+<p>&#8220;`js
+// good
+$(this).trigger(&lsquo;listingUpdated&rsquo;, { listingId : listing.id });</p>
+
+<p>&hellip;</p>
+
+<p>$(this).on(&lsquo;listingUpdated&rsquo;, function(e, data) {
+  // do something with data.listingId
+});
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='modules'>模块</a></h2>
+
+<ul>
+<li>这个文件应该以驼峰命名，并在同名文件夹下，同时导出的时候名字一致</li>
+<li>对于公开API库可以考虑加入一个名为noConflict()的方法来设置导出的模块为之前的版本并返回它</li>
+<li><p>总是在模块顶部声明 <code>'use strict';</code>，引入<code>[JSHint规范](http://jshint.com/)</code></p>
+
+<p>&#8220;`javascript
+// fancyInput/fancyInput.js</p>
+
+<p>（function(global) {
+  &lsquo;use strict&rsquo;;</p>
+
+<p>  var previousFancyInput = global.FancyInput;</p>
+
+<p>  function FancyInput(options) {
+    this.options = options || {};
+  }</p>
+
+<p>  FancyInput.noConflict = function noConflict() {
+    global.FancyInput = previousFancyInput;
+    return FancyInput;
+  };</p>
+
+<p>  global.FancyInput = FancyInput;
+})(this);
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='jquery'>jQuery</a></h2>
+
+<ul>
+<li><p>对于jQuery对象以<code>$</code>开头，以和原生DOM节点区分。</p>
+
+<p>&#8220;`javascript
+// bad
+var menu = $(&ldquo;.menu&rdquo;);</p>
+
+<p>// good
+var $menu = $(&ldquo;.menu&rdquo;);
+&#8220;`</p></li>
+<li><p>缓存jQuery查询</p>
+
+<p>&#8220;`javascript
+// bad
+function setSidebar() {
+  $(&lsquo;.sidebar&rsquo;).hide();</p>
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  $(&lsquo;.sidebar&rsquo;).css({
+    &lsquo;background-color&rsquo;: &lsquo;pink&rsquo;
+  });
+}</p>
+
+<p>// good
+function setSidebar() {
+  var $sidebar = $(&lsquo;.sidebar&rsquo;);
+  $sidebar.hide();</p>
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  $sidebar.css({
+    &lsquo;background-color&rsquo;: &lsquo;pink&rsquo;
+  });
+}
+&#8220;`</p></li>
+<li><p>对DOM查询使用级联的 <code>$('.sidebar ul')</code> 或 <code>$('.sidebar ul')</code>，<a href="http://jsperf.com/jquery-find-vs-context-sel/16">jsPerf</a></p></li>
+<li><p>对有作用域的jQuery对象查询使用 <code>find</code></p>
+
+<p>&#8220;`javascript
+// bad
+$(&lsquo;.sidebar&rsquo;, &lsquo;ul&rsquo;).hide();</p>
+
+<p>// bad
+$(&lsquo;.sidebar&rsquo;).find(&lsquo;ul&rsquo;).hide();</p>
+
+<p>// good
+$(&lsquo;.sidebar ul&rsquo;).hide();</p>
+
+<p>// good
+$(&lsquo;.sidebar > ul&rsquo;).hide();</p>
+
+<p>// good (slower)
+$sidebar.find(&lsquo;ul&rsquo;);</p>
+
+<p>// good (faster)
+$($sidebar[0]).find(&lsquo;ul&rsquo;);
+&#8220;`</p></li>
+<li><p>每个页面只使用一次document的ready事件，这样便于调试与行为流跟踪。</p>
+
+<p><code>javascript
+$(function(){
+   //do your page init.  
+});
+</code></p></li>
+<li><p>事件利用<code>jQuery.on</code>从页面分离到JavaScript文件。</p>
+
+<p>&#8220;`javascript
+// bad
+<a id="myLink" href="#" onclick="myEventHandler();"></a></p>
+
+<p>// good
+<a id="myLink" href="#"></a></p>
+
+<p>$(&ldquo;#myLink&rdquo;).on(&ldquo;click&rdquo;, myEventHandler);</p>
+
+<p>&#8220;`</p></li>
+<li><p>对于Ajax使用promise方式。</p>
+
+<p>&#8220;`javascript
+    // bad
+    $.ajax({
+        &hellip;
+        success : function(){
+        },
+        error : function(){
+        }
+    })</p>
+
+<pre class='green'><code>// good
+$.ajax({.
+    ..
+}).then( function( ){
+    // success
+}, function( ){
+    // error
+})
+</code></pre>
+
+<p>&#8220;`</p></li>
+<li><p>利用promise的deferred对象解决延迟注册问题。</p></li>
+</ul>
+
+
+<p> <code>javascript
+  var dtd = $.Deferred(); // 新建一个deferred对象
+　　var wait = function(dtd){
+　　　　var tasks = function(){
+　　　　　　alert("执行完毕！");
+　　　　　　dtd.resolve(); // 改变deferred对象的执行状态
+　　　　};
+　　　　setTimeout(tasks,5000);
+　　　　return dtd;
+　　};
+</code>
+  &ndash; HTML中Style、以及JavaScript中style移到CSS中class，在HTML、JavaScript中引入class，而不是直接style。</p>
+
+<h2><a name='es5'>ECMAScript 5兼容性</a></h2>
+
+<p>尽量采用ES5方法，特别数组map、filter、forEach方法简化日常开发。在老式IE浏览器中引入<a href="https://github.com/es-shims/es5-shim">ES5-shim</a>。或者也可以考虑引入<a href="http://underscorejs.org/">underscore</a>、<a href="https://lodash.com/">lodash</a> 常用辅助库.
+  &ndash; 参考<a href="https://twitter.com/kangax/">Kangax</a>的 ES5 <a href="http://kangax.github.com/es5-compat-table/">compatibility table</a>
+ &ndash; <a href="http://www.cnblogs.com/whitewolf/p/4417873.html">JavaScript工具库之Lodash</a>
+ &ndash; <a href="http://www.cnblogs.com/whitewolf/p/4357916.html">Babel-现在开始使用 ES6</a></p>
+
+<h2><a name='html-css-js'>HTML、CSS、JavaScript分离</a></h2>
+
+<ul>
+<li>页面DOM结构使用HTML，样式则采用CSS，动态DOM操作JavaScript。不要混用在HTML中</li>
+<li>分离在不同类型文件，文件link。</li>
+<li>HTML、CSS、JavaScript变量名都需要有业务价值。CSS以中划线分割的全小写命名，JavaScript则首字母小写的驼峰命名。</li>
+<li>CSS可引入Bootstrap、Foundation等出名响应式设计框架。以及SASS、LESS工具书写CSS。</li>
+<li>对于CSS、JavaScript建议合并为单文件，减少Ajax的连接数。也可以引入AMD(Require.js)加载方式。</li>
+<li>对于内部大部分企业管理系统，可以尝试采用前端 MVC框架组织代码。如Angular、React + flux架构、Knockout等。</li>
+<li>对于兼容性可用<a href="http://modernizr.com/">Modernizr</a>规范库辅助。</li>
+</ul>
+
+
+<h2><a name='jshint'>使用jsHint</a></h2>
+
+<ul>
+<li>前端项目中推荐引入<a href="http://jshint.com/">jshint</a>插件来规范项目编码规范。以及一套完善的IDE配置。</li>
+<li>注意：jshint需要引入nodejs 工具grunt或gulp插件，建议院级nodejs npm私服。</li>
+</ul>
+
+
+<h2><a name='tools'>前端工具</a></h2>
+
+<ul>
+<li>前端第三方JavaScript包管理工具bower(<code>bower install jQuery</code>)，bower可以实现第三方库的依赖解析、下载、升级管理等。建议建立院级bower私服。</li>
+<li>前端构建工具，可以采用grunt或者gulp工具，可以实现html、css、js压缩、验证、测试，文件合并、watch和liveload等所有前端任务。建议院级nodejs npm私服。</li>
+<li>前端开发IDE： WebStorm( Idea )、Sublime为最佳 。项目组统一IDE。IDE统一配置很重要。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TypeScript - Modules(模块)]]></title>
+    <link href="http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai/"/>
+    <updated>2015-04-12T16:52:50+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai</id>
+    <content type="html"><![CDATA[<h2>简介</h2>
+
+<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
+
+<h2>第一步</h2>
+
+<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
+
+<h4>单文件的验证逻辑</h4>
+
+<pre class='green'><code>interface StringValidator {
+    isAcceptable(s: string): boolean;
+}
+
+var lettersRegexp = /^[A-Za-z]+$/;
+var numberRegexp = /^[0-9]+$/;
+
+class LettersOnlyValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return lettersRegexp.test(s);
+    }
+}
+
+class ZipCodeValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return s.length === 5 &amp;&amp; numberRegexp.test(s);
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: StringValidator; } = {};
+validators['ZIP code'] = new ZipCodeValidator();
+validators['Letters only'] = new LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h4>增加模块化</h4>
+
+<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
+
+<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
+
+<h4>模块化的Validators</h4>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+
+    var lettersRegexp = /^[A-Za-z]+$/;
+    var numberRegexp = /^[0-9]+$/;
+
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h2>分离模块文件</h2>
+
+<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
+
+<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
+
+<h4>多文件的内部模块</h4>
+
+<h6>Validation.ts</h6>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+}
+</code></pre>
+
+<h6>LettersOnlyValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var lettersRegexp = /^[A-Za-z]+$/;
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>ZipCodeValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var numberRegexp = /^[0-9]+$/;
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>Test.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
+/// &lt;reference path="ZipCodeValidator.ts" /&gt;
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
+
+<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
+
+<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
+
+<h6>#MyTestPage.html (excerpt)</h6>
+
+<pre class='green'><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
+&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
+&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
+&lt;script src="Test.js" type="text/javascript" /&gt;
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JavaScript工具库之Lodash]]></title>
@@ -2684,133 +4111,6 @@ list[1] = 100;
 </code></pre>
 
 <p>Mockito给我们提供了很多关于Matcher扩展的方法，本文只是ArgumentMatcher的实例。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持]]></title>
-    <link href="http://greengerong.github.io/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/"/>
-    <updated>2014-10-07T12:18:24+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs</id>
-    <content type="html"><![CDATA[<p> [原文发表地址]<a href="http://www.hanselman.com/blog/IntroducingGulpGruntBowerAndNpmSupportForVisualStudio.aspx">Introducing Gulp, Grunt, Bower, and npm support for Visual Studio</a></p>
-
-<p>Web 开发，特别是前端 Web 开发，正迅速变得像传统的后端开发一样复杂和精密。<strong>大多数项目不仅仅是通过</strong> FTP上传一些 JS 和 CSS 文件。而现在的<strong>前端生成过程，</strong>可以囊括SASS 和LESS扩展、CSS/JS的压缩包、JSHint 或 JSLint的运行时 、或者更多。这些生成任务和进程都和像Gulp和Grunt这样的工具一起协调工作。此外，类似于npm和bower这样的管理系统将客户端库作为软件包来管理。</p>
-
-<h5>ASP.NET客户端软件包的管理者，为什么不用 NuGet？或MSBuild？</h5>
-
-<p>你们中的一些人可能会问，为什么JavaScript不使用 NuGet？为什么不扩展 MSBuild 去构建 CSS/JS？原因很简单。因为已经有了丰富的系统，来做这种事情。对于服务器端库 （和一些客户端）来说，使用NuGet 就已经很棒了。npm和bower 上已经有了很多的，而且还会有更多的 CSS 和 JS 库。而对于服务器端的应用程序构建来说，使用MSBuild很棒，但当构建客户端应用程序时，它有些多余了。</p>
-
-<p>所以，两者都可以使用。这些都是您工具包中的工具。添加Gulp，Grun，Bower，npm的支持（和将来需要其他东西） ，这意味着为ASP.NET前端开发者提供了一个更熟悉的环境。它允许 ASP.NET 开发人员引入 JS 和 CSS 库，使他们可以每天使用。</p>
-
-<h5>引入任务资源管理器</h5>
-
-<p>我们从你们中，以及整个社会收到了相当多的、关于Grunt/Gulp的功能请求。我们利用Visual Studio “14的充分可扩展性正在构建对Grunt/Gulp第一流的支持。现在我们已经准备好将这个支持作为VS2013的一个扩展加入到预览版本中， 并且我们感激您帮助我们测试和考察这个功能。</p>
-
-<p>今天我们介绍一个预览版本，在这个预览版本中，“<a href="http://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708">任务资源管理器</a>”将作为VSIX<strong>的一个扩展。</strong><strong>同时也推荐两个其他的</strong><strong>VSIX</strong><strong>来完善对这个功能的体验。</strong></p>
-
-<p><strong>注意：</strong><strong> </strong><strong>VSIX</strong><strong>扩展中的大多数功能都被内置到</strong><strong>Visual Studio</strong><strong>中，因此你不需要安装其他别的东西。而且，</strong><strong>在</strong><strong>VS2013</strong><strong>和此预览版本中我们需要更多的</strong><strong>VSIX</strong><strong>，让你迟早能得到这些扩展。</strong><strong> </strong><strong>请注意，今天任务资源管理器只工作于</strong><strong>Vsiaual Studio Express </strong><strong>版本中，但</strong><strong>VS14</strong><strong>的所有功能都将出现在</strong><strong>VS</strong><strong>免费版本中。</strong></p>
-
-<p>类似于VS Productivity Power Tools一样， “DevLabs”这样的功能现在还在预览版中。但是他们终将会集成到最终的产品中。</p>
-
-<h5>你需要什么？</h5>
-
-<h5>首先，你将需要<a href="http://www.microsoft.com/en-us/download/details.aspx?id=43721">Visual Studio 2013.3</a> ，3的意思是免费的更新&#8221;Update 3&#8221;。</h5>
-
-<ol>
-<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F8e1b4368-4afb-467a-bc13-9650572db708"><strong>TRX-</strong><strong>任务资源管理器</strong></a><strong> </strong>Visual Studio 扩展</li>
-<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F65748cdb-4087-497e-a394-2e3449c8e61e">NMP/NBower包智能感知</a>-搜索NPM 和Bower包在线版，它直接附加智能感知功能。</li>
-<li><p>可选的<a href="http://visualstudiogallery.msdn.microsoft.com/dcbc5325-79ef-4b72-960e-0a51ee33a0ff">Grunt Launcher</a>（在解决方案资源管理器上右键单击选项— — 你会看到&#8221; npm install &ldquo;）</p>
-
-<ul>
-<li>如果你现在没有这种扩展，那么你将需要自己运行npm install来还原/添加软件包</li>
-<li>如果你有这种扩展，那么请在运行grunt/gulp之前，右键单击 packages.json 和&#8221;npm install&#8221;</li>
-</ul>
-</li>
-</ol>
-
-
-<p>要打开 TRX （任务资源管理器），只需用鼠标右键单击您的项目中任何一个 gruntfile.js文件：</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image002_60531aad-06cb-4ce7-83ea-5629fa7e8b8d.png" alt="" /></p>
-
-<p>默认情况下，TRX 位于VS的底部，，看起来像这样：</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image001_8eae3676-2331-461b-bfe6-fec463c7f49c.png" alt="" /></p>
-
-<p>在这里，我们看到 gruntfile.js 在该解决方案中的一个或多个项目的根目录中。它还有<strong>任务绑定功能，也就是说任何任务或目标可以由</strong><strong> 4 </strong><strong>个</strong><strong>不同</strong><strong> Visual Studio </strong><strong>事件触发。</strong></p>
-
-<p>要想将一个任务/目标和一个VS事件绑定在一起，只需右键单击进行绑定设置。</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image003_9d3aeb6c-f450-4e68-8d4c-010b619f7da8.png" alt="" /></p>
-
-<p>要想运行任何一个任务/目标，只需双击它，然后控制台将显示如下：</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image004_1db90c39-a4cd-42a7-81df-b3ec2493e8c0.png" alt="" /></p>
-
-<p>当你有了软件包智能感知扩展功能时，你会发现通过bower 和 npm来直接编辑package.json很容易添加并更新软件包。</p>
-
-<p>甚至，你也有了异步填充元数据工具提示功能。</p>
-
-<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/tooltip-animated_thumb.gif" alt="" /></p>
-
-<p>现在你可以去测试它了，记住在你用任务资源管理器来运行Grunt任务之前，你需要运行“ npm install” 。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[解决ng界面长表达式(ui-set)]]></title>
-    <link href="http://greengerong.github.io/blog/2014/09/29/ng-ui-set-for-long-expression/"/>
-    <updated>2014-09-29T16:52:55+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/09/29/ng-ui-set-for-long-expression</id>
-    <content type="html"><![CDATA[<p>本文来自网友sun shine的问题，问题如下：</p>
-
-<pre class='green'><code>    您好, 我想求教一个问题.
-    在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢?
-    比如:
-    $scope.this.is.a.very.deep.obj = {
-    'name': 'xxx',
-    'state': 'active'};
-
-    在 模板中,
-
-    {{this.is.a.very.deep.obj.name}}
-    {{this.is.a.very.deep.obj.state}}
-    类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
-
-    但是我试了, 并没有成功. 求指点.
-    先谢了.
-</code></pre>
-
-<p>在这里首先需要说明的是ng界面的所有引用都需要在$scope这个viewmodel(ui和view的胶水层)，所以如果我们希望能够把表达式变得更可读，更友好，那么我们就必须在$scope上创建这个变量。</p>
-
-<p>再则对于ng其使用使用的一堆的$watch，实现脏检查，如果你理解这些了，那么我们就可以很容易的实现一套如spring的</p>
-
-<pre class='green'><code>&lt;c:set var="xxx" expression="xxx" /&gt;
-</code></pre>
-
-<p>的tag.</p>
-
-<p>对于实现这类tag，我们最好的方式则是利用ng的directive来实现，代码如下：</p>
-
-<pre class='green'><code>        angular.module("greengerong.ui.tag", [])
-          .directive("uiSet", [
-            function() {
-              return {
-                restrict: "EA",
-                link: function(scope, elm, iAttrs) {
-                  scope.$watch(iAttrs.expression, function(val) {
-                    scope[iAttrs.
-                      var] = val;
-                    var apply = !scope.$$phase ? scope.$apply : angular.noop;
-                    apply();
-                  });
-                }
-              };
-            }
-          ]);
-</code></pre>
-
-<p>demo效果请移步<a href="http://jsbin.com/neqow/3/edit">jsbin demo</a>;</p>
 ]]></content>
   </entry>
   

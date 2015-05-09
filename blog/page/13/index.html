@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 在昨天一个大学师弟，他问我能不能将LinqToSql文件转化为创建表的TSql语句，他是刚开始学习.NET，所以在网上下些示例看，但苦于没有数据库。所以就有了这一篇博客，作为我的Code生成技术的CodeSimth的最后一篇示例。在下一步Code &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式; &nbsp;&nbsp; MEF &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,294 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/11/11/MEF-xue-xi-bi-ji/">MEF学习笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/11/11/MEF-xue-xi-bi-ji/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/11/MEF-xue-xi-bi-ji/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式;</p>
+
+<p>&nbsp;&nbsp; MEF 为我们提供了一种运行时的扩展，具体应用在对象的实例化。它有目录（AssemblyCatalog）和容器（CompositionContainer）组成，他有输入输出（Exports和Imports）元数据标记，在对象实例化的时候会自动匹配这个契约。</p>
+
+<p>下面是官方的一个展示图：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled_thumb.png" title="untitled" alt="untitled" /></a></p>
+
+<p>由CompositionContainer来管理我们的多个可组合部件。</p>
+
+<p>下面我们来一个简单的示例来初步了解MEF:</p>
+
+<p>控制台程序：</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+    using System.ComponentModel.Composition;//添加引用 
+
+
+
+    namespace MEFTest 
+    { 
+        public interface ILog 
+        { 
+            void Write(string message); 
+        } 
+
+        [System.ComponentModel.Composition.Export(typeof(ILog))] 
+        public class ConsoleLog:ILog 
+        { 
+            public void Write(string message) 
+            { 
+                Console.WriteLine("Hello:"+message); 
+            } 
+        } 
+        class Program 
+        { 
+            [System.ComponentModel.Composition.Import(typeof(ILog))] 
+            public ILog Log; 
+            static void Main(string[] args) 
+            { 
+                Program pro = new Program(); 
+                pro.Init(); 
+                pro.Log.Write("Test"); 
+                Console.Read(); 
+            }
+
+            public void Init() 
+            { 
+                var assem = System.Reflection.Assembly.GetExecutingAssembly();//当前程序集 
+                var assemcat = new System.ComponentModel.Composition.Hosting.AssemblyCatalog(assem);//构建目录 
+                var container = new System.ComponentModel.Composition.Hosting.CompositionContainer(assemcat);//构建容器 
+                container.ComposeParts(this);//这是一个System.ComponentModel.Composition.AttributedModelServices 的扩展方法。 
+            } 
+        } 
+    }
+</code></pre>
+
+<p>输出为：</p>
+
+<p>Hello:Test</p>
+
+<p>ExportAttribute 定义如下：</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)] 
+    public class ExportAttribute : Attribute 
+    { 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+        public ExportAttribute(Type contractType); 
+
+        public ExportAttribute(string contractName, Type contractType);
+
+
+        public string ContractName { get; } 
+
+        public Type ContractType { get; } 
+    }
+</code></pre>
+
+<p>从他的定义我们可以知道他可以运用于我们的类、方法、属性、字段，并且可以多继承，但是不存在从父类的继承特性。</p>
+
+<p>他有三种不同的标记方式方式.在MEF中这里标记为可以导出，即注入到Import。</p>
+
+<p>ImportAttribute 定义：</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)] 
+        public class ImportAttribute : Attribute, IAttributedImport 
+        { 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(); 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(string contractName); 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(Type contractType); 
+
+            public ImportAttribute(string contractName, Type contractType); 
+
+            public bool AllowDefault { get; set; }
+
+            public bool AllowRecomposition { get; set; } 
+
+            public string ContractName { get; } 
+
+            public Type ContractType { get; } 
+
+            public CreationPolicy RequiredCreationPolicy { get; set; } 
+        }
+</code></pre>
+
+<p>&nbsp;同上Export,这里标记为可被Export注入的接口点。</p>
+
+<p>今天就写到这里了，希望大家多多指教，大家一起共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/11/MEF1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">(翻译)31天Windows Phone学习-1-项目模板</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>的 <a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">31 Days of Windows Phone</a> 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习，所以准备拿来对Windows Phone 7的简单入门学习。并翻译出来供像我一样的菜鸟学习，我的E文并不好，所以翻译难免会有一些不对的忘大家原谅和多多指教。说道E文又想起大学时，就是因为这个E文让我少的了一大笔奖学金，哎。翻译这个系列，也顺便提高一下我的E文吧，呵呵。</p>
+
+<p>&nbsp;&nbsp; 步入正题：今天是我们Windows Phone学习的第一天，是一些关于项目模板的。</p>
+
+<p>&nbsp; 首先： 在学习Windows Phone7之前我们假设你已经对Microsoft 的Silverlight有了一定的了解，如果你还不了解，你也可以参考作者的&nbsp; 20天Silverlight这个系列&nbsp; ，讲解的都是一些Silverlight的基础级知识。</p>
+
+<p>&nbsp; 再者我们假设你已经安装了Microsoft 所有Windows Phone Tools，如果你没有安装，你可以从这里下载<a href="http://developer.windowsphone.com/">http://developer.windowsphone.com/</a>，从这里我们会获得Visual Studio 2010 for Windows Phone和 Expression Blend 4 for&nbsp; Windows Phone。如果在你的机子已经安装了官方的正式版，你仅需要更新添加一些新的模板。</p>
+
+<p>&nbsp;&nbsp; 在今天我们会预览一下Visual Studio 2010为我们的Windows Phone应用程序生成的默认模板。</p>
+
+<p><img src="http://www.jeffblankenburg.com/image.axd?picture=NewProject.png" title="NewProject" alt="NewProject" /></p>
+
+<h4><font style="font-weight: bold">Solution Explorer：</font></h4>
+
+<p>下面是vs2010默认为我们生成的解决方案，我不准备详细介绍各个文件，你可以从<a target="_blank"><a href="http://bit.ly/8XcWaO"><font color="#3d81ee">安装上所有Tools</font></a>&nbsp;</a>并自己尝试，比较简单。</p>
+
+<h4><img src="http://www.jeffblankenburg.com/image.axd?picture=SolutionExplorer.png" title="SolutionExplorer" alt="SolutionExplorer" /></h4>
+
+<h4><font style="font-weight: bold">ApplicationIcon.png:</font></h4>
+
+<p>&nbsp; 是Phone application List现实的图标，你也可以替换成你想要的图标。</p>
+
+<h4><font style="font-weight: bold">App.xaml：</font></h4>
+
+<h4>&nbsp; 有点像ASP.NET web.config 文件，保存了我们应用程序的常用数据和设置，我更喜欢防止我的style在这里，但这不是必须的。</h4>
+
+<h4><font style="font-weight: bold">App.xaml.cs：</font></h4>
+
+<p>是前一文件（App.xaml）的Code-Behind文件，和前一个文件一起定义我们应用程序的入口点，初始化应用程序级别的全局静态资源(StaticResource)和启动程序的页面。</p>
+
+<h4><font style="font-weight: bold">AssemblyInfo.cs：</font></h4>
+
+<p>定义了我们应用程序的程序集信息，入 版本，名称等。个人觉得和我们的WinForm、Asp.net程序应该差不多。</p>
+
+<h4><font style="font-weight: bold">Background.png：</font></h4>
+
+<p>是我们应用程启动时的屏幕背景，我们也可以替换为你需要的图标。</p>
+
+<h4><font style="font-weight: bold">MainPage.xaml：</font></h4>
+
+<p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
+
+<pre class='green'>&lt;Tasks&gt;</pre>
+
+
+<pre class='green'>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
+
+
+<pre class='green'> &lt;/Tasks&gt;</pre>
+
+
+<h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
+
+<p>前一个文件(MainPage.xaml)的Code-Behind文件，在这里需要我们编辑页面启动页面的Code.</p>
+
+<h4><font style="font-weight: bold">SplashScreenImage.jpg:</font></h4>
+
+<p>应用程序加载图标（即：我的应用程序启动，第一个页面还没有显示时）。我们也可以替换这个图标。在这里只是为了让我们的用户了解程序正在加载。</p>
+
+<h4><font style="font-weight: bold">WMAppManifest.xml：</font></h4>
+
+<p>用于定义我们应用程序打包的文件(manifest)。 Silverlight程序最终会打成xap包（zip格式），里面包含了程序需要用到的所有资源（例如图片，声音文件等等），和依赖 的第三方DLL等等。AppManifest.xml文件用于定义打包的结构。</p>
+
+<p>&nbsp;</p>
+
+<p>第一天学习很简单，就到这里的作者给我们提供了Code下载，其实我觉得没有必要。所以偷个懒了。</p>
+
+<p>本文E文原文：<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>关于Windows Phone的一些学习资料：</p>
+
+<p>1：首先是翻译的原文：&nbsp;<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>博客<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>2: 园友<a href="#">306Room</a>的一起学Windows Phone系列<a href="http://www.cnblogs.com/randylee/category/258713.html" title="http://www.cnblogs.com/randylee/category/258713.html">http://www.cnblogs.com/randylee/category/258713.html</a></p>
+
+<p>3：<a href="http://windowsteamblog.com/windows_phone/" title="http://windowsteamblog.com/windows_phone/">http://windowsteamblog.com/windows_phone/</a></p>
+
+<p>4：<a href="http://create.msdn.com/en-US/" title="http://create.msdn.com/en-US/">http://create.msdn.com/en-US/</a></p>
+
+<p>还有其他的我在后续看见了，也会一一不上。也希望大家给我提供一些学习资料，共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/10/1873273.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1303,247 +1591,6 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/">CodeDom六&#8211;实体类生成示例</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-07-08T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeDom这个东西个人觉得知识点不多，前几个续节写的已差不多了。在这节将演示一个CodeDom示例：</p>
-
-<p>数据库实体类的生成。这里先声明在如今的CodeSmith或者是T4模板中实现这些都很简单，并且更实用，在这</p>
-
-<p>里只是一个CodeDom示例，为了演示CodeDom。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在代码中位了简单、简化数据库数据信息的提取，引用了CodeSimth的SchemaExplorer.dll和SchemaExplorer.</p>
-
-<p>SqlSchemaProvider.dll。可以在Demo中的CodeSimth目录下找到。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 先贴上代码，需要讲解的东西没有什么：</p></blockquote>
-
-<pre class='green'><code>using System;
-using System.Text;
-using System.Windows.Forms;
-using SchemaExplorer;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-namespace CodeDomDemo
-{
-public partial class Form1 : Form
-{
-public Form1()
-{
-InitializeComponent();
-}
-private void Form1_Load(object sender, EventArgs e)
-{
-IDbSchemaProvider provider = new SqlSchemaProvider();
-string connectionString = System.Configuration.ConfigurationManager.
-?
-AppSettings["ConnectionString"].ToString();
-if (string.IsNullOrEmpty(connectionString))
-{
-MessageBox.Show(this, "Connection String is requested,in app configuration.",
-?
-"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-Application.Exit();
-}
-DatabaseSchema db = new DatabaseSchema(provider, connectionString);
-lboxTables.Items.AddRange(db.Tables.ToArray());
-}
-?
-        public CodeCompileUnit GenTableCompilerUnit(TableSchema item)
-{
-if (item == null)
-throw new ArgumentNullException("item");
-CodeTypeDeclaration tableClass = new CodeTypeDeclaration();
-tableClass.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-tableClass.Name = item.Name;
-?
-            foreach (var col in item.Columns)
-{
-CodeMemberField field = new CodeMemberField(
-?
-new CodeTypeReference(col.SystemType), "_" + col.Name);
-CodeMemberProperty property = new CodeMemberProperty();
-property.Name = col.Name;
-property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-property.Type = new CodeTypeReference(col.SystemType);
-property.SetStatements.Add(new CodeAssignStatement(
-?
-new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
-field.Name), new CodePropertySetValueReferenceExpression()));
-property.GetStatements.Add(new CodeMethodReturnStatement(
-?
-new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field.Name)));
-tableClass.Members.Add(field);
-tableClass.Members.Add(property);
-}
-CodeNamespace nspace = new CodeNamespace(item.Database.Name);
-nspace.Imports.Add(new CodeNamespaceImport("System"));
-nspace.Types.Add(tableClass);
-CodeCompileUnit unit=new CodeCompileUnit();
-unit.Namespaces.Add(nspace);
-return unit;
-}
-public string GenTanleCodeFromCompilerUnit(CodeCompileUnit unit, string language)
-{
-CodeGeneratorOptions option=new CodeGeneratorOptions();
-option.BlankLinesBetweenMembers =true;
-option.BracingStyle ="c";
-option.ElseOnClosing=true;
-option.IndentString="    ";
-StringBuilder sb=new StringBuilder();
-System.IO.StringWriter sw=new System.IO.StringWriter(sb);
-CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit(unit, sw, option);
-sw.Close();
-return sb.ToString();
-}
-?
-        private void lboxTables_SelectedIndexChanged(object sender, EventArgs e)
-{
-int index = lboxTables.SelectedIndex;
-if (index &gt; -1 &amp;&amp; index &lt; lboxTables.Items.Count)
-{
-object obj = lboxTables.Items[index];
-if (obj is TableSchema)
-{
-CodeCompileUnit unit= GenTableCompilerUnit(obj as TableSchema);
-string language="c#";
-if(!string.IsNullOrEmpty(this.toolStripComboBox1.Text))
-language=this.toolStripComboBox1.Text;
-string code = GenTanleCodeFromCompilerUnit(unit,language);
-this.rtbCode.Text = code;
-}
-}
-}
-}
-}
-</code></pre>
-
-<p>运行示图:c#图
-<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb.png" title="c#图" alt="imagec#图" /></a></p>
-
-<p> vb图：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb_1.png" title="vb图" alt="imagevb图" /></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 代码比较简单界面也做得太简洁了，呵呵导出文件都没有，我觉得没有什么必要讲解的，如果有什么不懂的或者是写的不对</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 不好的，请留言，我会尽快回复。</p>
-
-<blockquote><p><a href="http://files.cnblogs.com/whitewolf/CodeDomDemo-GeneratorCode.rar">CodeDom代码下载；</a></p></blockquote>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/">jQuery系列之目录汇总</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp; 最近一个月写了些关于jQuery的文章，谢谢大家的支持。文章仅我个人观点，也许有不对的地方，请指出。这个系列还在更新中</p>
-
-<p>一：jQuery基础系列：&nbsp;</p>
-
-<ol>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/23/1717994.html"><span style="font-size: 10pt;">jQuery温习篇&mdash;-强大的JQuery选择器</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/29/1723579.html"><span style="font-size: 10pt;">jQuery之工具函数</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/01/1725700.html"><span style="font-size: 10pt;">jQuery之筛选函数</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/23/1718526.html"><span style="font-size: 10pt;">jQuery1.4.2新特性（翻译）</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/13/1734152.html"><span style="font-size: 10pt;">jQuery Ajax 回顾</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/27/1786188.html"><span style="font-size: 10pt;">jQuery 1.4 版本的十五个新特性-转载</span></a></h4></li>
-</ol>
-
-
-<p>二：jQuery插件系列：</p>
-
-<ol>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/09/1731120.html"><span style="font-size: 10pt;">jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译)</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/11/1733069.html"><span style="font-size: 10pt;">jQuery File </span><span style="font-size: 10pt;">Tree(翻译)</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754727.html"><span style="font-size: 10pt;">关于jConfirm回传的解决方案</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/25/1994481.html"><span style="font-size: 10pt;">我的jQuery动态表格插件</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/04/13/2014621.html"><span style="font-size: 10pt;">我的jQuery动态表格插件二</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/09/28/2194795.html"><font color="#6699cc"><span style="font-size: 10pt;">jQuery右键菜单contextMenu实例</span></font></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/10/09/2204185.html"><font color="#6699cc"><span style="font-size: 10pt;">JQuery模板插件-jquery.tmpl</span></font></a></h4></li>
-</ol>
-
-
-<p>三：jQuery实践系列：</p>
-
-<ol>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/26/1784971.html"><span style="font-size: 10pt;">用一句JQuery代码实现表格的简单筛选</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/27/1786168.html"><span style="font-size: 10pt;">jquery:利用jsonp跨域访问&mdash;转载</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/09/21/2184488.html"><font color="#6699cc"><span style="font-size: 10pt;">StringTemplate遇见jQuery的冲突</span></font></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/09/26/2192253.html"><font color="#6699cc"><span style="font-size: 10pt;">jQuery Ajax 仿AjaxPro.Utility.RegisterTypeForAjax辅助方法</span></font></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/09/2243571.html"><font color="#6699cc"><span style="font-size: 10pt;">JQuery模板插件jquery.tmpl-动态ajax扩展</span></font></a></h4></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/14/">&larr; Older</a>
@@ -1577,6 +1624,14 @@ this.rtbCode.Text = code;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
@@ -1598,14 +1653,6 @@ this.rtbCode.Text = code;
     
       <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
       </li>
     
   </ul>

@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="你还在为JavaScript中的数据转换、匹配、查找等烦恼吗？一堆看似简单的foreach，却冗长无趣，可仍还在不停的repeat it！也许你已经用上了Underscore.js，不错，你已经进步很大一步了。然而今天我希望你能更进一步，利用lodash替换掉Underscore。 &hellip;">
+  <meta name="description" content="JavaScript规范 目录 类型 对象 数组 字符串 函数 属性 变量 条件表达式和等号 块 注释 空白 逗号 分号 类型转换 命名约定 存取器 构造器 事件 模块 jQuery ES5 兼容性 HTML、CSS、JavaScript分离 使用jsHint 前端工具 类型 原始值: 相当于传值 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,1493 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-09T23:18:20+08:00" pubdate data-updated="true">May 9<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/05/09/qian-duan-javascriptgui-fan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript规范</h1>
+
+<h2><a name='TOC'>目录</a></h2>
+
+<ol>
+<li> <a href="#types">类型</a></li>
+<li> <a href="#objects">对象</a></li>
+<li> <a href="#arrays">数组</a></li>
+<li> <a href="#strings">字符串</a></li>
+<li> <a href="#functions">函数</a></li>
+<li> <a href="#properties">属性</a></li>
+<li> <a href="#variables">变量</a></li>
+<li> <a href="#conditionals">条件表达式和等号</a></li>
+<li> <a href="#blocks">块</a></li>
+<li> <a href="#comments">注释</a></li>
+<li> <a href="#whitespace">空白</a></li>
+<li> <a href="#commas">逗号</a></li>
+<li> <a href="#semicolons">分号</a></li>
+<li> <a href="#type-coercion">类型转换</a></li>
+<li> <a href="#naming-conventions">命名约定</a></li>
+<li> <a href="#accessors">存取器</a></li>
+<li> <a href="#constructors">构造器</a></li>
+<li> <a href="#events">事件</a></li>
+<li> <a href="#modules">模块</a></li>
+<li> <a href="#jquery">jQuery</a></li>
+<li> <a href="#es5">ES5 兼容性</a></li>
+<li> <a href="#html-css-js">HTML、CSS、JavaScript分离</a></li>
+<li> <a href="#jshint">使用jsHint</a></li>
+<li> <a href="#tools">前端工具</a></li>
+</ol>
+
+
+<h2><a name='types'>类型</a></h2>
+
+<ul>
+<li><p><strong>原始值</strong>: 相当于传值(JavaScript对象都提供了字面量)，使用字面量创建对象。</p>
+
+<ul>
+<li><code>string</code></li>
+<li><code>number</code></li>
+<li><code>boolean</code></li>
+<li><code>null</code></li>
+<li><code>undefined</code></li>
+</ul>
+
+
+<p>&#8220;`javascript
+var foo = 1,
+    bar = foo;</p>
+
+<p>bar = 9;</p>
+
+<p>console.log(foo, bar); // => 1, 9
+&#8220;`</p></li>
+<li><p><strong>复杂类型</strong>: 相当于传引用</p>
+
+<ul>
+<li><code>object</code></li>
+<li><code>array</code></li>
+<li><code>function</code></li>
+</ul>
+
+
+<p>&#8220;`javascript
+var foo = [1, 2],
+    bar = foo;</p>
+
+<p>bar[0] = 9;</p>
+
+<p>console.log(foo[0], bar[0]); // => 9, 9
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='objects'>对象</a></h2>
+
+<ul>
+<li><p>使用字面值创建对象</p>
+
+<p>&#8220;`javascript
+// bad
+var item = new Object();</p>
+
+<p>// good
+var item = {};
+&#8220;`</p></li>
+<li><p>不要使用保留字 <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Reserved_Words">reserved words</a> 作为键</p>
+
+<p>&#8220;`javascript
+// bad
+var superman = {
+  class: &lsquo;superhero&rsquo;,
+  default: { clark: &lsquo;kent&rsquo; },
+  private: true
+};</p>
+
+<p>// good
+var superman = {
+  klass: &lsquo;superhero&rsquo;,
+  defaults: { clark: &lsquo;kent&rsquo; },
+  hidden: true
+};
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='arrays'>数组</a></h2>
+
+<ul>
+<li><p>使用字面值创建数组</p>
+
+<p>&#8220;`javascript
+// bad
+var items = new Array();</p>
+
+<p>// good
+var items = [];
+&#8220;`</p></li>
+<li><p>如果你不知道数组的长度，使用push</p>
+
+<p>&#8220;`javascript
+var someStack = [];</p>
+
+<p>// bad
+someStack[someStack.length] = &lsquo;abracadabra&rsquo;;</p>
+
+<p>// good
+someStack.push(&lsquo;abracadabra&rsquo;);
+&#8220;`</p></li>
+<li><p>当你需要拷贝数组时使用slice. <a href="http://jsperf.com/converting-arguments-to-an-array/7">jsPerf</a></p>
+
+<p>&#8220;`javascript
+var len = items.length,
+    itemsCopy = [],
+    i;</p>
+
+<p>// bad
+for (i = 0; i &lt; len; i++) {
+  itemsCopy[i] = items[i];
+}</p>
+
+<p>// good
+itemsCopy = items.slice();
+&#8220;`</p></li>
+<li><p>使用slice将类数组的对象转成数组.</p>
+
+<p><code>javascript
+function trigger() {
+  var args = [].slice.apply(arguments);
+  ...
+}
+</code></p></li>
+</ul>
+
+
+<h2><a name='strings'>字符串</a></h2>
+
+<ul>
+<li><p>对字符串使用单引号 <code>''</code>(因为大多时候我们的字符串。特别html会出现<code>"</code>)</p>
+
+<p>&#8220;`javascript
+// bad
+var name = &ldquo;Bob Parr&rdquo;;</p>
+
+<p>// good
+var name = &lsquo;Bob Parr&rsquo;;</p>
+
+<p>// bad
+var fullName = &ldquo;Bob &rdquo; + this.lastName;</p>
+
+<p>// good
+var fullName = &lsquo;Bob &rsquo; + this.lastName;
+&#8220;`</p></li>
+<li><p>超过80(也有规定140的，项目具体可制定)个字符的字符串应该使用字符串连接换行</p></li>
+<li><p>注: 如果过度使用，长字符串连接可能会对性能有影响. <a href="http://jsperf.com/ya-string-concat">jsPerf</a> &amp; <a href="https://github.com/airbnb/javascript/issues/40">Discussion</a></p>
+
+<p>&#8220;`javascript
+// bad
+var errorMessage = &lsquo;This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.&rsquo;;</p>
+
+<p>// bad
+var errorMessage = &lsquo;This is a super long error that \
+was thrown because of Batman. \
+When you stop to think about \
+how Batman had anything to do \
+with this, you would get nowhere \
+fast.&rsquo;;</p>
+
+<p>// good
+var errorMessage = &lsquo;This is a super long error that &rsquo; +
+  &lsquo;was thrown because of Batman.&rsquo; +
+  &lsquo;When you stop to think about &rsquo; +
+  &lsquo;how Batman had anything to do &rsquo; +
+  &lsquo;with this, you would get nowhere &rsquo; +
+  &lsquo;fast.&rsquo;;
+&#8220;`</p></li>
+<li><p>编程时使用join而不是字符串连接来构建字符串，特别是IE: <a href="http://jsperf.com/string-vs-array-concat/2">jsPerf</a>.</p>
+
+<p>&#8220;`javascript
+var items,
+    messages,
+    length, i;</p>
+
+<p>messages = [{
+    state: &lsquo;success&rsquo;,
+    message: &lsquo;This one worked.&rsquo;
+},{
+    state: &lsquo;success&rsquo;,
+    message: &lsquo;This one worked as well.&rsquo;
+},{
+    state: &lsquo;error&rsquo;,
+    message: &lsquo;This one did not work.&rsquo;
+}];</p>
+
+<p>length = messages.length;</p>
+
+<p>// bad
+function inbox(messages) {
+  items = &lsquo;<ul>&rsquo;;</p>
+
+<p>  for (i = 0; i &lt; length; i++) {
+    items += &lsquo;<li>&rsquo; + messages[i].message + &lsquo;</li>&rsquo;;
+  }</p>
+
+<p>  return items + &lsquo;</ul>&rsquo;;
+}</p>
+
+<p>// good
+function inbox(messages) {
+  items = [];</p>
+
+<p>  for (i = 0; i &lt; length; i++) {
+    items[i] = messages[i].message;
+  }</p>
+
+<p>  return &lsquo;<ul><li>&rsquo; + items.join(&lsquo;</li><li>&rsquo;) + &lsquo;</li></ul>&rsquo;;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='functions'>函数</a></h2>
+
+<ul>
+<li><p>函数表达式:</p>
+
+<p>&#8220;`javascript
+// 匿名函数表达式
+var anonymous = function() {
+  return true;
+};</p>
+
+<p>// 有名函数表达式
+var named = function named() {
+  return true;
+};</p>
+
+<p>// 立即调用函数表达式
+(function() {
+  console.log(&lsquo;Welcome to the Internet. Please follow me.&rsquo;);
+})();
+&#8220;`</p></li>
+<li><p>绝对不要在一个非函数块里声明一个函数，把那个函数赋给一个变量。浏览器允许你这么做，但是它们解析不同。</p></li>
+<li><p><strong>注:</strong> ECMA-262定义把<code>块</code>定义为一组语句，函数声明不是一个语句。<a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97">阅读ECMA-262对这个问题的说明</a>.</p>
+
+<p>&#8220;`javascript
+// bad
+if (currentUser) {
+  function test() {
+    console.log(&lsquo;Nope.&rsquo;);
+  }
+}</p>
+
+<p>// good
+if (currentUser) {
+  var test = function test() {
+    console.log(&lsquo;Yup.&rsquo;);
+  };
+}
+&#8220;`</p></li>
+<li><p>绝对不要把参数命名为 <code>arguments</code>, 这将会逾越函数作用域内传过来的 <code>arguments</code> 对象.</p>
+
+<p>&#8220;`javascript
+// bad
+function nope(name, options, arguments) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+function yup(name, options, args) {
+  // &hellip;stuff&hellip;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='properties'>属性</a></h2>
+
+<ul>
+<li><p>当使用变量和特殊非法变量名时，访问属性时可以使用中括号(<code>.</code> 优先).</p>
+
+<p>&#8220;`javascript
+var luke = {
+  jedi: true,
+  age: 28
+};</p>
+
+<p>function getProp(prop) {
+  return luke[prop];
+}</p>
+
+<p>var isJedi = getProp(&lsquo;jedi&rsquo;);
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='variables'>变量</a></h2>
+
+<ul>
+<li><p>总是使用 <code>var</code> 来声明变量，如果不这么做将导致产生全局变量，我们要避免污染全局命名空间。</p>
+
+<p>&#8220;`javascript
+// bad
+superPower = new SuperPower();</p>
+
+<p>// good
+var superPower = new SuperPower();
+&#8220;`</p></li>
+<li><p>使用一个 <code>var</code> 以及新行声明多个变量，缩进4个空格。</p>
+
+<p>&#8220;`javascript
+// bad
+var items = getItems();
+var goSportsTeam = true;
+var dragonball = &lsquo;z&rsquo;;</p>
+
+<p>// good
+var items = getItems(),
+    goSportsTeam = true,
+    dragonball = &lsquo;z&rsquo;;
+&#8220;`</p></li>
+<li><p>最后再声明未赋值的变量，当你想引用之前已赋值变量的时候很有用。</p>
+
+<p>&#8220;`javascript
+// bad
+var i, len, dragonball,
+    items = getItems(),
+    goSportsTeam = true;</p>
+
+<p>// bad
+var i, items = getItems(),
+    dragonball,
+    goSportsTeam = true,
+    len;</p>
+
+<p>// good
+var items = getItems(),
+    goSportsTeam = true,
+    dragonball,
+    length,
+    i;
+&#8220;`</p></li>
+<li><p>在作用域顶部声明变量，避免变量声明和赋值引起的相关问题。</p>
+
+<p>&#8220;`javascript
+// bad
+function() {
+  test();
+  console.log(&lsquo;doing stuff..&rsquo;);</p>
+
+<p>  //..other stuff..</p>
+
+<p>  var name = getName();</p>
+
+<p>  if (name === &lsquo;test&rsquo;) {
+    return false;
+  }</p>
+
+<p>  return name;
+}</p>
+
+<p>// good
+function() {
+  var name = getName();</p>
+
+<p>  test();
+  console.log(&lsquo;doing stuff..&rsquo;);</p>
+
+<p>  //..other stuff..</p>
+
+<p>  if (name === &lsquo;test&rsquo;) {
+    return false;
+  }</p>
+
+<p>  return name;
+}</p>
+
+<p>// bad
+function() {
+  var name = getName();</p>
+
+<p>  if (!arguments.length) {
+    return false;
+  }</p>
+
+<p>  return true;
+}</p>
+
+<p>// good
+function() {
+  if (!arguments.length) {
+    return false;
+  }</p>
+
+<p>  var name = getName();</p>
+
+<p>  return true;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='conditionals'>条件表达式和等号</a></h2>
+
+<ul>
+<li>合理使用 <code>===</code> 和 <code>!==</code> 以及 <code>==</code> 和 <code>!=</code>.</li>
+<li>合理使用表达式逻辑操作运算.</li>
+<li><p>条件表达式的强制类型转换遵循以下规则：</p>
+
+<ul>
+<li><strong>对象</strong> 被计算为 <strong>true</strong></li>
+<li><strong>Undefined</strong> 被计算为 <strong>false</strong></li>
+<li><strong>Null</strong> 被计算为 <strong>false</strong></li>
+<li><strong>布尔值</strong> 被计算为 <strong>布尔的值</strong></li>
+<li><strong>数字</strong> 如果是 <strong>+0, -0, or NaN</strong> 被计算为 <strong>false</strong> , 否则为 <strong>true</strong></li>
+<li><strong>字符串</strong> 如果是空字符串 <code>''</code> 则被计算为 <strong>false</strong>, 否则为 <strong>true</strong></li>
+</ul>
+
+
+<p><code>javascript
+if ([0]) {
+  // true
+  // An array is an object, objects evaluate to true
+}
+</code></p></li>
+<li><p>使用快捷方式.</p>
+
+<p>`&ldquo;javascript
+// bad
+if (name !== &rdquo;) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+if (name) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// bad
+if (collection.length > 0) {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+if (collection.length) {
+  // &hellip;stuff&hellip;
+}
+&#8220;`</p></li>
+<li><p>阅读 <a href="http://javascriptweblog.wordpress.com/2011/02/07/truth-equality-and-javascript/#more-2108">Truth Equality and JavaScript</a> 了解更多</p></li>
+</ul>
+
+
+<h2><a name='blocks'>块</a></h2>
+
+<ul>
+<li><p>给所有多行的块使用大括号</p>
+
+<p>&#8220;`javascript
+// bad
+if (test)
+  return false;</p>
+
+<p>// good
+if (test) return false;</p>
+
+<p>// good
+if (test) {
+  return false;
+}</p>
+
+<p>// bad
+function() { return false; }</p>
+
+<p>// good
+function() {
+  return false;
+}
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='comments'>注释</a></h2>
+
+<ul>
+<li><p>使用 <code>/** ... */</code> 进行多行注释，包括描述，指定类型以及参数值和返回值</p>
+
+<p>&#8220;`javascript
+// bad
+// make() returns a new element
+// based on the passed in tag name
+//
+// @param <String> tag
+// @return <Element> element
+function make(tag) {</p>
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  return element;
+}</p>
+
+<p>// good
+/**</p>
+
+<ul>
+<li>make() returns a new element</li>
+<li>based on the passed in tag name
+*</li>
+<li>@param <String> tag</li>
+<li>@return <Element> element
+*/
+function make(tag) {</li>
+</ul>
+
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  return element;
+}
+&#8220;`</p></li>
+<li><p>使用 <code>//</code> 进行单行注释，在评论对象的上面进行单行注释，注释前放一个空行.</p>
+
+<p>&#8220;`javascript
+// bad
+var active = true;  // is current tab</p>
+
+<p>// good
+// is current tab
+var active = true;</p>
+
+<p>// bad
+function getType() {
+  console.log(&lsquo;fetching type&hellip;&rsquo;);
+  // set the default type to &lsquo;no type&rsquo;
+  var type = this._type || &lsquo;no type&rsquo;;</p>
+
+<p>  return type;
+}</p>
+
+<p>// good
+function getType() {
+  console.log(&lsquo;fetching type&hellip;&rsquo;);</p>
+
+<p>  // set the default type to &lsquo;no type&rsquo;
+  var type = this._type || &lsquo;no type&rsquo;;</p>
+
+<p>  return type;
+}
+&#8220;`</p></li>
+<li><p>如果你有一个问题需要重新来看一下或如果你建议一个需要被实现的解决方法的话需要在你的注释前面加上 <code>FIXME</code> 或 <code>TODO</code> 帮助其他人迅速理解</p>
+
+<p>&#8220;`javascript
+function Calculator() {</p>
+
+<p>  // FIXME: shouldn&rsquo;t use a global here
+  total = 0;</p>
+
+<p>  return this;
+}
+&#8220;`</p>
+
+<p>&#8220;`javascript
+function Calculator() {</p>
+
+<p>  // TODO: total should be configurable by an options param
+  this.total = 0;</p>
+
+<p>  return this;
+}
+&#8220;`</p></li>
+<li>满足规范的文档，在需要文档的时候，可以尝试<a href="http://usejsdoc.org/">jsdoc</a>.</li>
+</ul>
+
+
+<h2><a name='whitespace'>空白</a></h2>
+
+<ul>
+<li>缩进、格式化能帮助团队更快得定位修复代码BUG.</li>
+<li><p>将tab设为4个空格</p>
+
+<p>&#8220;`javascript
+// bad
+function() {
+∙∙var name;
+}</p>
+
+<p>// bad
+function() {
+∙var name;
+}</p>
+
+<p>// good
+function() {
+∙∙∙∙var name;
+}
+&#8220;`</p></li>
+<li><p>大括号前放一个空格</p>
+
+<p>&#8220;`javascript
+// bad
+function test(){
+  console.log(&lsquo;test&rsquo;);
+}</p>
+
+<p>// good
+function test() {
+  console.log(&lsquo;test&rsquo;);
+}</p>
+
+<p>// bad
+dog.set(&lsquo;attr&rsquo;,{
+  age: &lsquo;1 year&rsquo;,
+  breed: &lsquo;Bernese Mountain Dog&rsquo;
+});</p>
+
+<p>// good
+dog.set(&lsquo;attr&rsquo;, {
+  age: &lsquo;1 year&rsquo;,
+  breed: &lsquo;Bernese Mountain Dog&rsquo;
+});
+&#8220;`</p></li>
+<li><p>在做长方法链时使用缩进.</p>
+
+<p>&#8220;`javascript
+// bad
+$(&lsquo;#items&rsquo;).find(&lsquo;.selected&rsquo;).highlight().end().find(&lsquo;.open&rsquo;).updateCount();</p>
+
+<p>// good
+$(&lsquo;#items&rsquo;)
+  .find(&lsquo;.selected&rsquo;)
+    .highlight()
+    .end()
+  .find(&lsquo;.open&rsquo;)
+    .updateCount();</p>
+
+<p>// bad
+var leds = stage.selectAll(&lsquo;.led&rsquo;).data(data).enter().append(&lsquo;svg:svg&rsquo;).class(&lsquo;led&rsquo;, true)
+    .attr(&lsquo;width&rsquo;,  (radius + margin) * 2).append(&lsquo;svg:g&rsquo;)
+    .attr(&lsquo;transform&rsquo;, &lsquo;translate(&rsquo; + (radius + margin) + &lsquo;,&rsquo; + (radius + margin) + &lsquo;)&rsquo;)
+    .call(tron.led);</p>
+
+<p>// good
+var leds = stage.selectAll(&lsquo;.led&rsquo;)
+    .data(data)
+  .enter().append(&lsquo;svg:svg&rsquo;)
+    .class(&lsquo;led&rsquo;, true)
+    .attr(&lsquo;width&rsquo;,  (radius + margin) * 2)
+  .append(&lsquo;svg:g&rsquo;)
+    .attr(&lsquo;transform&rsquo;, &lsquo;translate(&rsquo; + (radius + margin) + &lsquo;,&rsquo; + (radius + margin) + &lsquo;)&rsquo;)
+    .call(tron.led);
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='commas'>逗号</a></h2>
+
+<ul>
+<li><p>不要将逗号放前面</p>
+
+<p>&#8220;`javascript
+// bad
+var once
+  , upon
+  , aTime;</p>
+
+<p>// good
+var once,
+    upon,
+    aTime;</p>
+
+<p>// bad
+var hero = {
+    firstName: &lsquo;Bob&rsquo;
+  , lastName: &lsquo;Parr&rsquo;
+  , heroName: &lsquo;Mr. Incredible&rsquo;
+  , superPower: &lsquo;strength&rsquo;
+};</p>
+
+<p>// good
+var hero = {
+  firstName: &lsquo;Bob&rsquo;,
+  lastName: &lsquo;Parr&rsquo;,
+  heroName: &lsquo;Mr. Incredible&rsquo;,
+  superPower: &lsquo;strength&rsquo;
+};
+&#8220;`</p></li>
+<li><p>不要加多余的逗号，这可能会在IE下引起错误，同时如果多一个逗号某些ES3的实现会计算多数组的长度。</p>
+
+<p>&#8220;`javascript
+// bad
+var hero = {
+  firstName: &lsquo;Kevin&rsquo;,
+  lastName: &lsquo;Flynn&rsquo;,
+};</p>
+
+<p>var heroes = [
+  &lsquo;Batman&rsquo;,
+  &lsquo;Superman&rsquo;,
+];</p>
+
+<p>// good
+var hero = {
+  firstName: &lsquo;Kevin&rsquo;,
+  lastName: &lsquo;Flynn&rsquo;
+};</p>
+
+<p>var heroes = [
+  &lsquo;Batman&rsquo;,
+  &lsquo;Superman&rsquo;
+];
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='semicolons'>分号</a></h2>
+
+<ul>
+<li><p>语句结束一定要加分号</p>
+
+<p>&#8220;`javascript
+// bad
+(function() {
+  var name = &lsquo;Skywalker&rsquo;
+  return name
+})()</p>
+
+<p>// good
+(function() {
+  var name = &lsquo;Skywalker&rsquo;;
+  return name;
+})();</p>
+
+<p>// good
+;(function() {
+  var name = &lsquo;Skywalker&rsquo;;
+  return name;
+})();
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='type-coercion'>类型转换</a></h2>
+
+<ul>
+<li>在语句的开始执行类型转换.</li>
+<li><p>字符串:</p>
+
+<p>&#8220;`javascript
+//  => this.reviewScore = 9;</p>
+
+<p>// bad
+var totalScore = this.reviewScore + &lsquo;&rsquo;;</p>
+
+<p>// good
+var totalScore = &lsquo;&rsquo; + this.reviewScore;</p>
+
+<p>// bad
+var totalScore = &lsquo;&rsquo; + this.reviewScore + &lsquo; total score&rsquo;;</p>
+
+<p>// good
+var totalScore = this.reviewScore + &lsquo; total score&rsquo;;
+&#8220;`</p></li>
+<li><p>对数字使用 <code>parseInt</code> 并且总是带上类型转换的基数.，如<code>parseInt(value, 10)</code></p>
+
+<p>&#8220;`javascript
+var inputValue = &lsquo;4&rsquo;;</p>
+
+<p>// bad
+var val = new Number(inputValue);</p>
+
+<p>// bad
+var val = +inputValue;</p>
+
+<p>// bad
+var val = inputValue >> 0;</p>
+
+<p>// bad
+var val = parseInt(inputValue);</p>
+
+<p>// good
+var val = Number(inputValue);</p>
+
+<p>// good
+var val = parseInt(inputValue, 10);</p>
+
+<p>// good
+/**</p>
+
+<ul>
+<li>parseInt was the reason my code was slow.</li>
+<li>Bitshifting the String to coerce it to a</li>
+<li>Number made it a lot faster.
+*/
+var val = inputValue >> 0;
+&#8220;`</li>
+</ul>
+</li>
+<li><p>布尔值:</p>
+
+<p>&#8220;`javascript
+var age = 0;</p>
+
+<p>// bad
+var hasAge = new Boolean(age);</p>
+
+<p>// good
+var hasAge = Boolean(age);</p>
+
+<p>// good
+var hasAge = !!age;
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='naming-conventions'>命名约定</a></h2>
+
+<ul>
+<li><p>避免单个字符名，让你的变量名有描述意义。</p>
+
+<p>&#8220;`javascript
+// bad
+function q() {
+  // &hellip;stuff&hellip;
+}</p>
+
+<p>// good
+function query() {
+  // ..stuff..
+}
+&#8220;`</p></li>
+<li><p>当命名对象、函数和实例时使用驼峰命名规则</p>
+
+<p>&#8220;`javascript
+// bad
+var OBJEcttsssss = {};
+var this_is_my_object = {};
+var this-is-my-object = {};
+function c() {};
+var u = new user({
+  name: &lsquo;Bob Parr&rsquo;
+});</p>
+
+<p>// good
+var thisIsMyObject = {};
+function thisIsMyFunction() {};
+var user = new User({
+  name: &lsquo;Bob Parr&rsquo;
+});
+&#8220;`</p></li>
+<li><p>当命名构造函数或类时使用驼峰式大写</p>
+
+<p>&#8220;`javascript
+// bad
+function user(options) {
+  this.name = options.name;
+}</p>
+
+<p>var bad = new user({
+  name: &lsquo;nope&rsquo;
+});</p>
+
+<p>// good
+function User(options) {
+  this.name = options.name;
+}</p>
+
+<p>var good = new User({
+  name: &lsquo;yup&rsquo;
+});
+&#8220;`</p></li>
+<li><p>命名私有属性时前面加个下划线 <code>_</code></p>
+
+<p>&#8220;`javascript
+// bad
+this.<strong>firstName</strong> = &lsquo;Panda&rsquo;;
+this.firstName_ = &lsquo;Panda&rsquo;;</p>
+
+<p>// good
+this._firstName = &lsquo;Panda&rsquo;;
+&#8220;`</p></li>
+<li><p>当保存对 <code>this</code> 的引用时使用 <code>self(python 风格)</code>,避免<code>this issue</code>.Angular建议使用<code>vm(MVVM模式中view-model)</code></p>
+
+<p><code>javascript
+// good
+function() {
+  var self = this;
+  return function() {
+    console.log(self);
+  };
+}
+</code></p></li>
+</ul>
+
+
+<h2><a name='accessors'>存取器</a></h2>
+
+<ul>
+<li>属性的存取器函数不是必需的</li>
+<li><p>如果你确实有存取器函数的话使用getVal() 和 setVal(&lsquo;hello&rsquo;),<code>java getter、setter风格</code>或者<code>jQuery风格</code></p></li>
+<li><p>如果属性是布尔值，使用isVal() 或 hasVal()</p>
+
+<p>&#8220;`javascript
+// bad
+if (!dragon.age()) {
+  return false;
+}</p>
+
+<p>// good
+if (!dragon.hasAge()) {
+  return false;
+}
+&#8220;`</p></li>
+<li><p>可以创建get()和set()函数，但是要保持一致</p>
+
+<p>&#8220;`javascript
+function Jedi(options) {
+  options || (options = {});
+  var lightsaber = options.lightsaber || &lsquo;blue&rsquo;;
+  this.set(&lsquo;lightsaber&rsquo;, lightsaber);
+}</p>
+
+<p>Jedi.prototype.set = function(key, val) {
+  this[key] = val;
+};</p>
+
+<p>Jedi.prototype.get = function(key) {
+  return this[key];
+};
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='constructors'>构造器</a></h2>
+
+<ul>
+<li><p>给对象原型分配方法，而不是用一个新的对象覆盖原型，覆盖原型会使继承出现问题。</p>
+
+<p>&#8220;`javascript
+function Jedi() {
+  console.log(&lsquo;new jedi&rsquo;);
+}</p>
+
+<p>// bad
+Jedi.prototype = {
+  fight: function fight() {
+    console.log(&lsquo;fighting&rsquo;);
+  },</p>
+
+<p>  block: function block() {
+    console.log(&lsquo;blocking&rsquo;);
+  }
+};</p>
+
+<p>// good
+Jedi.prototype.fight = function fight() {
+  console.log(&lsquo;fighting&rsquo;);
+};</p>
+
+<p>Jedi.prototype.block = function block() {
+  console.log(&lsquo;blocking&rsquo;);
+};
+&#8220;`</p></li>
+<li><p>方法可以返回 <code>this</code> 帮助方法可链。</p>
+
+<p>&#8220;`javascript
+// bad
+Jedi.prototype.jump = function() {
+  this.jumping = true;
+  return true;
+};</p>
+
+<p>Jedi.prototype.setHeight = function(height) {
+  this.height = height;
+};</p>
+
+<p>var luke = new Jedi();
+luke.jump(); // => true
+luke.setHeight(20) // => undefined</p>
+
+<p>// good
+Jedi.prototype.jump = function() {
+  this.jumping = true;
+  return this;
+};</p>
+
+<p>Jedi.prototype.setHeight = function(height) {
+  this.height = height;
+  return this;
+};</p>
+
+<p>var luke = new Jedi();</p>
+
+<p>luke.jump()
+  .setHeight(20);
+&#8220;`</p></li>
+<li><p>可以写一个自定义的toString()方法，但是确保它工作正常并且不会有副作用。</p>
+
+<p>&#8220;`javascript
+function Jedi(options) {
+  options || (options = {});
+  this.name = options.name || &lsquo;no name&rsquo;;
+}</p>
+
+<p>Jedi.prototype.getName = function getName() {
+  return this.name;
+};</p>
+
+<p>Jedi.prototype.toString = function toString() {
+  return &lsquo;Jedi &ndash; &rsquo; + this.getName();
+};
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='events'>事件</a></h2>
+
+<ul>
+<li><p>当给事件附加数据时，传入一个哈希而不是原始值，这可以让后面的贡献者加入更多数据到事件数据里而不用找出并更新那个事件的事件处理器</p>
+
+<p>&#8220;`js
+// bad
+$(this).trigger(&lsquo;listingUpdated&rsquo;, listing.id);</p>
+
+<p>&hellip;</p>
+
+<p>$(this).on(&lsquo;listingUpdated&rsquo;, function(e, listingId) {
+  // do something with listingId
+});
+&#8220;`</p>
+
+<p>更好:</p>
+
+<p>&#8220;`js
+// good
+$(this).trigger(&lsquo;listingUpdated&rsquo;, { listingId : listing.id });</p>
+
+<p>&hellip;</p>
+
+<p>$(this).on(&lsquo;listingUpdated&rsquo;, function(e, data) {
+  // do something with data.listingId
+});
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='modules'>模块</a></h2>
+
+<ul>
+<li>这个文件应该以驼峰命名，并在同名文件夹下，同时导出的时候名字一致</li>
+<li>对于公开API库可以考虑加入一个名为noConflict()的方法来设置导出的模块为之前的版本并返回它</li>
+<li><p>总是在模块顶部声明 <code>'use strict';</code>，引入<code>[JSHint规范](http://jshint.com/)</code></p>
+
+<p>&#8220;`javascript
+// fancyInput/fancyInput.js</p>
+
+<p>（function(global) {
+  &lsquo;use strict&rsquo;;</p>
+
+<p>  var previousFancyInput = global.FancyInput;</p>
+
+<p>  function FancyInput(options) {
+    this.options = options || {};
+  }</p>
+
+<p>  FancyInput.noConflict = function noConflict() {
+    global.FancyInput = previousFancyInput;
+    return FancyInput;
+  };</p>
+
+<p>  global.FancyInput = FancyInput;
+})(this);
+&#8220;`</p></li>
+</ul>
+
+
+<h2><a name='jquery'>jQuery</a></h2>
+
+<ul>
+<li><p>对于jQuery对象以<code>$</code>开头，以和原生DOM节点区分。</p>
+
+<p>&#8220;`javascript
+// bad
+var menu = $(&ldquo;.menu&rdquo;);</p>
+
+<p>// good
+var $menu = $(&ldquo;.menu&rdquo;);
+&#8220;`</p></li>
+<li><p>缓存jQuery查询</p>
+
+<p>&#8220;`javascript
+// bad
+function setSidebar() {
+  $(&lsquo;.sidebar&rsquo;).hide();</p>
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  $(&lsquo;.sidebar&rsquo;).css({
+    &lsquo;background-color&rsquo;: &lsquo;pink&rsquo;
+  });
+}</p>
+
+<p>// good
+function setSidebar() {
+  var $sidebar = $(&lsquo;.sidebar&rsquo;);
+  $sidebar.hide();</p>
+
+<p>  // &hellip;stuff&hellip;</p>
+
+<p>  $sidebar.css({
+    &lsquo;background-color&rsquo;: &lsquo;pink&rsquo;
+  });
+}
+&#8220;`</p></li>
+<li><p>对DOM查询使用级联的 <code>$('.sidebar ul')</code> 或 <code>$('.sidebar ul')</code>，<a href="http://jsperf.com/jquery-find-vs-context-sel/16">jsPerf</a></p></li>
+<li><p>对有作用域的jQuery对象查询使用 <code>find</code></p>
+
+<p>&#8220;`javascript
+// bad
+$(&lsquo;.sidebar&rsquo;, &lsquo;ul&rsquo;).hide();</p>
+
+<p>// bad
+$(&lsquo;.sidebar&rsquo;).find(&lsquo;ul&rsquo;).hide();</p>
+
+<p>// good
+$(&lsquo;.sidebar ul&rsquo;).hide();</p>
+
+<p>// good
+$(&lsquo;.sidebar > ul&rsquo;).hide();</p>
+
+<p>// good (slower)
+$sidebar.find(&lsquo;ul&rsquo;);</p>
+
+<p>// good (faster)
+$($sidebar[0]).find(&lsquo;ul&rsquo;);
+&#8220;`</p></li>
+<li><p>每个页面只使用一次document的ready事件，这样便于调试与行为流跟踪。</p>
+
+<p><code>javascript
+$(function(){
+   //do your page init.  
+});
+</code></p></li>
+<li><p>事件利用<code>jQuery.on</code>从页面分离到JavaScript文件。</p>
+
+<p>&#8220;`javascript
+// bad
+<a id="myLink" href="#" onclick="myEventHandler();"></a></p>
+
+<p>// good
+<a id="myLink" href="#"></a></p>
+
+<p>$(&ldquo;#myLink&rdquo;).on(&ldquo;click&rdquo;, myEventHandler);</p>
+
+<p>&#8220;`</p></li>
+<li><p>对于Ajax使用promise方式。</p>
+
+<p>&#8220;`javascript
+    // bad
+    $.ajax({
+        &hellip;
+        success : function(){
+        },
+        error : function(){
+        }
+    })</p>
+
+<pre class='green'><code>// good
+$.ajax({.
+    ..
+}).then( function( ){
+    // success
+}, function( ){
+    // error
+})
+</code></pre>
+
+<p>&#8220;`</p></li>
+<li><p>利用promise的deferred对象解决延迟注册问题。</p></li>
+</ul>
+
+
+<p> <code>javascript
+  var dtd = $.Deferred(); // 新建一个deferred对象
+　　var wait = function(dtd){
+　　　　var tasks = function(){
+　　　　　　alert("执行完毕！");
+　　　　　　dtd.resolve(); // 改变deferred对象的执行状态
+　　　　};
+　　　　setTimeout(tasks,5000);
+　　　　return dtd;
+　　};
+</code>
+  &ndash; HTML中Style、以及JavaScript中style移到CSS中class，在HTML、JavaScript中引入class，而不是直接style。</p>
+
+<h2><a name='es5'>ECMAScript 5兼容性</a></h2>
+
+<p>尽量采用ES5方法，特别数组map、filter、forEach方法简化日常开发。在老式IE浏览器中引入<a href="https://github.com/es-shims/es5-shim">ES5-shim</a>。或者也可以考虑引入<a href="http://underscorejs.org/">underscore</a>、<a href="https://lodash.com/">lodash</a> 常用辅助库.
+  &ndash; 参考<a href="https://twitter.com/kangax/">Kangax</a>的 ES5 <a href="http://kangax.github.com/es5-compat-table/">compatibility table</a>
+ &ndash; <a href="http://www.cnblogs.com/whitewolf/p/4417873.html">JavaScript工具库之Lodash</a>
+ &ndash; <a href="http://www.cnblogs.com/whitewolf/p/4357916.html">Babel-现在开始使用 ES6</a></p>
+
+<h2><a name='html-css-js'>HTML、CSS、JavaScript分离</a></h2>
+
+<ul>
+<li>页面DOM结构使用HTML，样式则采用CSS，动态DOM操作JavaScript。不要混用在HTML中</li>
+<li>分离在不同类型文件，文件link。</li>
+<li>HTML、CSS、JavaScript变量名都需要有业务价值。CSS以中划线分割的全小写命名，JavaScript则首字母小写的驼峰命名。</li>
+<li>CSS可引入Bootstrap、Foundation等出名响应式设计框架。以及SASS、LESS工具书写CSS。</li>
+<li>对于CSS、JavaScript建议合并为单文件，减少Ajax的连接数。也可以引入AMD(Require.js)加载方式。</li>
+<li>对于内部大部分企业管理系统，可以尝试采用前端 MVC框架组织代码。如Angular、React + flux架构、Knockout等。</li>
+<li>对于兼容性可用<a href="http://modernizr.com/">Modernizr</a>规范库辅助。</li>
+</ul>
+
+
+<h2><a name='jshint'>使用jsHint</a></h2>
+
+<ul>
+<li>前端项目中推荐引入<a href="http://jshint.com/">jshint</a>插件来规范项目编码规范。以及一套完善的IDE配置。</li>
+<li>注意：jshint需要引入nodejs 工具grunt或gulp插件，建议院级nodejs npm私服。</li>
+</ul>
+
+
+<h2><a name='tools'>前端工具</a></h2>
+
+<ul>
+<li>前端第三方JavaScript包管理工具bower(<code>bower install jQuery</code>)，bower可以实现第三方库的依赖解析、下载、升级管理等。建议建立院级bower私服。</li>
+<li>前端构建工具，可以采用grunt或者gulp工具，可以实现html、css、js压缩、验证、测试，文件合并、watch和liveload等所有前端任务。建议院级nodejs npm私服。</li>
+<li>前端开发IDE： WebStorm( Idea )、Sublime为最佳 。项目组统一IDE。IDE统一配置很重要。</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T16:52:50+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/04/12/typescript-modules-mo-kuai/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>简介</h2>
+
+<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
+
+<h2>第一步</h2>
+
+<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
+
+<h4>单文件的验证逻辑</h4>
+
+<pre class='green'><code>interface StringValidator {
+    isAcceptable(s: string): boolean;
+}
+
+var lettersRegexp = /^[A-Za-z]+$/;
+var numberRegexp = /^[0-9]+$/;
+
+class LettersOnlyValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return lettersRegexp.test(s);
+    }
+}
+
+class ZipCodeValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return s.length === 5 &amp;&amp; numberRegexp.test(s);
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: StringValidator; } = {};
+validators['ZIP code'] = new ZipCodeValidator();
+validators['Letters only'] = new LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h4>增加模块化</h4>
+
+<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
+
+<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
+
+<h4>模块化的Validators</h4>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+
+    var lettersRegexp = /^[A-Za-z]+$/;
+    var numberRegexp = /^[0-9]+$/;
+
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h2>分离模块文件</h2>
+
+<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
+
+<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
+
+<h4>多文件的内部模块</h4>
+
+<h6>Validation.ts</h6>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+}
+</code></pre>
+
+<h6>LettersOnlyValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var lettersRegexp = /^[A-Za-z]+$/;
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>ZipCodeValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var numberRegexp = /^[0-9]+$/;
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>Test.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
+/// &lt;reference path="ZipCodeValidator.ts" /&gt;
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
+
+<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
+
+<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
+
+<h6>#MyTestPage.html (excerpt)</h6>
+
+<pre class='green'><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
+&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
+&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
+&lt;script src="Test.js" type="text/javascript" /&gt;
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1397,450 +2884,6 @@ deallocate prepare stmt;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/01/05/tddsui-xiang-lu/">TDD随想录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-05T21:58:10+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2015</time>
-        
-           | <a href="/blog/2015/01/05/tddsui-xiang-lu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2015/01/05/tddsui-xiang-lu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>2014年我一直从事在敏捷实践咨询项目，这也是我颇有收获的一年，特别是咨询项目的每一点改变，不管是代码质量的提高，还是自组织团队的建设，都能让我们感到欣慰。涉及人的问题都是复杂问题，改变人，改变一个组织是个更复杂问题，这里可能涉及很多的非技术，非能力问题。</p>
-
-<p>在2014年12月我在某企业内部推行TDD(测试驱动开发)培训，一共分4个课时完成一个特定需求的例子，看着大家一步一步的加深对TDD的理解，直到2014-12-31，也是2014的最后一天下午培训完TDD课程，经过一系列的总结过后，某参与人员说道：“单元测试需要写更多的代码，但是从项目的总体来看，一个字‘值’.”。紧接着后来某参与人员发了一份其关于TDD培训感受，名叫《TDD随想录》也将是本文的主题，本文或许更好的说是转载此文，了解一个开发人员对TDD了解的心路历程，以及对TDD的看法。</p>
-
-<p>注：原文发布与hxfirefox的<a href="https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md">https://github.com/hxfirefox/blog/blob/master/TDD/TDD%E9%9A%8F%E6%83%B3%E5%BD%95.md</a>.</p>
-
-<p>原文如下：</p>
-
-<h2>TDD随想录</h2>
-
-<p>谨以本文献给TDD的开创者与传播者</p>
-
-<p>本文纯属个人经历，如有雷同纯属巧合</p>
-
-<p>我从不觉得自己是一个好的程序员，甚至可能连合格都谈不上，不过在内心深处我却渴望着在编程这件事上获得成功。</p>
-
-<p>可惜每次审视自己写的暂且称之为代码的东西，都会有挫折感，想重构却又感觉盘根错节，难以下手;想重写却又感觉自己好不容易写出来的，也花了不少心思，就这样丢弃心有不甘。</p>
-
-<p>也曾思考过如何才能写好代码，有段时间觉得只有严格符合编程规范的代码才是好代码进而如同遵守戒律一样地字字斟酌，还有段时间觉得只有用上设计模式才能称之优秀代码进而非模式不用，一切套用模式。不过这些都没有让我走出开发的迷雾，永远是加不完的班，修不完的bug。</p>
-
-<p>究竟是否有一种方法能够让我拨开开发迷雾，至少能够让我能够轻松地修剪代码，降低bug发生率，那么我觉得这种方法在我身上就是成功的。</p>
-
-<p>初次接触到TDD是通过公司内部的“代码大全培训”，犹如十月革命中阿芙勒尔号的一声炮响，为我打开了软件开发的视野。先测试后开发，小步迭代，持续集成，这些新名词突然涌进了我的大脑，既新鲜又晦涩。犹如人的幼年容易犯幼稚病一样，初识这些新名词就以为了解了TDD的一切，结果却发现在实践过程中处处碰壁，举步维艰。对TDD中每个环节真正隐含的开发思想的囫囵吞枣，让这一次的培训只在我脑中留下TDD的一个模糊身影:为软件开发结下一张安全网。</p>
-
-<p>虽然未领悟精髓，但培训后体验和直觉告诉我TDD是一条通往我向往的软件成功的道路，尽管自己摸索前行比较坎坷。很幸运的是团队获得了随队敏捷教练的支持，结对让我系统地了解到了TDD的思想。</p>
-
-<p><strong>测试先行</strong>，其实讲的是需求边界，测试不是漫无目的而是精确计算成本的一项活动。测试从何而来，从需求来，需求推演出测试，也规划出产品边界，不能反映需求的测试是一种浪费，因此引申出开发需要讲求适当。开发是一项功利性的活动，永远都在追求盈利，而测试就一条红线，一旦跨过就意味着亏损。</p>
-
-<p><strong>小步迭代</strong>，“让子弹飞”中有句话很经典:步子要一步一步迈，一步迈大了，咔，容易扯着蛋。代码堆叠的后遗症是复杂，复杂到没人愿意触碰，且不停地咒骂这代码有多烂，这是步子迈太大的真实写照。TDD讲求的小步迭代是写完一个测试再去写完一个实现，每个实现都是通过测试的，如此累加小胜为大胜，最后所有代码的收尾也不过是让最后一个测试通过而已，就是这样简单。</p>
-
-<p><strong>重构</strong>，这是我最喜欢的部分，为啥？因为这里面所有的活动都会要求你去思考，且看上去都像是让你的代码向着大师级代码前进。漂亮的代码并不是堆砌各种技巧，而是在正确的时间，正确的地点做正确的事，重构很容易实现这个目标。重构是一件让人一旦开始就会欲罢不能的事，会让开发者在整个开发阶段都能够不停地去思考、实践再思考，直到无法再添加或删除一个字母。</p>
-
-<p><strong>持续集成</strong>，你终究是需要交付产品的，产品就是客户需要的价值，就如同厨师终究会端出客人点的大餐一样，没有哪个厨师是把所有食材罗列着呈现给你的，而是混合在一起，蒸煮炖烧，有些食材需要先处理，这样吃起来才软硬适中，而有些则是最后下锅，这样吃起来才鲜嫩多汁，厨师就是这样一步步将食材集成起来，每一步的处理都是可用都是有价值的，都是为后续进行的铺垫。软件开发也一样，持续集成就要保证每一次的完成都是有价值都可以为后续提供支撑。</p>
-
-<p>写到这里也许会有人问你如何知道TDD是真理，是康庄大道，它一定适合每个人吗？不，我并不知道，我所写的一切只是发生在我身上的一段经历。这段经历告诉我TDD迫使我去更多的思考，去切割我那些冗长且复杂又不切实际的胡思乱想，把它们碾碎成一个个小片段，提炼，过滤，不断累加，最终变成最接近交代价值的东西，而这最终的东西正是我一直在追求的那个成就感。如果想要知道TDD是不是适合自己，最好的办法就是去尝试，去亲身体验一下，无论好坏也许你能获得比我更多的体会。</p>
-
-<h2>总结</h2>
-
-<p>TDD并不是万能的，但是TDD也不是一无是处的，重要的是用方法论的人，引入某同事一句话：</p>
-
-<pre class='green'><code>站在教学的角度来讲，我还是很推崇TDD的，TDD是一个很好的思维框架，如果非要教人一个思维框架的话就得教TDD，
-不然人会瞎碰，不思考，不总结，不结果导向，靠灵感编程，凭直觉设计，撞大运修bug。最糟糕的是因为没有好的习惯
-会接二连三的发生灵异现象。同一道题，习惯不好的人做，总能做出无数种新问题来。而且问题套问题，给他解决要浪费
-我半天时间，如果他学会了TDD出的错只在最近一个引入的变化里，就好纠正多了。甚至他自己都能纠正。
-</code></pre>
-
-<p>博主很是赞同该同事的看法，并且作者认为：</p>
-
-<pre class='green'><code>tdd重要的不是测试代码本身，是解决问题的思维，也许可以泛化，哪怕没测试，如果能够做到快速验证，反馈，价值的
-稳定叠加，有足够信心，也未尝不可。也许你会说测试可以cover功能，那么如果只有这一点的话，我更喜欢BDD
-(behavior-driven development)，因为这具有用户最终的使用价值。如果你说快速定位bug，我们我更倾向于BDD
-(bug-driven development，自创的，即时每天出现测试bug，在加一个单元测试cover，覆盖)。这写都是TDD的结果导致的好处所在，而价值反馈思维才是实现TDD背后原理。
-TDD驱使我们以结果导向，使得我们简单设计(并不是无设计)，日常重构我们的代码库，注重交付价值流稳定叠加。
-</code></pre>
-
-<p>世上并没有放之四海皆准的法则，TDD好坏在于你的判断，方法论的主体在于使用的人，本文并不会给你一个完美的答案，这需要你自己的发掘。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-10T21:50:37+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/12/10/light-ioc-guice-framework/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/12/10/light-ioc-guice-framework/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于：</p>
-
-<ol>
-<li>速度快，号称比spring快100倍。</li>
-<li>无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。</li>
-<li>简单，快速，基本没有学习成本。</li>
-</ol>
-
-
-<p>Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目简单方案，如OSGI容器，spring更适合大型项目组织。</p>
-
-<h2>注入方式</h2>
-
-<p>在我们谈到IOC框架，首先我们的话题将是构造，属性以及函数注入方式，Guice的实现只需要在构造函数，字段，或者注入函数上标注@Inject，如：</p>
-
-<h4>构造注入</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">,</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>属性注入</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">,</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>函数(setter)注入</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setItemService</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPriceService</span><span class="o">(</span><span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Module依赖注册</h2>
-
-<p>Guice提供依赖配置类，需要继承至AbstractModule，实现configure方法。在configure方法中我们可以用Binder配置依赖。</p>
-
-<p>Binder利用链式形成一套独具语义的DSL，如：</p>
-
-<ul>
-<li>基本配置：binder.bind(serviceClass).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>无base类、接口配置：binder.bind(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>service实例配置：binder.bind(serviceClass).toInstance(servieInstance).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>多个实例按名注入：binder.bind(serviceClass).annotatedWith(Names.named(&ldquo;name&rdquo;)).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>运行时注入：利用@Provides标注注入方法，相当于spring的@Bean。</li>
-<li>@ImplementedBy：或者在实现接口之上标注@ImplementedBy指定其实现类。这种方式有点反OO设计，抽象不该知道其实现类。</li>
-</ul>
-
-
-<p>对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">Binder</span> <span class="n">binder</span> <span class="o">=</span> <span class="n">binder</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//TODO: bind named instance;</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
-</span><span class='line'>                                                   <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Provides</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
-</span><span class='line'>                                             <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;();</span>
-</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService1</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService2</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Guice实例</h2>
-
-<p>下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">greengerong</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * ***************************************</span>
-</span><span class='line'><span class="cm"> * *</span>
-</span><span class='line'><span class="cm"> * Auth: green gerong                     *</span>
-</span><span class='line'><span class="cm"> * Date: 2014                             *</span>
-</span><span class='line'><span class="cm"> * blog: http://greengerong.github.io/    *</span>
-</span><span class='line'><span class="cm"> * github: https://github.com/greengerong *</span>
-</span><span class='line'><span class="cm"> * *</span>
-</span><span class='line'><span class="cm"> * ****************************************</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppModule</span> <span class="kd">extends</span> <span class="n">AbstractModule</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">AppModule</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">AppModule</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">bundleContext</span> <span class="o">=</span> <span class="n">bundleContext</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;enter app module with: %s&quot;</span><span class="o">,</span> <span class="n">bundleContext</span><span class="o">));</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">Binder</span> <span class="n">binder</span> <span class="o">=</span> <span class="n">binder</span><span class="o">();</span>
-</span><span class='line'>        <span class="c1">//TODO: bind interface</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">ItemService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">ItemServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">SINGLETON</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">OrderService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">OrderServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">SINGLETON</span><span class="o">);</span>
-</span><span class='line'>        <span class="c1">//TODO: bind self class(without interface or base class)</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">PriceService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">Scopes</span><span class="o">.</span><span class="na">SINGLETON</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//TODO: bind instance not class.</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">RuntimeService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">toInstance</span><span class="o">(</span><span class="k">new</span> <span class="n">RuntimeService</span><span class="o">());</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//TODO: bind named instance;</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Provides</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
-</span><span class='line'>                                                 <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService1</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService2</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Guice的使用</h2>
-
-<p>对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">(</span><span class="k">new</span> <span class="n">AppModule</span><span class="o">(</span><span class="n">bundleContext</span><span class="o">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里可以传入多个module，我们可以利用module分离领域依赖。</p>
-
-<p>Guice api方法：</p>
-
-<p> &#8220;`java</p>
-
-<pre class='green'><code>public static Injector createInjector(Module... modules) 
-
-public static Injector createInjector(Iterable&lt;? extends Module&gt; modules) 
-
-public static Injector createInjector(Stage stage, Module... modules)
-
-public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&gt; modules) 
-</code></pre>
-
-<p>&#8220;`</p>
-
-<p>Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。</p>
-
-<h2>后续</h2>
-
-<p>本文Guice更全的demo代码请参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
-
-<p>Guice还有很多的扩展如AOP，同一个服务多个实例注入set，map，OSGI，UOW等扩展，请参见<a href="https://github.com/google/guice/wiki">Guice wiki</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1872,6 +2915,14 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
@@ -1893,14 +2944,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
     
       <li class="post">
         <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/18/guava-optionalpian/">Guava-Optional可空类型</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/08/guava-joiner-and-splitter/">Guava之Joiner 和 Splitter</a>
       </li>
     
   </ul>
