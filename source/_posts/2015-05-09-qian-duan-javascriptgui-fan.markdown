@@ -1140,7 +1140,7 @@ $("#myLink").on("click", myEventHandler);
 
 <ul>
 <li>前端项目中推荐引入<a href="http://jshint.com/">jshint</a>插件来规范项目编码规范。以及一套完善的IDE配置。</li>
-<li>注意：jshint需要引入nodejs 工具grunt或gulp插件，建议院级nodejs npm私服。</li>
+<li>注意：jshint需要引入nodejs 工具grunt或gulp插件，建议企业级nodejs npm私服。</li>
 </ul>
 
 
@@ -1148,7 +1148,7 @@ $("#myLink").on("click", myEventHandler);
 <h2 id="前端工具"><a>前端工具</a></h2>
 
 <ul>
-<li>前端第三方JavaScript包管理工具bower(<code>bower install jQuery</code>)，bower可以实现第三方库的依赖解析、下载、升级管理等。建议建立院级bower私服。</li>
-<li>前端构建工具，可以采用grunt或者gulp工具，可以实现html、css、js压缩、验证、测试，文件合并、watch和liveload等所有前端任务。建议院级nodejs npm私服。</li>
+<li>前端第三方JavaScript包管理工具bower(<code>bower install jQuery</code>)，bower可以实现第三方库的依赖解析、下载、升级管理等。建议建立企业级bower私服。</li>
+<li>前端构建工具，可以采用grunt或者gulp工具，可以实现html、css、js压缩、验证、测试，文件合并、watch和liveload等所有前端任务。建议企业级nodejs npm私服。</li>
 <li>前端开发IDE： WebStorm( Idea )、Sublime为最佳 。项目组统一IDE。IDE统一配置很重要。</li>
 </ul></div>
