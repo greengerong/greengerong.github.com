@@ -1,4 +1,11 @@
---- layout: post title: "前端HTML-CSS规范" date: 2015-05-10 08:15:28 +0800 comments: true categories: ---
+--- 
+layout: post 
+title: "前端HTML-CSS规范" 
+date: 2015-05-10 08:15:28 +0800 
+comments: true c
+ategories: 
+---
+
 <div class="heading" id="toc">
     <h2>目录</h2>
 </div>
@@ -582,3 +589,4 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 </script>
 <script src=" http://hm.baidu.com/h.js?a25e97c8b6d0ae5501b3b46d61ed807f" type="text/javascript"></script>
 <script src="./编码规范_files/h.js" type="text/javascript"></script>
+
