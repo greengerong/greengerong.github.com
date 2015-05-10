@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-05-10T08:19:00+08:00</updated>
+  <updated>2015-05-10T08:21:09+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -648,10 +648,7 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
     <link href="http://greengerong.github.io/blog/2015/05/09/qian-duan-javascriptgui-fan/"/>
     <updated>2015-05-09T23:18:20+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/05/09/qian-duan-javascriptgui-fan</id>
-    <content type="html"><![CDATA[<div id="MathJax_Message" style="display: none;"></div>
-
-
-<div class="container"><h1 id="javascript规范">JavaScript规范</h1>
+    <content type="html"><![CDATA[<div id="MathJax_Message" style="display: none;"></div><div class="container"><h1 id="javascript规范">JavaScript规范</h1>
 
 
 
@@ -1797,7 +1794,6 @@ $("#myLink").on("click", myEventHandler);
 <li>前端构建工具，可以采用grunt或者gulp工具，可以实现html、css、js压缩、验证、测试，文件合并、watch和liveload等所有前端任务。建议企业级nodejs npm私服。</li>
 <li>前端开发IDE： WebStorm( Idea )、Sublime为最佳 。项目组统一IDE。IDE统一配置很重要。</li>
 </ul></div>
-
 ]]></content>
   </entry>
   
