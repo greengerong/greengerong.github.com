@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo &hellip;">
+  <meta name="description" content="&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。 &nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,123 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/">语言设计中的鸭子类型风格</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-30T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/06/30/yu-yan-she-ji-zhong-di-ya-zi-lei-xing-feng-ge/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导，并不在乎类型的真正实体，只要他的行为有鸭子的特性，那么我们就可以把它当做一只鸭子来看到。在动态语言设计中，可以解释为无论一个对象是什么类型的，只要它具有某类型的行为（方法），则它就是这一类型的实例，而不在于它是否显示的实现或者继承。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 鸭子类型在动态语言中被广为奉行。某类接口需要一个log接口，换句话说这借口中需要调用传入对象的log，方法，在动态语言中无论你传入的是什么对象，只有具有log方法则就是合法的。而java，c#这类静态强类型语言（当前首先声明c#已经不是纯的静态强类型语言，它具有dynamic，表达式，当然这里所说的c#是去掉这类特性，或者说C#2.0吧）我们传入的对象是必须显示实现该接口的类实例，他们直接必须具有显示的继承链。</p>
+
+<p>&nbsp;&nbsp; &nbsp;&nbsp;以上所说的是两类语言设计中的对抽象的制约的区别。</p>
+
+<p>&nbsp;&nbsp;&nbsp; Javascript中鸭子型的实现：</p>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">function</span><span style="color: #000000;"> log(logger){
+
+       logger.log(&ldquo;hello world&rdquo;)；
+
+}
+
+log({log:</span><span style="color: #0000ff;">function</span><span style="color: #000000;">(msg){
+
+       console.log(msg);
+
+}});</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>代码量很少，这里只是一种简单的约定，而不是强制，使得我们的自控感增强，所以我喜欢javascript这门语言给我的自由度。但是相对于java这类静态强类型语言而言是将语法的检查推向了运行时期，延迟了发现问题的时间，不助于我们的调试。在强类型系统的语言中由于具有完备的类型信息，我们可以提高良好的IDE于开发时限制，有助于我们的大规模开发。所以这里没有对错，只是看你的选择和喜爱。如果你是一个优秀的程序员，动态语言这种检查的推迟对你并无什么问题，因为你能够有条理次序的节奏型开发。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 关于鸭子型风格这里还得必须提到go语言，也是go语言带来我对这种风格的思考。</p>
+
+<p>我们还可以显示的定义在消费者方法中，形如&nbsp;</p>
+
+<div class="cnblogs_code">
+<pre class='green'>func SomeFunction(logger <span style="color: #0000ff;">interface</span>{Log(<span style="color: #0000ff;">string</span><span style="color: #000000;">)}){
+
+    logger.Log(&ldquo;hello world, I am go lang&rdquo;).
+
+}</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>实现提供者：</p>
+
+<div class="cnblogs_code">
+<pre class='green'>type S <span style="color: #0000ff;">struct</span><span style="color: #000000;"> { }
+
+func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="color: #0000ff;">string</span><span style="color: #000000;">) {
+
+    console.log(msg)
+
+}</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在类型S就是一个实现了Logger的实例。</p>
+
+<p>&nbsp;</p>
+
+<p>Go还有一种叫做空接口，能够容纳万物的东西;</p>
+
+<div class="cnblogs_code">
+<pre class='green'>func log(any <span style="color: #0000ff;">interface</span>{}) <span style="color: #0000ff;">int</span><span style="color: #000000;"> {
+
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> any.(I).Get()
+
+ }</span></pre>
+</div>
+
+
+<p>&nbsp; &nbsp;Go语言不同于其他鸭子类型语言的是它实现了在编译时期检查，同时也不失这种自由度。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 另外TypeScript想必你也知道 ，这与google的dart一样致力于将javascript带入大规模开发的语言，不同的是TypeScript是javascript的超集，并不是重造一门新语言。他为javascript引入的接口，类型，泛型等较完备的类型系统，是的能够有更好的IDE支持，从某种程度上来说，这是对鸭子类型或者javascript编译器的检查推迟的弥补。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/06/30/3163358.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1217,67 +1334,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/">Node.js Connect ECONNREFUSED错误</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-31T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>   最近在准备Angularjs +node.js demo的时候在我的mac开发中 遇见此错误，如下：</p>
-
-<pre class='green'><code>events.js:71
-        throw arguments[1]; // Unhandled 'error' event
-                   ^
-Error: connect ECONNREFUSED
-    at errnoException (net.js:770:11)
- at Object.afterConnect [as oncomplete] (net.js:761:19)
-</code></pre>
-
-<p>最后在stackoverflow找到解决方案，这主要由于上一次node.js server进程仍然还在运行没关闭掉，所以我们需要杀掉此进程，在mac上操作为：</p>
-
-<pre class='green'><code>ps aux | grep node
-
-twer    7668  4.3  1.0  42060 10708 pts/1    Sl+  20:36   0:00 
-node server 
-twer    7749  0.0  0.0   4384   832 pts/8    S+   20:37   0:00 
-grep --color=auto node
-</code></pre>
-
-<p>从输出可以看见进程PID7668在使用，所以我们必须杀掉这顽固分子，运行kill -9 7668. Ok，一键搞定，可以重新开启server了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991588.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1311,6 +1367,10 @@ grep --color=auto node
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
       </li>
     
@@ -1336,10 +1396,6 @@ grep --color=auto node
     
       <li class="post">
         <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
       </li>
     
   </ul>

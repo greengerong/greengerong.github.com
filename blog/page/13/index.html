@@ -9,7 +9,9 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式; &nbsp;&nbsp; MEF &hellip;">
+  <meta name="description" content="在我们的调试输出到VS输出窗口的信息，有时候我们想要鼠标点击就定位该该文件，改行，甚至该列。在强大的VS工具中已经给我们提供了这个功能，我们只需要把输出到输出窗 口的字符串就是一定的格式化就可以了。c#在VS输出窗口格式为：
+文件名称（行号，列号）:消息信息。
+比如我 test.cs（100，78 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +67,123 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/11/12/VS-shu-chu-chuang-kou-output-view-di-xiao-ji-qiao-wen-jian-hang-hao-zi-fu-ding-wei/">VS输出窗口（output View）的小技巧&#8211;文件行号字符定位</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/11/12/VS-shu-chu-chuang-kou-output-view-di-xiao-ji-qiao-wen-jian-hang-hao-zi-fu-ding-wei/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/12/VS-shu-chu-chuang-kou-output-view-di-xiao-ji-qiao-wen-jian-hang-hao-zi-fu-ding-wei/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在我们的调试输出到VS输出窗口的信息，有时候我们想要鼠标点击就定位该该文件，改行，甚至该列。在强大的VS工具中已经给我们提供了这个功能，我们只需要把输出到输出窗</p>
+
+<p>口的字符串就是一定的格式化就可以了。c#在VS输出窗口格式为：
+文件名称（行号，列号）:消息信息。
+比如我 test.cs（100，78）:消息信息。就是对应我们的test.cs文件的100行78个字符。
+在这里我写了一个简单异常输出信息的扩展类。
+代码具体如下：&nbsp;&nbsp;&nbsp;</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;public class OutPutExceptionEx
+        {
+            public static void WriteLine(string message, Exception ex)
+            {
+                System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(ex, true);
+                System.Diagnostics.StackFrame frm = st.GetFrame(0);
+                if (frm != null)
+                {
+                    System.Diagnostics.Debug.WriteLine(string.Format("{0}({1},{2}):{3})", frm.GetFileName(), frm.GetFileLineNumber(), frm.GetFileColumnNumber(), 
+
+    message));
+                }
+
+            }
+
+            public static void WriteLine(Exception ex)
+            {
+                WriteLine(ex.Message, ex);
+            }
+
+            public static void Write(string message, Exception ex)
+            {
+                System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(ex, true);
+                System.Diagnostics.StackFrame frm = st.GetFrame(0);
+                if (frm != null)
+                {
+                    System.Diagnostics.Debug.Write(string.Format("{0}({1},{2}):{3})", frm.GetFileName(), frm.GetFileLineNumber(), frm.GetFileColumnNumber(), 
+
+    message));
+                }
+
+            }
+
+            public static void Write(Exception ex)
+            {
+                Write(ex.Message,ex);
+            }
+        }
+
+    //测试
+        class Program
+        {
+            static void Main(string[] args)
+            {
+
+                try
+                {
+                    throw new Exception("这个发生了一个错误！");
+                }
+                catch (Exception ex)
+                {
+                    OutPutExceptionEx.Write(ex);
+                }
+
+                Console.WriteLine("ok");
+                Console.Read();           
+            }
+    }
+</code></pre>
+
+<p>图片效果：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201011121051.jpg" alt="" /></p>
+
+<p>2：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/2010111210512.jpg" alt="" /></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/12/1875473.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1529,68 +1648,6 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/07/14/qu-diao-VS-wan-gu-Add-in/">去掉VS顽固Add-in</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-07-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/07/14/qu-diao-VS-wan-gu-Add-in/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/07/14/qu-diao-VS-wan-gu-Add-in/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;卸掉VS Add-in的方法可以参考：</p>
-
-<p><a href="http://msdn.microsoft.com/en-us/library/ms228765.aspx">Deactivate and Remove an Add-in</a>
-<a href="http://www.mztools.com/articles/2006/MZ2006018.aspx">How to get rid of a Visual Studio add-in</a></p>
-
-<p>其中有两个比较简单易行的方法。</p>
-
-<p>1）使用devenv命令</p>
-
-<p>devenv.exe /resetaddin &lt;Namespace.Class&gt;</p>
-
-<p>Namespace.Class即Add-In的实现类的完全限定名称，比如那个默认的Connect。对于我们开发的Add-In来说，可以查看.Addin文件中的&lt;FullClassName&gt;&lt;/FullClassName&gt;节点。</p>
-
-<p>2）使用工具栏的自定义功能</p>
-
-<p>我们可以把命令添加到工具栏，这也包括自定义的Add-In命令，方法是Tools-&gt;Customize&#8230;：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/anderslly/WindowsLiveWriter/VSAddIn_148C5/customize-commands_2.jpg"><img src="http://images.cnblogs.com/cnblogs_com/anderslly/WindowsLiveWriter/VSAddIn_148C5/customize-commands_thumb.jpg" title="customize-commands" alt="customize-commands" /></a></p>
-
-<p>将需要移除的命令拖到工具栏上，关闭对话框。如果Add-In已经卸载了，那么它的功能自然是不可用的了，此时点击工具栏的相应按钮，VS就会报错，此时就可以选择将其移除了。</p>
-
-<p>转自：<a href="http://www.cnblogs.com/anderslly/archive/2009/05/28/remove-vs-addin-menu.html">一个程序员的自省</a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/14/1777357.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/14/">&larr; Older</a>
@@ -1624,6 +1681,10 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
       </li>
     
@@ -1649,10 +1710,6 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
     
       <li class="post">
         <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/25/ngnice-showcase-he-guide/">Ngnice-国内ng学习网站</a>
       </li>
     
   </ul>
