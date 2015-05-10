@@ -4,7 +4,7 @@
   <title><![CDATA[Category: TypeScript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/typescript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-05-10T08:41:36+08:00</updated>
+  <updated>2015-05-10T08:41:54+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -169,7 +169,7 @@ strings.forEach(s =&gt; {
 
 <p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
 
-<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（{{ tsc &mdash;out sample.js Test.ts }}）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：{{ tsc &mdash;out sample.js Validation.ts LettersOnlyValidator.ts ZipCodeValidator.ts Test.ts }}。</p>
+<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
 
 <p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
 

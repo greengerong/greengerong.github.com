@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-05-10T08:41:36+08:00</updated>
+  <updated>2015-05-10T08:41:54+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -171,7 +171,7 @@
 
 <pre><code>    &lt;div ng-repeat="item in demo.fields"&gt;
       &lt;div class="control-group"&gt;
-        &lt;label class="control-label"&gt;{{item.label }} : &lt;/label&gt;
+        &lt;label class="control-label"&gt; : &lt;/label&gt;
         &lt;div class="controls"&gt;
           &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
         &lt;/div&gt;
@@ -228,7 +228,7 @@
 
 <p>html:</p>
 
-<pre><code>  &lt;pre&gt;{{ a | json }}&lt;/pre&gt;
+<pre><code>  &lt;pre&gt;&lt;/pre&gt;
 
   &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
 </code></pre>
@@ -256,7 +256,7 @@
 
 <p>html:</p>
 
-<pre><code>&lt;pre&gt;{{ b | json }}&lt;/pre&gt;
+<pre><code>&lt;pre&gt;&lt;/pre&gt;
 
 &lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
 </code></pre>
