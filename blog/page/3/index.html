@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="在TDD开发中，也许我们会遇见对一些重要的无返回值的行为测试，比如在用户的积分DB中增加用户的积分，这个行为对于我们的业务具有重要的价值，所以我们也希望能测试覆盖这部分业务价值。这个时候我们就得使用mockito带来的verify断言，但verify的参数断言主要有eq，或者any常见的方式。 &hellip;">
+  <meta name="description" content="今天记录一个在安装vsftpd的时候遇见错误： 500 OOPS: vsftpd: refusing to run with writable root inside chroot () 在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,59 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T19:38:05+08:00" pubdate data-updated="true">Nov 12<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/blog_img/vsftpd.jpg" alt="vsftpd" /></p>
+
+<p>今天记录一个在安装vsftpd的时候遇见错误：</p>
+
+<pre class='green'><code>500 OOPS: vsftpd: refusing to run with writable root inside chroot ()
+</code></pre>
+
+<p>在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制，而这在最近的更新里是不被允许的。要修复这个错误，可以用命令chmod a-w /home/$user去除用户根目录的写权限,或者在vsftpd。conf配置允许writeable。</p>
+
+<p>设置允许writeable为：</p>
+
+<pre class='green'><code>allow_writeable_chroot=YES
+</code></pre>
+
+<p>最简单的方式就是允许writeable。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1029,51 +1082,6 @@ ORM(Object Relation Mapping)框架辅助。</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-18T05:01:09+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Docker是一个开源的Linux容器，其被业界所接受，很快成为了一个产业标准。Docker可以减少应用程序启动
-时候的大量资源的筹备。docker很快的成为了新兴的应用程序容器标准。现在有很多项目正围绕着它处于开发中。
-下面将是Mindmap出我所知道的一些项目。你可以在这里访问<a href="http://www.mindmeister.com/389671722/docker-ecosystem">Mindmap</a>.</p>
-
-<p><a href="http://www.mindmeister.com/389671722/docker-ecosystem"><img src="http://i0.wp.com/allthingsplatforms.com/wp-content/uploads/2014/03/Docker-Ecosystem-v0.1.png?resize=717%2C432" alt="docker mindmap" /></a></p>
-
-<p>英语原文链接<a href="http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/">http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1107,6 +1115,10 @@ ORM(Object Relation Mapping)框架辅助。</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/11/jshan-shu-ke-li-hua/">Js函数柯里化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
       </li>
     
@@ -1132,10 +1144,6 @@ ORM(Object Relation Mapping)框架辅助。</p>
     
       <li class="post">
         <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
       </li>
     
   </ul>

@@ -9,8 +9,9 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="在上篇Intellij修改archetype Plugin配置
-中我们已经简单介绍了关于archetype的作用。 简单来说maven archetype插件就是创建项目的脚手架,通过命令行或者IDE集成简化项目创建的工作。例如： org.apache.maven.archetypes:maven &hellip;">
+  <meta name="description" content="Docker是一个开源的Linux容器，其被业界所接受，很快成为了一个产业标准。Docker可以减少应用程序启动
+时候的大量资源的筹备。docker很快的成为了新兴的应用程序容器标准。现在有很多项目正围绕着它处于开发中。
+下面将是Mindmap出我所知道的一些项目。你可以在这里访问Mindmap &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +67,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/18/docker-ecosystem-mapped-out/">[翻译]docker生态圈Mindmap</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T05:01:09+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/18/docker-ecosystem-mapped-out/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Docker是一个开源的Linux容器，其被业界所接受，很快成为了一个产业标准。Docker可以减少应用程序启动
+时候的大量资源的筹备。docker很快的成为了新兴的应用程序容器标准。现在有很多项目正围绕着它处于开发中。
+下面将是Mindmap出我所知道的一些项目。你可以在这里访问<a href="http://www.mindmeister.com/389671722/docker-ecosystem">Mindmap</a>.</p>
+
+<p><a href="http://www.mindmeister.com/389671722/docker-ecosystem"><img src="http://i0.wp.com/allthingsplatforms.com/wp-content/uploads/2014/03/Docker-Ecosystem-v0.1.png?resize=717%2C432" alt="docker mindmap" /></a></p>
+
+<p>英语原文链接<a href="http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/">http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -953,132 +999,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-11T22:27:29+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
-
-<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
-
-<p>如ngClick在官方文档是这么描述的：</p>
-
-<pre class='green'><code>Expression to evaluate upon click. (Event object is available as $event)
-</code></pre>
-
-<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
-
-<pre class='green'><code>    var ngEventDirectives = {};
-    forEach(
-      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
-      function(name) {
-        var directiveName = directiveNormalize('ng-' + name);
-        ngEventDirectives[directiveName] = ['$parse', function($parse) {
-          return {
-            compile: function($element, attr) {
-              var fn = $parse(attr[directiveName]);
-              return function(scope, element, attr) {
-                element.on(lowercase(name), function(event) {
-                  scope.$apply(function() {
-                    fn(scope, {$event:event});
-                  });
-                });
-              };
-            }
-          };
-        }];
-      }
-    );
-</code></pre>
-
-<p>在上边代码我们可以得到两个信息：</p>
-
-<ol>
-<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
-<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
-</ol>
-
-
-<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
-
-<p>html 代码</p>
-
-<pre class='green'><code>    &lt;!DOCTYPE html&gt;
-    &lt;html id="ng-app" ng-app="app"&gt;
-    &lt;head&gt;
-    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
-      &lt;meta charset="utf-8"&gt;
-      &lt;title&gt;JS Bin&lt;/title&gt;
-    &lt;/head&gt;
-    &lt;body ng-controller="demo as d"&gt;
-       &lt;div ng-click="d.click('parent',$event)"&gt;
-         given some text for click
-         &lt;hr&gt;
-         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
-         &lt;hr&gt;
-         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
-
-       &lt;/div&gt;
-    &lt;/body&gt;
-    &lt;/html&gt;             
-</code></pre>
-
-<p>js 代码</p>
-
-<pre class='green'><code>angular.module("app",[])
-.controller("demo",[function(){
-  var vm = this;
-
-  vm.click = function(name,$event){
-    console.log(name +" -----called");
-    if(vm.stopPropagation){
-      $event.stopPropagation();
-    }
-  };
-
-  return vm;
-}]);
-</code></pre>
-
-<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
-
-<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
-
-<p>希望大家已经明白了，不要再问这类问题了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1112,6 +1032,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/11/jshan-shu-ke-li-hua/">Js函数柯里化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
       </li>
     
@@ -1137,10 +1061,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a>
       </li>
     
   </ul>
