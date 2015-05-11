@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-05-11T20:11:50+08:00</updated>
+  <updated>2015-05-11T20:14:05+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Js函数柯里化]]></title>
+    <title type="html"><![CDATA[JavaScript函数柯里化]]></title>
     <link href="http://greengerong.github.io/blog/2015/05/11/jshan-shu-ke-li-hua/"/>
     <updated>2015-05-11T19:37:18+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/05/11/jshan-shu-ke-li-hua</id>
@@ -24,6 +24,8 @@
 
 <p>JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使用方式：</p>
 
+<p>```javascript</p>
+
 <pre><code>var names = _.chain(users)
   .map(function(user){
     return user.user;
@@ -32,6 +34,8 @@
   .value();
 console.log(names);
 </code></pre>
+
+<p>```</p>
 
 <p>关于lodash更多内容请参考<a href="http://www.cnblogs.com/whitewolf/p/4417873.html">JavaScript工具库之Lodash</a>.</p>
 
@@ -48,6 +52,8 @@ console.log(names);
 <p>下边的例子，我们将把柯里化方式泛化为接受任意个参数，直到声明的方法参数个数饱和才执行，所以根据参数个数可以有多种柯里化函数产生。</p>
 
 <p>代码如下：</p>
+
+<p>```javascript</p>
 
 <pre><code>(function(global) {
     var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
@@ -108,6 +114,8 @@ function sayHello() {
 }
 console.log(curryFunc(sayHello));
 </code></pre>
+
+<p>```</p>
 
 <p>首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足支持，也希望大家指出来。</p>
 ]]></content>
