@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "js函数柯里化"
+title: "JavaScript函数柯里化"
 date: 2015-05-11 19:37:18 +0800
 comments: true
 categories: [JavaScript]
@@ -11,6 +11,7 @@ JavaScript是以函数为一等公民的函数式语言。函数在JavaScript中
 
 JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使用方式：
 
+```javascript
 	var names = _.chain(users)
 	  .map(function(user){
 	    return user.user;
@@ -18,6 +19,7 @@ JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使
 	  .join(" , ")
 	  .value();
 	console.log(names);
+```
 
 关于lodash更多内容请参考[JavaScript工具库之Lodash](http://www.cnblogs.com/whitewolf/p/4417873.html).
 
@@ -34,6 +36,7 @@ JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使
 
 代码如下：
 
+```javascript
 	(function(global) {
 	    var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
 	        FN_ARG_SPLIT = /,/,
@@ -92,7 +95,7 @@ JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使
 	    return "hello";
 	}
 	console.log(curryFunc(sayHello));
-
+```
 
 首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足支持，也希望大家指出来。
 
