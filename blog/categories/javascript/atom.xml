@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-05-11T20:14:05+08:00</updated>
+  <updated>2015-05-12T12:24:48+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -117,7 +117,7 @@ console.log(curryFunc(sayHello));
 
 <p>```</p>
 
-<p>首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足支持，也希望大家指出来。</p>
+<p>首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足之处，也希望大家指出来。</p>
 ]]></content>
   </entry>
   
