@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-06-29T06:57:17+08:00</updated>
+  <updated>2015-06-29T06:59:39+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -70,8 +70,9 @@
 }]);
 </code></pre>
 
-<p> 在代码中我们已经为ngModel变量amount赋值了整数“0”，可是界面显示效果仍然显示&#8221;1 &ndash; 100&#8221;的placeholder(如下图)。
-<img src="http://greengerong.github.io/images/blog_img/ngModel-vadation-question.png" alt="ng-model绑定值不改变:验证" /></p>
+<p> 在代码中我们已经为ngModel变量amount赋值了整数“0”，可是界面显示效果仍然显示&#8221;1 &ndash; 100&#8221;的placeholder(如下图)。</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/ngModel-vadation-question.png" alt="ng-model绑定值不改变:验证" /></p>
 
 <p>下面是关于angular number组件ngModel转换函数代码：</p>
 
@@ -215,8 +216,9 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     .controller("ChildCtrl", angular.noop);
 </code></pre>
 
-<p>jsbin demo: <a href="http://jsbin.com/metufi/1/edit?html,js,output">http://jsbin.com/metufi/1/edit?html,js,output</a>
-这里在ngModel属性值多引入了“vm”变量，这个时候，不管我们尝试修改greet值，整个页面都会得到相应的同步。关于这个问题，作者更推荐使用angular 1.2后的controller as vm的方式解决，更多的信息请阅读《使用controller as vm方式.md》一节。</p>
+<p>jsbin demo: <a href="http://jsbin.com/metufi/1/edit?html,js,output">http://jsbin.com/metufi/1/edit?html,js,output</a></p>
+
+<p>这里在ngModel属性值多引入了“vm”变量，这个时候，不管我们尝试修改greet值，整个页面都会得到相应的同步。关于这个问题，作者更推荐使用angular 1.2后的controller as vm的方式解决，更多的信息请阅读《使用controller as vm方式.md》一节。</p>
 ]]></content>
   </entry>
   
