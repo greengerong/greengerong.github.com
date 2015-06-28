@@ -52,6 +52,7 @@ javascript代码：
 	}]);
      
  在代码中我们已经为ngModel变量amount赋值了整数“0”，可是界面显示效果仍然显示"1 - 100"的placeholder(如下图)。
+ 
 ![ng-model绑定值不改变:验证](/images/blog_img/ngModel-vadation-question.png)
 
 下面是关于angular number组件ngModel转换函数代码：
@@ -193,4 +194,5 @@ JavaScript:
 	    .controller("ChildCtrl", angular.noop);
 
 jsbin demo: http://jsbin.com/metufi/1/edit?html,js,output
+
 这里在ngModel属性值多引入了“vm”变量，这个时候，不管我们尝试修改greet值，整个页面都会得到相应的同步。关于这个问题，作者更推荐使用angular 1.2后的controller as vm的方式解决，更多的信息请阅读《使用controller as vm方式.md》一节。
