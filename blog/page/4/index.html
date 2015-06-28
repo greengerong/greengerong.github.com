@@ -9,9 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="在软件开发设计中我们经常会面对业务分析，提取领域问题，从而实现软件架构设计。关于
-软件架构设计Martin Fowler在2004出版的《企业应用架构模式》中
-概括了四种方式的架构模式。它们分别为事务性脚本，表驱动模式，活动记录模式，领域驱动设计。前两者事务性脚本，表驱动模式作为 &hellip;">
+  <meta name="description" content="今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。 这是angularjs源码中单元测试的使用browserTrigger的实例： it(' &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +65,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-24T20:42:33+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/06/24/angularjs-browsertrigger/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/06/24/angularjs-browsertrigger/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。</p>
+
+<p>这是angularjs源码中单元测试的使用browserTrigger的实例：</p>
+
+<pre class='green'><code>it('should set the model to empty string when empty option is selected', function() {
+    scope.robot = 'x';
+    compile('&lt;select ng-model="robot"&gt;' +
+              '&lt;option value=""&gt;--select--&lt;/option&gt;' +
+              '&lt;option value="x"&gt;robot x&lt;/option&gt;' +
+              '&lt;option value="y"&gt;robot y&lt;/option&gt;' +
+            '&lt;/select&gt;');
+    expect(element).toEqualSelect('', ['x'], 'y');
+
+    browserTrigger(element.find('option').eq(0));
+    expect(element).toEqualSelect([''], 'x', 'y');
+    expect(scope.robot).toBe('');
+  });
+</code></pre>
+
+<p>在这段代码中给browserTrigger传入你希望选择的select option，则它会帮助你tigger change，选中当前option，更触发更新ng select的viewmodel。</p>
+
+<p>在browserTrigger中还为我们做了很多其他输入框或者html控件的触发接口，同时也加入了浏览器的兼容性。使得我们的测试更加方便不用考虑浏览器兼容性或者不同的html控件trigger不同的事件去更新scope的值。</p>
+
+<p>具体更多信息请参考<a href="https://github.com/angular/angular.js/blob/accd35b7471bbf58cd5b569a004824fa60fa640a/test/ng/directive/selectSpec.js">ng的官方测试</a>和<a href="https://raw.githubusercontent.com/angular/angular.js/dafb8a3cd12e7c3247838f536c25eb796331658d/src/ngScenario/browserTrigger.js">browserTrigger源码</a>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -945,62 +1005,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-16T02:02:17+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/16/angularjs-chinese-guide-public/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
-
-<p>从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
-
-<p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
-
-<p>在经过一段时间的协调和大家付出工作之外的业余时间，如今Angularjs的中文本学习指南终于上线出炉</p>
-
-<p>地址为：</p>
-
-<pre class='green'><code>[http://www.ngnice.com/](http://www.ngnice.com/)
-</code></pre>
-
-<p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
-
-<p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
-
-<p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1034,6 +1038,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/">ngModel 值不更新/显示</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/06/16/angularzhong-de-mvvmmo-shi/">angular中的MVVM模式</a>
       </li>
     
@@ -1059,10 +1067,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2015/03/22/babel-kai-shi-es6ti-yan/">(转)Babel-现在开始使用 ES6</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a>
       </li>
     
   </ul>

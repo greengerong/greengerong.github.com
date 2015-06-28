@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 作为一个好的Restfull Api不仅在于service url的语义,可读性,幂等,正交，作为http状态码也很重要，一个好的Http Status Code给使用者一个很好的响应，比如200表示正常成功，201表示创建成功， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,118 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">利用Travis CI 让你的github项目持续构建(Node.js为例)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/04/14/li-yong-Travis-CI-rang-ni-di-github-xiang-mu-chi-xu-gou-jian-Node-js-wei-li/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Travis CI 是目前新兴的开源持续集成构建项目，它与jenkins，GO的很明显的特别在于采用yaml格式，简洁清新独树一帜。目前大多数的github项目都已经移入到Travis CI的构建队列中，据说Travis CI每天运行超过4000次完整构建。对于做开源项目或者github的使用者，如果你的项目还没有加入Travis CI构建队列，那么我真的想对你说out了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面是本人的构建历史：</p>
+
+<p>&nbsp;<img src="http://images.cnitblog.com/blog/63184/201304/14093241-01c09362fb72431dabed0cb6635a0fdb.png" alt="" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; 搭建Travis CI build，需要你有个github账号和github项目：</p>
+
+<p>1：用github账号登陆<a href="http://travis-ci.org">Travis CI</a>.</p>
+
+<h5>2 :在右上角你的账户名点击进入 account，在Repositories tab页点击Sync now同步你的github项目，</h5>
+
+<p>3：选中项目将默认的off改变为on开启项目的持续集成。</p>
+
+<p>4：在你项目的根目录建立一个.travis.yml文件，内容为：</p>
+
+<p>language: node_js</p>
+
+<p>node_js:&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.4&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; 0.6</p>
+
+<p>5: 在打开你的node.js的package.json文件，确保加入script/test节点：</p>
+
+<p>&ldquo;scripts&rdquo;: {</p>
+
+<p>&nbsp; &nbsp; &ldquo;test&rdquo;: &ldquo;XXXX&rdquo;</p>
+
+<p>&nbsp; },</p>
+
+<p>这里你可惜选择mak或者jasmine-node等node.js测试框架的测试命令。并且可以把依赖加入package的depends</p>
+
+<p>6：在你项目中运行npm test，确保正常工作。</p>
+
+<p>7： check in你的code到github，代开tracivs
+ci界面等待其同步并运行你的build构建。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; 如果你需要将你的build构建状态放在一个显眼的位置或者项目readme，你可以在首页My Repositories中找到项目并设置中复制状态图片code，形如：</p>
+
+<p><code>markdown
+  [![Build Status]([https://travis-ci.org/greengerong/
+  qing.png?branch=master)](https://travis-ci.org/greengerong/
+  qing](https://travis-ci.org/greengerong/qing.png?
+  branch=master)%5D(https://travis-ci.org/greengerong/qing))
+ </code></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;
+Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<a href="http://about.travis-ci.org/docs/">Travis Docs</a>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在上面提到的travis.yml文件中我们还可以加入build前后执行脚本，形如：</p>
+
+<p>before_script:&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_1&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; before_command_2</p>
+
+<p>after_script:&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_1&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &ndash; after_command_2</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp; &nbsp;将你的开源项目加入Travis CI队列吧，很容易让你的项目加入持续集成，持续构建队列。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/14/3019838.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1527,110 +1639,6 @@ app.controller("report", report);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/">Javascript覆盖率(jstd)报表解析Maven插件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-16T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/12/16/Javascript-fu-gai-shuai-jstd-bao-biao-jie-xi-Maven-cha-jian/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 最近项目中希望加入javascript覆盖率统计，由于项目的单元测试用的google的jstd（<a href="http://code.google.com/p/js-test-driver/wiki/CodeCoverage">javascript test driver</a>），jstd生成&lt;config filename&gt;-coverage.dat LCOV 格式，这是一种linux上格式，在window上网上搜寻了很久没找到可用的maven组件。最后狠下心来自己写一个。代码已经放在<a href="https://github.com/greengerong/JsTestDriverCoverageReport/tree/zip-resource/sample/green.jstdcoveragereport.test/build">github</a>上，并且maven插件也成功<a href="https://oss.sonatype.org/index.html#nexus-search;quick~com.github.greengerong">release到官网</a>。</p>
-
-<p>coverage 文件格式：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 项目主要采用java将coverage文件解析成java object在利用json序列化输出到固定位置的javascript文件。在利用angularjs显示文件覆盖率报表，利用bootstrap样式展示。</p>
-
-<p>如果你对代码感兴趣，可以参考<a href="https://github.com/greengerong/JsTestDriverCoverageReport/tree/zip-resource/sample/green.jstdcoveragereport.test/build">github</a>源码，实例也在项目sample下。</p>
-
-<p>使用基本配置：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:html;gutter:false;">            &lt;plugin&gt;
-
-                &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
-
-                &lt;artifactId&gt;JSCoverageReport&lt;/artifactId&gt;
-
-                &lt;version&gt;1.0&lt;/version&gt;
-
-                &lt;configuration&gt;
-
-                    &lt;outputDirectory&gt;${basedir}/build/&lt;/outputDirectory&gt;
-
-                    &lt;coverageFile&gt;${basedir}/build/jstd-coverage.dat&lt;/coverageFile&gt;
-
-                    &lt;limit&gt;60&lt;/limit&gt;
-
-                &lt;/configuration&gt;
-
-                &lt;executions&gt;
-
-                    &lt;execution&gt;
-
-                        &lt;phase&gt;test&lt;/phase&gt;
-
-                        &lt;goals&gt;
-
-                            &lt;goal&gt;test&lt;/goal&gt;
-
-                        &lt;/goals&gt;
-
-                    &lt;/execution&gt;
-
-                &lt;/executions&gt;
-
-            &lt;/plugin&gt;
-</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>效果：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201174217.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201189101.png" title="image" alt="image" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>文件执行明细：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201198380.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201202774.png" title="image" alt="image" /></a></p>
-
-<blockquote><p>代码行之间的样式有点过于大，还没来得及修改样式，敬请原谅。
-有什么问题请及时在github上提出，希望多多交流。同时也可以作为一个angularjs和bootstrap的例子学习<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201204136.gif" title="LY6DR3ISJE0)6K)L)]~VIZK">![LY6DR3ISJE0)6K)L)]~VIZK</a>](<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201205249.gif">http://images.cnblogs.com/cnblogs_com/whitewolf/201212/201212162201205249.gif</a>)</p></blockquote>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/12/16/2820949.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -1664,6 +1672,10 @@ app.controller("report", report);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/">ngModel 值不更新/显示</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/06/16/angularzhong-de-mvvmmo-shi/">angular中的MVVM模式</a>
       </li>
     
@@ -1689,10 +1701,6 @@ app.controller("report", report);
     
       <li class="post">
         <a href="/blog/2015/03/22/babel-kai-shi-es6ti-yan/">(转)Babel-现在开始使用 ES6</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a>
       </li>
     
   </ul>

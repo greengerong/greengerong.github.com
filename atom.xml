@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-06-16T11:46:12+08:00</updated>
+  <updated>2015-06-29T06:57:17+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,213 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ngModel 值不更新/显示]]></title>
+    <link href="http://greengerong.github.io/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/"/>
+    <updated>2015-06-29T06:50:10+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi</id>
+    <content type="html"><![CDATA[<p>angular中的$scope是页面（view）和数据（model）之间的桥梁，它链接了页面元素和model，也是angular双向绑定机制的核心。</p>
+
+<p>而ngModel是angular用来处理表单（form）的最重要的指令，它链接了页面表单中的可交互元素和位于$scope之上的model，它会自动把ngModel所指向的model值渲染到form表单的可交互元素上，同时也会根据用户在form表单的输入或交互来更新此model值。</p>
+
+<p>在源码中，model值的格式化、解析、验证都是由ngModel指令所对应的控制器ngModelController来实现的。</p>
+
+<p>在笔者所维护的国内ng群中，经常被问到一个问题：</p>
+
+<pre class='green'><code>    为什么我的ng-model=“xxx”值不能在页面显示了呢?
+</code></pre>
+
+<p>对于ngModel的这类问题主要分为两类：</p>
+
+<ul>
+<li>model值不满足表单验证条件,所以angular不会渲染它</li>
+<li>由于JavaScript特殊的原型链继承机制，对$scope中属性的赋值并不能更新到父$scope</li>
+</ul>
+
+
+<p>在本节中，我们将会详细分析此类问题，借此深入剖析ngModel的工作原理。</p>
+
+<h4>验证引起的model值不显示</h4>
+
+<p>我们先来看一个修改商品数量的例子，要求为必须输入1-100的个数；</p>
+
+<p>下面是对应的html代码：</p>
+
+<pre class='green'><code>&lt;body class="container"&gt;
+  &lt;div ng-controller="DemoCtrl as demo"&gt;
+   &lt;div ng-form="form" class="form-horizontal"&gt;
+      &lt;div class="form-group" ng-class="{'has-error': form.amount.$invalid }"&gt;
+      &lt;label for="amount"&gt;Amount&lt;/label&gt;
+      &lt;!-- 这个input将工作不正常 --&gt;
+    &lt;input id="amount" name="amount" type="number" ng-model="demo.amount" class="form-control" placeholder="1 - 100" min="1" max="100"/&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>javascript代码：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("DemoCtrl", [function(){
+    var vm = this;
+
+    vm.amount = 0;
+
+    return vm;
+}]);
+</code></pre>
+
+<p> 在代码中我们已经为ngModel变量amount赋值了整数“0”，可是界面显示效果仍然显示&#8221;1 &ndash; 100&#8221;的placeholder(如下图)。
+<img src="http://greengerong.github.io/images/blog_img/ngModel-vadation-question.png" alt="ng-model绑定值不改变:验证" /></p>
+
+<p>下面是关于angular number组件ngModel转换函数代码：</p>
+
+<pre class='green'><code>var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+
+function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+    textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+    ctrl.$parsers.push(function(value) {
+        var empty = ctrl.$isEmpty(value);
+        if (empty || NUMBER_REGEXP.test(value)) {
+            ctrl.$setValidity('number', true);
+            return value === '' ? null : (empty ? value : parseFloat(value));
+        } else {
+            ctrl.$setValidity('number', false);
+            return undefined;
+        }
+    });
+
+    addNativeHtml5Validators(ctrl, 'number', numberBadFlags, null, ctrl.$$validityState);
+
+    ctrl.$formatters.push(function(value) {
+        return ctrl.$isEmpty(value) ? '' : '' + value;
+    });
+
+    if (attr.min) {
+        var minValidator = function(value) {
+            var min = parseFloat(attr.min);
+            return validate(ctrl, 'min', ctrl.$isEmpty(value) || value &gt;= min, value);
+        };
+
+        ctrl.$parsers.push(minValidator);
+        ctrl.$formatters.push(minValidator);
+    }
+
+    if (attr.max) {
+        var maxValidator = function(value) {
+            var max = parseFloat(attr.max);
+            return validate(ctrl, 'max', ctrl.$isEmpty(value) || value &lt;= max, value);
+        };
+
+        ctrl.$parsers.push(maxValidator);
+        ctrl.$formatters.push(maxValidator);
+    }
+
+    ctrl.$formatters.push(function(value) {
+        return validate(ctrl, 'number', ctrl.$isEmpty(value) || isNumber(value), value);
+    });
+}
+</code></pre>
+
+<p>ngModel作为angular双向绑定中的重要组成部分，负责view控件交互数据到$scope上model的同步。当然这里存在一些差异，view上的显示和输入都是字符串类型，而在model上的数据则是有特定类型的，如常用的int、float、Date、Array、Object等。ngModel为了实现数据到model的类型转换，在ngModelController中提供了两个管道数组$formatters和$parsers，它们分别是将model的数据转换为view交互控件显示的值和将交互控件得到的view值转换为model数据，它们都是一个数组对象，在ngModel启动数据转换时，会以UNIX管道式传递执行这一些列的转换。我们也可以手动的添加$formatters和$parsers的转换函数（unshift、push），当然在这里也是做数据验证的最佳时机，能够转换意味应该是合法的数据。</p>
+
+<p>在number组件代码中，我们清晰看见：依次添加了对数字验证转换、最小值合法性验证、最大值合法验证。首先会启动$parsers转换，如果在转换过程中出现不合法验证则会设置ngModelController.$setValidity验证错误，则返回undefined。对于model数据到交互控件显示，同样也会经过$formatters转换管道，对于没有通过验证的逻辑，同样也会ngModelController.$setValidity设置验证错误，返回undefined，因此这不合法的model数据不会显示在交互控件上。</p>
+
+<h4>原型链继承问题</h4>
+
+<p>JavaScript中每个对象都会链接到一个原型对象，并且他可以从中继承属性。即使通过字面量创建的对象也会链接到Object.prototype，它是JavaScript中的标配对象。JavaScript的原型链继承相对于其他语言常见的继承，是一种另类的继承，它是实施于对象上的动态继承方式，而非常见的实施与类型class之上的静态继承体系。JavaScript的这种继承方式很灵活，一个对象可以被多个对象继承，而且他们共享同一实例对象，但理解起来显得格外复杂，从JavaScript原型和原型链可以看出它的复杂性。在Javascript中，每个函数都有一个原型属性prototype指向自身的原型，而由这个函数创建的对象也有一个<strong>proto</strong>属性指向这个原型，而函数的原型是一个对象，所以这个对象也会有一个<strong>proto</strong>指向自己的原型，这样逐层深入直到Object对象的原型，这样就形成了原型链。下面的是JavaScript原型继承基础原型和原型链展示图。</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/javascript-%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF.png" alt="javascript-原型继承" /></p>
+
+<p>函数是由Function函数创建的对象，因此函数也有一个<strong>proto</strong>属性指向Function函数的原型。需要注意的是，真正形成原型链的是每个对象的<strong>proto</strong>属性，而不是函数的prototype属性。更多的内容关于原型和原型链的知识，请参考《Javascript模式》这本书。</p>
+
+<p>JavaScript的原型链连接只在属性检索的时候才会启用，如果我们尝试去获取对象的某个属性值，但该对象没有此属性名，则JavaScript会试着从原型对象中获取该属性值。如果那个对象也没有该属性名，那么在继续从它的原型中寻找，依次类推，直到Object.prototype，如果仍然没有找到该属性值，则返回结果为undefined。不幸的是，这种原型链连接检索，只会在属性检索的的时候启用，并不会在更新属性值时启用，因此当我们对于基础类型（非引用对象上的属性，换句通俗的话来说，就是不会出现“.”运算符）的属性更新的时候，它并不能更新父对象的属性，替代方式是在自身对象上创建了该属性。这也是angular中对于基础类型的属性，不能在子controller中被修改的原因，导致在子controller中ngModel的更新并不会反应在父controller上。</p>
+
+<p>下边是关于该问题的一个简化例子：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div ng-controller="ParentCtrl"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;h4&gt;Parent Controller:&lt;/h4&gt;
+        &lt;pre&gt;&lt;/pre&gt;
+        &lt;input type="text" ng-model="greet" class="form-control" /&gt;
+    &lt;/div&gt;
+    &lt;div ng-controller="ChildCtrl"&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h4&gt;Child controller:&lt;/h4&gt;
+            &lt;pre&gt;&lt;/pre&gt;
+            &lt;input type="text" ng-model="greet" class="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("ParentCtrl", ["$scope", function($scope) {
+
+        $scope.greet = "hello angular!";
+
+    }])
+    .controller("ChildCtrl", angular.noop);
+</code></pre>
+
+<p>从初始化显示效果中，我们能看出子$scope之继承了来自父$scope的greet属性，都显示为&#8221;hello angular!&ldquo;。如果我们尝试利用父controller提供了input控件改变父$scope的greet属性，你也能看见子controller区域的显示也会被及时更新。对于ngController默认会使用原型链继承其父对象的属性，所有的$scope的根$scope或称祖$scope是来自ngApp节点创建的$rootScope，换句话说，$rootScope是万物之源，所有的$scope都直接或者间接继承至它。</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-1.png" alt="ngModel-controller继承" /></p>
+
+<p>当我们尝试去改变输入框的greet属性的时，则发生了下面的情况：子controller区域发生了更新，父controller区域却无法更新。因为上面所说的JavaScript的原型链检索并不对更新启用，对于基础类型JavaScript在自身对象（这里是子$scope）上创建了一个同名的变量。你也想可以从下面angular调试插件batarang截图中看出来。一旦利用子controller的input控件修改了greet属性，再次之后我再次尝试修改父controller区域的greet属性，子controller区别不会在像初始化时候那样及时同步了，它们之间完全独立了，各自拥有了自己的greet属性。</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-2.png" alt="ngModel-controller继承" /></p>
+
+<p>batarang插件截图</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-3.png" alt="ngModel-controller继承" /></p>
+
+<p>经过上面的例子分析，相信作为读者的你已经能够理解这类由于继承链引用问题导致的ngModel不能更新问题了，请记住：这是JavaScript原型继承的issue，并不是angular的issue。</p>
+
+<p>那么我们在子controller中如何更新父controller的属性值呢？这个问题已经很简单了，issue的问题在于没有启用原型链的检索，那么如果我们将ngModel的属性变为引用对象，换句话说：在ngModel的属性值中加了“.”，那么在JavaScript的原型链检索就会启动了。</p>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;div ng-controller="ParentCtrl"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;h4&gt;Parent Controller:&lt;/h4&gt;
+        &lt;pre&gt;&lt;/pre&gt;
+        &lt;input type="text" ng-model="vm.greet" class="form-control" /&gt;
+    &lt;/div&gt;
+    &lt;div ng-controller="ChildCtrl"&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h4&gt;Child controller:&lt;/h4&gt;
+            &lt;pre&gt;&lt;/pre&gt;
+            &lt;input type="text" ng-model="vm.greet" class="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("ParentCtrl", ["$scope", function($scope) {
+
+        $scope.vm = {
+            greet: "hello angular!"
+        };
+
+    }])
+    .controller("ChildCtrl", angular.noop);
+</code></pre>
+
+<p>jsbin demo: <a href="http://jsbin.com/metufi/1/edit?html,js,output">http://jsbin.com/metufi/1/edit?html,js,output</a>
+这里在ngModel属性值多引入了“vm”变量，这个时候，不管我们尝试修改greet值，整个页面都会得到相应的同步。关于这个问题，作者更推荐使用angular 1.2后的controller as vm的方式解决，更多的信息请阅读《使用controller as vm方式.md》一节。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[angular中的MVVM模式]]></title>
@@ -4348,278 +4555,6 @@ var point3d: Point3d = {x: 1, y: 2, z: 3};
 </code></pre>
 
 <p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TypeScript - Interfaces]]></title>
-    <link href="http://greengerong.github.io/blog/2014/11/13/typescript-interfaces/"/>
-    <updated>2014-11-13T21:49:25+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/11/13/typescript-interfaces</id>
-    <content type="html"><![CDATA[<h4>简介</h4>
-
-<p>关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这种模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。</p>
-
-<h2>初见Interface</h2>
-
-<p>理解interface的最好办法，就是写个hello world程序：</p>
-
-<pre class='green'><code>function printLabel(labelledObj: {label: string}) {
-  console.log(labelledObj.label);
-}
-
-var myObj = {size: 10, label: "Size 10 Object"};
-printLabel(myObj);
-</code></pre>
-
-<p>在这里类型检查系统会检查printLabel这个函数，printLabel函数要求传入一个包含一个label的字符串属性。上例可以了解我们传入的对象可以有多个属性，但是类型检查系统只会检查printLabel所要求的label属性是否满足其要求。</p>
-
-<p>接下来我们可以进一步简化，声明一个interface来描述一个具有label字符串属性的对象：</p>
-
-<pre class='green'><code>interface LabelledValue {
-  label: string;
-}
-
-function printLabel(labelledObj: LabelledValue) {
-  console.log(labelledObj.label);
-}
-
-var myObj = {size: 10, label: "Size 10 Object"};
-printLabel(myObj);
-</code></pre>
-
-<p>接口LabelledValue描述了上例中printLabel的所要求的类型对象。它依然代表包含一个label的字符串属性。可以看见我们利用‘shape’(行)描述了printLabel的传入参数要求。</p>
-
-<h2>可选的Properties</h2>
-
-<p>有时不是所有定义在interface中的属性都是必须的。例如流行的&#8221;option bags&#8221;模式(option配置)，使用者可以之传入部分定制化属性。如下面“option bags”模式：</p>
-
-<p>interface SquareConfig {
-  color?: string;
-  width?: number;
-}</p>
-
-<pre class='green'><code>function createSquare(config: SquareConfig): {color: string; area: number} {
-  var newSquare = {color: "white", area: 100};
-  if (config.color) {
-    newSquare.color = config.color;
-  }
-  if (config.width) {
-    newSquare.area = config.width * config.width;
-  }
-  return newSquare;
-}
-
-var mySquare = createSquare({color: "black"});
-</code></pre>
-
-<p>带有可选属性的interface定义和c#语言很相似，以&#8217;?&lsquo;紧跟类型后边表示。</p>
-
-<p>interface的可选属性可以限制那些属性是可用的，这部分能得到类型检查，以及智能感知。例如下例：</p>
-
-<pre class='green'><code>interface SquareConfig {
-  color?: string;
-  width?: number;
-}
-
-function createSquare(config: SquareConfig): {color: string; area: number} {
-  var newSquare = {color: "white", area: 100};
-  if (config.color) {
-    newSquare.color = config.collor;  // 类型检查系统能识别不正确的属性collor.
-  }
-  if (config.width) {
-    newSquare.area = config.width * config.width;
-  }
-  return newSquare;
-}
-
-var mySquare = createSquare({color: "black"});  
-</code></pre>
-
-<h2>函数类型</h2>
-
-<p>Interfaces为了描述对象能接收的数据形(shapes)的返回。对于interface不仅难呢过描述对象的属性，也能描述函数类型。</p>
-
-<p>下面是定义的interface signature是一个接收两个string的输入参数，并返回boolean的函数类型：</p>
-
-<pre class='green'><code>interface SearchFunc {
-  (source: string, subString: string): boolean;
-}
-</code></pre>
-
-<p>我也可以使用函数类型的interface去描述我们的数据。下面演示如何将一个相同类型的函数赋值给interface：</p>
-
-<pre class='green'><code>var mySearch: SearchFunc;
-mySearch = function(source: string, subString: string) {
-  var result = source.search(subString);
-  if (result == -1) {
-    return false;
-  }
-  else {
-    return true;
-  }
-}
-</code></pre>
-
-<p>对于函数类型的interface，并不需要参数名的对应相同，如下例：</p>
-
-<pre class='green'><code>var mySearch: SearchFunc;
-mySearch = function(src: string, sub: string) {
-  var result = src.search(sub);
-  if (result == -1) {
-    return false;
-  }
-  else {
-    return true;
-  }
-}
-</code></pre>
-
-<p>对于函数参数的检查，会按照参数的顺序检查对应的类型是否匹配。同时也会检查函数的返回类型是否匹配，在这个函数我们期望返回boolean类型true/false， 如果返回的是numbers或者string，则类型检查系统会提示返回值类型不匹配。</p>
-
-<h2>数组类型</h2>
-
-<p>类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个&#8217;index&#8217;类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：</p>
-
-<pre class='green'><code>interface StringArray {
-  [index: number]: string;
-}
-
-var myArray: StringArray;
-myArray = ["Bob", "Fred"]
-</code></pre>
-
-<p>index的支持两种类型，分别是字符串和数值类型. 我们可以限制index的类型，同时也可以检查index项的返回值类型。</p>
-
-<p>index的类型签名可以描述常用的数组或者是‘dictionary’（字典序）模式，这点会强制所有的属性都需要和其返回值匹配。下例中length属性不匹配这点，所以类型检查会给出一个错误：</p>
-
-<pre class='green'><code>interface Dictionary {
-  [index: string]: string;
-  length: number;    // error, the type of 'length' is not a subtype of the indexer
-} 
-</code></pre>
-
-<h2>Class类型</h2>
-
-<h4>实现interface</h4>
-
-<p>在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：</p>
-
-<pre class='green'><code>interface ClockInterface {
-    currentTime: Date;
-}
-
-class Clock implements ClockInterface  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
-</code></pre>
-
-<p>同样也可以在interface中实现函数类型的契约，并要求clas实现此函数。如下例的‘setTime’函数：</p>
-
-<pre class='green'><code>interface ClockInterface {
-    currentTime: Date;
-    setTime(d: Date);
-}
-
-class Clock implements ClockInterface  {
-    currentTime: Date;
-    setTime(d: Date) {
-        this.currentTime = d;
-    }
-    constructor(h: number, m: number) { }
-}
-</code></pre>
-
-<p>interface描述的的是class的公开(public)部分，而不是私有部分.</p>
-
-<h4>类static/instance区别</h4>
-
-<p>当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。</p>
-
-<pre class='green'><code>interface ClockInterface {
-    new (hour: number, minute: number);
-}
-
-class Clock implements ClockInterface  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
-</code></pre>
-
-<p>这是因为一个类去实现接口的时候，只有instance(实例)的部分才会被检查。而构造函数属于静态部分，所以不会被类型检查。</p>
-
-<p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
-
-<pre class='green'><code>interface ClockStatic {
-    new (hour: number, minute: number);
-}
-
-class Clock  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
-
-var cs: ClockStatic = Clock;
-var newClock = new cs(7, 30);
-</code></pre>
-
-<h4>interface的继承</h4>
-
-<p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
-
-<pre class='green'><code>interface Shape {
-    color: string;
-}
-
-interface Square extends Shape {
-    sideLength: number;
-}
-
-var square = &lt;Square&gt;{};
-square.color = "blue";
-square.sideLength = 10;
-</code></pre>
-
-<p>一个interface可以同时集成多个interface，实现多个接口成员的合并。</p>
-
-<pre class='green'><code>interface Shape {
-    color: string;
-}
-
-interface PenStroke {
-    penWidth: number;
-}
-
-interface Square extends Shape, PenStroke {
-    sideLength: number;
-}
-
-var square = &lt;Square&gt;{};
-square.color = "blue";
-square.sideLength = 10;
-square.penWidth = 5.0;
-</code></pre>
-
-<h2>混合式类型</h2>
-
-<p>如前边提到的一样，在interface几乎可以描述JavaScript世界的一切对象。因为JavaScript是一个动态，灵活的脚本语言，所以偶尔也希望一个对象能够描述一些多个类型.</p>
-
-<p>下面是一个混合式描述函数，对象以及额外属性的实例：</p>
-
-<pre class='green'><code>interface Counter {
-    (start: number): string;
-    interval: number;
-    reset(): void;
-}
-
-var c: Counter;
-c(10);
-c.reset();
-c.interval = 5.0;
-</code></pre>
-
-<p>和第三方JavaScript库交互的时候，也许我们也会上面的模式来描述一个完整的类型。</p>
 ]]></content>
   </entry>
   
