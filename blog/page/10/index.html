@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在当前软件开发OO设计中，面对软件需求的各种潜在变化，我们可能会采用领域驱动开发，把我们的各个业务逻辑分层次隔离解除耦合，这就出现了N层架构（这面值得是逻辑上的分层，当然我们的逻辑分层层次需要比物理架构层次多）， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,1087 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/">Green.AgileMapper开源项目的使用(1)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人，我在网上搜索等到很多实体匹配的框架EmitMapper，AutoMapper等，但是他们都不能满足dto和do的对象的按规则匹配包装。最后我只得花了半个小时写了一个简单的代码生成器，完成了我的任务。但是事后总觉得不爽，于是有了写下这个AgileMapper框架来适应领域开发中的po，do，dto，vo着一些列对象的相互包装，建立一个按规则包装的Mapper框架。项目已经完成上传于CodePlex <a href="http://agilemapper.codeplex.com/" title="http://agilemapper.codeplex.com/">http://agilemapper.codeplex.com/</a> ，目前刚成型，希望大家能够帮助测试，提出bug，或者修复。我不是很清楚开源协议，选择了一个 协议。大家可以随便使用和修改应用来满足各自的需求，但是如果有些bug修复或者好的通用的修改希望大家能够，提交供我和其他人学习共同进步，但是这不是必须的，你也可以选择保留。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AgileMapper架构设计类图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333323869.png" title="AgileMapper" alt="AgileMapper" /></p>
+
+<p>&nbsp;&nbsp;&nbsp; 在AgileMapper中支持多种MappingConfigurator（匹配管理器）都集成至MappingConfiguratorBase（MappingConfiguratorBase中拥有唯一的对象之间对于相等的默认表达式守信，针对于dto转化为do对象级联删除情况），内置了AttributeMappingConfigurator，XMLMappingConfigurator，DataRowMappingConfigurator三种匹配管理器。支持xml书写，attribute标记规则。由这些管理器根据具体标记标记方式产生一组IMappingRule（匹配规则），内置了5中匹配规则（简单，集合，表达式，对象，datarow）。</p>
+
+<p>&nbsp;&nbsp; 在AgileMapper为我们提供了MappingConfiguratorBase的扩展，IMappingRule的扩展，已经多余Attribute标注的扩展CustomerMappingAttribute，已经xml的配置扩展。</p>
+
+<p>下面我们来使用AgileMapper提供的内置Mapper。</p>
+
+<p>测试预备：</p>
+
+<p>Domain Object：</p>
+
+<pre class='green'><code>public class StudenDo 
+
+{ 
+
+   public int ID 
+
+   { 
+
+       get; 
+
+       set; 
+
+   } 
+
+
+
+   public string Name 
+
+   { get; set; } 
+
+
+
+   public Sex Sex 
+
+   { get; set; } 
+
+
+
+   public Address Address 
+
+   { get; set; } 
+
+
+
+   public ContactWay ContactWay 
+
+   { get; set; } 
+
+
+
+   public List&lt;string&gt; CourseIds 
+
+   { get; set; } 
+
+
+
+   public List&lt;KeyValuePair&gt; Propertys 
+
+   { get; set; } 
+
+
+
+} 
+
+
+
+public class KeyValuePair 
+
+{ 
+
+   public string Key 
+
+   { get; set; } 
+
+
+
+   public string Value 
+
+   { get; set; } 
+
+} 
+
+
+
+ public enum Sex 
+
+{ 
+
+   男, 女 
+
+ }
+
+
+
+public class ContactWay 
+
+{ 
+
+  public string Phone 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+
+
+  public string Email 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+
+
+  public string QQ 
+
+  { 
+
+      get; 
+
+      set; 
+
+  } 
+
+}
+
+
+public class Address 
+
+ { 
+
+   public string Country 
+
+   { 
+
+       get; 
+
+       set; 
+
+   } 
+
+
+
+   public string Province 
+
+   { get; set; } 
+
+
+
+   public string Street 
+
+   { get; set; } 
+
+
+
+   public string Particular 
+
+   { get; set; } 
+
+}
+</code></pre>
+
+<p>Dto：</p>
+
+<pre class='green'><code>public class StudenDto 
+
+   { 
+
+       public int ID 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string Name 
+
+       { get; set; } 
+
+
+
+       public Sex Sex 
+
+       { get; set; } 
+
+
+
+       [Mapping("Address.Country")] 
+
+       public string Country 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       [Mapping("Address.Province")] 
+
+       public string Province 
+
+       { get; set; } 
+
+
+
+       // [Mapping("Address.Street")] 
+
+       [IgnoreMapping] 
+
+       public string Street 
+
+       { get; set; } 
+
+
+
+       [ExpressionMapping("Address.Country +\" 国籍 \"+Address.Province +\" 省 \"")] 
+
+       public string Particular 
+
+       { get; set; } 
+
+
+
+       [ObjectMappingAttribute] 
+
+       public ContactWayDto ContactWay 
+
+       { get; set; } 
+
+
+
+       [CollectionMapping()] 
+
+       public List&lt;string&gt; CourseIds 
+
+       { get; set; } 
+
+
+
+       [CollectionMapping(EqualExpression="from.Key==to.Key",IsDeleteNotInFromItem=true)] 
+
+       public List&lt;KeyValuePair&gt; Propertys 
+
+       { get; set; } 
+
+
+
+       [ExpressionMapping("Propertys[0].Key")] 
+
+       public string FirstPropertyKey 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+
+
+
+
+public class ContactWayDto 
+
+    { 
+
+        public string Phone 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+
+
+        public string Email 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+
+
+        public string QQ 
+
+        { 
+
+            get; 
+
+            set; 
+
+        } 
+
+    }
+
+
+
+public class AddressDto 
+
+{ 
+
+    public string Country 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    public string Province 
+
+    { get; set; } 
+
+
+
+    public string Street 
+
+    { get; set; } 
+
+
+
+    public string Particular 
+
+    { get; set; } 
+
+}
+</code></pre>
+
+<p>一：Attribute标注：</p>
+
+<pre class='green'><code>        [TestMethod] 
+
+     public void AttributeConfig_SimpleMapping_Gen() 
+
+     { 
+
+
+
+         StudenDo stu = new StudenDo() 
+
+         { 
+
+             ID = 1, 
+
+             Name = "test1", 
+
+             Sex = Sex.女, 
+
+             Address = new Address() 
+
+             { 
+
+                 Country = "中国", 
+
+                 Province = "四川", 
+
+                 Street = "高新区" 
+
+             }, 
+
+             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+             ContactWay = new ContactWay() 
+
+             { 
+
+                 Phone = "1111111111111111", 
+
+                 Email = "xxxx@12f", 
+
+                 QQ = "7889789999889" 
+
+             } 
+
+         }; 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(); 
+
+
+
+         var dt1 = DateTime.Now; 
+
+         var stuDto = mapper.Warp(stu); 
+
+         var sp = DateTime.Now - dt1; 
+
+
+
+         dt1 = DateTime.Now; 
+
+         stuDto = mapper.Warp(stu); 
+
+         var sp1 = DateTime.Now - dt1; 
+
+
+
+         Assert.AreEqual(stuDto.ID, stu.ID); 
+
+         Assert.AreEqual(stuDto.Name, stu.Name); 
+
+         Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+         Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+         //object 
+
+         // Assert.AreEqual(stuDto.ContactWay,null); 
+
+         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+         //expression 
+
+         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
+
+         Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
+
+         //collection            
+
+         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+
+
+         Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
+
+         Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
+
+         Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
+
+
+
+         //Warp 2 
+
+         var stuDo = new StudenDo(); 
+
+         mapper.Warp(stuDto, stuDo); 
+
+
+
+         Assert.AreEqual(stuDo.ID, stuDto.ID); 
+
+         Assert.AreEqual(stuDo.Name, stuDto.Name); 
+
+         Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
+
+         Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
+
+         Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
+
+         //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
+
+         //object 
+
+         Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
+
+         //collection 
+
+
+
+         Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
+
+         Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
+
+
+
+         Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
+
+         Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
+
+         Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void AttributeConfig_SimpleMapping() 
+
+     { 
+
+         StudenDo stu = new StudenDo() 
+
+         { 
+
+             ID = 1, 
+
+             Name = "test1", 
+
+             Sex = Sex.女, 
+
+             Address = new Address() 
+
+             { 
+
+                 Country = "中国", 
+
+                 Province = "四川", 
+
+                 Street = "高新区" 
+
+             }, 
+
+             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+             ContactWay = new ContactWay() 
+
+             { 
+
+                 Phone = "1111111111111111", 
+
+                 Email = "xxxx@12f", 
+
+                 QQ = "7889789999889" 
+
+             } 
+
+         }; 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(); 
+
+         var stuDto = mapper.Warp(typeof(StudenDto), stu) as StudenDto; 
+
+
+
+         Assert.AreEqual(stuDto.ID, stu.ID); 
+
+         Assert.AreEqual(stuDto.Name, stu.Name); 
+
+         Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+         Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+         //object 
+
+         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+         //expression 
+
+         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
+
+         //collection            
+
+         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+     }
+</code></pre>
+
+<p>二：xml配置标注规则：&nbsp;</p>
+
+<pre class='green'><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+
+&lt;AgileMapper&gt; 
+
+  &lt;Extensions&gt; 
+
+    &lt;Extension Name="SimpleMappingRule" Type="Green.AgileMapper.SimpleMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="ObjectMappingRule" Type="Green.AgileMapper.ObjectMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="CollectionMappingRule" Type="Green.AgileMapper.CollectionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+    &lt;Extension Name="ExpressionMappingRule" Type="Green.AgileMapper.ExpressionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
+
+  &lt;/Extensions&gt; 
+
+  &lt;Mappings&gt; 
+
+    &lt;Mapping FromType="AgileMapper.Test.StudenDto,AgileMapper.Test"  &gt; 
+
+      &lt;SimpleMappingRule FromPoperty="Country" ToPoperty="Address.Country"&gt;&lt;/SimpleMappingRule&gt; 
+
+      &lt;SimpleMappingRule FromPoperty="Province" ToPoperty="Address.Province"&gt;&lt;/SimpleMappingRule&gt;           
+
+      &lt;ObjectMappingRule  FromPoperty="ContactWay" ToPoperty="ContactWay"&gt;&lt;/ObjectMappingRule&gt; 
+
+      &lt;CollectionMappingRule FromPoperty="CourseIds" ToPoperty="CourseIds"&gt;&lt;/CollectionMappingRule&gt; 
+
+      &lt;CollectionMappingRule FromPoperty="Propertys" ToPoperty="Propertys" EqualExpression="from.Key==to.Key" IsDeleteNotInFromItem="true"&gt;&lt;/CollectionMappingRule&gt; 
+
+      &lt;ExpressionMappingRule  FromPoperty="Particular" Expression="Address.Country +Address.Province"&gt;&lt;/ExpressionMappingRule&gt; 
+
+      &lt;ExpressionMappingRule  FromPoperty="FirstPropertyKey" Expression="Propertys[0].Key"&gt;&lt;/ExpressionMappingRule&gt; 
+
+      &lt;Ignores&gt; 
+
+        &lt;Ignore Name="Street"&gt;&lt;/Ignore&gt; 
+
+      &lt;/Ignores&gt; 
+
+    &lt;/Mapping&gt; 
+
+  &lt;/Mappings&gt; 
+
+&lt;/AgileMapper&gt;
+</code></pre>
+
+<p>测试代码：</p>
+
+<p>[TestMethod]</p>
+
+<pre class='green'><code>    public void XMlConfig_SimpleMapping_Gen() 
+
+    { 
+
+
+
+        StudenDo stu = new StudenDo() 
+
+        { 
+
+            ID = 1, 
+
+            Name = "test1", 
+
+            Sex = Sex.女, 
+
+            Address = new Address() 
+
+            { 
+
+                Country = "中国", 
+
+                Province = "四川", 
+
+                Street = "高新区" 
+
+            }, 
+
+            CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
+
+            Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
+
+            ContactWay = new ContactWay() 
+
+            { 
+
+                Phone = "1111111111111111", 
+
+                Email = "xxxx@12f", 
+
+                QQ = "7889789999889" 
+
+            } 
+
+        }; 
+
+
+
+        var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(new XMLMappingConfigurator(@"E:\Project\OpenSource\AgileMapper\AgileMappper.Test\XMLConfigurator\AgileMapper.xml")); 
+
+
+
+        var stuDto = mapper.Warp(stu);           
+
+
+
+        Assert.AreEqual(stuDto.ID, stu.ID); 
+
+        Assert.AreEqual(stuDto.Name, stu.Name); 
+
+        Assert.AreEqual(stuDto.Sex, stu.Sex); 
+
+        Assert.AreEqual(stuDto.Country, stu.Address.Country); 
+
+        Assert.AreEqual(stuDto.Province, stu.Address.Province); 
+
+        Assert.AreEqual(stuDto.Street, null);//Ignore 
+
+        //object 
+
+        // Assert.AreEqual(stuDto.ContactWay,null); 
+
+        Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
+
+        Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
+
+        //expression 
+
+        Assert.AreEqual(stuDto.Particular.Replace(" ", ""), string.Format("{0}{1}", stu.Address.Country, stu.Address.Province)); 
+
+        Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
+
+        //collection            
+
+        Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
+
+        Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
+
+
+
+        Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
+
+        Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
+
+        Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
+
+
+
+        //Warp 2 
+
+        var stuDo = new StudenDo(); 
+
+        mapper.Warp(stuDto, stuDo); 
+
+
+
+        Assert.AreEqual(stuDo.ID, stuDto.ID); 
+
+        Assert.AreEqual(stuDo.Name, stuDto.Name); 
+
+        Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
+
+        Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
+
+        Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
+
+        //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
+
+        //object 
+
+        Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
+
+        Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
+
+        //collection 
+
+
+
+        Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
+
+        Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
+
+
+
+        Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
+
+        Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
+
+        Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
+
+    }
+</code></pre>
+
+<p>三：DataRow的测试：&nbsp;</p>
+
+<p>测试预备StudentModelForDataRow：</p>
+
+<pre class='green'><code>public class StudentModelForDataRow 
+
+  { 
+
+      public int ID 
+
+      { get; set; } 
+
+
+
+      public string Name 
+
+      { get; set; } 
+
+  }
+</code></pre>
+
+<p>测试代码：&nbsp;</p>
+
+<pre class='green'><code>    [TestMethod] 
+
+     public void DataRowConfig_SameTable_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+
+
+         var rowClone = dt.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(typeof(DataRow), row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_UnSameTable_MutipleRule_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         DataTable dt2 = new DataTable(); 
+
+         dt2.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)), 
+
+              new DataColumn("Sex",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt2.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         row[2] = "Nan"; 
+
+         dt2.Rows.Add(row); 
+
+
+
+         var rowClone = dt.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_UnSameTable_Not_MutipleRule_DataRowCloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         DataTable dt2 = new DataTable(); 
+
+         dt2.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)), 
+
+              new DataColumn("Sex",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+
+
+         var rowClone = dt2.NewRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, rowClone); 
+
+         Assert.AreEqual(row[0], rowClone[0]); 
+
+         Assert.AreEqual(row[1], rowClone[1]); 
+
+     } 
+
+
+
+     [TestMethod] 
+
+     public void DataRowConfig_To_Object_CloneMapping() 
+
+     { 
+
+         DataTable dt = new DataTable(); 
+
+         dt.Columns.AddRange(new DataColumn[] { 
+
+             new DataColumn("ID",typeof(int)), 
+
+             new DataColumn("Name",typeof(string)) 
+
+         }); 
+
+
+
+         var row = dt.NewRow(); 
+
+         row[0] = 1; 
+
+         row[1] = "Green"; 
+
+         dt.Rows.Add(row); 
+
+         StudentModelForDataRow model = new StudentModelForDataRow(); 
+
+
+
+         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
+
+         mapper.Warp(row, model); 
+
+         Assert.AreEqual(model.ID, row[0]); 
+
+         Assert.AreEqual(model.Name, row[1]); 
+
+     }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; DataRow匹配针对相同的表结构和不同表结构，以及实体类和DataRow之间的转化。&nbsp;</p>
+
+<p>单元测试结果：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333394223.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/20120329133348267.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 对于xml配置的架构还没做，以及基于T4模板的按照规则代码生成模板还在进一步开发中，敬请期待。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天就写在这里了，欢迎大家的指正和修改，希望你的修改如果更好能通知我，给我好的建议和探讨，谢谢。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/03/29/AgileMapper1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1483,603 +2564,6 @@ public override bool CompileTimeValidate(System.Reflection.MethodBase method)
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/">利用Attribute简化Unity框架IOC注入</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-29T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合，减少我们的后期维护成本。IOC框架一般基于容器，在容器中存储着各个抽象和具体实现的依赖关系，当我们需要发出请求的时候，IOC框架会在当前容器中找到我们所需要的具体实现返回给我们，当然这里还有DI注入（属性，方法，构造），在我们的使用者（客户端）不需要了解具体实现，如何初始化，如何流转等具体，只需明白我们的契约接口暴露给我们的服务，IOC框架是解决抽象和具体直接的创建问题。其他资料可以参见<strong><a href="http://martinfowler.com/articles/injection.html">Inversion of Control Containers and the Dependency Injection pattern</a>。</strong></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 当然Unity框架中为我们提供了RegisterInstance，RegisterType方法我们可以在代码中注册到容器，比如NLayerApp中就在<code>IoCFactory中注册一大堆抽象-具体关联。但是在我们的实际实践中一般会选择另一种方式xml配置配置，因为这样我们会得到更大的灵活性，需求变化只要抽象接口不变，我们也只需要在xml配置文件中修改一行配置加入我们的具体实现，加入我们的程序集，就可以适应需求变化，这更满足oo设计&amp;#8220;开闭原则&amp;#8221;。</code></p>
-
-<p><code>&amp;nbsp;&amp;nbsp; 在这里个人实践利用抽象（接口）定义Attribute制定具体ConfigFile（配置文件），Container（容器），Name（名称）解决IOC植入，减少我们多次去读取配置文件。Unity为我们提供了在Web.config,App.config中配置注入信息，或者注册外部配置，但是很多时候我们更希望，在我们的 不同模块下，应用不同的IOC配置信息，这些可以减少维护的关联少些，清晰，同时文件夹的出现便于我们的配置信息的管理。</code></p>
-
-<p><code>Attribute实现：UnityInjectionAttribute</code></p>
-
-<pre class='green'><code>[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)] 
-
-   public class UnityInjectionAttribute : Attribute 
-
-   { 
-
-
-
-       public UnityInjectionAttribute(string Container) 
-
-       { 
-
-           this.Container = Container;            
-
-       } 
-
-
-
-       public string Container 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-       public string ConfigFile 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-       public string Name 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-       public Microsoft.Practices.Unity.Configuration.UnityConfigurationSection GetUnityConfigurationSection() 
-
-       { 
-
-           if (!string.IsNullOrEmpty(this.ConfigFile)) 
-
-           { 
-
-               var fileMap = new System.Configuration.ExeConfigurationFileMap { ExeConfigFilename = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, this.ConfigFile) }; 
-
-               System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(fileMap, System.Configuration.ConfigurationUserLevel.None); 
-
-               return configuration == null ? null : configuration.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
-
-           } 
-
-           return System.Configuration.ConfigurationManager.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
-
-       } 
-
-   }
-</code></pre>
-
-<p>&nbsp; 在这里我们GetUnityConfigurationSection根据ConfigFile获取UnityConfigurationSection ，ConfigFile为空则当前应用配置文件，不空则为路径。在这里我们为了性能，减少过多的IOC操作，读取配置文件，我们可以更具具体需要加入对配置文件UnityConfigurationSection的缓存（ConfigFile作为key，UnityConfigurationSection为value ）。</p>
-
-<p>&nbsp;&nbsp; 同时提供操作辅助方法：ELUnityUtility</p>
-
-<pre class='green'><code> public static class ELUnityUtility 
-
-   { 
-
-       public static T Resolve&lt;T&gt;() where T : class 
-
-       { 
-
-           return Resolve(typeof(T)) as T; 
-
-       } 
-
-
-
-       public static object Resolve(this Type type) 
-
-       { 
-
-           var attrs = type.GetCustomAttributes(typeof(Utils.UnityInjectionAttribute), true) as Utils.UnityInjectionAttribute[]; 
-
-           if (attrs != null &amp;&amp; attrs.Length &gt; 0) 
-
-           { 
-
-               var attr = attrs[0]; 
-
-               var unitySection = attr.GetUnityConfigurationSection(); 
-
-               if (unitySection != null) 
-
-               { 
-
-                   var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(attr.Container) ? unitySection.Containers.Default.Name : attr.Container); 
-
-                   var obj = string.IsNullOrEmpty(attr.Name) ? container.Resolve(type) : container.Resolve(type, attr.Name); 
-
-                   if (obj != null) 
-
-                   { 
-
-                       var piabAtttr = obj.GetType().GetCustomAttributes(typeof(ELPolicyinjectionAttribute), false) as ELPolicyinjectionAttribute[]; 
-
-                       if (piabAtttr.Length &gt; 0) 
-
-                       { 
-
-                           obj = Microsoft.Practices.EnterpriseLibrary.PolicyInjection.PolicyInjection.Wrap(type, obj); 
-
-                       } 
-
-                       return obj; 
-
-                   } 
-
-               } 
-
-           } 
-
-           return null; 
-
-       } 
-
-
-
-       public static IEnumerable&lt;T&gt; ResolveAll&lt;T&gt;() where T : class 
-
-       { 
-
-           return ResolveAll(typeof(T)) as IEnumerable&lt;T&gt;; 
-
-       } 
-
-
-
-       public static object ResolveAll(this Type type) 
-
-       { 
-
-           var attrs = type.GetCustomAttributes(typeof(Utils.UnityInjectionAttribute), true) as Utils.UnityInjectionAttribute[]; 
-
-           if (attrs != null &amp;&amp; attrs.Length &gt; 0) 
-
-           { 
-
-               var attr = attrs[0]; 
-
-               var unitySection = attr.GetUnityConfigurationSection(); 
-
-               if (unitySection != null) 
-
-               { 
-
-                   var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(attr.Container) ? unitySection.Containers.Default.Name : attr.Container); 
-
-                   return container.ResolveAll(type); 
-
-               } 
-
-           } 
-
-           return null; 
-
-       } 
-
-
-
-   }
-</code></pre>
-
-<p><font face="Courier New">这里我们就可以很简便的获取IOC翻转。注：这里还有根据具体实现是否具体ELPolicyinjectionAttribute来决定是否进行PIAB的AOP操作，当然我们也可以在Unity配置文件中引入节点扩展</font></p>
-
-<p>Microsoft.Practices.Unity.InterceptionExtension.Configuration.InterceptionConfigurationExtension,</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Microsoft.Practices.Unity.Interception.Configuration</p>
-
-<p><font face="Courier New">（PIAB利用的是透明代理速度较慢所以一般很少使用，当然你也可以实现具体的PIAB AOP方式比如注入MSIL，但我们已经有了很多注入MSIL的AOP框架了，我不准备去造轮子），ELPolicyinjectionAttribute：</font></p>
-
-<pre class='green'><code> [AttributeUsage(AttributeTargets.Class)] 
-
-   public class ELPolicyinjectionAttribute : Attribute 
-
-   { 
-
-       public string Name 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-   }
-</code></pre>
-
-<p>这样：我们的客户端 就可以很简单的使用了：</p>
-
-<pre class='green'><code> class Program 
-
-   { 
-
-       static void Main(string[] args) 
-
-       { 
-
-
-
-           ELUnityUtility.Resolve&lt;IClass2&gt;().Show(); 
-
-           (typeof(IClass2).Resolve() as IClass2).Show(); 
-
-           Console.Read(); 
-
-       } 
-
-   } 
-
-
-
-   public interface IClass1 
-
-   { 
-
-       void Show(); 
-
-   } 
-
-
-
-   [Green.Utils.ELPolicyinjection] 
-
-   public class Class1 : IClass1 
-
-   { 
-
-
-
-       #region IClass1 成员 
-
-       [TestCallHandler] 
-
-       public void Show() 
-
-       { 
-
-           Console.WriteLine(this.GetType()); 
-
-       } 
-
-
-
-       #endregion 
-
-   } 
-
-
-
-   [Green.Utils.UnityInjection("First", Name = "class2", ConfigFile = "App1.config")] 
-
-   public interface IClass2 
-
-   { 
-
-       void Show(); 
-
-   } 
-
-
-
-    public class Class2 : ConsoleApplication1.IClass2 
-
-   { 
-
-       [Microsoft.Practices.Unity.Dependency("class1")] 
-
-       public IClass1 Class1 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-            public void Show() 
-
-       { 
-
-           Console.WriteLine(this.GetType()); 
-
-           Class1.Show(); 
-
-       } 
-
-   }
-</code></pre>
-
-<p>App1.Config配置：</p>
-
-<pre class='green'><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
-
-&lt;configuration&gt; 
-
-  &lt;configSections&gt; 
-
-    &lt;section name="unity" 
-
-             type="Microsoft.Practices.Unity.Configuration.UnityConfigurationSection, 
-
-             Microsoft.Practices.Unity.Configuration"/&gt; 
-
-  &lt;/configSections&gt; 
-
-  &lt;unity xmlns="http://schemas.microsoft.com/practices/2010/unity%22&gt; 
-
-    &lt;container name="First"&gt; 
-
-      &lt;register type="ConsoleApplication1.IClass1,ConsoleApplication1" mapTo="ConsoleApplication1.Class1,ConsoleApplication1" name="class1" /&gt; 
-
-      &lt;register type="ConsoleApplication1.IClass2,ConsoleApplication1" mapTo="ConsoleApplication1.Class2,ConsoleApplication1" name="class2"  /&gt; 
-
-    &lt;/container&gt; 
-
-  &lt;/unity&gt; 
-
-&lt;/configuration&gt;
-</code></pre>
-
-<p>下边是一个完整的带PIAB的例子：</p>
-
-<p> using System;</p>
-
-<p>using System.Collections.Generic;</p>
-
-<p>using System.Linq;</p>
-
-<p>using System.Text;</p>
-
-<p>using Green.Utils;</p>
-
-<p>using Microsoft.Practices.Unity.InterceptionExtension;</p>
-
-<p>using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;</p>
-
-<p>namespace ConsoleApplication1</p>
-
-<p>{</p>
-
-<pre class='green'><code>class Program 
-
-{ 
-
-    static void Main(string[] args) 
-
-    { 
-
-
-
-        ELUnityUtility.Resolve&lt;IClass2&gt;().Show(); 
-
-        (typeof(IClass2).Resolve() as IClass2).Show(); 
-
-        Console.Read(); 
-
-    } 
-
-} 
-
-
-
-public interface IClass1 
-
-{ 
-
-    void Show(); 
-
-} 
-
-
-
-[Green.Utils.ELPolicyinjection] 
-
-public class Class1 : IClass1 
-
-{ 
-
-
-
-    #region IClass1 成员 
-
-    [TestCallHandler] 
-
-    public void Show() 
-
-    { 
-
-        Console.WriteLine(this.GetType()); 
-
-    } 
-
-
-
-    #endregion 
-
-} 
-
-
-
-[Green.Utils.UnityInjection("First", Name = "class2", ConfigFile = "App1.config")] 
-
-public interface IClass2 
-
-{ 
-
-    void Show(); 
-
-} 
-
-
-
-[Green.Utils.ELPolicyinjection] 
-
-public class Class2 : ConsoleApplication1.IClass2 
-
-{ 
-
-    [Microsoft.Practices.Unity.Dependency("class1")] 
-
-    public IClass1 Class1 
-
-    { 
-
-        get; 
-
-        set; 
-
-    } 
-
-
-
-    [TestCallHandler] 
-
-    public void Show() 
-
-    { 
-
-        Console.WriteLine(this.GetType()); 
-
-        Class1.Show(); 
-
-    } 
-
-} 
-
-
-
-[Microsoft.Practices.EnterpriseLibrary.Common.Configuration.ConfigurationElementType(typeof(CustomCallHandlerData))] 
-
-public class TestCallHandler : ICallHandler 
-
-{ 
-
-    #region ICallHandler 成员 
-
-
-
-    public IMethodReturn Invoke(IMethodInvocation input, GetNextHandlerDelegate getNext) 
-
-    { 
-
-        if (input == null) throw new ArgumentNullException("input"); 
-
-        if (getNext == null) throw new ArgumentNullException("getNext"); 
-
-        Console.WriteLine("begin...."); 
-
-        var result = getNext()(input, getNext); 
-
-        Console.WriteLine("end...."); 
-
-        return result; 
-
-    } 
-
-
-
-    public int Order 
-
-    { 
-
-        get; 
-
-        set; 
-
-    } 
-
-
-
-    #endregion 
-
-} 
-
-
-
-[AttributeUsage(AttributeTargets.Method)] 
-
-public class TestCallHandlerAttribute : HandlerAttribute 
-
-{ 
-
-    public override ICallHandler CreateHandler(Microsoft.Practices.Unity.IUnityContainer container) 
-
-    { 
-
-        return new TestCallHandler(); 
-
-    } 
-
-} 
-
-}
-</code></pre>
-
-<p>欢迎大家指正，批评，交流是的大家都功能进步。<a href="http://files.cnblogs.com/whitewolf/UnityInjectionAttribute.rar">代码下载</a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -2113,6 +2597,10 @@ public class TestCallHandlerAttribute : HandlerAttribute
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/">ngModel 值不更新/显示</a>
       </li>
     
@@ -2138,10 +2626,6 @@ public class TestCallHandlerAttribute : HandlerAttribute
     
       <li class="post">
         <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/22/babel-kai-shi-es6ti-yan/">(转)Babel-现在开始使用 ES6</a>
       </li>
     
   </ul>

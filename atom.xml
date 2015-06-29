@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-06-29T06:59:39+08:00</updated>
+  <updated>2015-06-30T06:39:00+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[动态绑定HTML]]></title>
+    <link href="http://greengerong.github.io/blog/2015/06/30/dong-tai-bang-ding-html/"/>
+    <updated>2015-06-30T06:38:36+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/06/30/dong-tai-bang-ding-html</id>
+    <content type="html"><![CDATA[<p>在Web前端开发中，我们经常会遇见需要动态的将一些来自后端或者是动态拼接的HTML字符串绑定到页面DOM显示，特别是在内容管理系统（CMS：是Content Management System的缩写），这样的需求，更是遍地皆是。</p>
+
+<p>对于对angular的读者肯定首先会想到ngBindHtml，对,angular为我们提供了这个指令来动态绑定HTML，它会将计算出来的表达式结果用innerHTML绑定到DOM。但是，问题并不是这么简单。在Web安全中XSS（Cross-site scripting，脚本注入攻击），它是在Web应用程序中很典型的计算机安全漏洞。XSS攻击指的是通过对网页注入可执行客户端代码且成功地被浏览器执行，来达到攻击的目的，形成了一次有效XSS攻击，一旦攻击成功，它可能会获取到用户的一些敏感信息、改变用户的体验、诱导用户等非法行为，有时XSS攻击还会合其他攻击方式同时实施比如SQL注入攻击服务器和数据库、Click劫持、相对链接劫持等实施钓鱼，它带来的危害是巨大的，也是web安全的头号大敌。更多的Web安全问题，请参考wiki <a href="https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82">https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82</a></p>
+
+<p>在angular中默认是不相信添加的HTML内容，对于添加的HTML内容，首先必须利用$sce.trustAsHtml，告诉angular这是可信的HTML内容。否则你将会得到$sce:unsafe的异常错误。</p>
+
+<pre class='green'><code>Error: [$sce:unsafe] Attempting to use an unsafe value in a safe context.
+</code></pre>
+
+<p>下面是一个绑定简单的angular链接的demo：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div ng-controller="DemoCtrl as demo"&gt;
+    &lt;div ng-bind-html="demo.html"&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("DemoCtrl", ["$sce", function($sce) {
+        var vm = this;
+
+        var html = '&lt;p&gt;hello &lt;a href="https://angular.io/"&gt;angular&lt;/a&gt;&lt;/p&gt;';
+        vm.html = $sce.trustAsHtml(html);
+
+        return vm;
+    }]);
+</code></pre>
+
+<p>对于简单的静态HTML，这个问题就解决了。但对于复杂的HTML，这里的复杂是指带有angular表达式、指令的HTML模板，对于它们来说，我们不仅希望绑定大DOM显示，同时还希望得到angular强大的双向绑定机制。ngBindHhtml并不会和$scope关联双向绑定，如果在HTML中存在ngClick、ngHref、ngSHow、ngHide等angular指令，它们并不会被compile，点击这些按钮，也不会发生任何反应，绑定的表达式也不会在更新。例如尝试将上次的链接变为：ng-href=&ldquo;demo.link&#8221;，链接并不会被解析，在DOM看见的仍然会是原样的HTML字符串。</p>
+
+<p>在angular中的所有指令要生效，都需要经过compile，在compile中包含了pre-link和post-link，连接上特定行为，才能工作。大部分情况下compile，是会在angular启动时，自动compile的。但如果是对于动态添加的模板，则需要手动的compile。angular中为我们提供了$compile服务来实现这一功能。下面是一个比较通用的compile例子：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;body ng-controller="DemoCtrl as demo"&gt;
+    &lt;dy-compile html=""&gt;
+    &lt;/dy-compile&gt;
+    &lt;button ng-click="demo.change();"&gt;change&lt;/button&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .directive("dyCompile", ["$compile", function($compile) {
+        return {
+            replace: true,
+            restrict: 'EA',
+            link: function(scope, elm, iAttrs) {
+                var DUMMY_SCOPE = {
+                        $destroy: angular.noop
+                    },
+                    root = elm,
+                    childScope,
+                    destroyChildScope = function() {
+                        (childScope || DUMMY_SCOPE).$destroy();
+                    };
+
+                iAttrs.$observe("html", function(html) {
+                    if (html) {
+                        destroyChildScope();
+                        childScope = scope.$new(true);
+                        var content = $compile(html)(scope);
+                        root.replaceWith(content);
+                        root = content;
+                    }
+
+                    scope.$on("$destroy", destroyChildScope);
+                });
+            }
+        };
+    }])
+    .controller("DemoCtrl", [function() {
+        var vm = this;
+
+        vm.html = '&lt;h2&gt;hello : &lt;a ng-href=""&gt;angular&lt;/a&gt;&lt;/h2&gt;';
+
+        vm.link = 'https://angular.io/';
+        var i = 0;
+        vm.change = function() {
+            vm.html = '&lt;h3&gt;change after : &lt;a ng-href=""&gt;' + (++i) + '&lt;/a&gt;&lt;/h3&gt;';
+        };
+    }]);
+</code></pre>
+
+<p>这里创建了一个叫dy-compile的指令，它首先会监听绑定属性html值的变化，当html内容存在的时候，它会尝试首先创个一个子scope，然后利用$compile服务来动态连接传入的html，并替换掉当前DOM节点；这里创建子scope的原因，是方便在每次销毁DOM的时，也能容易的销毁掉scope，去掉HTML compile带来的watchers函数，并在最后的父scope销毁的时候，也会尝试销毁该scope。</p>
+
+<p>因为有了上边的compile的编译和连接，则ngHref指令就可以生效了。这里只是尝试给出动态compile angular模块的例子，具体的实现方式，请参照你的页面来声明特定的directive。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ngModel 值不更新/显示]]></title>
@@ -4262,301 +4361,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 </span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TypeScript - Classes]]></title>
-    <link href="http://greengerong.github.io/blog/2014/11/17/typescript-classes/"/>
-    <updated>2014-11-17T19:10:32+08:00</updated>
-    <id>http://greengerong.github.io/blog/2014/11/17/typescript-classes</id>
-    <content type="html"><![CDATA[<h2>简介</h2>
-
-<p>JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式，TypeScript将编译为目前大多数浏览器能允许的普通Javascript代码，所以我们不用在等待ECMAScript 6的到来了。</p>
-
-<h2>类</h2>
-
-<p>我们先看一个关于class-base的实例：</p>
-
-<pre class='green'><code>class Greeter {
-    greeting: string;
-    constructor(message: string) {
-        this.greeting = message;
-    }
-    greet() {
-        return "Hello, " + this.greeting;
-    }
-}
-
-var greeter = new Greeter("world");
-</code></pre>
-
-<p>这种语法和我们先前在c#，java语言看见的很相似。在这里我们声明了一个Greeter的类，其中包含一个greeting的属性，构造函数，以及greet的方法。</p>
-
-<p>你也许已经注意到了例子中的‘this’关键字，’this‘和java/C#一样代表对象实例的成员访问。</p>
-
-<p>在最后一行我们利用‘new’关键字创建了一个Greeter的对象实例。这将会新建一个对象实例，并调用我们先前定义的构造函数初始化此对象。</p>
-
-<h2>继承</h2>
-
-<p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
-
-<pre class='green'><code>class Animal {
-    name:string;
-    constructor(theName: string) { this.name = theName; }
-    move(meters: number) {
-        alert(this.name + " moved " + meters + "m.");
-    }
-}
-
-class Snake extends Animal {
-    constructor(name: string) { super(name); }
-    move() {
-        alert("Slithering...");
-        super.move(5);
-    }
-}
-
-class Horse extends Animal {
-    constructor(name: string) { super(name); }
-    move() {
-        alert("Galloping...");
-        super.move(45);
-    }
-}
-
-var sam = new Snake("Sammy the Python");
-var tom: Animal = new Horse("Tommy the Palomino");
-
-sam.move();
-tom.move(34);
-</code></pre>
-
-<p>在这个案例中展示了TypeScript的OO继承方式，它和其他语言很相似。在TypeScript中我们采用‘extends’关键字来表示类的继承关系。在这里你可以看见 &lsquo;Horse&#8217;和&#8217;Snake&#8217;都是继承至&#8217;Animal&#8217;的子类实现。</p>
-
-<p>在案例中也展示如何去重写父类的方法，在这里&#8217;Snake&#8217;和&#8217;Horse都各自创建了一个‘move’方法来重写父类&#8217;Animal&#8217;的‘move’方法，并和‘super’关键字来调用父类的方法。</p>
-
-<h2>Private/Public访问限制</h2>
-
-<h4>Public为默认行为</h4>
-
-<p>你可能注意到了在上例中我们并没有用‘public’关键字去描述类的成员的访问级别让其可见。在C#这类语言中，我们必须显示的标注public关键字才能使得类的成员可见。但是在TypeScript中public为默认访问级别，而不是想c#一样private默认。</p>
-
-<p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
-
-<pre class='green'><code>class Animal {
-    private name:string;
-    constructor(theName: string) { this.name = theName; }
-    move(meters: number) {
-        alert(this.name + " moved " + meters + "m.");
-    }
-}
-</code></pre>
-
-<h4>理解private(私有)</h4>
-
-<p>TypeScript有一个结构化的类型(或者鸭子类型)系统。在我们比较两个不同类型，我们不关心它们来自哪里，只关心对类型的每个成员的兼容性。一旦所有的成员都是兼容的，那么我们就认为这两个类型也是兼容的。</p>
-
-<p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
-
-<pre class='green'><code>class Animal {
-    private name:stringParameter properties;
-    constructor(theName: string) { this.name = theName; }
-}
-
-class Rhino extends Animal {
-    constructor() { super("Rhino"); }
-}
-
-class Employee {
-    private name:string;
-    constructor(theName: string) { this.name = theName; }   
-}
-
-var animal = new Animal("Goat");
-var rhino = new Rhino();
-var employee = new Employee("Bob");
-
-animal = rhino;
-animal = employee; //error: Animal and Employee are not compatible
-</code></pre>
-
-<p>在上例中我们有&#8217;Animal&#8217;和‘Rhino’两个类型，&#8217;Rhino&#8217;是‘Animal’的一个子类。同时我们也定义了一个 &lsquo;Employee&#8217;的类，它和‘Animal’类完全相同。我们分别创建了第三个类的对象，并相互赋值，结果&#8217;Animal&#8217;和&#8217;Rhino&#8217;继承关系，所以对于私有字段name在‘Animal’中具有相同的声明  &#8216;private name: string&#8217;，他们是兼容的。但对于&#8217;Employee&#8217;则各自声明了一个私有name字段，对于私有字段是不相同的，所以我们不能将employee赋值给animal对象，他们是不兼容的类型。</p>
-
-<h4>参数属性(Parameter properties)</h4>
-
-<p>访问限制关键字public&#8217;和&#8217;private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
-
-<pre class='green'><code>class Animal {
-    constructor(private name: string) { }
-    move(meters: number) {
-        alert(this.name + " moved " + meters + "m.");
-    }
-}
-</code></pre>
-
-<p>这里我们利用‘private’关键字为类创建了一个私有成员并初始化其值。对于public也类似。</p>
-
-<h2>访问器(Accessors)</h2>
-
-<p>TypeScript支持利用getters/setters来控制对成员的访问。让我们可以控制类的成员之间的访问方式。</p>
-
-<p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
-
-<pre class='green'><code>class Employee {
-    fullName: string;
-}
-
-var employee = new Employee();
-employee.fullName = "Bob Smith";
-if (employee.fullName) {
-    alert(employee.fullName);
-}
-</code></pre>
-
-<p>在这里我们允许任意的访问内部fullName成员。有时这可能不是我们所期望的。</p>
-
-<p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
-
-<pre class='green'><code>var passcode = "secret passcode";
-
-class Employee {
-    private _fullName: string;
-
-    get fullName(): string {
-        return this._fullName;
-    }
-
-    set fullName(newName: string) {
-        if (passcode &amp;&amp; passcode == "secret passcode") {
-            this._fullName = newName;
-        }
-        else {
-            alert("Error: Unauthorized update of employee!");
-        }
-    }
-}
-
-var employee = new Employee();
-employee.fullName = "Bob Smith";
-if (employee.fullName) {
-    alert(employee.fullName);
-}
-</code></pre>
-
-<p>这里我们在修改fullName属性的时候验证了passcode值，是否有权限修改。你可以尝试修改passcode的值，使其不匹配，观察下会发生什么问题？</p>
-
-<p><strong>注意:</strong>访问器使用我们需要设置编译输出为ECMAScript 5。</p>
-
-<h2>静态属性</h2>
-
-<p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用&#8217;static&#8217; 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的&#8217;this.&lsquo;.</p>
-
-<pre class='green'><code>class Grid {
-    static origin = {x: 0, y: 0};
-    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
-        var xDist = (point.x - Grid.origin.x);
-        var yDist = (point.y - Grid.origin.y);
-        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
-    }
-    constructor (public scale: number) { }
-}
-
-var grid1 = new Grid(1.0);  // 1x scale
-var grid2 = new Grid(5.0);  // 5x scale
-
-alert(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
-alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
-</code></pre>
-
-<h2>高级特性</h2>
-
-<h4>构造函数</h4>
-
-<p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
-
-<pre class='green'><code>class Greeter {
-    greeting: string;
-    constructor(message: string) {
-        this.greeting = message;
-    }
-    greet() {
-        return "Hello, " + this.greeting;
-    }
-}
-
-var greeter: Greeter;
-greeter = new Greeter("world");
-alert(greeter.greet());
-</code></pre>
-
-<p>这里“var greeter: Greeter”首先声明一个Greeter类的实例变量。这在很多OO语言中是很自然的方式。</p>
-
-<p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
-
-<pre class='green'><code>var Greeter = (function () {
-    function Greeter(message) {
-        this.greeting = message;
-    }
-    Greeter.prototype.greet = function () {
-        return "Hello, " + this.greeting;
-    };
-    return Greeter;
-})();
-
-var greeter;
-greeter = new Greeter("world");
-alert(greeter.greet());
-</code></pre>
-
-<p>这里&#8217;var Greeter&#8217;被赋值构造函数，并利用‘new’调用了这个方法得到类的实例。同样我们的类也可以包含静态变量。我们可以这么认为所有的类都可以拥有实例和静态两种类型的成员。</p>
-
-<p>让我们对上例稍微做一些修改：</p>
-
-<pre class='green'><code>class Greeter {
-    static standardGreeting = "Hello, there";
-    greeting: string;
-    greet() {
-        if (this.greeting) {
-            return "Hello, " + this.greeting;
-        }
-        else {
-            return Greeter.standardGreeting;
-        }
-    }
-}
-
-var greeter1: Greeter;
-greeter1 = new Greeter();
-alert(greeter1.greet());
-
-var greeterMaker: typeof Greeter = Greeter;
-greeterMaker.standardGreeting = "Hey there!";
-var greeter2:Greeter = new greeterMaker();
-alert(greeter2.greet());
-</code></pre>
-
-<p>这里‘greeter1’和上例工作很相似。我们初始化了‘Greeter’类，并调用此对象。其结果在上例已经看见。</p>
-
-<p>接着，我们直接使用了类访问。首先我们定义了一个新的‘greeterMaker’的变量，这变量保持了Greeter类的类型信息，这里我们使用的是‘typeof Greeter’，这会返回Greeter自身的类类型信息。这个类型信息中会包含所以的静态成员信息和实例化对象的构造函数信息。然后通过‘new’ greeterMaker来创建一个Greeter的实例对象，在调用其方法greet。</p>
-
-<h2>利用interface来使用class</h2>
-
-<p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
-
-<pre class='green'><code>class Point {
-    x: number;
-    y: number;
-}
-
-interface Point3d extends Point {
-    z: number;
-}
-
-var point3d: Point3d = {x: 1, y: 2, z: 3};
-</code></pre>
-
-<p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
 ]]></content>
   </entry>
   
