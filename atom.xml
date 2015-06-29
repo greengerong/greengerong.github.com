@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-06-30T06:39:00+08:00</updated>
+  <updated>2015-06-30T06:40:55+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -108,7 +108,7 @@
 
 <p>这里创建了一个叫dy-compile的指令，它首先会监听绑定属性html值的变化，当html内容存在的时候，它会尝试首先创个一个子scope，然后利用$compile服务来动态连接传入的html，并替换掉当前DOM节点；这里创建子scope的原因，是方便在每次销毁DOM的时，也能容易的销毁掉scope，去掉HTML compile带来的watchers函数，并在最后的父scope销毁的时候，也会尝试销毁该scope。</p>
 
-<p>因为有了上边的compile的编译和连接，则ngHref指令就可以生效了。这里只是尝试给出动态compile angular模块的例子，具体的实现方式，请参照你的页面来声明特定的directive。</p>
+<p>因为有了上边的compile的编译和连接，则ngHref指令就可以生效了。这里只是尝试给出动态compile angular模块的例子，具体的实现方式，请参照你的业务来声明特定的directive。</p>
 ]]></content>
   </entry>
   
