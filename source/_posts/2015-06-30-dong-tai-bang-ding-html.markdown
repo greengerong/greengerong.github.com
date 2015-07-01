@@ -66,8 +66,8 @@ JavaScript：
 	                iAttrs.$observe("html", function(html) {
 	                    if (html) {
 	                        destroyChildScope();
-	                        childScope = scope.$new(true);
-	                        var content = $compile(html)(scope);
+	                        childScope = scope.$new(false);
+	                        var content = $compile(html)(childScope);
 	                        root.replaceWith(content);
 	                        root = content;
 	                    }
