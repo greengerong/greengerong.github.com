@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-06-30T06:40:55+08:00</updated>
+  <updated>2015-07-01T21:30:45+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -82,8 +82,8 @@
                 iAttrs.$observe("html", function(html) {
                     if (html) {
                         destroyChildScope();
-                        childScope = scope.$new(true);
-                        var content = $compile(html)(scope);
+                        childScope = scope.$new(false);
+                        var content = $compile(html)(childScope);
                         root.replaceWith(content);
                         root = content;
                     }
