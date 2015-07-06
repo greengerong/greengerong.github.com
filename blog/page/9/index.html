@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在最近工作中遇到对用户验证，需要根据用户名和密码验证用户是否合法。在外文网站找到的这段代码，在这里分享给大家，如果你也需要用户验证的话，那么可以直接copy使用，现在没地方用，也可以收藏备用。 Function Test- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,125 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/09/fen-xiang-yi-duan-PowerShell-yong-hu-ren-zheng-Function/">分享一段PowerShell用户认证Function</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/06/09/fen-xiang-yi-duan-PowerShell-yong-hu-ren-zheng-Function/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/06/09/fen-xiang-yi-duan-PowerShell-yong-hu-ren-zheng-Function/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在最近工作中遇到对用户验证，需要根据用户名和密码验证用户是否合法。在外文网站找到的这段代码，在这里分享给大家，如果你也需要用户验证的话，那么可以直接copy使用，现在没地方用，也可以收藏备用。</p>
+
+<pre class='green'><code>Function Test-UserCredential {
+
+    [CmdletBinding()] [OutputType([System.Boolean])]
+
+    param(
+
+     [Parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]
+
+     [System.String] $Username,
+
+
+
+
+     [Parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]
+
+     [System.String] $Password,
+
+
+
+     [Parameter()]
+
+     [Switch] $Domain
+
+ )
+
+
+
+ Begin {
+
+     $assembly = [system.reflection.assembly]::LoadWithPartialName('System.DirectoryServices.AccountManagement')
+
+ }
+
+
+
+ Process {
+
+     try {
+
+         $system = Get-WmiObject -Class Win32_ComputerSystem
+
+         if ($Domain) {
+
+             if (0, 2 -contains $system.DomainRole) {
+
+                 throw 'This computer is not a member of a domain.'
+
+             } else {
+
+                 $principalContext = New-Object -TypeName System.DirectoryServices.AccountManagement.PrincipalContext 'Domain', $system.Domain
+
+             }
+
+         } else {
+
+             $principalContext = New-Object -TypeName System.DirectoryServices.AccountManagement.PrincipalContext 'Machine', $env:COMPUTERNAME
+
+         }
+
+
+
+         return $principalContext.ValidateCredentials($Username, $Password)
+
+     }
+
+     catch {
+
+         throw 'Failed to test user credentials. The error was: "{0}".' -f $_
+
+     }
+
+ }
+</code></pre>
+
+<p>}</p>
+
+<p>使用很简单方便：Test-UserCredential&nbsp; &#8220;用户名&#8221; &#8220;密码&#8221; &#8220;用户域&#8221;,第三个参数&#8220;用户域&#8221;为可选参数,返回为布尔类型。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543584.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1022,73 +1141,6 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">架构设计&#8211;逻辑层 vs 物理层</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; Layer 和Tier都是层，但是他们所表现的含义不同，Tier指的是软件系统中物理上的软件和硬件，具体指部署在某服务器上，而Layer（逻辑层）指软件系统中完成特定功能的逻辑模块，逻辑概念。</p>
-
-<p>&nbsp;&nbsp; Layer是逻辑上 组织代码的形式。比如逻辑分层中表现层，服务层，业务层，领域层，他们是软件功能来划分的。并不指代部署在那台具体的服务器上或者，物理位置。</p>
-
-<p>&nbsp; Tier这指代码运行部署的具体位置，是一个物理层次上的划为，Tier就是指逻辑层Layer具体的运行位置。所以逻辑层可以部署或者迁移在不同物理层，一个物理层可以部署运行多个逻辑层。</p>
-
-<p>&nbsp;&nbsp; 从Layer和Tier就会延伸到逻辑架构和物理架构。我们一个逻辑分层（N-Layer）的部署运行环境可以在一台或者是多台服务器，由于物理环境的多样性，逻辑层次的部署也具有多样性。这就需要我们必须了解物理架构和逻辑架构。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 大多数情况下我们所说的N层应用系统指的是物理模型，具体模块的分布物理位置。客户端，服务层，逻辑层，数据库服务器，与我们的逻辑模型之间并不是一对一的关系。逻辑上的分层架构与物理位置上的服务器数量和网络边界多少无关，逻辑架构层次只与我们的功能划分相关，是按照功能划分。经典的3-Layer架构：表现层，业务层，数据访问层，他们可能运行在同一物理位置上。也可以是3台计算机上，这并不是逻辑架构所关注的。逻辑层次和物理分层数量关系为：逻辑层数必须不小于物理层数，因为一个物理层可以部署一个或者多个逻辑层次，逻辑层次只能迁移在不同的物理环境。</p>
-
-<p>&nbsp;&nbsp; 逻辑层次的架构能帮助我们解决逻辑耦合，达到灵活配置，迁移。</p>
-
-<p>&nbsp;&nbsp; 一个良好的逻辑分层可以带来：</p>
-
-<ol>
-<li>逻辑组织代码2.  易于维护3.  代码更好的重用4.  更好的团队开发体验5.  代码逻辑的清晰度</li>
-</ol>
-
-
-<p>&nbsp; 一个良好的物理架构可以带来：</p>
-
-<ol>
-<li>性能的提升2.  可伸缩性3.  容错性4.  安全性</li>
-</ol>
-
-
-<p>&nbsp; 逻辑层次越多会影响程序运行的性能，但代码层次的低耦合，松散化，是需要架构师的权衡的，我觉得一般应用程序的瓶颈并不在这里。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/10/">&larr; Older</a>
@@ -1122,6 +1174,10 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明获取重载</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
       </li>
     
@@ -1147,10 +1203,6 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
     
       <li class="post">
         <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
   </ul>

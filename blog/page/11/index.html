@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; PostSharp 这个静态植入的aop框架我就不多说了，在以前的aop文件，我们也尝试用MSBuild+Mono.Cicel理解静态植入AOP的原理。最近公司准备购买Postsharp做一些AOP，减少开发是代码量，至于选择AOP相信也不用多说。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,171 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">AOP之PostSharp初见-OnExceptionAspect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/12/04/AOP-zhi-PostSharp-chu-jian-OnExceptionAspect/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PostSharp 这个静态植入的aop框架我就不多说了，在以前的aop文件，我们也尝试用<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>理解静态植入AOP的原理。最近公司准备购买Postsharp做一些AOP，减少开发是代码量，至于选择AOP相信也不用多说。我也在今天重新了解了些Postsharp最新版更新，这阵子的博客更新也少了，所以准备在<a href="http://www.cnblogs.com/whitewolf/category/312638.html">MSBuild+Mono.Cicel</a>的基础上再一些Postsharp系列。今天既然是初见，那么我们就从最简单的OnExceptionAspect开始。</p>
+
+<p>一：OnExceptionAspect</p>
+
+<p>起定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132372435.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132381812.png" title="image" alt="image" /></a></p>
+
+<p>先写Aspect Attribute：</p>
+
+<pre class='green'><code>[Serializable] 
+    public class ExceptionAspectDemoAttribute : OnExceptionAspect 
+    { 
+
+        public override void OnException(MethodExecutionArgs args) 
+        { 
+            var msg = string.Format("时间[{0:yyyy年MM月dd日 HH时mm分}]方法{1}发生异常: {2}\n{3}", DateTime.Now, args.Method.Name, args.Exception.Message, args.Exception.StackTrace); 
+            Console.WriteLine(msg); 
+            args.FlowBehavior = FlowBehavior.Continue; 
+        } 
+        public override Type GetExceptionType(System.Reflection.MethodBase targetMethod) 
+        { 
+            return typeof(NullReferenceException); 
+        } 
+    }
+</code></pre>
+
+<p>注意Postsharp的Aspect都需要标记为可序列化的，因为在编译时会为我们二进制序列化为资源，减少在运行是的开销，这个将在后面专门讲。</p>
+
+<p>上面的code继承至OnExceptionAspect，并且override OnException和GetExceptionType，GetExceptionType为我们需要处理的特定异常。OnException为异常处理决策方法。我们的异常处理决策是当NullReferenceException时候我们会记录日志，并且方法指定继续（args.FlowBehavior = FlowBehavior.Continue）。</p>
+
+<p>看看我们的测试代码：</p>
+
+<pre class='green'><code> class Program 
+   { 
+       static void Main(string[] args) 
+       { 
+           Program.ExceptionAspectDemoAttribute1(); 
+           Program.ExceptionAspectDemoAttribute2(); 
+           Console.Read(); 
+       } 
+       [ExceptionAspectDemo] 
+       public static void ExceptionAspectDemoAttribute1() 
+       { 
+           string s = null; 
+           s.GetType(); 
+       } 
+       [ExceptionAspectDemo] 
+       public static void ExceptionAspectDemoAttribute2() 
+       { 
+           throw new Exception("exception"); 
+       } 
+   }
+</code></pre>
+
+<p>&nbsp;很显然我们的两个方法抛出了null异常和自定义异常，预期是NullReferenceException会被扑捉，而自定义异常会中断，运行效果如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013240186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132436890.png" title="image" alt="image" /></a>&nbsp;</p>
+
+<p>我们在来看看postsharp为我们做了什么，当然是反编译看看：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013246115.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132497243.png" title="image" alt="image" /></a></p>
+
+<p>二：Postsharp的Multicasting</p>
+
+<p>1:Multicasting class:</p>
+
+<p>&nbsp; 在这随便也说一下postsharp的Multicasting，多播这样翻译感觉有点死板呵呵，理解就行。利用这一点我们可以吧我们的aspect放在class，assembly等目标上匹配我们的多个目标。比如现在我们不想在我们的每个方法上加attribute，那我们可以选择在class上，如：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132509686.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132515475.png" title="image" alt="image" /></a></p>
+
+<p>反编译，同样注入了我们每个方法：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132524994.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132551142.png" title="image" alt="image" /></a></p>
+
+<p>2:Multicasting assembly:</p>
+
+<p>我们同样可以利用</p>
+
+<p>[assembly: PostSharpDemo.ExceptionAspectDemoAttribute()]</p>
+
+<p>标记在我们的程序集上。</p>
+
+<p>3:AttributeExclude:</p>
+
+<p>但是注意这样也标记了我们的aspect，某些时候可能会导致堆栈溢出 ，我们可以用AttributeExclude=true来排除。</p>
+
+<p>同时我们也可以设置应用目标：AttributeTargetMemberAttributes是一个枚举类型，定义如下：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111204013255520.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132564009.png" title="image" alt="image" /></a></p>
+
+<p>比如我们需要过滤编译时候生成的目标（自动属性，action等等），</p>
+
+<div class="cnblogs_code">
+<div>[assembly:&nbsp;PostSharpDemo1.MethodTraceAspect(AttributeExclude&nbsp;=&nbsp;<span style="color: #0000ff">true</span>,&nbsp;AttributePriority&nbsp;=&nbsp;<span style="color: #800080">0</span>,&nbsp;AttributeTargetMemberAttributes&nbsp;=&nbsp;MulticastAttributes.CompilerGenerated)]</div></div>
+
+
+<p>&nbsp;4:AttributePriority:</p>
+
+<p>还有AttributePriority，我们可以设置编译时优先级。如果我们对目标标记了多个aspect，这样postsharp就不确定注入先后顺序，这样不能确保正确性，在vs编译时候我们会看见警告：Their order of execution is undeterministic.</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040132595140.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112040133019119.png" title="image" alt="image" /></a></p>
+
+<p>这是时候AttributePriority就派上用途了来决定我们植入的先后优先级。</p>
+
+<p>5:其他匹配</p>
+
+<p>同上AttributeTargetMemberAttributes 我们还可以利用AttributeTargetMembers，AttributeTargetTypes进行目标名称的匹配，支持模糊匹配。</p>
+
+<p>附件：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar" title="Demo下载">Demo下载</a></p>
+
+<p>我的AOP资料：</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1707,84 +1872,6 @@ namespace SilverlightApplication2
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">混合模式程序集是针对“V2.050727”版本生成的，在没有配置信息情况下，无发在4.0运行时架子程序集。</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/05/14/hun-he-mo-shi-cheng-xu-ji-shi-zhen-dui-V2-050727-ban-ben-sheng-cheng-di-zai-mei-you-pei-zhi-xin-xi-qing-kuang-xia-wu-fa-zai-4-0-yun-hang-shi-jia-zi-cheng-xu-ji/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。</p>
-
-<p>&nbsp;</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/MixedRUntime1.jpg" alt="" /></p>
-
-<p>&nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入：</p>
-
-<p><font color="#ff0000">&nbsp;&lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
-&nbsp; &lt;/startup&gt; </font></p>
-
-<p>&nbsp;参考原文：</p>
-
-<p>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; error using .NET 4 Development Web Server</p>
-
-<p>If your application has a dependency on an assembly built in .NET 2 you will see the error below if you try to run your application when it has been built in.NET 4.</p>
-
-<p><em><strong>Mixed mode assembly is built against version &lsquo;v2.0.50727&rsquo; of the runtime and cannot be loaded in the 4.0 runtime without additional configuration information.</strong></em></p>
-
-<p>This can be important in VS2010 testing, as test projects must be built as .NET 4, there is no option to build with an older runtime. I suffered this problem when trying to do some development where I hosted a <a href="http://blogs.blackmarble.co.uk/blogs/rfennell/archive/2010/03/25/a-fix-to-run-typemock-isolator-inside-the-page-load-for-an-aspx-page-on-vs2010-net4.aspx">webpart that make calls into SharePoint (that was faked out with Typemock Isolator) inside a ASP.NET 4.0 test harness</a></p>
-
-<p>The answer to this problem is well documented, you need to add the <strong>useLegacyV2RuntimeActivationPolicy</strong> attribute to a .CONFIG file, but which one? It is not the <strong>web.config</strong> file you might suspect, but the <strong>C:\Program Files (x86)\Common Files\microsoft shared\DevServer\10.0\WebDev.WebServer40.exe.config</strong> file. The revised config file should read as follows (new bits in <font color="#ff0000">red</font>)</p>
-
-<blockquote><p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;utf-8&rdquo; ?&gt;
-&lt;configuration&gt;
-&nbsp;<font color="#ff0000"> &lt;startup useLegacyV2RuntimeActivationPolicy=&ldquo;true&rdquo;&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;supportedRuntime version=&ldquo;v4.0&rdquo; /&gt;&nbsp;&nbsp;&nbsp;
-&nbsp; &lt;/startup&gt; </font></p>
-
-<p>&nbsp; &lt;runtime&gt;
-&nbsp;&nbsp;&nbsp; &lt;generatePublisherEvidence enabled=&ldquo;false&rdquo; /&gt;
-&nbsp; &lt;/runtime&gt;
-&lt;/configuration&gt;</p></blockquote>
-
-<p>Note: Don&#8217;t add the following _&lt;supportedRuntime version=&ldquo;v2.0.50727&rdquo; /&gt;&nbsp; this cause the web server to crash on start-up. _</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/05/14/2046449.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/12/">&larr; Older</a>
@@ -1818,6 +1905,10 @@ namespace SilverlightApplication2
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明获取重载</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
       </li>
     
@@ -1843,10 +1934,6 @@ namespace SilverlightApplication2
     
       <li class="post">
         <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
   </ul>

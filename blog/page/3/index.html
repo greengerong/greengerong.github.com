@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="简介 JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式， &hellip;">
+  <meta name="description" content="今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type&hellip;等简单的常用e2e测试动作封装，使得其语义清晰 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,174 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Nightmare基于phantomjs的自动化测试套件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-20T18:58:15+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type&hellip;等简单的常用e2e测试动作封装，使得其语义清晰，简洁。其官方在<a href="http://www.nightmarejs.org/">http://www.nightmarejs.org/</a>.</p>
+
+<p>如果你的项目测试不需要想需求和测试人员理解，那么基于nightmare测试或许是一个好的选择，你的降低测试代码的成本，以及测试套件的部署。我们可以选择基于jasmine-node等作为测试套件集成。</p>
+
+<p>安装nightmare：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='sh'><span class='line'>npm install nightmare
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面我们对比与远程phantomjs的对比：</p>
+
+<p>原phantomjs的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">phantom</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">ph</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">ph</span><span class="p">.</span><span class="nx">createPage</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;http://yahoo.com&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span>
+</span><span class='line'>          <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;input[title=&quot;Search&quot;]&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">el</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">&#39;github nightmare&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;.searchsubmit&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">event</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">(</span><span class="s1">&#39;MouseEvent&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">event</span><span class="p">.</span><span class="nx">initEvent</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">el</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">ph</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>nightmare代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="k">new</span> <span class="nx">Nightmare</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="s1">&#39;http://yahoo.com&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;input[title=&quot;Search&quot;]&#39;</span><span class="p">,</span> <span class="s1">&#39;github nightmare&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="s1">&#39;.searchsubmit&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一切显而易见，不用多说。</p>
+
+<p>nightmare同时也支持插件方式抽取公用逻辑，以供复用和提高测试代码语意，如下例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Login to a Swiftly account.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * @param {String} email</span>
+</span><span class='line'><span class="cm"> * @param {String} password</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">exports</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">nightmare</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">nightmare</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">viewport</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="s1">&#39;https://swiftly.com/login&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;#username&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s1">&#39;#password&#39;</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="s1">&#39;.button--primary&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">wait</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用代码很简单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">Swiftly</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nightmare-swiftly&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">new</span> <span class="nx">Nightmare</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Swiftly</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Swiftly</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="nx">instructions</span><span class="p">,</span> <span class="nx">uploads</span><span class="p">,</span> <span class="nx">path</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1371,222 +1539,6 @@ list[1] = 100;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
-        
-           | <a href="/blog/2014/09/03/karma-for-jquery-unit-test/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
-
-<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
-
-<h4>jasmime测试套件</h4>
-
-<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
-
-<h4>jasmine-jquery</h4>
-
-<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
-
-<pre class='green'><code>jasmine.getFixtures().fixturesPath = 'base path';
-loadFixtures('myfixture.html');
-jasmine.getFixtures().load(...);
-</code></pre>
-
-<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
-
-<h4>jasmine-ajax</h4>
-
-<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
-
-<pre class='green'><code> beforeEach(function() {
-    jasmine.Ajax.requests.when = function (url) {
-      return this.filter("/jquery/ajax")[0];
-    };
-    jasmine.Ajax.install();
-});
-
-it("jquery ajax success with getResponse", function() {
-    var result;
-
-    $.get("/jquery/ajax").success(function(data) {
-        result = data;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'data from mock ajax'
-    });
-
-    expect(result).toEqual('data from mock ajax');
-});
-
-
-afterEach(function() {
-    jasmine.Ajax.uninstall();
-});
-</code></pre>
-
-<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
-
-<h4>运用karma runner</h4>
-
-<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
-
-<p>所以分为以下几步：
-1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
-2：host 测试的html fixtures。
-3：加载html fixtures 与install ajax之前。</p>
-
-<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
-
-<pre class='green'><code>files: [
-    {
-      pattern: 'view/**/*.html',
-      watched: true,
-      included: false,
-      served: true
-    },
-    'bower_components/jquery/dist/jquery.js',
-    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
-    'bower_components/jasmine-ajax/lib/mock-ajax.js',
-    'src/*.js',
-    'test/*.js'
-],
-</code></pre>
-
-<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
-
-<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
-
-<p>测试html fixtures加载：</p>
-
-<pre class='green'><code>describe('console html content', function() {
-
-  beforeEach(function() {
-    jasmine.getFixtures().fixturesPath = 'base/view/';
-    loadFixtures("index.html");
-  });
-
-  it('index html', function() {
-    expect($("h2")).toBeInDOM();
-    expect($("h2")).toContainText("this is index page");
-  });
-
-})
-</code></pre>
-
-<p>测试mock ajax：</p>
-
-<pre class='green'><code>describe('console html content', function() {
-
-  beforeEach(function() {
-     jasmine.Ajax.requests.when = function(url) {
-         return this.filter("/jquery/ajax")[0];
-     };
-     jasmine.Ajax.install();
- });
-
-
-  it('index html', function() {
-    expect($("h2")).toBeInDOM();
-    expect($("h2")).toContainText("this is index page");
-  });
-
-  it("ajax mock", function() {
-    var doneFn = jasmine.createSpy("success");
-
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(args) {
-      if (this.readyState == this.DONE) {
-        doneFn(this.responseText);
-      }
-    };
-
-    xhr.open("GET", "/some/cool/url");
-    xhr.send();
-
-    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
-    expect(doneFn).not.toHaveBeenCalled();
-
-    jasmine.Ajax.requests.mostRecent().response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'awesome response'
-    });
-
-    expect(doneFn).toHaveBeenCalledWith('awesome response');
-  });
-
-  it("jquery ajax success with getResponse", function() {
-    var result;
-    getResponse().then(function(data){
-      result = data;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 200,
-      "contentType": 'text/plain',
-      "responseText": 'data from mock ajax'
-    });
-
-    expect(result).toEqual('data from mock ajax');
-  });
-
-  it("jquery ajax error", function() {
-    var status;
-    $.get("/jquery/ajax").error(function(response) {
-      status = response.status;
-    });
-
-    jasmine.Ajax.requests.when("/jquery/ajax").response({
-      "status": 400
-    });
-
-    expect(status).toEqual(400);
-  });
-
-  afterEach(function() {
-    jasmine.Ajax.uninstall();
-  });
-})      
-</code></pre>
-
-<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1620,6 +1572,10 @@ afterEach(function() {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明获取重载</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
       </li>
     
@@ -1645,10 +1601,6 @@ afterEach(function() {
     
       <li class="post">
         <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>
       </li>
     
   </ul>

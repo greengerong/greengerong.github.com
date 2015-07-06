@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-07-01T21:30:45+08:00</updated>
+  <updated>2015-07-06T08:30:59+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,106 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Angular Module声明获取重载]]></title>
+    <link href="http://greengerong.github.io/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/"/>
+    <updated>2015-07-06T08:30:33+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai</id>
+    <content type="html"><![CDATA[<p>module是angular中重要的模块组织方式，它提供了将一组内聚的业务组件（controller、service、filter、directive&hellip;）封装在一起的能力。这样做可以将代码按照业务领域问题分module的封装，然后利用module的依赖注入其关联的模块内容，使得我们能够更好的”分离关注点“，达到更好的”高内聚低耦合“。”高内聚低耦合“是来自面向对象设计原则。内聚是指模块或者对象内部的完整性，一组紧密联系的逻辑应该被封装在同一模块、对象等代码单元中，而不是分散在各处；耦合则指模块、对象等代码单元之间的依赖程度，如果一个模块的修改，会影响到另一个模块，则说明这两模块之间是相互依赖紧耦合的。</p>
+
+<p>同时module也是我们angular代码的入口，首先需要声明module，然后才能定义angular中的其他组件元素，如controller、service、filter、directive、config代码块、run代码块等。</p>
+
+<p>关于module的定义为：angular.module(&lsquo;com.ngbook.demo&rsquo;, [])。关于module函数可以传递3个参数，它们分别为：</p>
+
+<ol>
+<li>name：模块定义的名称，它应该是一个唯一的必选参数，它会在后边被其他模块注入或者是在ngAPP指令中声明应用程序主模块；</li>
+<li>requires：模块的依赖，它是声明本模块需要依赖的其他模块的参数。特别注意：如果在这里没有声明模块的依赖，则我们是无法在模块中使用依赖模块的任何组件的；它是个可选参数。</li>
+<li>configFn： 模块的启动配置函数，在angular config阶段会调用该函数，对模块中的组件进行实例化对象实例之前的特定配置，如我们常见的对$routeProvider配置应用程序的路由信息。它等同于”module.config“函数，建议用”module.config“函数替换它。这也是个可选参数。</li>
+</ol>
+
+
+<p>对于angular.module方法，我们常用的方式有有种，分别为angular.module(&lsquo;com.ngbook.demo&rsquo;, [可选依赖])和angular.module(&lsquo;com.ngbook.demo&rsquo;)。请注意它是完全不同的方式，一个是声明创建module，而另外一个则是获取已经声明了的module。在应用程序中，对module的声明应该有且只有一次；对于获取module，则可以有多次。推荐将angular组件独立分离在不同的文件中，module文件中声明module，其他组件则引入module，需要注意的是在打包或者script方式引入的时候，我们需要首先加载module声明文件，然后才能加载其他组件模块。</p>
+
+<p>在angular中文社区群中，有时会听见某些同学问关于”ng:areq“的错误：</p>
+
+<pre><code> [ng:areq] Argument 'DemoCtrl' is not a function, got undefined！
+</code></pre>
+
+<p>这往往是因为忘记定义controller或者是声明了多次module，多次声明module会导致前边的module定义信息被清空，所以程序就会找不到已定义的组件。这我们也能从angular源码中了解到（来自loader.js）：</p>
+
+<pre><code>function setupModuleLoader(window) {
+            ...
+            function ensure(obj, name, factory) {
+                return obj[name] || (obj[name] = factory());
+            }
+            var angular = ensure(window, 'angular', Object);
+            return ensure(angular, 'module', function() {
+                var modules = {};
+                return function module(name, requires, configFn) {
+                    var assertNotHasOwnProperty = function(name, context) {
+                        if (name === 'hasOwnProperty') {
+                            throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
+                        }
+                    };
+
+                    assertNotHasOwnProperty(name, 'module');
+                    if (requires &amp;&amp; modules.hasOwnProperty(name)) {
+                        modules[name] = null;
+                    }
+                    return ensure(modules, name, function() {
+                        if (!requires) {
+                            throw $injectorMinErr('nomod', "Module '{0}' is not available! You either misspelled " +
+                                "the module name or forgot to load it. If registering a module ensure that you " +
+                                "specify the dependencies as the second argument.", name);
+                        }
+                        var invokeQueue = [];
+                        var runBlocks = [];
+                        var config = invokeLater('$injector', 'invoke');
+                        var moduleInstance = {
+                            _invokeQueue: invokeQueue,
+                            _runBlocks: runBlocks,
+                            requires: requires,
+                            name: name,
+                            provider: invokeLater('$provide', 'provider'),
+                            factory: invokeLater('$provide', 'factory'),
+                            service: invokeLater('$provide', 'service'),
+                            value: invokeLater('$provide', 'value'),
+                            constant: invokeLater('$provide', 'constant', 'unshift'),
+                            animation: invokeLater('$animateProvider', 'register'),
+                            filter: invokeLater('$filterProvider', 'register'),
+                            controller: invokeLater('$controllerProvider', 'register'),
+                            directive: invokeLater('$compileProvider', 'directive'),
+                            config: config,
+                            run: function(block) {
+                                runBlocks.push(block);
+                                return this;
+                            }
+                        };
+                        if (configFn) {
+                            config(configFn);
+                        }
+                        return moduleInstance;
+
+                        function invokeLater(provider, method, insertMethod) {
+                            return function() {
+                                invokeQueue[insertMethod || 'push']([provider, method, arguments]);
+                                return moduleInstance;
+                            };
+                        }
+                    });
+                };
+            });
+        }
+</code></pre>
+
+<p>在代码中，我们能了解到angular在启动时，会设置全局的angular对象，然后在angular对象上发布module这个API。关于module API代码，能清晰的看见第一行谓语句，module名称不能以hasOwnProperty命名，否则会抛出”badname“的错误信息。紧接着，如果传入了name参数，其表示是声明module，则会删除已有的module信息，将其置为null。</p>
+
+<p>从moduleInstance的定义，我们能够看出，angular.module为我们公开的API有：<em>invokeQueue、</em>runBlocks、requires、name、provider、factory、servic、value、constant、animation、filter、controller、directive、config、run。其中<em>invokeQueue和</em>runBlocks是按名约定的私有属性，请不要随意使用，其他API都是我们常用的angular组件定义方法，从invokeLater代码中能看到这类angular组件定义的返回依然是moduleInstance实例，这就形成了流畅API，推荐使用链式定义这些组件，而不是声明一个全局的module变量。</p>
+
+<p>最后，如果传入了第三个参数configFn，则会将它配置到config信息中，当angular进入config阶段时，它们将会依次执行，进行对angular应用或者angular组件如service等的实例化前的配置。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[动态绑定HTML]]></title>
@@ -489,176 +589,6 @@ console.log(curryFunc(sayHello));
 <p>```</p>
 
 <p>首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足之处，也希望大家指出来。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TypeScript - Modules(模块)]]></title>
-    <link href="http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai/"/>
-    <updated>2015-04-12T16:52:50+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai</id>
-    <content type="html"><![CDATA[<h2>简介</h2>
-
-<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
-
-<h2>第一步</h2>
-
-<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
-
-<h4>单文件的验证逻辑</h4>
-
-<pre><code>interface StringValidator {
-    isAcceptable(s: string): boolean;
-}
-
-var lettersRegexp = /^[A-Za-z]+$/;
-var numberRegexp = /^[0-9]+$/;
-
-class LettersOnlyValidator implements StringValidator {
-    isAcceptable(s: string) {
-        return lettersRegexp.test(s);
-    }
-}
-
-class ZipCodeValidator implements StringValidator {
-    isAcceptable(s: string) {
-        return s.length === 5 &amp;&amp; numberRegexp.test(s);
-    }
-}
-
-// Some samples to try
-var strings = ['Hello', '98052', '101'];
-// Validators to use
-var validators: { [s: string]: StringValidator; } = {};
-validators['ZIP code'] = new ZipCodeValidator();
-validators['Letters only'] = new LettersOnlyValidator();
-// Show whether each string passed each validator
-strings.forEach(s =&gt; {
-    for (var name in validators) {
-        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
-    }
-});
-</code></pre>
-
-<h4>增加模块化</h4>
-
-<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
-
-<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
-
-<h4>模块化的Validators</h4>
-
-<pre><code>module Validation {
-    export interface StringValidator {
-        isAcceptable(s: string): boolean;
-    }
-
-    var lettersRegexp = /^[A-Za-z]+$/;
-    var numberRegexp = /^[0-9]+$/;
-
-    export class LettersOnlyValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return lettersRegexp.test(s);
-        }
-    }
-
-    export class ZipCodeValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return s.length === 5 &amp;&amp; numberRegexp.test(s);
-        }
-    }
-}
-
-// Some samples to try
-var strings = ['Hello', '98052', '101'];
-// Validators to use
-var validators: { [s: string]: Validation.StringValidator; } = {};
-validators['ZIP code'] = new Validation.ZipCodeValidator();
-validators['Letters only'] = new Validation.LettersOnlyValidator();
-// Show whether each string passed each validator
-strings.forEach(s =&gt; {
-    for (var name in validators) {
-        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
-    }
-});
-</code></pre>
-
-<h2>分离模块文件</h2>
-
-<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
-
-<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
-
-<h4>多文件的内部模块</h4>
-
-<h6>Validation.ts</h6>
-
-<pre><code>module Validation {
-    export interface StringValidator {
-        isAcceptable(s: string): boolean;
-    }
-}
-</code></pre>
-
-<h6>LettersOnlyValidator.ts</h6>
-
-<pre><code>/// &lt;reference path="Validation.ts" /&gt;
-module Validation {
-    var lettersRegexp = /^[A-Za-z]+$/;
-    export class LettersOnlyValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return lettersRegexp.test(s);
-        }
-    }
-}
-</code></pre>
-
-<h6>ZipCodeValidator.ts</h6>
-
-<pre><code>/// &lt;reference path="Validation.ts" /&gt;
-module Validation {
-    var numberRegexp = /^[0-9]+$/;
-    export class ZipCodeValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return s.length === 5 &amp;&amp; numberRegexp.test(s);
-        }
-    }
-}
-</code></pre>
-
-<h6>Test.ts</h6>
-
-<pre><code>/// &lt;reference path="Validation.ts" /&gt;
-/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
-/// &lt;reference path="ZipCodeValidator.ts" /&gt;
-
-// Some samples to try
-var strings = ['Hello', '98052', '101'];
-// Validators to use
-var validators: { [s: string]: Validation.StringValidator; } = {};
-validators['ZIP code'] = new Validation.ZipCodeValidator();
-validators['Letters only'] = new Validation.LettersOnlyValidator();
-// Show whether each string passed each validator
-strings.forEach(s =&gt; {
-    for (var name in validators) {
-        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
-    }
-});
-</code></pre>
-
-<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
-
-<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
-
-<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
-
-<h6>#MyTestPage.html (excerpt)</h6>
-
-<pre><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
-&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
-&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
-&lt;script src="Test.js" type="text/javascript" /&gt;
-</code></pre>
 ]]></content>
   </entry>
   
