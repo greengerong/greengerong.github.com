@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "angular Module声明获取重载"
+title: "angular Module声明和获取重载"
 date: 2015-07-06 08:30:33 +0800
 comments: true
 categories: [JavaScript, angular]
