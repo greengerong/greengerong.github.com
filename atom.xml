@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-07-06T08:30:59+08:00</updated>
+  <updated>2015-07-06T08:32:26+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Angular Module声明获取重载]]></title>
+    <title type="html"><![CDATA[Angular Module声明和获取重载]]></title>
     <link href="http://greengerong.github.io/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/"/>
     <updated>2015-07-06T08:30:33+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai</id>
