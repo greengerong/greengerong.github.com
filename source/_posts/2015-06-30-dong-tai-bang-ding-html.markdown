@@ -41,7 +41,7 @@ JavaScript：
 HTML：
 
 	<body ng-controller="DemoCtrl as demo">
-	    <dy-compile html="% raw %}{{demo.html}}{% endraw %}">
+	    <dy-compile html="{% raw %}{{demo.html}}{% endraw %}">
 	    </dy-compile>
 	    <button ng-click="demo.change();">change</button>
 	</body>
