@@ -41,7 +41,7 @@ JavaScript：
 HTML：
 
 	<body ng-controller="DemoCtrl as demo">
-	    <dy-compile html="{% raw %}{{demo.html}}{% endraw %}">
+	    <dy-compile html=" {% raw %} {{demo.html}} {% endraw %} ">
 	    </dy-compile>
 	    <button ng-click="demo.change();">change</button>
 	</body>
@@ -80,12 +80,12 @@ JavaScript：
 	    .controller("DemoCtrl", [function() {
 	        var vm = this;
 
-	        vm.html = '<h2>hello : <a ng-href="{{demo.link}}">angular</a></h2>';
+	        vm.html = '<h2>hello : <a ng-href=" {% raw %} {{demo.link}} {% endraw %}  ">angular</a></h2>';
 
 	        vm.link = 'https://angular.io/';
 	        var i = 0;
 	        vm.change = function() {
-	            vm.html = '<h3>change after : <a ng-href="{{demo.link}}">' + (++i) + '</a></h3>';
+	            vm.html = '<h3>change after : <a ng-href=" {% raw %} {{demo.link}} {% endraw %} ">' + (++i) + '</a></h3>';
 	        };
 	    }]);
 
