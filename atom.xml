@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-07-06T08:32:26+08:00</updated>
+  <updated>2015-07-17T16:38:58+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -156,7 +156,7 @@
 <p>HTML：</p>
 
 <pre class='green'><code>&lt;body ng-controller="DemoCtrl as demo"&gt;
-    &lt;dy-compile html=""&gt;
+    &lt;dy-compile html="{{demo.html}}"&gt; 
     &lt;/dy-compile&gt;
     &lt;button ng-click="demo.change();"&gt;change&lt;/button&gt;
 &lt;/body&gt;
@@ -196,12 +196,12 @@
     .controller("DemoCtrl", [function() {
         var vm = this;
 
-        vm.html = '&lt;h2&gt;hello : &lt;a ng-href=""&gt;angular&lt;/a&gt;&lt;/h2&gt;';
+         vm.html = '&lt;h2&gt;hello : &lt;a ng-href="{{demo.link}}"&gt;angular&lt;/a&gt;&lt;/h2&gt;';  
 
         vm.link = 'https://angular.io/';
         var i = 0;
         vm.change = function() {
-            vm.html = '&lt;h3&gt;change after : &lt;a ng-href=""&gt;' + (++i) + '&lt;/a&gt;&lt;/h3&gt;';
+            vm.html = '&lt;h3&gt;change after : &lt;a ng-href="{{demo.link}}"&gt;' + (++i) + '&lt;/a&gt;&lt;/h3&gt;';  
         };
     }]);
 </code></pre>
