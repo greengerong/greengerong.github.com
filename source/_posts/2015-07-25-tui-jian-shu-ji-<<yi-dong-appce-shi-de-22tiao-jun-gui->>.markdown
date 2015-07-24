@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "推荐书籍-《移动App测试的22条军规》"
+title: "推荐书籍 -《移动App测试的22条军规》"
 date: 2015-07-25 01:29:56 +0800
 comments: true
 categories: [书评，移动，测试]
