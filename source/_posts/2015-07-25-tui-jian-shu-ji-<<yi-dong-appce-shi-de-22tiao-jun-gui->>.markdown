@@ -31,4 +31,4 @@ categories: [书评，移动，测试]
 
 本书的在线购买或试读地址为：[http://item.m.jd.com/ware/view.action?wareId=11730286&from=timeline&isappinstalled=0](http://item.m.jd.com/ware/view.action?wareId=11730286&from=timeline&isappinstalled=0)
 
-![http://m.360buyimg.com/n12/jfs/t1615/101/742241908/97316/39b2b3e/55a8c17eNcf6e3c5b.jpg!q70.jpg](http://m.360buyimg.com/n12/jfs/t1615/101/742241908/97316/39b2b3e/55a8c17eNcf6e3c5b.jpg!q70.jpg)
+![http://img11.360buyimg.com/n1/jfs/t1615/101/742241908/97316/39b2b3e/55a8c17eNcf6e3c5b.jpg](http://img11.360buyimg.com/n1/jfs/t1615/101/742241908/97316/39b2b3e/55a8c17eNcf6e3c5b.jpg)
