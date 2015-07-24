@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp; 混合模式程序集是针对&#8220;V2.050727&#8221;版本生成的，在没有配置信息情况下，无法子啊4.0运行时架子程序集。 &nbsp; &nbsp;&nbsp;&nbsp;我的做法是在文件中加如app.config，加入： &nbsp;&lt;startup &hellip;">
+  <meta name="description" content="&nbsp; 在我们的silverlight项目中，是被打包为xap zip文件下载到客户端，所以silverlight中的app配置文件我们不能直接修改，而在其宿主web host中的web.config在服务端我们也不能直接访问。在我们的项目中遇见了这个问题所以我就有了此博客。 &nbsp;& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,317 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Silverlight获取WebHost配置信息&#8211;WebClient和XmlSerializer模拟</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-06T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/06/Silverlight-huo-qu-WebHost-pei-zhi-xin-xi-WebClient-he-XmlSerializer-mo-ni/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; 在我们的silverlight项目中，是被打包为xap zip文件下载到客户端，所以silverlight中的app配置文件我们不能直接修改，而在其宿主web host中的web.config在服务端我们也不能直接访问。在我们的项目中遇见了这个问题所以我就有了此博客。</p>
+
+<p>&nbsp;&nbsp; 先说明解决这个问题的方案有：</p>
+
+<p>1：调用wcf，webservice，Asp.net页面等服务端数据源，异步显示在我们的UI。</p>
+
+<p>2：利用silverlight项目的宿主页面 object，传入初始化参数，在silverlight app中获取。</p>
+
+<p>上面的方案都是针对于我们的少量有限配置信息的获取。我这里做的是利用在服务端的xml配置文件来模拟配置文件（为什么不用web.config？以为存在权限信息的问题，所以我觉得尽量避免此文件信息暴露）。在silverlight的异步加载xml文档并解析xml文档。形成配置信息。</p>
+
+<p>为了全局使用，早些加载xml文档，我们需要在app中加一句：</p>
+
+<p>SLConfigManager.Current.ConfigPath = &ldquo;../SlConfig.xml&rdquo;;//配置文件的路径，相对于我们的xap文件路径。</p>
+
+<p>我们先看一下测试xml：</p>
+
+<pre class='green'><code>  &lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+&lt;Configuration&gt; 
+  &lt;appSettings&gt; 
+    &lt;add key="test1" value="123"&gt;&lt;/add&gt; 
+    &lt;add key="test2" value="1"&gt;&lt;/add&gt; 
+  &lt;/appSettings&gt; 
+  &lt;Class ClassID="111"&gt; 
+    &lt;Student Age="123"&gt; 
+      &lt;Name&gt;ddddd&lt;/Name&gt;     
+    &lt;/Student&gt; 
+    &lt;Student  Age="28"&gt; 
+      &lt;Name&gt;111&lt;/Name&gt;     
+    &lt;/Student&gt; 
+  &lt;/Class&gt; 
+&lt;/Configuration&gt;
+</code></pre>
+
+<p>这是我们可以使用：</p>
+
+<pre class='green'><code>void Page1_Loaded(object sender, RoutedEventArgs e) 
+     { 
+         MessageBox.Show(SLConfigManager.Current.GetSection&lt;Class&gt;("Class").ClassID + ""); 
+         MessageBox.Show(SLConfigManager.Current.GetAppSettings("test1").ToString()); 
+         MessageBox.Show(SLConfigManager.Current.GetAppSettings&lt;Sex&gt;("test2").ToString()); 
+     } 
+
+        public enum Sex 
+     { 
+      man,woman 
+     }
+</code></pre>
+
+<p>在这里我们模拟了AppSettings，和Section（注：这里的section，不需要预申明，在利用xml转化形成的，更利于我们的配置扩展性，使用到了XmlRoot，XmlElement等attribute），在看看我们的Class类：</p>
+
+<pre class='green'><code>using System.Xml.Serialization; 
+</code></pre>
+
+<p>  namespace SilverlightApplication2
+  {</p>
+
+<pre class='green'><code>  [XmlRoot("Student")] 
+  public class Student 
+  { 
+      [XmlElement("Name")] 
+      public string Name 
+      { get; set; } 
+
+      [XmlAttribute("Age")] 
+      public int Age 
+      { 
+          get; 
+          set; 
+      } 
+  } 
+
+  [XmlRoot("Class")] 
+  public class Class 
+  { 
+      [XmlAttribute("ClassID")] 
+      public int ClassID 
+      { 
+          get; 
+          set; 
+      } 
+
+      [XmlArray()] 
+      [XmlArrayItem("Students")] 
+      public System.Collections.Generic.List&lt;Student&gt; Students 
+      { 
+          get; 
+          set; 
+      } 
+  } 
+</code></pre>
+
+<p>  }</p>
+
+<p>最后需要说明的是：在于我们的项目中可能存在xml文件还没有加载，的情况，所以加入了时间支持和IsLoaded属性标示。</p>
+
+<p>源码：</p>
+
+<pre class='green'><code>using System; 
+using System.Net; 
+using System.Windows; 
+using System.Windows.Controls; 
+using System.Windows.Documents; 
+using System.Windows.Ink; 
+using System.Windows.Input; 
+using System.Windows.Media; 
+using System.Windows.Media.Animation; 
+using System.Windows.Shapes; 
+using System.Xml; 
+using System.Xml.Linq; 
+using System.Linq; 
+using System.Collections.Generic; 
+using Green.Utility.Utils; 
+
+namespace SilverlightApplication2 
+{ 
+    public delegate void LoadComplete(); 
+
+    public class SLConfigManager 
+    { 
+        private XDocument document = null; 
+
+        private static readonly SLConfigManager _SLConfigManager = new SLConfigManager(); 
+        private Dictionary&lt;string, object&gt; dict = new Dictionary&lt;string, object&gt;(); 
+        private Dictionary&lt;string, string&gt; appSettings = new Dictionary&lt;string, string&gt;(); 
+        private string _ConfigPath = null; 
+
+        public static SLConfigManager Current 
+        { 
+            get 
+            { 
+                return _SLConfigManager; 
+            } 
+        } 
+
+        public string ConfigPath 
+        { 
+            get { return _ConfigPath; } 
+            set 
+            { 
+                if (_ConfigPath != value) 
+                { 
+                    _ConfigPath = value; 
+                    LoadResource(); 
+                } 
+            } 
+        } 
+
+        public bool IsLoaded 
+        { 
+            get; 
+            private set; 
+        } 
+        public event LoadComplete LoadComplete; 
+
+        public void EnsureLoadResource() 
+        { 
+
+            if (document == null) 
+            { 
+                LoadResource(); 
+            } 
+        } 
+
+        protected virtual void LoadResource() 
+        { 
+            if (string.IsNullOrEmpty(ConfigPath)) 
+            { 
+                throw new Exception("ConfigPath is required!"); 
+            } 
+
+            dict.Clear(); 
+            Uri url = new Uri(Application.Current.Host.Source, ConfigPath); 
+            WebClient client = new WebClient(); 
+            client.OpenReadCompleted += new OpenReadCompletedEventHandler(client_OpenReadCompleted); 
+            client.OpenReadAsync(url, client); 
+        } 
+
+        protected virtual void client_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e) 
+        { 
+            if (e.Error != null) 
+            { 
+                throw e.Error; 
+            } 
+
+            var sw = new System.IO.StreamReader(e.Result); 
+            var xml = sw.ReadToEnd(); 
+            document = XDocument.Parse(xml); 
+            sw.Close(); 
+            e.Result.Close(); 
+            sw = null; 
+
+            GetappSettings(); 
+
+            IsLoaded = true; 
+            if (LoadComplete != null) 
+            { 
+                LoadComplete(); 
+            } 
+        } 
+
+        protected virtual void GetappSettings() 
+        { 
+            if (document != null) 
+            { 
+                var appSettingsel = document.Root.Element("appSettings"); 
+                if (appSettings != null) 
+                { 
+                    appSettingsel.Elements("add").ToList().ForEach(e =&gt; 
+                    { 
+                        var key = e.Attribute("key").Value; 
+                        var value = e.Attribute("value").Value; 
+                        if (!string.IsNullOrEmpty(key)&amp;&amp;!this.appSettings.ContainsKey(key)) 
+                        { 
+                            this.appSettings.Add(key, value); 
+                        } 
+                    }); 
+                } 
+            } 
+        } 
+
+        public T GetSection&lt;T&gt;(string section) where T : class ,new() 
+        { 
+            if (document == null) 
+            { 
+                // throw new Exception("Config Document is null!");                
+            } 
+            if (!dict.ContainsKey(section)) 
+            { 
+                var el = document.Root.Descendants().SingleOrDefault(t =&gt; t.Name == section); 
+                var xml = el.ToString(); 
+                dict.Add(section, XmlSerializer&lt;T&gt;(xml)); 
+            } 
+            return dict[section] as T; 
+        } 
+
+        protected virtual T XmlSerializer&lt;T&gt;(string xml) where T : class ,new() 
+        { 
+            System.Xml.Serialization.XmlSerializer serialzer = new System.Xml.Serialization.XmlSerializer(typeof(T)); 
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xml)); 
+            var obj = serialzer.Deserialize(ms) as T; 
+            ms.Flush(); 
+            ms.Close(); 
+            ms = null; 
+            return obj; 
+        } 
+
+        public T GetAppSettings&lt;T&gt;(string key) where T : IConvertible 
+        { 
+            if (appSettings.ContainsKey(key)) 
+            { 
+                var val = this.appSettings[key]; 
+                if (string.IsNullOrEmpty(val)) 
+                    return default(T); 
+                if (typeof(T).IsEnum) 
+                { 
+                    return (T)Enum.Parse(typeof(T), val, true); 
+                } 
+                return (T)Convert.ChangeType(val, typeof(T), null); 
+            } 
+            return default(T); 
+        } 
+
+        public string GetAppSettings(string key) 
+        { 
+            return GetAppSettings&lt;string&gt;(key); 
+        } 
+    } 
+}
+</code></pre>
+
+<p>最后附：<a href="http://files.cnblogs.com/whitewolf/SilverlightApplication2.rar" title="测试程序打包下载">测试程序打包下载</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/06/SlConfig.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -863,57 +1174,6 @@ http://www.CodeHighlighter.com/
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/">The &#x27;Microsoft.Jet.OLEDB.4.0&#x27; Provider Is Not Registered on the Local machine-Excel2003</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-01-01T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/01/01/The-Microsoft-Jet-OLEDB-4-0-provider-is-not-registered-on-the-local-machine-Excel2003/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在操作Excel2003时候在我的win7英文操作系统发生错误，（在此记录下来）：</p>
-
-<p>The &lsquo;Microsoft.Jet.OLEDB.4.0&rsquo; provider is not registered on the local machine.</p>
-
-<p>在网上google了一下，错误原因是我的机子是64编译的，需要改为32位，在vs中设置将编译Any CPU改为x86，就ok。</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/QQ%E6%88%AA%E5%9B%BE%E6%9C%AA%E5%91%BD%E5%90%8D.png" alt="The " /></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/01/01/1923744.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/13/">&larr; Older</a>
@@ -947,6 +1207,10 @@ http://www.CodeHighlighter.com/
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/25/tui-jian-shu-ji-%3C%3Cyi-dong-appce-shi-de-22tiao-jun-gui-%3E%3E/">推荐书籍-《移动App测试的22条军规》</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明和获取重载</a>
       </li>
     
@@ -972,10 +1236,6 @@ http://www.CodeHighlighter.com/
     
       <li class="post">
         <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a>
       </li>
     
   </ul>
