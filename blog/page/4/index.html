@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。 今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。 &hellip;">
+  <meta name="description" content="jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子： angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,133 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T15:53:45+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
+
+<pre class='green'><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+      StoreService.listStores().then(function(branches) {
+        Contact.retrieveContactInfo().then(function(userInfo) {
+            //more code here crossing user and stores data
+        });  
+      });
+    });
+</code></pre>
+
+<p>下面让我们来尝试如何用angular提供的$provide创建一个依赖的实现，以及利用jasmine帮助我们fake方法的返回值：</p>
+
+<p>代码如下，有详细注释帮助你去理解这段代码：</p>
+
+<pre class='green'><code>    describe("Store Controller", function() {
+      var $controller, Contact, StoreService, createController, scope;
+
+      beforeEach(function() {
+        module('myApp.store');
+
+        // Provide will help us create fake implementations for our dependencies
+        module(function($provide) {
+
+          // Fake StoreService Implementation returning a promise
+          $provide.value('StoreService', {
+            listStores: function() {
+              return { 
+                then: function(callback) {return callback([{ some: "thing", hoursInfo: {isOpen: true}}]);}
+              };
+            },
+            chooseStore: function() { return null;}
+          });
+
+          // Fake Contact Implementation return an empty object 
+          $provide.value('Contact', {
+            retrieveContactInfo: function() {
+              return {
+                then: function(callback) { return callback({});}
+              };
+            }
+          });
+
+          return null;
+        });
+      });
+
+      beforeEach(function() {
+
+        // When Angular Injects the StoreService and Contact dependencies, 
+        // it will use the implementation we provided above
+        inject(function($controller, $rootScope, _StoreService_, _Contact_) {
+          scope = $rootScope.$new();
+          StoreService = _StoreService_;
+          Contact = _Contact_;
+          createController = function(params) {
+            return $controller("StoresCtrl", {
+              $scope: scope,
+              $stateParams: params || {}
+            });
+          };
+        });
+      });
+
+      it("should call the store service to retrieve the store list", function() {
+        var user = { address: {street: 1}};
+
+        // Jasmine spy over the listStores service. 
+        // Since we provided a fake response already we can just call through. 
+        spyOn(StoreService, 'listStores').and.callThrough();
+
+        // Jasmine spy also allows to call Fake implementations via the callFake function 
+        // or we can return our own response via 'and.returnValue
+        // Here we can override the response we previously defined and return a promise with a user object
+        spyOn(Contact, 'retrieveContactInfo').and.callFake(function() {
+          return {
+            then: function(callback) { return callback(user); }
+          };
+        });
+
+        createController();
+        // Since we setup a spy we can now expect that spied function to have been called 
+        // or to have been called with certain parameters..etc
+        expect(StoreService.listStores).toHaveBeenCalled();
+      });
+    });
+</code></pre>
+
+<p>原文地址:<a href="http://ng-learn.org/2014/08/Testing_Promises_with_Jasmine_Provide_Spy/">Testing Promises with Jasmine &ndash; Provide and Spy</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1035,73 +1162,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/28/ci-tools-go-open-source/">ThoughtWorks持续集成平台GO开源了</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-28T22:11:34+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/28/ci-tools-go-open-source/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0" alt="go" /></p>
-
-<p>ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。</p>
-
-<p>Go下载地址为<a href="http://www.go.cd/download/">http://www.go.cd/download/</a>.</p>
-
-<p>下面是几张来自官方的视图：</p>
-
-<p>GO流程图：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" /></p>
-
-<p>GO截面图：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" /></p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" /></p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" /></p>
-
-<p>GO的版本：</p>
-
-<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" /></p>
-
-<ul>
-<li> <a href="http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c">Thoughtworks官方的宣布文章</a></li>
-<li> 你也可以在ThoughtWorks中国微信雷小达看到:<a href="http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&amp;mid=200062098&amp;idx=1&amp;sn=25198a84122904cd113ef010637d27ed&amp;uin=MjA0MjY0NDk0MA%3D%3D">GO！我们开源了！</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1135,6 +1195,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升你的IDE对JavaScript智能感知的能力</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/07/25/tui-jian-shu-ji-%3C%3Cyi-dong-appce-shi-de-22tiao-jun-gui-%3E%3E/">推荐书籍 -《移动App测试的22条军规》</a>
       </li>
     
@@ -1160,10 +1224,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
       </li>
     
   </ul>

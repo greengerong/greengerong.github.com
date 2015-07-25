@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忙碌了一年了项目又到了交付了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初， &hellip;">
+  <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,261 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/">CSV和集合对象基于Annotation操作封装</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-16T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件，对opencsv基于Annotation简单的封装，使得我们可以轻易的将CSV文件转化为List对像和把List对像导出为CSV文件。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 项目托管地址于github <a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于代码就不用多说了，简单看看如何使用。</p>
+
+<pre class='green'><code>package opencsv.utils;
+
+
+
+public class Person {
+
+
+
+private int id;
+
+
+
+@Csv("person name")
+
+private String name;
+
+
+
+@Ignore
+
+private int age;
+
+
+
+public Person(int id, String name, int age) {
+
+    this.id = id;
+
+    this.name = name;
+
+    this.age = age;
+
+}
+
+
+
+public Person() {
+
+
+
+}
+
+
+
+public int getId() {
+
+    return id;
+
+}
+
+
+
+public void setId(int id) {
+
+    this.id = id;
+
+}
+
+
+
+public String getName() {
+
+    return name;
+
+}
+
+
+
+public void setName(String name) {
+
+    this.name = name;
+
+}
+
+
+
+public int getAge() {
+
+    return age;
+
+}
+
+
+
+public void setAge(int age) {
+
+    this.age = age;
+
+}
+
+}
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>Mapping会自动将没有ignore的字段作为CSV的映射属性名作为CSV列头，如果针对特殊列则可以标记@CSV解决。</p>
+
+<p>1： 读取CSV:</p>
+
+<p>(1) 基于Annotation映射方式</p>
+
+<pre class='green'><code> @Test
+
+public void shouldGetPersonFromCSV() throws Exception {
+
+    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
+
+    List&lt;Person&gt; personList = personCsvMapper
+
+            .withMapping("id", "id")
+
+            .withMapping("person name", "name")
+
+            .fromCsv(reader);
+
+
+
+    assertThat(personList.size(), is(2));
+
+
+
+    final Person first = personList.get(0);
+
+    assertThat(first.getId(), is(1));
+
+    assertThat(first.getName(), is("name1"));
+
+
+
+    final Person second = personList.get(1);
+
+    assertThat(second.getId(), is(2));
+
+    assertThat(second.getName(), is("name2"));
+
+
+
+}
+</code></pre>
+
+<p>(2) 自定义映射方式&nbsp;</p>
+
+<pre class='green'><code>@Test
+
+public void shouldToCsv() throws Exception {
+
+    personCsvMapper.withMapping(new CsvColumnMapping(Person.class));
+
+    final ArrayList&lt;Person&gt; list = new ArrayList&lt;Person&gt;();
+
+    list.add(new Person(1, "name1", 20));
+
+    list.add(new Person(2, "name2", 30));
+
+    final StringWriter writer = new StringWriter();
+
+
+
+    personCsvMapper.toCsv(writer, list);
+
+
+
+    final String text = writer.toString();
+
+    assertThat(text, is("id,person name\n1,name1\n2,name2\n"));
+
+}
+</code></pre>
+
+<p>2: CSV输出</p>
+
+<pre class='green'><code>@Test
+
+public void shouldGetPersonFromCsv() throws Exception {
+
+    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
+
+    List&lt;Person&gt; personList = new CsvMapper&lt;Person&gt;(Person.class)
+
+            .withMapping(new CsvColumnMapping(Person.class))
+
+            .fromCsv(reader);
+
+
+
+    assertThat(personList.size(), is(2));
+
+
+
+    final Person first = personList.get(0);
+
+    assertThat(first.getId(), is(1));
+
+    assertThat(first.getName(), is("name1"));
+
+
+
+    final Person second = personList.get(1);
+
+    assertThat(second.getId(), is(2));
+
+    assertThat(second.getName(), is("name2"));
+
+
+
+}
+</code></pre>
+
+<p>最后在累赘下托管地址:<a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。其他的相比不用再说了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/16/3082700.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1098,55 +1353,6 @@ console.log(result);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/13/tuan-dui-wen-hua-zhong-di-hai-qun-zhi-ma/">团队文化中的害群之马</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-13T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/13/tuan-dui-wen-hua-zhong-di-hai-qun-zhi-ma/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/13/tuan-dui-wen-hua-zhong-di-hai-qun-zhi-ma/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这是本人开博以来第一篇水文，我不想讨论一些所谓的的空谈，反对一切空谈，只有行动事实才能证明一切。思索许久才有了这篇水文，纪念一些失去的。本文所指其实也不局限于敏捷项目，或软件项目。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;团队是一个小型的社会群体，有人的地方就会有争斗（本文中更倾向于争论），不论大与小，对与错。争论不一定是坏的，争论可以让我们不断改进，调整正确的方向，但是争论我们必须保证基本的准则，人与人尊重不论任何场景的基本准则。在敏捷中有&ldquo;Please trust people!&rdquo;,Retro誓词&ldquo;我们相信每一个人都尽最大努力&hellip;&rdquo;，只有在互相的尊重信任下才能得到更好的交流。敏捷注重人的交流，快速的反馈，任何团队只有在互信的基础下才能使得团队成员朝着一致的方向前进，更好的交互价值。团队或好或坏难免出现这种&ldquo;极品&rdquo;（这里提的是行为，本人不想指代人，因为这样有意无意的也成了&ldquo;极品&rdquo;），团队需要做的是制至无意的争论、会议，如若无异可以选择起源的根除，团队不需要一个不会做人的&ldquo;极品&rdquo;，即使天才（如若是天才我相信不会有争论，因为他能得到大家的信任和宽恕）。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 团队的意识来自于团队的集体，而不是特权独裁。团队准则意识，需要大家的或多或少的牺牲，但绝不是让成员处在&ldquo;痛点&rdquo;，而不是多数人服从少数人的意思，更有效的团队是尽量让每一个成员处于工作的舒适区，大家才会为项目安心全力的付出奉献。敏捷是要发挥每个人的最大效率价值。集体的利益大于一切，但并不意味牺牲个人的利益。只有这样的团队意识才能得到团队的执行，而不是&ldquo;胡萝卜大棒&rdquo;。但难免有&ldquo;朝令夕改&rdquo;的人，无视或同样请他离开，因为无法满足他的舒适区，相信他也不会全力的付出项目。</p>
-
-<p>&nbsp;&nbsp; &nbsp;&nbsp;良好的团队，对于技术的争论，永远只有优势和劣势，对待的是事情技术的问题，而不是人的问题。一旦进入对人的问题，就升级为关键对话。这是项目团队和谐团，队文化所不允许的。&nbsp;</p>
-
-<p>&nbsp;&nbsp; 如何发现团队的不和谐的因子？从团队成员的感受意见。看到这里很多人可能会问，如果他是某某怎么办？如果&ldquo;他爸是李刚&rdquo;，对于不舒适区，那只有选择你的离开，因为我是个简单的人，简单的活着，我的工作就是为了快乐简单的生活，不舒适的工作何谈舒适的生活？何谈为项目的付出？同时也是不希望项目眼睁睁的看着失败。大卫.奥格威说过&ldquo;人们死于厌烦、心理冲突和疾病，但他们不会死于辛勤工作&rdquo;。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/13/2957541.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -1180,6 +1386,10 @@ console.log(result);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升你的IDE对JavaScript智能感知的能力</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/07/25/tui-jian-shu-ji-%3C%3Cyi-dong-appce-shi-de-22tiao-jun-gui-%3E%3E/">推荐书籍 -《移动App测试的22条军规》</a>
       </li>
     
@@ -1205,10 +1415,6 @@ console.log(result);
     
       <li class="post">
         <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
       </li>
     
   </ul>

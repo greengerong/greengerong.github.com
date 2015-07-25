@@ -9,7 +9,7 @@
   <meta name="author" content="破 狼">
 
   
-  <meta name="description" content="在 2 月 20 号 ECMAScript 第六版就正式推出了，这门语言一直保持稳定快速的发展而且新功能也在慢慢被现在主流的 JavaScript 引擎所接受。不过要想在浏览器端或者 Node 端直接运行 ES6 代码还得等上一些日子。幸好 TC39 (负责研究开发 EMCAScript &hellip;">
+  <meta name="description" content="你还在为JavaScript中的数据转换、匹配、查找等烦恼吗？一堆看似简单的foreach，却冗长无趣，可仍还在不停的repeat it！也许你已经用上了Underscore.js，不错，你已经进步很大一步了。然而今天我希望你能更进一步，利用lodash替换掉Underscore。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,141 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-11T14:53:27+08:00" pubdate data-updated="true">Apr 11<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/04/11/qian-duan-ku-zhi-lodash/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>你还在为JavaScript中的数据转换、匹配、查找等烦恼吗？一堆看似简单的foreach，却冗长无趣，可仍还在不停的repeat it！也许你已经用上了Underscore.js，不错，你已经进步很大一步了。然而今天我希望你能更进一步，利用lodash替换掉Underscore。</p>
+
+<p>lodash一开始是Underscore.js库的一个fork，因为和其他(Underscore.js的)贡献者意见相左。John-David Dalton的最初目标，是提供更多“一致的跨浏览器行为……，并改善性能”。之后，该项目在现有成功的基础之上取得了更大的成果。最近lodash也发布了3.5版，成为了npm包仓库中依赖最多的库。它正在摆脱屌丝身份，成为开发者的常规选择之一。</p>
+
+<p>现在我们所熟知的很多开源项目都已经使用或者转到了lodash阵营之上。比如JavaScript转译器Babel、博客平台Ghost，和项目脚手架工具Yeoman。特别Ghost是从Underscore迁移到了lodash，Ghost的创始人John O&#8217;Nolan对于此曾评价到：“这是一个非常明智的选择，它几乎完全是由我们开源开发社区推动的。我们发现lodash包含更多的功能，更好的性能、恰到好处地使用了semver，并且在Node.js社区（以及其他依赖）中越来越抢眼“。</p>
+
+<h2>lodash演练</h2>
+
+<p>lodash主要使用了延迟计算，使得lodash其性能远远超过Underscore。在lodash中延迟计算意味着在我们的链式方法在显示或隐式的value()调用之前是不会执行的。由于这种执行的延后，因此lodash可以进行shortcut fusion这样的优化，通过合并链式iteratee大大降低迭代的次数。从而大大提供其执行性能。</p>
+
+<p>百说不如一练，下面我们以用户信息为例：</p>
+
+<pre class='green'><code>var users = [
+  { 'user': 'barney',  'age': 36 },
+  { 'user': 'fred',    'age': 40 },
+  { 'user': 'pebbles', 'age': 18 }
+];
+</code></pre>
+
+<h4>1. 获取所有用户名字，并以”，“分割</h4>
+
+<pre class='green'><code>var names = _.chain(users)
+  .map(function(user){
+    return user.user;
+  })
+  .join(" , ")
+  .value();
+console.log(names);
+</code></pre>
+
+<p>个人比较喜欢lodash延迟计算的现实value，以及JavaScript的函数式风格。在这里首先将users对象包装成为lodash对象，再map获取所有用户的名称，并最后利用join将用户名称以”，“连接在一起。注意这里只是一串方法链，如果你没有显样的调用value方法，使其立即执行的化，你将会得到如下的LodashWrapper延迟表达式：</p>
+
+<pre class='green'><code> LodashWrapper {__wrapped__: LazyWrapper, __actions__: Array[1], __chain__: true, constructor: function, after: function…}
+</code></pre>
+
+<p> 因为延迟表达式的存在，因此我们可以多次增加方法链，但这并不会被执行，所以不会存在性能的问题，最后知道我们需要使用的时候，使用value显式立即执行即可。</p>
+
+<h4>2. 获取最年轻的用户</h4>
+
+<pre class='green'><code> var youngest = _.chain(users)
+  .min(function(user){
+    return user.age;
+  })
+  .value();
+console.log(youngest);
+</code></pre>
+
+<p>这里利用了lodash提供的min函数可以轻易的解决。</p>
+
+<p>在这里博主还希望用另外一个方式解释lodash方法链的优化,上面的方法可以等价为下面的方式，以age排序的第一个user：</p>
+
+<pre class='green'><code>var youngest2 = _.chain(users)
+  .sortBy("age")
+  .map(function(user){
+    console.log("map", user);
+    return user;
+  })
+  .first()
+  .value();
+console.log(youngest2);
+</code></pre>
+
+<p>在这里博主多加了一个map作为log输出，如果你执行这行代码的时候，你会惊奇的看见这里只会有一个user的输出，这点可以证明在立即执行的时候lodash为我们的方法链做了可靠的优化；如果我们去掉first函数你则会看见有3个user对象的输出。</p>
+
+<h4>3. 获取最年长的用户</h4>
+
+<pre class='green'><code>var oldest  = _.chain(users)
+  .max(function(user){
+    return user.age;
+  })
+  .value();
+
+console.log(oldest );
+</code></pre>
+
+<p>这里则使用lodash的max函数。</p>
+
+<h4>4. 用户数组到用户Map的转换</h4>
+
+<p>在开发中我们经常会有把一堆素组形式的数据转换为Object形式的数组，便于根据属性key值查找，下面将以user对象来演示：</p>
+
+<pre class='green'><code>var userObj = _.chain(users)
+  .map(function(user){
+    return [user.user, user.age];
+  })
+  .zipObject()
+  .value();
+console.log(userObj);
+</code></pre>
+
+<p>利用lodash首先将user数组map为[key, value]的数组集合，最后利用zipObject将结果转换为Object对象，zipObject会利用结果集的第一项作为key，第二项作为value生产Object。</p>
+
+<h2>结尾</h2>
+
+<p>我们在这里展示知识lodash中很小一部分的API，正如随笔开始所说：lodash是为了提供更多“一致的跨浏览器行为……，并改善性能”API。所有的lodash API你可以在这里<a href="https://lodash.com/docs#matches">https://lodash.com/docs#matches</a>查找。</p>
+
+<p>本文的所演示的demo，你也可以在jsbin <a href="http://jsbin.com/xocixubaru/1/edit?html,js,output">http://jsbin.com/xocixubaru/1/edit?html,js,output</a>演示。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1706,160 +1841,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-27T21:49:40+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/11/27/guava-eventbus/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Guava在<a href="http://code.google.com/p/guava-libraries/">guava-libraries</a>中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。</p>
-
-<p>不再多的废话，直奔Guava EventBus主题。首先Guava为我们提供了同步事件EventBus和异步实现AsyncEventBus两个事件总线，他们都不是单例的，官方理由是并不想我们我们的使用方式。当然如果我们想其为单例，我们可以很容易封装它，一个单例模式保证只创建一个实例就对了。</p>
-
-<p>下面将以EventBus为例，AsyncEventBus使用方式与其一致的。</p>
-
-<h4>订阅</h4>
-
-<p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="k">new</span> <span class="nf">Object</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Integer</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%d from int%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
-
-<h4>发布</h4>
-
-<p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">EventBus</span> <span class="n">eventBus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventBus</span><span class="o">();</span>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Integer</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from int%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Number</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from Number%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Long</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from long%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
-
-<p>所以博主建议对于每类时间封装一个特定的事件类型是必要的。</p>
-
-<h4>DeadEvent</h4>
-
-<p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">EventBus</span> <span class="n">eventBus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventBus</span><span class="o">();</span>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">DeadEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s=%s from dead events%n&quot;</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="na">getSource</span><span class="o">().</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">event</span><span class="o">.</span><span class="na">getEvent</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>更多Guava博文：</p>
-
-<ol>
-<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
-<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1893,6 +1874,10 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升你的IDE对JavaScript智能感知的能力</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/07/25/tui-jian-shu-ji-%3C%3Cyi-dong-appce-shi-de-22tiao-jun-gui-%3E%3E/">推荐书籍 -《移动App测试的22条军规》</a>
       </li>
     
@@ -1918,10 +1903,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
     
       <li class="post">
         <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a>
       </li>
     
   </ul>
