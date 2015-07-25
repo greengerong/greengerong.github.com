@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-07-26T00:58:23+08:00</updated>
+  <updated>2015-07-26T01:02:02+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[tsd-提升你的IDE对JavaScript智能感知的能力]]></title>
+    <title type="html"><![CDATA[tsd-提升IDE对JavaScript智能感知的能力]]></title>
     <link href="http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/"/>
     <updated>2015-07-26T00:55:31+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li</id>
@@ -51,7 +51,7 @@
 
 <p>tsd.json文件的格式如下：</p>
 
-<p><img src="http://greengerong.github.io/images/blo_img/tsd-install.png" alt="tsd文件目录" /></p>
+<p><img src="http://greengerong.github.io/images/blog_img/tsd-install.png" alt="tsd文件目录" /></p>
 
 <p>同时候TSD工具还会为我们在typing目录下生产一个tsd.d.ts文件，它会为我们引入这些模板文件，使得IDE能够识别出这样模板文件：</p>
 
@@ -61,7 +61,7 @@
 
 <p>下面是我们在Intellij中得到的智能感知图：</p>
 
-<p><img src="http://greengerong.github.io/images/blo_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
+<p><img src="http://greengerong.github.io/images/blog_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
 
 <p>目前能够很好支持TypeScript这一特性的工具有：Intellij家族、微软自家的VS工具、Sublime。有了TSD这一工具，也许我们虽然还不能尝试TypeScript的特性，但我们仍然可以利用它来帮助我们的普通JavaScript开发。</p>
 ]]></content>
