@@ -26,7 +26,6 @@ Swagger包括库、编辑器、代码生成器等很多部分，这里我们主�
 
 	git clone https://github.com/swagger-api/swagger-editor.git
 	cd swagger-editor
-	npm install
 	npm start
 
 当我们修改了API的定义之后，在编辑器右侧就可以看到相应的API文档了，而且永远是最新的。
