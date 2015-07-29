@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="你还在为JavaScript中的数据转换、匹配、查找等烦恼吗？一堆看似简单的foreach，却冗长无趣，可仍还在不停的repeat it！也许你已经用上了Underscore.js，不错，你已经进步很大一步了。然而今天我希望你能更进一步，利用lodash替换掉Underscore。 &hellip;"> 
+    <meta name="description" content="简介 在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。 第一步 让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,206 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T16:52:50+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/04/12/typescript-modules-mo-kuai/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>简介</h2>
+
+<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
+
+<h2>第一步</h2>
+
+<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
+
+<h4>单文件的验证逻辑</h4>
+
+<pre class='green'><code>interface StringValidator {
+    isAcceptable(s: string): boolean;
+}
+
+var lettersRegexp = /^[A-Za-z]+$/;
+var numberRegexp = /^[0-9]+$/;
+
+class LettersOnlyValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return lettersRegexp.test(s);
+    }
+}
+
+class ZipCodeValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return s.length === 5 &amp;&amp; numberRegexp.test(s);
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: StringValidator; } = {};
+validators['ZIP code'] = new ZipCodeValidator();
+validators['Letters only'] = new LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h4>增加模块化</h4>
+
+<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
+
+<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
+
+<h4>模块化的Validators</h4>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+
+    var lettersRegexp = /^[A-Za-z]+$/;
+    var numberRegexp = /^[0-9]+$/;
+
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h2>分离模块文件</h2>
+
+<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
+
+<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
+
+<h4>多文件的内部模块</h4>
+
+<h6>Validation.ts</h6>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+}
+</code></pre>
+
+<h6>LettersOnlyValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var lettersRegexp = /^[A-Za-z]+$/;
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>ZipCodeValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var numberRegexp = /^[0-9]+$/;
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>Test.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
+/// &lt;reference path="ZipCodeValidator.ts" /&gt;
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
+
+<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
+
+<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
+
+<h6>#MyTestPage.html (excerpt)</h6>
+
+<pre class='green'><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
+&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
+&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
+&lt;script src="Test.js" type="text/javascript" /&gt;
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1489,356 +1689,6 @@ TDD驱使我们以结果导向，使得我们简单设计(并不是无设计)，
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/10/light-ioc-guice-framework/">java轻量级IOC框架Guice</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-10T21:50:37+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/12/10/light-ioc-guice-framework/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/12/10/light-ioc-guice-framework/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Guice是由Google大牛Bob lee开发的一款绝对轻量级的java IoC容器。其优势在于：</p>
-
-<ol>
-<li>速度快，号称比spring快100倍。</li>
-<li>无外部配置(如需要使用外部可以可以选用Guice的扩展包)，完全基于annotation特性，支持重构，代码静态检查。</li>
-<li>简单，快速，基本没有学习成本。</li>
-</ol>
-
-
-<p>Guice和spring各有所长，Guice更适合与嵌入式或者高性能但项目简单方案，如OSGI容器，spring更适合大型项目组织。</p>
-
-<h2>注入方式</h2>
-
-<p>在我们谈到IOC框架，首先我们的话题将是构造，属性以及函数注入方式，Guice的实现只需要在构造函数，字段，或者注入函数上标注@Inject，如：</p>
-
-<h4>构造注入</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">,</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>属性注入</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">,</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>函数(setter)注入</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="n">OrderService</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">ItemService</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PriceService</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setItemService</span><span class="o">(</span><span class="n">ItemService</span> <span class="n">itemService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">itemService</span> <span class="o">=</span> <span class="n">itemService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPriceService</span><span class="o">(</span><span class="n">PriceService</span> <span class="n">priceService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">priceService</span> <span class="o">=</span> <span class="n">priceService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Module依赖注册</h2>
-
-<p>Guice提供依赖配置类，需要继承至AbstractModule，实现configure方法。在configure方法中我们可以用Binder配置依赖。</p>
-
-<p>Binder利用链式形成一套独具语义的DSL，如：</p>
-
-<ul>
-<li>基本配置：binder.bind(serviceClass).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>无base类、接口配置：binder.bind(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>service实例配置：binder.bind(serviceClass).toInstance(servieInstance).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>多个实例按名注入：binder.bind(serviceClass).annotatedWith(Names.named(&ldquo;name&rdquo;)).to(implClass).in(Scopes.[SINGLETON | NO_SCOPE]);</li>
-<li>运行时注入：利用@Provides标注注入方法，相当于spring的@Bean。</li>
-<li>@ImplementedBy：或者在实现接口之上标注@ImplementedBy指定其实现类。这种方式有点反OO设计，抽象不该知道其实现类。</li>
-</ul>
-
-
-<p>对于上面的配置在注入的方式仅仅需要@Inject标注，但对于按名注入需要在参数前边加入@Named标注，如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">Binder</span> <span class="n">binder</span> <span class="o">=</span> <span class="n">binder</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//TODO: bind named instance;</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Inject</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
-</span><span class='line'>                                                   <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Guice也可以利用@Provides标注注入方法来运行时注入：如</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Provides</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
-</span><span class='line'>                                             <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;();</span>
-</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService1</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService2</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Guice实例</h2>
-
-<p>下面是一个Guice module的实例代码：包含大部分常用依赖配置方式。更多代码参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">greengerong</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * ***************************************</span>
-</span><span class='line'><span class="cm"> * *</span>
-</span><span class='line'><span class="cm"> * Auth: green gerong                     *</span>
-</span><span class='line'><span class="cm"> * Date: 2014                             *</span>
-</span><span class='line'><span class="cm"> * blog: http://greengerong.github.io/    *</span>
-</span><span class='line'><span class="cm"> * github: https://github.com/greengerong *</span>
-</span><span class='line'><span class="cm"> * *</span>
-</span><span class='line'><span class="cm"> * ****************************************</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppModule</span> <span class="kd">extends</span> <span class="n">AbstractModule</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">AppModule</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">AppModule</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">bundleContext</span> <span class="o">=</span> <span class="n">bundleContext</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;enter app module with: %s&quot;</span><span class="o">,</span> <span class="n">bundleContext</span><span class="o">));</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">Binder</span> <span class="n">binder</span> <span class="o">=</span> <span class="n">binder</span><span class="o">();</span>
-</span><span class='line'>        <span class="c1">//TODO: bind interface</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">ItemService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">ItemServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">SINGLETON</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">OrderService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">OrderServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">SINGLETON</span><span class="o">);</span>
-</span><span class='line'>        <span class="c1">//TODO: bind self class(without interface or base class)</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">PriceService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">in</span><span class="o">(</span><span class="n">Scopes</span><span class="o">.</span><span class="na">SINGLETON</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//TODO: bind instance not class.</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">RuntimeService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">toInstance</span><span class="o">(</span><span class="k">new</span> <span class="n">RuntimeService</span><span class="o">());</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//TODO: bind named instance;</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">binder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">NamedService</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">annotatedWith</span><span class="o">(</span><span class="n">Names</span><span class="o">.</span><span class="na">named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)).</span><span class="na">to</span><span class="o">(</span><span class="n">NamedServiceImpl2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Provides</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="nf">getAllItemServices</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl1&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService1</span><span class="o">,</span>
-</span><span class='line'>                                                 <span class="nd">@Named</span><span class="o">(</span><span class="s">&quot;impl2&quot;</span><span class="o">)</span> <span class="n">NamedService</span> <span class="n">nameService2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">NamedService</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService1</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">nameService2</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Guice的使用</h2>
-
-<p>对于Guice的使用则比较简单，利用利用Guice module初始化Guice创建其injector，如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">(</span><span class="k">new</span> <span class="n">AppModule</span><span class="o">(</span><span class="n">bundleContext</span><span class="o">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里可以传入多个module，我们可以利用module分离领域依赖。</p>
-
-<p>Guice api方法：</p>
-
-<p> &#8220;`java</p>
-
-<pre class='green'><code>public static Injector createInjector(Module... modules) 
-
-public static Injector createInjector(Iterable&lt;? extends Module&gt; modules) 
-
-public static Injector createInjector(Stage stage, Module... modules)
-
-public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&gt; modules) 
-</code></pre>
-
-<p>&#8220;`</p>
-
-<p>Guice同时也支持不同Region配置，上面的State重载，state支持 TOOL,DEVELOPMENT,PRODUCTION选项;默认为DEVELOPMENT环境。</p>
-
-<h2>后续</h2>
-
-<p>本文Guice更全的demo代码请参见<a href="https://github.com/greengerong/guice-demo">github </a>.</p>
-
-<p>Guice还有很多的扩展如AOP，同一个服务多个实例注入set，map，OSGI，UOW等扩展，请参见<a href="https://github.com/google/guice/wiki">Guice wiki</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1872,6 +1722,10 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升IDE对JavaScript智能感知的能力</a>
       </li>
     
@@ -1897,10 +1751,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
     
       <li class="post">
         <a href="/blog/2015/05/11/jshan-shu-ke-li-hua/">JavaScript函数柯里化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a>
       </li>
     
   </ul>
