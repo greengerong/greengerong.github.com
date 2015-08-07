@@ -1,0 +1,200 @@
+---
+layout: post
+title: "直接不等于简单"
+date: 2015-08-07 16:12:35 +0800
+comments: true
+categories: [架构,设计]
+---
+
+本文来自笔者hxfirefox[https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md](https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md)，他是笔者在某国内大型企业提供敏捷XP咨询项目的同事。本文也是由他交给笔者帮助review，同时也授权了笔者发布在笔者的博客之中。
+
+原文地址为：[https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md](https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md)。
+
+####码农的博弈
+
+了解XP(极限编程)的人都知道，XP有一项实践叫做简单设计(simple design)，站在这项实践对立面的是过度设计。当我们从客户价值的中心视角去审视那些我们遇到过的过度设计，自然而然就会得出一个结论：
+
+*“又TM被那些美其名曰项目经理和程序员的孙子们给忽悠了，这些功能我其实都用不到，但我还花了这么多冤枉钱去购买，下次议价时一定要砍掉80%的预算。”*
+
+![img1](http://ano.lolcathost.org/pics/pcartoon1.jpg)
+
+一旦得出这个结论，那么很快客户和开发团队将陷入无止境的撕逼状态，群体攻击增强300%，单体理智降低80%，所以为了避免程序猿的世界被破坏，并从根本上保障码农群体可怜的经济来源，就应当想办法给客户这样一种错觉：
+
+*“你要的功能必须值这个价，如果想要新增一个功能就应该要额外收费。”*
+
+对于开发人员而言，想在这场博弈中获胜的最佳方法就是砍掉那些完全只为满足自我虚荣心(以此证明自己技艺是如何炉火纯青)的多余设计和实现，只完美地产出客户真正需要和关心的功能，这就是简单设计。
+
+####似乎简单的直接设计
+
+理论总是非常easy，但是，请注意这里的**但是**，由于汉字的博大精深和内涵丰富，再遇上程序员这种伴随二进制进化的只有0和1二个极端的特殊生物，“简单”一词的含义被引申到了更广的范围，演化成了简单粗暴，出现了一种在编码中随处可见的风景——我称之为**直接设计(directly design)**。
+
+直接设计看上去像是一种“按图索骥”的编程方法，开发人员将流程图上的处理及分支用直白的代码表达出来，比如最近在工作中遇到的一个例子：
+
+设备对于端口的获得信息默认情况下需要进行处理，当端口被配置为A或B类型时，则该端口获得的信息无需处理，转化为流程图如下。
+
+<img src="https://www.processon.com/chart_image/thumb/55c438d6e4b08c136f0791c9.png" width = "300" height = "300" alt="flowchart" align=center />
+
+产生的代码如下：
+例1
+```java
+@Override
+public void onMsgRecvdFromPort(RecvMsg msg) {
+    checkNotNull(msg);
+
+    if (msg.getIn().getPortType() == InPortType.A) {
+        doRecord();
+    } else if (msg.getIn().getPortType() == InPortType.B) {
+        doRecord();
+    } else {
+        handleMsg(msg);
+    }
+}
+```
+也许团队中有那么一两个了解过clean code和重构的人，那么这段代码可能演变成如下：
+例2
+```java
+@Override
+public void onMsgRecvdFromPort(RecvMsg msg) {
+    checkNotNull(msg);
+
+    if (msg.getIn().getPortType() == InPortType.A || msg.getIn().getPortType() == InPortType.B) {
+        doRecord();
+    } else {
+        handleMsg(msg);
+    }
+}
+```
+但这还不够，再改造一下：
+例3
+```java
+@Override
+public void onMsgRecvdFromPort(RecvMsg msg) {
+    checkNotNull(msg);
+
+    if (!isPortTypeAOrB(msg)) {
+        handleMsg(msg);
+    }
+
+    doRecord();
+}
+
+private boolean isPortTypeAOrB(RecvMsg msg) {
+    return msg.getIn().getPortType() == InPortType.A || msg.getIn().getPortType() == InPortType.B;
+}
+```
+现在看上去似乎舒服多了，代码也好理解了，进行到这一步代码可以算是大的提升，但是这就结束了吗？其实这只是转嫁了问题，问题并没有结束，因为现在isPortTypeAOrB方法开始变得复杂难懂起来。不论编码资历深浅，大多数开发人员都写过类似例1的代码，这些直接设计总是自觉或不自觉地跑出来，像个幽灵一样。那么这些直接设计从何而来？
+
+审视自己的经历，直接设计代码产生的原因有很多，归结起来有以下几种可能性：
+
+- 习惯于面向过程编程的开发人员转向面向对象，惯性使然
+- 新手们被要求严格地按规划的流程编码，这是最快地让新手熟练起来的方法
+- 开发人员误解了简单的含义，认为简单就是直接，忽视了设计，也即简单而不设计
+
+人人都爱直接设计，不只是开发人员，因为那样不费脑力，有章可循，且按图索骥后责任就变成了流程的设计人员，既可以轻轻松松，又能趋利避害，不这么做似乎于情于理都很难说过去。其实直接设计并不代表代码质量有问题，相反只要意图足够清晰和简单，那么还是要推荐直接设计，毕竟开发人员都是这样被教育出来的。但是直接设计有一个很突出的缺陷——丑陋，因为总是会把过多的细节暴露出来，尤其是在分支处理上，就像上面的例1那样。
+
+也许有人觉得这样直接挺清晰，挺容易理解，其实问题也就在这里，现在这样的分支只有两个，当用户觉得这样的需求还不能满足需要时，就会要求更多，也许会有5个，10个甚至近百个分支，那时对于开发人员而言就要不断地增加新的分支代码，就像下面的代码这样。
+```java
+@Override
+public void onMsgRecvdFromPort(RecvMsg msg) {
+    checkNotNull(msg);
+
+    if (msg.getIn().getPortType() == InPortType.A) {
+        doRecord();
+    } else if (msg.getIn().getPortType() == InPortType.B) {
+        doRecord();
+    } else if (msg.getIn().getPortType() == InPortType.C) {
+        doRecord();
+    } else if (msg.getIn().getPortType() == InPortType.D) {
+        doRecord();
+    } else if (msg.getIn().getPortType() == InPortType.E) {
+        doRecord();
+    } 
+    ...
+    ...
+    else {
+        handleMsg(msg);
+    }
+}
+```
+并且在新增分支时还要小心翼翼地考虑与原有分支的逻辑关系，嵌套分支看来是在所难免了，用不了几个迭代，这些代码就会变得一堆意大利面条。
+
+![pasta_img](http://richkeycafe.com/UploadFile/201142631318888.jpg)
+
+也许，万幸的是，功能都实现，你幸福地点上一根烟，满足地看着自己的杰作，突然，有个新手菜鸟心怀崇敬地问你：“大牛，这段代码是什么意思？”，你盯着代码半天心里嘀咕着，这TM是什么鬼，我怎么也看不懂了，然后只好敷衍地回答一句“这个不明白吗？回去看看设计文档！”，好不容易打发走了这个新手，项目经理找到了你，告诉了你一个晴天霹雳，客户又改需求了，可能又要新增十几个分支，你眼前一黑，感叹一声又要加班了，但又不得不重新重头解读一遍自己创作的一切，看看哪里能够插入一个新需求，于是加班又开始了。
+
+![bad_condition](http://hackles.org/strips/cartoon75.png)
+
+####简单设计需要设计
+
+直截了当地设计过多地暴露细节造成扩展性和维护性也直截了当地下降，这种结局是所有开发人员都努力想避免的，如此看来简单设计并不简单，**关键是设计，因为简单设计更需要设计**，套用一句经典的广告语：**简约而不简单**，这才是简单设计想到达到的目的。现在试着重新解读简单设计，个人认为简单设计原则可以分成三个层次：
+
+- 实现具有用户价值的需求，简单的说就是用户要什么你就给他什么
+- 代码设计应当职责简单，简单地说就是做好一件事
+- 设计应尽可能针对一到两个问题展开，做到即设计要简单，足够针对性的解决问题即可
+
+让我们看看从上面角度怎么来设计，仍然以上面的例子为例。根据这个原则，将上述需求实例化，可以得到：
+
+- when port type == A, it should not handle message
+- when port type == B, it should not handle message
+- when port type != A && != B, it should handle message
+
+将端口类型进行归纳，可以发现其实端口是否处理消息由端口类型决定，一种端口类型是不需要处理消息类型，而另一种则是需要处理类型，因此端口消息处理只需要关心哪些端口是属于需要处理的类型即可。从这点出发可以看出例1做了太多可以委托他人去做的事情，因此设计上需要考虑将功能分离，特别是判断逻辑与功能主体剥离，使得单个主体的功能尽量简单来满足简单设计的第二条原则，按照上述思路，转化为如下代码：
+```java
+@Override
+public void onMsgRecvdFromPort(RecvMsg msg) {
+    checkNotNull(msg);
+    ParseMsg(msg);
+}
+
+private void ParseMsg(RecvMsg msg) {
+    if (!filter(msg)) { // only ports not in disabled list could be parsed
+        handleMsg(msg);
+    }
+    doRecord();
+}
+
+private boolean filter(RecvMsg msg) {
+    return DisabledPortFilter.getInstance().contains(msg.getIn());
+}
+```
+而DisabledPortFilter负责管理禁用端口，提供注册及过滤功能，如下：
+```java
+public class DisabledPortFilter {
+    // FilterRule in HashMap means rule for filting with port
+    // Sometimes you need to composite multi-conditions to filting, not only type of port
+    // FilterRule is an interface, so any one wants to use filter should offer an implementation
+    private HashMap<InPort, FilterRule> disableHandleList = Maps.newHashMap(); 
+    private static DisabledPortFilter portFilter = new DisabledPortFilter();
+
+    private DisabledPortFilter() {
+    }
+
+    public static DisabledPortFilter getInstance() {
+        return portFilter;
+    }
+
+    public void registDisabledPort(InPort inPort, FilterRule rule) {
+        disableHandleList.put(inPort, rule);
+    }
+    
+    public void unregistDisabeldPort(InPort inPort) {
+        disableHandleList.remove(inPort);
+    }
+
+    public boolean contains(InPort in) {
+        return !disableHandleList.get(in).matchFilter(in);
+    }
+}
+```
+FilterRule定义如下：
+```java
+public interface FilterRule {
+    public boolean matchFilter(InPort inPort);
+}
+```
+将例1中在一个方法中执行的过程分解到多个类中，每个类的职责更为单一，将复杂的过滤逻辑通过转化放在各个实现类中，也可以帮助开发者及维护者能够在某一时间点只关注其中某一中过滤规则。完成上述转化后，原来可能冗余繁复的分支处理消失了，取而代之的是短短的几行简单易懂的代码。并且转化后还带来了维护上的便利与代码扩展性的提升，当客户新增需求时，只需要增加对应的FilterRule实现，并注册到DisabledPortFilter中就可以，而不用去修改原有代码，不知不觉中又契合了OCP原则。
+对照前后例子，发生变化原因是针对逻辑判断与功能主体分离这一点问题进行了设计，后面的设计都是在此基础上展开，一次只设计一个切入点使得开发人员更容易控制开发思路，而不至于过多复杂的设计带来的思维混乱，因此简单设计原则中的第三条显得尤为重要，很多时候是我们自己想的太多而导致停滞不前，举步维艰。
+
+####简单设计之路
+
+简单设计是一条光明大道，但通向简单设计的路却并不简单，布满荆棘，很多时候并非我们不知道简单设计，而是在一次次与时间、进度博弈的过程中自觉或不自觉地放弃了简单设计，不少简单设计只需要我们再多想那么一点点，捅破这层窗户纸并不难，要做的只是多想一点，多看一眼，往往这片刻的思考就会对我们的编码产生巨大的影响，这也正是通向简单设计道路上唯一可以依靠的工具，你要做的只是多想一点，多看一眼。
