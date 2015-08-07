@@ -6,7 +6,7 @@ comments: true
 categories: [架构,设计]
 ---
 
-本文来自笔者[hxfirefox](https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md)，他是笔者在某国内大型企业提供敏捷XP咨询项目的同事。本文也是由他交给笔者帮助review，同时也授权了笔者发布在笔者的博客之中。
+本文来自[hxfirefox](https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md)，他是笔者在某国内大型企业提供敏捷XP咨询项目的内部教练。本文也是由他交给笔者帮助review，同时也授权发布在笔者的博客中。
 
 原文地址为：[直接不等于简单](https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md)。
 
