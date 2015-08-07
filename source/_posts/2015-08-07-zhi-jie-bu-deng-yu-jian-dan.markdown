@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "直接不等于简单"
+title: "设计-简约而不简单"
 date: 2015-08-07 16:12:35 +0800
 comments: true
 categories: [架构,设计]
