@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了Jeff Blankenburg的 31 Days of Windows Phone 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习， &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式; &nbsp;&nbsp; MEF &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,174 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/11/11/MEF-xue-xi-bi-ji/">MEF学习笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/11/11/MEF-xue-xi-bi-ji/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/11/MEF-xue-xi-bi-ji/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; MEF是 Managed Extensibility Framework简称，在计算机的世界什么都会加一个简称，这我们大家已经司空见惯了。从名字我们可以知道它是一个用于管理的可扩展性框架。这是和EL不同的另一种IOC方式;</p>
+
+<p>&nbsp;&nbsp; MEF 为我们提供了一种运行时的扩展，具体应用在对象的实例化。它有目录（AssemblyCatalog）和容器（CompositionContainer）组成，他有输入输出（Exports和Imports）元数据标记，在对象实例化的时候会自动匹配这个契约。</p>
+
+<p>下面是官方的一个展示图：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/Windows-Live-Writer/0291ec4c7408_12966/untitled_thumb.png" title="untitled" alt="untitled" /></a></p>
+
+<p>由CompositionContainer来管理我们的多个可组合部件。</p>
+
+<p>下面我们来一个简单的示例来初步了解MEF:</p>
+
+<p>控制台程序：</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+    using System.ComponentModel.Composition;//添加引用 
+
+
+
+    namespace MEFTest 
+    { 
+        public interface ILog 
+        { 
+            void Write(string message); 
+        } 
+
+        [System.ComponentModel.Composition.Export(typeof(ILog))] 
+        public class ConsoleLog:ILog 
+        { 
+            public void Write(string message) 
+            { 
+                Console.WriteLine("Hello:"+message); 
+            } 
+        } 
+        class Program 
+        { 
+            [System.ComponentModel.Composition.Import(typeof(ILog))] 
+            public ILog Log; 
+            static void Main(string[] args) 
+            { 
+                Program pro = new Program(); 
+                pro.Init(); 
+                pro.Log.Write("Test"); 
+                Console.Read(); 
+            }
+
+            public void Init() 
+            { 
+                var assem = System.Reflection.Assembly.GetExecutingAssembly();//当前程序集 
+                var assemcat = new System.ComponentModel.Composition.Hosting.AssemblyCatalog(assem);//构建目录 
+                var container = new System.ComponentModel.Composition.Hosting.CompositionContainer(assemcat);//构建容器 
+                container.ComposeParts(this);//这是一个System.ComponentModel.Composition.AttributedModelServices 的扩展方法。 
+            } 
+        } 
+    }
+</code></pre>
+
+<p>输出为：</p>
+
+<p>Hello:Test</p>
+
+<p>ExportAttribute 定义如下：</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)] 
+    public class ExportAttribute : Attribute 
+    { 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+
+        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+        public ExportAttribute(Type contractType); 
+
+        public ExportAttribute(string contractName, Type contractType);
+
+
+        public string ContractName { get; } 
+
+        public Type ContractType { get; } 
+    }
+</code></pre>
+
+<p>从他的定义我们可以知道他可以运用于我们的类、方法、属性、字段，并且可以多继承，但是不存在从父类的继承特性。</p>
+
+<p>他有三种不同的标记方式方式.在MEF中这里标记为可以导出，即注入到Import。</p>
+
+<p>ImportAttribute 定义：</p>
+
+<pre class='green'><code>     代码 
+
+    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)] 
+        public class ImportAttribute : Attribute, IAttributedImport 
+        { 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(); 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(string contractName); 
+
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] 
+            public ImportAttribute(Type contractType); 
+
+            public ImportAttribute(string contractName, Type contractType); 
+
+            public bool AllowDefault { get; set; }
+
+            public bool AllowRecomposition { get; set; } 
+
+            public string ContractName { get; } 
+
+            public Type ContractType { get; } 
+
+            public CreationPolicy RequiredCreationPolicy { get; set; } 
+        }
+</code></pre>
+
+<p>&nbsp;同上Export,这里标记为可被Export注入的接口点。</p>
+
+<p>今天就写到这里了，希望大家多多指教，大家一起共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/11/MEF1.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1421,170 +1589,6 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/">CodeDom六&#8211;实体类生成示例</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-07-08T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeDom这个东西个人觉得知识点不多，前几个续节写的已差不多了。在这节将演示一个CodeDom示例：</p>
-
-<p>数据库实体类的生成。这里先声明在如今的CodeSmith或者是T4模板中实现这些都很简单，并且更实用，在这</p>
-
-<p>里只是一个CodeDom示例，为了演示CodeDom。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在代码中位了简单、简化数据库数据信息的提取，引用了CodeSimth的SchemaExplorer.dll和SchemaExplorer.</p>
-
-<p>SqlSchemaProvider.dll。可以在Demo中的CodeSimth目录下找到。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 先贴上代码，需要讲解的东西没有什么：</p></blockquote>
-
-<pre class='green'><code>using System;
-using System.Text;
-using System.Windows.Forms;
-using SchemaExplorer;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-namespace CodeDomDemo
-{
-public partial class Form1 : Form
-{
-public Form1()
-{
-InitializeComponent();
-}
-private void Form1_Load(object sender, EventArgs e)
-{
-IDbSchemaProvider provider = new SqlSchemaProvider();
-string connectionString = System.Configuration.ConfigurationManager.
-?
-AppSettings["ConnectionString"].ToString();
-if (string.IsNullOrEmpty(connectionString))
-{
-MessageBox.Show(this, "Connection String is requested,in app configuration.",
-?
-"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-Application.Exit();
-}
-DatabaseSchema db = new DatabaseSchema(provider, connectionString);
-lboxTables.Items.AddRange(db.Tables.ToArray());
-}
-?
-        public CodeCompileUnit GenTableCompilerUnit(TableSchema item)
-{
-if (item == null)
-throw new ArgumentNullException("item");
-CodeTypeDeclaration tableClass = new CodeTypeDeclaration();
-tableClass.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-tableClass.Name = item.Name;
-?
-            foreach (var col in item.Columns)
-{
-CodeMemberField field = new CodeMemberField(
-?
-new CodeTypeReference(col.SystemType), "_" + col.Name);
-CodeMemberProperty property = new CodeMemberProperty();
-property.Name = col.Name;
-property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-property.Type = new CodeTypeReference(col.SystemType);
-property.SetStatements.Add(new CodeAssignStatement(
-?
-new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
-field.Name), new CodePropertySetValueReferenceExpression()));
-property.GetStatements.Add(new CodeMethodReturnStatement(
-?
-new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field.Name)));
-tableClass.Members.Add(field);
-tableClass.Members.Add(property);
-}
-CodeNamespace nspace = new CodeNamespace(item.Database.Name);
-nspace.Imports.Add(new CodeNamespaceImport("System"));
-nspace.Types.Add(tableClass);
-CodeCompileUnit unit=new CodeCompileUnit();
-unit.Namespaces.Add(nspace);
-return unit;
-}
-public string GenTanleCodeFromCompilerUnit(CodeCompileUnit unit, string language)
-{
-CodeGeneratorOptions option=new CodeGeneratorOptions();
-option.BlankLinesBetweenMembers =true;
-option.BracingStyle ="c";
-option.ElseOnClosing=true;
-option.IndentString="    ";
-StringBuilder sb=new StringBuilder();
-System.IO.StringWriter sw=new System.IO.StringWriter(sb);
-CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit(unit, sw, option);
-sw.Close();
-return sb.ToString();
-}
-?
-        private void lboxTables_SelectedIndexChanged(object sender, EventArgs e)
-{
-int index = lboxTables.SelectedIndex;
-if (index &gt; -1 &amp;&amp; index &lt; lboxTables.Items.Count)
-{
-object obj = lboxTables.Items[index];
-if (obj is TableSchema)
-{
-CodeCompileUnit unit= GenTableCompilerUnit(obj as TableSchema);
-string language="c#";
-if(!string.IsNullOrEmpty(this.toolStripComboBox1.Text))
-language=this.toolStripComboBox1.Text;
-string code = GenTanleCodeFromCompilerUnit(unit,language);
-this.rtbCode.Text = code;
-}
-}
-}
-}
-}
-</code></pre>
-
-<p>运行示图:c#图
-<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb.png" title="c#图" alt="imagec#图" /></a></p>
-
-<p> vb图：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb_1.png" title="vb图" alt="imagevb图" /></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 代码比较简单界面也做得太简洁了，呵呵导出文件都没有，我觉得没有什么必要讲解的，如果有什么不懂的或者是写的不对</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 不好的，请留言，我会尽快回复。</p>
-
-<blockquote><p><a href="http://files.cnblogs.com/whitewolf/CodeDomDemo-GeneratorCode.rar">CodeDom代码下载；</a></p></blockquote>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/15/">&larr; Older</a>
@@ -1618,6 +1622,10 @@ this.rtbCode.Text = code;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">直接不等于简单</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a>
       </li>
     
@@ -1643,10 +1651,6 @@ this.rtbCode.Text = code;
     
       <li class="post">
         <a href="/blog/2015/06/16/angularzhong-de-mvvmmo-shi/">angular中的MVVM模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/11/jshan-shu-ke-li-hua/">JavaScript函数柯里化</a>
       </li>
     
   </ul>
