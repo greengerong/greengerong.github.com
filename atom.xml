@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-08-07T16:38:35+08:00</updated>
+  <updated>2015-08-07T16:40:28+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -18,9 +18,9 @@
     <link href="http://greengerong.github.io/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/"/>
     <updated>2015-08-07T16:12:35+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan</id>
-    <content type="html"><![CDATA[<p>本文来自笔者hxfirefox<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md</a>，他是笔者在某国内大型企业提供敏捷XP咨询项目的同事。本文也是由他交给笔者帮助review，同时也授权了笔者发布在笔者的博客之中。</p>
+    <content type="html"><![CDATA[<p>本文来自笔者<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">hxfirefox</a>，他是笔者在某国内大型企业提供敏捷XP咨询项目的同事。本文也是由他交给笔者帮助review，同时也授权了笔者发布在笔者的博客之中。</p>
 
-<p>原文地址为：<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md</a>。</p>
+<p>原文地址为：<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">直接不等于简单</a>。</p>
 
 <h4>码农的博弈</h4>
 
