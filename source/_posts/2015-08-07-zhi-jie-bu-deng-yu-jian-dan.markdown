@@ -143,12 +143,13 @@ public void onMsgRecvdFromPort(RecvMsg msg) {
 @Override
 public void onMsgRecvdFromPort(RecvMsg msg) {
     checkNotNull(msg);
-    ParseMsg(msg);
+    parseMsg(msg);
 }
 
-private void ParseMsg(RecvMsg msg) {
+private void parseMsg(RecvMsg msg) {
     if (!filter(msg)) { // only ports not in disabled list could be parsed
         handleMsg(msg);
+        return;
     }
     doRecord();
 }
