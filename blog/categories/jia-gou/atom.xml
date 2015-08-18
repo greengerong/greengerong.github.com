@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 架构 | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/jia-gou/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-08-07T17:45:31+08:00</updated>
+  <updated>2015-08-18T22:33:03+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -180,15 +180,16 @@ else {
 public void onMsgRecvdFromPort(RecvMsg msg) {</p>
 
 <pre><code>checkNotNull(msg);
-ParseMsg(msg);
+parseMsg(msg);
 </code></pre>
 
 <p>}</p>
 
-<p>private void ParseMsg(RecvMsg msg) {</p>
+<p>private void parseMsg(RecvMsg msg) {</p>
 
 <pre><code>if (!filter(msg)) { // only ports not in disabled list could be parsed
     handleMsg(msg);
+    return;
 }
 doRecord();
 </code></pre>

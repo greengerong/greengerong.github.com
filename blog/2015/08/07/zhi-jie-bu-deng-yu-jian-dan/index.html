@@ -316,15 +316,17 @@
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
+<span class='line-number'>17</span>
 </pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
 </span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">ParseMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">parseMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">ParseMsg</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">parseMsg</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">filter</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// only ports not in disabled list could be parsed</span>
 </span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>    <span class="n">doRecord</span><span class="o">();</span>
 </span><span class='line'><span class="o">}</span>
@@ -529,7 +531,7 @@ dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
       </li>
     
       <li class="post">
-        <a href="/blog/2015/07/25/tui-jian-shu-ji-%3C%3Cyi-dong-appce-shi-de-22tiao-jun-gui-%3E%3E/">推荐书籍 -《移动App测试的22条军规》</a>
+        <a href="/blog/2015/07/25/tui-jian-shu-ji-yi-dong-appce-shi-de-22tiao-jun-gui/">推荐书籍 -《移动App测试的22条军规》</a>
       </li>
     
       <li class="post">
