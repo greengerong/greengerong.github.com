@@ -230,7 +230,7 @@ youngestUser(users); // Object {user: "pebbles", age: 18}
 
 <p>如希望我们希望最年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
 
-<pre class='green'><code>var olderUser =R.compose(R.head,R.tap(function(item){console.log(item)}),R.reverse, R.sortBy(R.prop("age")));
+<pre class='green'><code>var olderUser = R.compose(R.head,R.tap(function(item){console.log(item)}),R.reverse, R.sortBy(R.prop("age")));
 olderUser(users); // Object {user: "fred", age: 40}         
 </code></pre>
 
