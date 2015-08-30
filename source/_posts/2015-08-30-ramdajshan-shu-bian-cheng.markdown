@@ -6,7 +6,7 @@ comments: true
 categories: 
 ---
 
-![ramdajs函数式编程](/images/blog_img/ramdajs.png)
+![ramdajs函数式编程](/images/blog_img/ramda-logo.png)
 
 
 在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承至Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。在JavaScript中有很多的函数式编程库来辅助JavaScript函数式体验，在它们之中最为成功的要数Underscore或lodash。
