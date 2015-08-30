@@ -128,7 +128,7 @@ ramdajs则，可以组合获取第一个元素的R.head算法子和排序算法�
 	var youngestUser = R.compose(R.head, R.sortBy(R.prop("age")));
 	youngestUser(users); // Object {user: "pebbles", age: 18}
 
-如希望我们希望年长的用户，则只需再组合一个反序排列的算法子R.reverse：
+比如我们希望获取年长的用户，则只需再组合一个反序排列的算法子R.reverse：
 
 	var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
 	olderUser(users); // Object {user: "fred", age: 40}			
