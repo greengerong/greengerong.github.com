@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承至Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。 &hellip;"> 
+    <meta name="description" content="在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承自Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -97,7 +97,7 @@
 
   <div class="entry-content"><p><img src="/images/blog_img/ramda-logo.png" alt="ramdajs函数式编程" /></p>
 
-<p>在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承至Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。在JavaScript中有很多的函数式编程库来辅助JavaScript函数式体验，在它们之中最为成功的要数Underscore或lodash。</p>
+<p>在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承自Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。在JavaScript世界中有很多的函数式编程库能辅助我们的JavaScript函数式体验，在它们之中最为成功的要数Underscore或lodash。</p>
 
 <p>如下lodash实例代码：</p>
 
@@ -116,11 +116,11 @@ console.log(names);
 
 <p>它以链式、惰性求值著称，形成了一套自有的DSL风格。更多关于lodash的编程可以参见博主的另一篇文章<a href="http://greengerong.com/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>。</p>
 
-<p>函数式思想展现的是一种纯粹的数学思维。函数并不代表任何物质（对象，相对于面向对象思想而言），而它仅仅代表一种数据的转换行为。一个函数可以是原子的算法子（函数），也可以是多个原子算法子组成的组合算法子。它们是对行为的最高抽象，具有非凡的抽象能力和表现力。</p>
+<p>函数式思想展现的是一种纯粹的数学思维。函数并不代表任何物质（对象，相对于面向对象思想而言），而它仅仅代表一种针对数据的转换行为。一个函数可以是原子的算法子（函数），也可以是多个原子算法子组成的组合算法子。它们是对行为的最高抽象，具有非凡的抽象能力和表现力。</p>
 
-<p>虽然Underscore或lodash也提供了<em>.compose（或</em>.flowRight）函数来实现函数组合的能力，但它们没有ramdajs更具有更强的组合力。</p>
+<p>虽然Underscore或lodash也提供了<em>.compose（或</em>.flowRight）函数来实现函数组合的能力，但ramdajs具有更强的组合力。</p>
 
-<p>ramdajs是一个更函数式的JavaScript库，可以在这里了解更多关于它的信息<a href="http://ramdajs.com/0.17/">http://ramdajs.com/0.17/</a>。它的这种能力主要来自它自有的两大能力：自动柯里化和函数参数优先于数据。</p>
+<p>ramdajs是一个更具有函数式代表的JavaScript库，可以在这里了解更多关于它的信息<a href="http://ramdajs.com/0.17/">http://ramdajs.com/0.17/</a>。它的这种能力主要来自它自有的两大能力：自动柯里化和函数参数优先于数据。</p>
 
 <h4>自动柯里化</h4>
 
@@ -143,7 +143,7 @@ var map = R.map(function(item){
 map([2,3,5]); //输出[4, 6, 10]
 </code></pre>
 
-<p>如果我们传入2个完备的参数，则R.map函数将会直接执行。否则，他将返回另一个函数，等待参数完备时才执行。</p>
+<p>如果我们传入2个完备的参数，则R.map函数将会直接执行。否则，它将返回另一个函数，等待参数完备时才执行。</p>
 
 <p>关于JavaScript函数的柯里化，你还可以从博主的《JavaScript函数柯里化》中了解更多<a href="http://www.cnblogs.com/whitewolf/p/4495517.html">http://www.cnblogs.com/whitewolf/p/4495517.html</a></p>
 
@@ -173,13 +173,13 @@ R.multiply(10) (2); // 20
 <pre class='green'><code>R.map(R.multiply(2)) ([2, 5, 10, 80]); // [4, 10, 20, 160]
 </code></pre>
 
-<p>R.map(R.multiply(2))的返回值也是一个函数，它是一个组合转换函数。它组合了map和multiply行为。它利用R.map组合封装了R.multiply(2)返回的柯里化函数，它等等待map函数传入的被乘数。</p>
+<p>R.map(R.multiply(2))的返回值也是一个函数，它是一个组合转换函数。它组合了map和multiply行为。它利用R.map组合封装了R.multiply(2)返回的柯里化函数，它等待map函数传入对应的被乘数。</p>
 
 <h4>ramdajs的组合</h4>
 
-<p>有了上面的两个条件，再加上ramdajs为我们提供的R.compose方法，我们就能很容易的实现更多算法子的组合。R.compose是从右向左边执行的数据流向。</p>
+<p>有了上面的两个条件，再加上ramdajs为我们提供的R.compose方法，我们就能很容易的实现更多算法子的组合。R.compose是从右向左执行的数据流向。</p>
 
-<p>用ramdajs的组合来实现开篇lodash一样的用户名拼接的例子，则我们可以分为 个算法子：</p>
+<p>用ramdajs的组合来实现开篇lodash一样的用户名拼接的例子，则我们可以分为2个算法子的组合：</p>
 
 <ol>
 <li>R.pluck(prop)：选择对象固定属性；</li>
@@ -192,6 +192,10 @@ R.multiply(10) (2); // 20
 <pre class='green'><code>var joinUserName = R.compose(R.join(" , "), R.pluck("user"));
 joinUserName(users); // "barney , fred , pebbles"
 </code></pre>
+
+<p>这里的函数式组合可表示为下图：</p>
+
+<p><img src="/images/blog_img/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%AE%97%E6%B3%95%E5%AD%90%E7%BB%84%E5%90%88.png" alt="函数式组合" /></p>
 
 <p>如果我们希望join用户的年龄，则如下：</p>
 
@@ -228,7 +232,7 @@ joinUserBrithDay(users); // "1979,1975,1997"
 youngestUser(users); // Object {user: "pebbles", age: 18}
 </code></pre>
 
-<p>如希望我们希望最年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
+<p>如希望我们希望年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
 
 <pre class='green'><code>var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
 olderUser(users); // Object {user: "fred", age: 40}         
