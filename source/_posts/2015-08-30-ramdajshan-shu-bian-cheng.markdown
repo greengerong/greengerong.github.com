@@ -92,12 +92,12 @@ R.map(R.multiply(2))的返回值也是一个函数，它是一个组合转换函
 
 则代码如下所示：
 
-	var joinUserName = R.compose(R.join(" , "),R.pluck("user"));
+	var joinUserName = R.compose(R.join(" , "), R.pluck("user"));
 	joinUserName(users); // "barney , fred , pebbles"
 
 如果我们希望join用户的年龄，则如下：
 
-	var joinUserAge = R.compose(R.join(" , "),R.pluck("age"));
+	var joinUserAge = R.compose(R.join(" , "), R.pluck("age"));
 	joinUserAge(users); // "36 , 40 , 18"
 
 假设我们希望输出的不是用户年龄，而是用户生日，则我们可以轻易组合上一个减法的算法子：
