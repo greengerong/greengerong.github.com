@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-08-30T22:20:00+08:00</updated>
+  <updated>2015-08-30T22:57:40+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -155,7 +155,7 @@ joinUserBrithDay(users); // "1979,1975,1997"
 youngestUser(users); // Object {user: "pebbles", age: 18}
 </code></pre>
 
-<p>如希望我们希望年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
+<p>比如我们希望获取年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
 
 <pre class='green'><code>var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
 olderUser(users); // Object {user: "fred", age: 40}         
