@@ -10,7 +10,8 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在去年到今年参与了2个使用Angularjs作为客户端开发框架的项目开发。主要利用asp.net web api作为restfull服务提供框架和angularjs结合。Angularjs作为html的扩展， &hellip;"> 
+    <meta name="description" content="最近在准备Angularjs +node.js demo的时候在我的mac开发中 遇见此错误，如下： events.js:71 throw arguments[1]; // Unhandled 'error' event ^
+Error: connect ECONNREFUSED at &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +64,67 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/">Node.js Connect ECONNREFUSED错误</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-31T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/31/Node-js-connect-ECONNREFUSED-cuo-wu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>   最近在准备Angularjs +node.js demo的时候在我的mac开发中 遇见此错误，如下：</p>
+
+<pre class='green'><code>events.js:71
+        throw arguments[1]; // Unhandled 'error' event
+                   ^
+Error: connect ECONNREFUSED
+    at errnoException (net.js:770:11)
+ at Object.afterConnect [as oncomplete] (net.js:761:19)
+</code></pre>
+
+<p>最后在stackoverflow找到解决方案，这主要由于上一次node.js server进程仍然还在运行没关闭掉，所以我们需要杀掉此进程，在mac上操作为：</p>
+
+<pre class='green'><code>ps aux | grep node
+
+twer    7668  4.3  1.0  42060 10708 pts/1    Sl+  20:36   0:00 
+node server 
+twer    7749  0.0  0.0   4384   832 pts/8    S+   20:37   0:00 
+grep --color=auto node
+</code></pre>
+
+<p>从输出可以看见进程PID7668在使用，所以我们必须杀掉这顽固分子，运行kill -9 7668. Ok，一键搞定，可以重新开启server了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991588.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1335,119 +1397,6 @@ filter("fullname", function() {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/07/31/du-dai-ma-zheng-jie-zhi-dao/">读代码整洁之道</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-31T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2012/07/31/du-dai-ma-zheng-jie-zhi-dao/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2012/07/31/du-dai-ma-zheng-jie-zhi-dao/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 现在的软件系统开发难度主要在于其复杂度和规模，客户需求也不再像Winston Royce瀑布模型期望那样在系统编码前完成所有的设计满足用户软件需求。在这个信息爆炸技术日新月异的时代，需求总是在不停的变化，随之在2001年业界17位大牛聚集在美国犹他州的滑雪胜地雪鸟（Snowbird）雪场，提出了&#8220;Agile&#8221;（敏捷）软件开发价值观，并在他们的努力推动下，开始在业界流行起来。在《代码整洁之道》（Clean Code），提出一种软件质量，可持续开发不仅在于项目架构设计，还与代码质量密切相关，代码的整洁度和质量成正比，一份整洁的代码在质量上是可靠的，为团队开发，后期维护，重构奠定了良好的基础。在这本书中作者提出了注重实际开发实践的细节，而不是站在空洞的理论来谈论整洁之道。</p>
-
-<p>什么是整洁代码？不同的人会站在不同的角度阐述不同的说法。而我最喜欢的是Grady Booch（《面向对象分析与设计》作者）阐述：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &#8220;整洁的代码简单直接。整洁的代码如同优美的散文。整洁的代码从不隐藏设计者的意图，充满了干净利落的抽象和直截了当的控制语句。&#8221;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 整洁的代码就是一种简约（简单而不过于太简单）的设计，阅读代码的人能很清晰的明白这里在干什么，而不是隐涩难懂，整洁的代码读起来让人感觉到就像阅读散文-艺术的沉淀，作者是精心在意缔造出来。</p>
-
-<p>一：命名</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 命名包括变量、函数、参数，类等，一个好的命名能够很好的表述其所承载的业务，从命名上就已经很好的答复了为什么存在，做了什么事，应该怎么用等的大部分的问题，阅读者看到它的时候不必去深究其实现细节，一切都在命名上一目了然。一个好的命名必须是名副其实，不存在歧义（双关语或常见属于冲突），直接了当（否定语句或者误导性命名）。</p>
-
-<p>二：函数：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 从汇编/C时代开始的到现在函数一直都存在与我们开发中不可或缺的一部分，结构化组织，重用.作为函数式语言的一等公民，所有程序的第一组代码。</p>
-
-<ol>
-<li>好的函数必须足够的小，其次还是足够的小。很容易想像阅读上千行的代码，是多么巨大的自我心理挑战，在实习的时候工作于毫无分层逻辑的WinForm平台下，完全依赖RAD模式带来后置cs页面上千行的代码，每次修改都令我恼怒，恨不得重写整个业务逻辑。2.  一个函数在于短小精悍，只作一件事情，并做好这件事，只做一件事才能得到更好的利用函数名表述自己。3.  好的函数还应该是CQS（查询命令分离）无副作用的（不存在隐藏歧义的背后逻辑），并对其他类型不存在&#8220;依恋情节(Feature Envy)&#8220;（类中的变量被所有的函数使用这是理想的高内聚，万物皆有其位，而后物尽归其位）。4.  函数的参数应该足够的少，无最好，一次之，再次为二，尽量避免三个以及三个以上，对于太多的参数你可能该采用IntroduceParameterObject(引入参数对象)。5.  重复的代码。重复在软件系统是万恶的,我们熟悉的分离关注点，面向对象，设计原则&#8230;都是为了减少重复提高重用，Don&#8217;t repeat yourself！(DRY)。</li>
-</ol>
-
-
-<p>三：注释、格式：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 并不是写出完备的注释就是好的开发人员，如果代码清晰的表述自己意图，那么注释反而多余。在《重构-改善现有代码之道》中Martin Fowler指出多余的注释是一种代码坏味道。就是好的注释随着项目的维护不断的重构很多时候也会变得不那么适应，而我们很少会去主动维护。再则误导性的注释更为使用者所憎恨。当然有时我们也得使用注释，注释并不是万恶的，当我们没法用代码来描述自己的时候，我们需要注释去描述意图；多余有副作用的代码给使用者提供警告注释。TODO开发时进度控制，比如你在进行较大规模领域重构，目前有些逻辑不再适应，不那么自然，而对它的重构还在任务列表最后，你可以选择标注在TODO中，最后完成从ToDoList中去掉每一个TODO任务。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 良好的代码格式，会使得我们阅读更容易，一套共同的格式会让我们查找理解更快速。每个团队都应该遵循一套固定的代码格式规范，整个软件系统的统风格统一，而不是各自为政各成一体。</p>
-
-<p>四：对象和数据结构：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 数据结构指的就是数据的载体，暴露数据，而几乎没有有意义的行为的贫血类。最常见的应用在分布式服务，以wcf，webservice，reset之类的分布式服务中不可或缺的数据传输对象（DTO）模式，DTO（Request/Response）就是一个很典型的数据载体，只存在简单的get，set属性，并且更倾向于作为值对象存在。而对象则刚好相反作为面向对象的产物，必须封装隐藏数据，而暴露出行为接口，DDD中领域模型倾向于对象不仅在数据更多暴露行为操作自己或者关联状态。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 数据结构和对象之间看是细微的差别却导致了不同的本质区别：使用数据结构的代码便于在不改动现在数据结构的前提下添加新的行为（函数），面向对象代码则便于不改动现 有函数的前提下添加新的类。换句话说就是数据结构难以添加新的的数据类型，因为需要改动所有函数，面向对象的代码则难以添加新的函数，因为需要修改所有的类。在任何一个复杂的系统都会同时存在数据结构和对象，我们需要判断的是我们需要的是需要添加的新的数据类型还是新的行为函数。</p>
-
-<p>&nbsp;&nbsp; 隐藏作为面向对象主要特性中的最重要特性，封装隐藏是面向对象中最重要的特性，一个好的面向对象代码肯定是对对象的内部细节做到很好的隐藏封装，封装过后才有是多态，委派之类的。一个好的面向对象的代码一定是具有很好的隐藏封装，易于测试，不稳定因素往往集中在一处很小或者固定的位置，不稳定因素的变更不会导致更大面积的修改扩散。</p>
-
-<p>&nbsp; 对象的隐藏要求：方法不应和任何调用方法返回的对象操作，换句话之和朋友说话，不和陌生人说话（迪米特法则，或被译为最小知识原则），比如：ctxt.getOptions().getSearchDir().getAbsolutePath()，就是迪米特法则的反例模式。</p>
-
-<p>五：异常处理：</p>
-
-<p>&nbsp;&nbsp; 每个软件系统都避不开异常处理，需要防止它搞乱我们的逻辑。</p>
-
-<ol>
-<li>利用异常处理代替返回异常编码，返回异常编码会是的代码中充满了if/else，switch/case扰乱我的代码流转。2.  对于特定异常扑捉，可以面向异常编程，编写特定的异常类，使得对异常封装转化，更容易捕善后获处理。3.  避免返回null，在软件系统中最常见头疼的就是NullReferenceException。在非特定场景下，我们应该极力的避免返回null。面对这种场景我们可以采用null object Pattern（空对象模式）返回特例对象，如c#类库中的Guid.Empty，string.Empty；对于集合类型我们可以返回长度0的空集合而非null；</li>
-</ol>
-
-
-<p>六：边界：</p>
-
-<p>&nbsp;&nbsp; 在系统开发中不可能一切都得从零开始，自己写所有的代码，更好的方案是需要整合一些开源或者第三方的项目，为我所用。但是不能让这些非自己的代码渗侵中我们的代码各处，有一些所以功能很强大的第三方产品，但不一定具有很好的抽象。很多时候我更宁愿花些时间抽象出我们自己所需要的接口在第三方类库上外覆一层自己的抽象，这样不仅便于TDD，因为我们能够很好的创建伪对象，使的测试独立不依赖外部资源，得到快速反馈；而且在设计上得到很好的扩展，当由于某些原因如第三方类库不再能满足业务需求，或者权益收费等等，我们可以很好的切换底层而使得修改不会扩散到系统各处。外覆类也是处理遗留代码带入测试容器的一种很好实践。</p>
-
-<p>七:单元测试：</p>
-
-<p>&nbsp;&nbsp;&nbsp; TDD中测试代码在往往和产品代码差不多，在系统中占据一半的代码量，不好的测试代码也可能拖累项目的开发。整洁的测试代码应该是遵循first原则的：</p>
-
-<ol>
-<li>快速（Fast）：测试应该快速，因为需要不断的运行测试得到反馈，我们需要的快速反馈，错误的快速定位。所以你的测试就不能依赖太多的外部资源，数据库，硬件环境等等，对于这些外部资源应该采用伪对象模式来隔离。2.  独立（Independent）：测试应该是独立的，独立于测试用例之间，独立于特定的环境，独立于测试的运行顺利。数据的独立通常采用两种独立方式，每个测试环境的独立，很多时候我们希望每个测试运行完成后环境（如数据库）和运行前保持一致，如数据库高层次测试我们更希望在每次测试完成后不会带来多余或者改变数据。再则就是数据的隔离，我们的行为测试（BDD，集成高角度的测试）都会依赖一些固定的信息，通常是登陆系统的人员，我们可以采用么个测试建立一个不同的登陆人员来使的每个测试之间的s数据隔离。3.  可重复（Repeatable）：测试应该可以在任何环境下可重复，可运行，因为测试独立于环境外部资源。4.  自足验证（Self-Validation）：测试应该有通过失败的标示，从每一个测试上能得到一处代码逻辑的通过失败。每个测试都有对同一件事物的一种行为的断言，也之断言一件事，从而能够很好的错误定位，避免高技巧性的测试。5.  及时（Timely）：测试应该是及时编写的，TDD要求测试必须在实现代码之前，提前以使用者的角度定义使用接口方式。如果你是在编码后补测试，你的测试覆盖很可能不够，而且容易定式于实现的逻辑写测试，很多时候对于较低层次的测试也不是那么容易写的。一个设计良好的代码必须也是可测试的。</li>
-</ol>
-
-
-<p>八：类：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 面向对象的相似行为的抽象，函数代码块的组织形式，在面向对象中我们的软件系统是由众多的类和类之间的交互协作完成了。面向对象特征：封装，继承，多态度，委派。一个设计良好的类该是具有良好的封装，站在使用者的调度考虑那些是使用接口，那些是内部细节；这是面向对象最主要的特征，但是有时会与测试冲突，可以适当的放开并仅限于于测试调用。继承和多态在面向对象中可以实现重用，但我更倾向于继承不是为了重用，而是隔离变化；大量的滥用继承不干净的继承体系将会导致庞大的继承体系，继承体系中众多职责重复在各个同级派生类，理想的继承应该是满足里氏替换原则（LSP：每个父类出现的地方都应该可以被派生类所替换，并且能正确的工作）；面oo第二原则组合优先。而委派则是一个类把部分功能委派给其他类来完成，体现类之间的协作，类似组合。</p>
-
-<p>九：并发编程：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 并发是一种时间(When)和目的(What)的解耦,提供应用程序的吞吐量，提高cpu利用率；但是并发编码不是那么容易，再加上临界资源竞争死锁。在并发编程的时候我们必须尽量遵守一些原则：</p>
-
-<ol>
-<li>并发已经足够复杂，我们更需要代码分离，分离线程相关代码和非线程相关代码，单一权责，尽可能降低其复杂度。2.  限制临街资源的作用域，为临界资源加锁是防止并发的策略，但是必须正确的加锁，如果形成等待环，就导致死锁。3.  利用数据副本（值对象或者克隆）在线程之间传递数据，避免线程之前操作的并发影响；线程独立，使其在自己的环境中运行，不能其他线程共享数据。4.  对于临界资源加锁应尽量保持加锁范围尽可能的小。</li>
-</ol>
-
-
-<p>&nbsp;&nbsp; 更多关于简单设计，迭进，逐步编程代码，坏味道，并发示例请参见<a href="http://book.51cto.com/art/200912/168058.htm">代码整洁之道</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/31/2617473.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -1481,6 +1430,10 @@ filter("fullname", function() {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a>
       </li>
     
@@ -1506,10 +1459,6 @@ filter("fullname", function() {
     
       <li class="post">
         <a href="/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/">ngModel 值不更新/显示</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/16/angularzhong-de-mvvmmo-shi/">angular中的MVVM模式</a>
       </li>
     
   </ul>
