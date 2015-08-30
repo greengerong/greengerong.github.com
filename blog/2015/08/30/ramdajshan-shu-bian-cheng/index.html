@@ -186,13 +186,13 @@ R.multiply(10) (2); // 20
 
 <p>则代码如下所示：</p>
 
-<pre class='green'><code>var joinUserName = R.compose(R.join(" , "),R.pluck("user"));
+<pre class='green'><code>var joinUserName = R.compose(R.join(" , "), R.pluck("user"));
 joinUserName(users); // "barney , fred , pebbles"
 </code></pre>
 
 <p>如果我们希望join用户的年龄，则如下：</p>
 
-<pre class='green'><code>var joinUserAge = R.compose(R.join(" , "),R.pluck("age"));
+<pre class='green'><code>var joinUserAge = R.compose(R.join(" , "), R.pluck("age"));
 joinUserAge(users); // "36 , 40 , 18"
 </code></pre>
 
@@ -221,13 +221,13 @@ joinUserBrithDay(users); // "1979,1975,1997"
 
 <p>ramdajs则，可以组合获取第一个元素的R.head算法子和排序算法子R.sortBy：</p>
 
-<pre class='green'><code>var youngestUser = R.compose(R.head,R.sortBy(R.prop("age")));
+<pre class='green'><code>var youngestUser = R.compose(R.head, R.sortBy(R.prop("age")));
 youngestUser(users); // Object {user: "pebbles", age: 18}
 </code></pre>
 
 <p>如希望我们希望最年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
 
-<pre class='green'><code>var olderUser = R.compose(R.head,R.tap(function(item){console.log(item)}),R.reverse, R.sortBy(R.prop("age")));
+<pre class='green'><code>var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
 olderUser(users); // Object {user: "fred", age: 40}         
 </code></pre>
 
