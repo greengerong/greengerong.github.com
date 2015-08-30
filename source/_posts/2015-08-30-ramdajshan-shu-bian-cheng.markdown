@@ -129,5 +129,5 @@ ramdajs则，可以组合获取第一个元素的R.head算法子和排序算法�
 	var olderUser =R.compose(R.head,R.tap(function(item){console.log(item)}),R.reverse, R.sortBy(R.prop("age")));
 	olderUser(users); // Object {user: "fred", age: 40}			
 
-希望你也能像我一样喜欢上ramdajs，关于它的更多资料，请参见其官网[http://ramdajs.com/0.17/](http://ramdajs.com/0.17/)。
+希望你也能像我一样喜欢上ramdajs，关于它的更多资料，请参见其官网 [http://ramdajs.com/0.17/](http://ramdajs.com/0.17/)。
 
