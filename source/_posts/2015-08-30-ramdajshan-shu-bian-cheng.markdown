@@ -121,12 +121,12 @@ lodash实现：
 
 ramdajs则，可以组合获取第一个元素的R.head算法子和排序算法子R.sortBy：
 
-	var youngestUser = R.compose(R.head,R.sortBy(R.prop("age")));
+	var youngestUser = R.compose(R.head, R.sortBy(R.prop("age")));
 	youngestUser(users); // Object {user: "pebbles", age: 18}
 
 如希望我们希望最年长的用户，则只需再组合一个反序排列的算法子R.reverse：
 
-	var olderUser =R.compose(R.head,R.tap(function(item){console.log(item)}),R.reverse, R.sortBy(R.prop("age")));
+	var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
 	olderUser(users); // Object {user: "fred", age: 40}			
 
 希望你也能像我一样喜欢上ramdajs，关于它的更多资料，请参见其官网 [http://ramdajs.com/0.17/](http://ramdajs.com/0.17/)。
