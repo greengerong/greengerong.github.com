@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-02T17:24:48+08:00</updated>
+  <updated>2015-09-02T18:31:00+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -18,9 +18,9 @@
     <link href="http://greengerong.github.io/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/"/>
     <updated>2015-09-02T07:47:21+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view</id>
-    <content type="html"><![CDATA[<p>在层级结构数据展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。</p>
+    <content type="html"><![CDATA[<p>在层次数据结构展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。</p>
 
-<p>这里我们采用更ng way来实现这类常见的tree view结构。</p>
+<p>这里我们采用Angular的方式来实现这类常见的tree view结构。</p>
 
 <p>首先我们定义数据结构，采用以children属性来挂接子节点方式来展现树层次结构，示例如下：</p>
 
