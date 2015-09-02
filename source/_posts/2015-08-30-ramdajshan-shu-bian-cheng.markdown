@@ -3,7 +3,7 @@ layout: post
 title: "ramdajs函数编程"
 date: 2015-08-30 11:46:30 +0800
 comments: true
-categories: 
+categories: [javascript,函数式,ramdajs]
 ---
 
 ![ramdajs函数式编程](/images/blog_img/ramda-logo.png)
