@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "angular实现递归指令-tree view"
+title: "angular实现递归指令 - tree view"
 date: 2015-09-02 07:47:21 +0800
 comments: true
 categories: [angular,javascript]
