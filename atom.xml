@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-08-31T00:12:57+08:00</updated>
+  <updated>2015-09-02T17:21:55+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,111 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Angular实现递归指令-tree View]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/"/>
+    <updated>2015-09-02T07:47:21+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view</id>
+    <content type="html"><![CDATA[<p>在层级结构数据展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。</p>
+
+<p>这里我们采用更ng way来实现这类常见的tree view结构。</p>
+
+<p>首先我们定义数据结构，采用以children属性来挂接子节点方式来展现树层次结构，示例如下：</p>
+
+<pre class='green'><code>[
+   {
+      "id":"1",
+      "pid":"0",
+      "name":"家用电器",
+      "children":[
+         {
+            "id":"4",
+            "pid":"1",
+            "name":"大家电"
+         }
+      ]
+   },
+   {
+     ...
+   }
+   ...
+]
+</code></pre>
+
+<p>则我们对于ng way的tree view可以实现为：</p>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module('ng.demo', [])
+.directive('treeView',[function(){
+
+     return {
+          restrict: 'E',
+          templateUrl: '/treeView.html',
+          scope: {
+              treeData: '=',
+              canChecked: '=',
+              textField: '@',
+              itemClicked: '&amp;',
+              itemCheckedChanged: '&amp;'
+          },
+         controller:['$scope', function($scope){
+             $scope.itemExpended = function(item, $event){
+                 item.$$isExpend = ! item.$$isExpend;
+                 $event.stopPropagation();
+             };
+
+             $scope.isLeaf = function(item){
+                return !item.children || !item.children.length; 
+             };
+
+             $scope.warpCallback = function(callback, item, $event){
+                  ($scope[callback] || angular.noop)({
+                     $item:item,
+                     $event:$event
+                 });
+             };
+         }]
+     };
+</code></pre>
+
+<p>HTML:</p>
+
+<p>树内容主题HTML： /treeView.html</p>
+
+<pre class='green'><code>&lt;ul class="tree-view"&gt;
+       &lt;li ng-repeat="item in treeData" ng-include="'/treeItem.html'" &gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>每个item节点的HTML：/treeItem.html</p>
+
+<pre class='green'><code>&lt;i ng-click="itemExpended(item, $event);" class="fa" 
+ng-class="{'fa-minus': !isLeaf(item)&amp;&amp; item.$$isExpend, 'fa-plus': !isLeaf(item)&amp;&amp;!item.$$isExpend, 'fa-leaf': isLeaf(item)}"&gt;
+&lt;/i&gt;
+
+&lt;input id="checkItem" type="checkbox" ng-model="item.$$isChecked" class="check-box" ng-if="canChecked" ng-change="warpCallback('itemCheckedChanged', item, $event)"&gt;
+
+&lt;span class='text-field' ng-click="warpCallback('itemClicked', item, $event);"&gt;&lt;/span&gt;
+&lt;ul ng-if="!isLeaf(item)" ng-show="item.$$isExpend"&gt;
+   &lt;li ng-repeat="item in item.children" ng-include="'/treeItem.html'"&gt;
+   &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>这里的技巧在于利用ng-include来加载子节点和数据，以及利用一个warpCallback方法来转接函数外部回调函数，利用angular.noop的空对象模式来避免未注册的回调场景。</p>
+
+<p>我们就可以如下方式来使用这个tree-view：</p>
+
+<pre class='green'><code>&lt;tree-view tree-data="demo.tree" text-field="name" value-field='id' item-clicked="demo.itemClicked($item)" item-checked-changed="demo.itemCheckedChanged($item)" can-checked="true"&gt;&lt;/tree-view&gt;
+</code></pre>
+
+<p>效果如下，当然你也可以在<a href="http://jsbin.com/vefuqu/edit?html,js,output">jsbin中体验它</a>：</p>
+
+<p> <img src="http://greengerong.github.io/images/blog_img/ng-tree-view-sample.png" alt="ng-tree-view" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ramdajs函数编程]]></title>
@@ -4008,163 +4113,6 @@ deallocate prepare stmt;
 <p><img src="http://greengerong.github.io/images/blog_img/ng-showcase.png" alt="ng文章" /></p>
 
 <p>目前由于进入年底等各种原因我们暂停了这些开发，我们希望在后面的时间能继续完善更多的案例和文章分享。同时也希望爱好分享、喜欢交流、也愿意帮助更多ng新人的你能加入我们的ngShowcase开发组(qq群：278252889，注：这里不会给你解决任何ng问题，只供开发组使用)。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Guava-Optional可空类型]]></title>
-    <link href="http://greengerong.github.io/blog/2015/01/18/guava-optionalpian/"/>
-    <updated>2015-01-18T14:05:36+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/01/18/guava-optionalpian</id>
-    <content type="html"><![CDATA[<p>接上篇Guava之Joiner和Splitter，本篇将介绍Guava的另外一个有用的对象Optional<T>,这在Java中Google Guava首先给我们提出可空对象模型的。在其他语言如c#这是已经存在很久的模式，并包含在.net类库中Nullable<T>(Int?也是一个可空类型)。</p>
-
-<h2>Null sucks</h2>
-
-<p>回到本文主题Optional。在我日常编程中NullPointerException是肯定是大家遇见最多的异常错误:</p>
-
-<p>为此Doug Lea曾说过:</p>
-
-<pre class='green'><code>Null sucks.
-</code></pre>
-
-<p>Sir C. A. R. Hoare也曾说过：</p>
-
-<pre class='green'><code>I call it my billion-dollar mistake.
-</code></pre>
-
-<p>从上面我们能够足以看出NullPointerExceptiond的出现频率和可恨之处。因此在GOF的设计模式中我们也专门提出了空对象模式(或称特例模式)来应对这可恶的NullPointerExceptiond。空对象模式主要以返回一些<em>无意义并不影响处理逻辑的特定对象来替代null对象</em>，从而避免没必要的null对象的判断。
-例如在计算一组员工的总共薪资的时候，对于返回的null对象则我们可以返回默认值为了<em>0</em>薪资的员工对象，那么我们就不需要做任何null的判断。</p>
-
-<h2>员工薪资问题</h2>
-
-<p>那么在Guava的Optional又该怎么解决呢？在讲解Optional之前，让我们仍然以计算一组员工的总共薪资为例用原生java代码将来看看：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_get_total_age_for_all_employees</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;em1&quot;</span><span class="o">,</span> <span class="mi">30</span><span class="o">),</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;em2&quot;</span><span class="o">,</span> <span class="mi">40</span><span class="o">),</span> <span class="kc">null</span><span class="o">,</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;em4&quot;</span><span class="o">,</span> <span class="mi">18</span><span class="o">));</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">employee</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">sum</span> <span class="o">+=</span> <span class="n">employee</span><span class="o">.</span><span class="na">getAge</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">class</span> <span class="nc">Employee</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">Employee</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getAge</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">age</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果换成Guava Optional将如何：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_get_total_age_for_all_employees</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;em1&quot;</span><span class="o">,</span> <span class="mi">30</span><span class="o">),</span>
-</span><span class='line'>        <span class="k">new</span> <span class="nf">Employee</span><span class="o">(</span><span class="s">&quot;em2&quot;</span><span class="o">,</span> <span class="mi">40</span><span class="o">),</span>
-</span><span class='line'>         <span class="kc">null</span><span class="o">,</span>
-</span><span class='line'>         <span class="k">new</span> <span class="nf">Employee</span><span class="o">(</span><span class="s">&quot;em4&quot;</span><span class="o">,</span> <span class="mi">18</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">sum</span> <span class="o">+=</span> <span class="n">Optional</span><span class="o">.</span><span class="na">fromNullable</span><span class="o">(</span><span class="n">employee</span><span class="o">).</span><span class="na">or</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;dummy&quot;</span><span class="o">,</span> <span class="mi">0</span><span class="o">)).</span><span class="na">getAge</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从上面可以清晰看出，我们不在担心对象对空了，利用Optional的fromNullable创建了一个可空对象，并将其or上一个dummy的员工信息，所以在这里我们不在担心NullPointerExceptiond。</p>
-
-<p>也许你会说和利用三目运算 ( <em>?</em>:_)没什么差别，在此例子中功能是的确是没多大差距，但是个人觉得Guava更有语义，更通用一些，而且满足很多空对象模式使用的场景。</p>
-
-<h2>Optional API</h2>
-
-<p>*. OptionalObject.isPresent(): 返回对象是否有值。</p>
-
-<p>*. Optional.absent(): 返回一个空Optional对象,isPresent() 将会返回false</p>
-
-<p>*. Optional.of(): 创Optional对象，输入参数不能为null</p>
-
-<p>*. Optional.fromNullable(): 创Optional对象，输入可以为null</p>
-
-<p>*. OptionalObject.asSet(): 和Optional对象值合并，如果为null则返回size为0的Set</p>
-
-<p>*. OptionalObject.or(): 和Optional对象值合并，如果为null为空加则返回or参数作为默认值</p>
-
-<p>*. OptionalObject.orNull(): 和Optional对象值合并，如果为null为空加则返回Null作为默认值</p>
-
-<p>上面的api都是我们在使用Optional的时候最常用的方法属性方法，注意如果我们创建了Optional对象，但是没有判断isPresent()是否存在，就直接get这是会抛异常的，这属于乱用Optional情况，和直接用Null并没什么差别。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">Optional</span><span class="o">.</span><span class="na">fromNullable</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-</span><span class='line'><span class="kd">final</span> <span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>同样Optional为空对象模式，可以添加默认值，null不会影响我们的处理，如果为null我们无法继续程序处理的情况，需要抛异常或者中断的的，还是需要抛异常、中断，利用Preconditions.checkNotNull等，而不是继续套一层Optional对象，这也属于乱用Optional之列。</p>
 ]]></content>
   </entry>
   
