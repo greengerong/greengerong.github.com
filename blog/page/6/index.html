@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。 在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$ &hellip;"> 
+    <meta name="description" content="今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index. 其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,113 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-15T21:43:06+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/15/index-for-ng-options/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/15/index-for-ng-options/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index.</p>
+
+<p>其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。</p>
+
+<p>把这个问题换成角度来看,我们所需要的就是js数组的下标，所以我们如果我们能够在对象上加入下标，使用表达式作为option的label就能解决了。</p>
+
+<p>但是第一印象让我想起的是js数组本来就是一个key/value的对象，只是key为数组下标而已，所以有了如下之设计：</p>
+
+<p>html:</p>
+
+<pre class='green'><code>  &lt;pre&gt;&lt;/pre&gt;
+
+  &lt;select  ng-model="a" ng-options="value.field as getDesc1(key,value) for (key,value) in t"&gt;&lt;/select&gt;
+</code></pre>
+
+<p>  js:</p>
+
+<pre class='green'><code>$scope.getDesc1 = function(key, value) {
+    return (parseInt(key, 10) + 1) + "-&gt;" + value.field;
+};
+</code></pre>
+
+<p>可是不幸的是如果对于JavaScript你若将他作为key/value对象那么key将是无序的所以，出现了无序的下标如下：</p>
+
+<pre class='green'><code>&lt;select ng-model="a" ng-options="l.field as getDesc1(key,value) for (key,value) in t " class="ng-valid ng-dirty"&gt;
+  &lt;option value="0"  &gt;1-&amp;gt;jw_companyTalent&lt;/option&gt;
+  &lt;option value="1"  &gt;2-&amp;gt;jw_reportgroup&lt;/option&gt;
+  &lt;option value="10" &gt;11-&amp;gt;jw_ads&lt;/option&gt;
+  &lt;option value="11" &gt;12-&amp;gt;jw_jobcomment&lt;/option&gt;
+  &lt;option value="12" &gt;13-&amp;gt;jw_companyInfo&lt;/option&gt;
+  ....
+&lt;/select&gt;
+</code></pre>
+
+<p>所以这样是无法解决的。还好博主还有一招，ngOptions支持Angularjs的filter，所以我们可以对数据源对象上加上一个order字段标示下标作为序号。并且你可以在一个2年前的Angular的issue中看到Angular已经fix issue，option会对数组进行按下标顺序生成。</p>
+
+<p>html:</p>
+
+<pre class='green'><code>&lt;pre&gt;&lt;/pre&gt;
+
+&lt;select  ng-model="b" ng-options="l.field as getDesc(l) for l in t | index "&gt;&lt;/select&gt;
+</code></pre>
+
+<p>js:</p>
+
+<pre class='green'><code>    var app = angular.module('plunker', []);
+
+    app.controller('MainCtrl', function($scope) {
+      $scope.t = [{
+        "field": "jw_companyTalent"
+      }, {
+        "field": "jw_reportgroup"
+      }];
+      $scope.getDesc = function(l) {
+        return l.order + "-&gt;" + l.field;
+      };
+    }).filter("index", [
+      function() {
+        return function(array) {
+          return (array || []).map(function(item, index) {
+            item.order = index + 1;
+            return item;
+          });
+        };
+      }
+    ]);
+</code></pre>
+
+<p>这下option是按照有序的生成，最后我们终于能完美解决了,所以本文也将收尾。在最后在附上可运行的demo<a href="http://plnkr.co/edit/tRxzOT?p=preview">plnkr ngOptions index</a>;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -913,96 +1020,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">记录maven java.lang.String Cannot Be Cast to XX Error</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-10T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/09/10/ji-lu-maven-java-lang-String-cannot-be-cast-to-XX-error/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp;在项目开发中自定义了一个maven plugin，在本地能够很好的工作，但是在ci server上却无法正常工作报错为：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:java;gutter:false;">-----------------------------------------------------
-
-         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:225)
-         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:153)
-         at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:145)
-         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:84)
-         at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:59)
-         at org.apache.maven.lifecycle.internal.LifecycleStarter.singleThreadedBuild(LifecycleStarter.java:183)
-         at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:161)
-         at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:319)
-         at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:156)
-         at org.jvnet.hudson.maven3.launcher.Maven3Launcher.main(Maven3Launcher.java:79)
-         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-         at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-         at java.lang.reflect.Method.invoke(Method.java:601)
-         at org.codehaus.plexus.classworlds.launcher.Launcher.launchStandard(Launcher.java:329)
-         at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:239)
-         at org.jvnet.hudson.maven3.agent.Maven3Main.launch(Maven3Main.java:146)
-         at hudson.maven.Maven3Builder.call(Maven3Builder.java:127)
-         at hudson.maven.Maven3Builder.call(Maven3Builder.java:74)
-         at hudson.remoting.UserRequest.perform(UserRequest.java:118)
-         at hudson.remoting.UserRequest.perform(UserRequest.java:48)
-         at hudson.remoting.Request$2.run(Request.java:326)
-         at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)
-         at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
-         at java.util.concurrent.FutureTask.run(FutureTask.java:166)
-         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
-         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
-         at java.lang.Thread.run(Thread.java:722)
-Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibility occured while executing [group id]:[artifact id]:[version]:start: java.lang.String cannot be cast to java.io.File
------------------------------------------------------
-</pre>
-</div>
-
-
-<p>&nbsp; &nbsp; &nbsp; 在花费了我大半的时间，将本地环境的maven，jdk等设为和ci一致后最后定位到maven的版本问题，其终究原因是因为maven在3.0.3才支持配置参数为泛型集合(List&lt;T&gt;,Set&lt;T&gt;&hellip;)，在3.0.2及一下本班不支持此写法。</p>
-
-<p>&nbsp; &nbsp; &nbsp;修改次error的方法有两种：</p>
-
-<ol>
-<li>将ci Server的maven更新到3.0.3以上。(但是在我们的ci server更新有些困难，还有本人认为如果写一个plugin只能工作的固定version，这和一个废物差不多，所以选择了第二种方法)。</li>
-<li>将泛型集合List&lt;T&gt;改为Array T[]。（项目中某大神写的List&lt;File&gt;我轻易的改为File[].在执行前改为Arrays.asList(XXX)）;</li>
-</ol>
-
-
-<p>&nbsp; &nbsp; &nbsp;一切搞定。在此记录希望对于遇见同类问题的人有所帮助。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/09/10/3313515.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1033,6 +1050,10 @@ Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibil
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
       </li>
     
@@ -1058,10 +1079,6 @@ Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibil
     
       <li class="post">
         <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明和获取重载</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
       </li>
     
   </ul>

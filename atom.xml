@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-02T18:31:00+08:00</updated>
+  <updated>2015-09-03T18:13:15+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,86 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Angular Input格式化]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/03/angular-inputge-shi-hua/"/>
+    <updated>2015-09-03T16:29:35+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/03/angular-inputge-shi-hua</id>
+    <content type="html"><![CDATA[<p>今天在Angular中文群有位同学问到：如何实现对input box的格式化。如下的方式对吗？</p>
+
+<pre class='green'><code> &lt;input type="text" ng-model="demo.text | uppercase" /&gt;
+</code></pre>
+
+<p>这当然是不对的。在Angular中filter（过滤器）是为了显示数据的格式，它将$scope上的Model数据格式化View显示的数据绑定到DOM之上。它并不会负责ngModel的绑定值的格式化。</p>
+
+<p>在Angular中ngModel作为Angular双向绑定中的重要组成部分，负责View控件交互数据到$scope上Model的同步。当然这里存在一些差异，View上的显示和输入都是字符串类型，而在Model上的数据则是有特定数据类型的，例如常用的Number、Date、Array、Object等。ngModel为了实现数据到Model的类型转换，在ngModelController中提供了两个管道数组$formatters和$parsers，它们分别是将Model的数据转换为View交互控件显示的值和将交互控件得到的View值转换为Model数据。它们都是一个数组对象，在ngModel启动数据转换时，会以UNIX管道式传递执行这一系列的转换。Angular允许我们手动的添加$formatters和$parsers的转换函数（unshift、push）。同时在这里也是做数据验证的最佳时机，能够转换意味应该是合法的数据。</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/ngModelController-%E7%94%9F%E5%91%BD%E7%8E%AF.png" alt="ngModel" /></p>
+
+<p>同时，我们也可以利用Angular指令的reuqire来获取到这个ngModelController。如下方式来使用它的$parses和$formaters：</p>
+
+<pre class='green'><code>.directive('textTransform', [function() {
+
+    return {
+        require: 'ngModel',
+        link: function(scope, element, iAttrs, ngModelCtrl) {
+            ngModelCtrl.$parsers.push(function(value) {
+                ...
+            });
+
+            ngModelCtrl.$formatters.push(function(value) {
+                ...
+            });
+        }
+    };
+}]);
+</code></pre>
+
+<p>因此，开篇所描述的输入控件的大写格式化，则可以利用ngModelController实现，在对于View文字大小的格式化，这个特殊的场景下，利用css特性text-transform会更简单。所以实现如下：</p>
+
+<pre class='green'><code> .directive('textTransform', function() {
+     var transformConfig = {
+         uppercase: function(input){
+             return input.toUpperCase();
+         },
+         capitalize: function(input){
+             return input.replace(
+                 /([a-zA-Z])([a-zA-Z]*)/gi,
+                 function(matched, $1, $2){
+                    return $1.toUpperCase() + $2;
+                });
+         },
+         lowercase: function(input){
+             return input.toLowerCase();
+         }
+     };
+    return {
+        require: 'ngModel',
+        link: function(scope, element, iAttrs, modelCtrl) {
+            var transform = transformConfig[iAttrs.textTransform];
+            if(transform){
+                modelCtrl.$parsers.push(function(input) {
+                    return transform(input || "");
+                }); 
+
+                element.css("text-transform", iAttrs.textTransform);
+            }
+        }
+    };
+});
+</code></pre>
+
+<p>则，在HTML就可以如下方式使用指令：</p>
+
+<pre class='green'><code>&lt;input type="text" ng-model="demo.text" text-transform="capitalize" /&gt;
+&lt;input type="text" ng-model="demo.text" text-transform="uppercase" /&gt;
+&lt;input type="text" ng-model="demo.text" text-transform="lowercase" /&gt;
+</code></pre>
+
+<p>在这里利用了css text-transform特性，对于其它的方式，我们可以使用keydown、keyup、keypress等来实现。如<a href="https://github.com/greengerong/green.inputmask4angular">inputMask</a>和<a href="https://github.com/greengerong/ngmodel-format">ngmodel-format</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Angular实现递归指令 - Tree View]]></title>
@@ -4083,36 +4163,6 @@ deallocate prepare stmt;
 <p>希望技术雷达能够激励各位看官思考自己或者项目的技术选择，同时在可能的情况下提升您或者你项目团队的技术能力。 更希望您去&#8221;<a href="http://engage.thoughtworks.com/I0b0JQ50n7OiQP0Q0p0DE00">建立个人或者项目技术雷达</a>&ldquo;.</p>
 
 <p>博主也会经常为自己更新自己的技术雷达，根据雷达与圆心的距离标注优先级来指导自己的技术学习。以及为了团队成员快速掌握项目技术栈，以及团队成员的技术成长，也有在项目初期建立项目的技术雷达指导团队成员的学习和分享，保证项目交付的技术支持。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ngnice-国内ng学习网站]]></title>
-    <link href="http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guide/"/>
-    <updated>2015-01-25T10:43:40+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/01/25/ngnice-showcase-he-guide</id>
-    <content type="html"><![CDATA[<p><img src="http://greengerong.github.io/images/blog_img/ng-logo.png" alt="angular" /></p>
-
-<p>今天给angular新手介绍一个国内开源的ng学习网站<a href="http://www.ngnice.com/">http://www.ngnice.com/</a>这是由一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是:</p>
-
-<pre class='green'><code>ckken，grahamle，NigelYao，asnowwolf，lightma，joeylin，FrankyYang，lrrluo， why520crazy，破狼,二当家, Ken, zxsoft, why520crazy, playing，天猪、jacobdong、以及一批后加入或审校未记名的社区爱好者功能完成的。[这里排名不分先后]
-</code></pre>
-
-<p>再ngnice还在逐步完善中，目前完成的重要模块主要分为3栏：ng文章、angular中文指南、ng案例展示。</p>
-
-<p>ng文章：这里主要由一批国内早期的ng高手组成，在这里记录ng的坑、使用方式、以及ng原理之类的文章,方便更多人查看。地址为：<a href="http://www.ngnice.com/">http://www.ngnice.com/</a></p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/ng-%E6%96%87%E7%AB%A0.png" alt="ng文章" /></p>
-
-<p>angular中文指南：这是在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。现已经完成：地址为<a href="http://www.ngnice.com/docs/guide">http://www.ngnice.com/docs/guide</a>。</p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/ng-%E6%8C%87%E5%8D%97.png" alt="ng文章" /></p>
-
-<p>ng案例展示：这也是ngnice中对大家最有帮助的一块，这里收集了大家日常开发中会遇见的很多案例，如：进度条、html5表单、ng报表、数据表格展示等更多的有用案例。ng案例展示的目的是在线展示angular的各种常见案例，并能方便大家直接copy到自己的项目中应用。地址为：<a href="http://www.ngnice.com/showcase/#/home/about">http://www.ngnice.com/showcase/#/home/about</a>。</p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/ng-showcase.png" alt="ng文章" /></p>
-
-<p>目前由于进入年底等各种原因我们暂停了这些开发，我们希望在后面的时间能继续完善更多的案例和文章分享。同时也希望爱好分享、喜欢交流、也愿意帮助更多ng新人的你能加入我们的ngShowcase开发组(qq群：278252889，注：这里不会给你解决任何ng问题，只供开发组使用)。</p>
 ]]></content>
   </entry>
   

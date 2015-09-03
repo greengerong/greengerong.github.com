@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 由于工作几个月来框架开发已经好久没写博客了，今天想抽点时间出来冒泡。在领域驱动开发中SOA已经成为我们开发的主流技术，在面对当前众多的UI框架选择（asp.net mvc,silverlight,wpf,winform,wp7等一些列甚至跨语言）， &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 说到这个winform属性控件PropertyGrid.aspx)，要从以前参与项目架构研发，做报表引擎开始，当时我们的目的是想做一个比较简单的报表引擎没有RDLC等报表复杂，是为了让我们的可以操作，用户可以凭借表单拖拽设置样式完成报表模板设置， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,149 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/">PropertyGrid无意的发现DisplayNameAttribute及应用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-11T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2012/02/11/PropertyGrid-wu-yi-di-fa-xian-DisplayNameAttribute-ji-ying-yong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 说到这个winform属性控件<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)，要从以前参与项目架构研发，做报表引擎开始，当时我们的目的是想做一个比较简单的报表引擎没有RDLC等报表复杂，是为了让我们的可以操作，用户可以凭借表单拖拽设置样式完成报表模板设置，与我们开发人员代码实现的数据流结合，产生基于apose.cells的excel报表。把我们多而烦的报表业务交给用户完成，用户利用报表设计完成的模板保存为xml保存至服务器，工以后使用。当时做到表单控件属性设计无疑我们采用了<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)控件，<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx)支持很多的控件设计时交互，很强大，但是对于控件的属性汉化却存在问题，当时也没仔细查阅msdn，直接让控件属性为中文字段设计完成，对用户提示。最后项目基本完成，能够应对简单报表，稍微减少了些开发工作量吧。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在时隔今天做基本控件的封装的时候突然看见了System.ComponentModel.DisplayNameAttribute这个标签，见名就考虑是做什么的，查询msdn才知道他就可以完成对<a href="http://msdn.microsoft.com/zh-cn/library/system.windows.forms.propertygrid(v=vs.80">PropertyGrid</a>.aspx )的现实名称修改（<a href="http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute(v=VS.80">http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute(v=VS.80).aspx?TPSecNotice</a>.aspx?TPSecNotice &ldquo;<a href="http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute">http://msdn.microsoft.com/zh-cn/library/system.componentmodel.displaynameattribute</a>(v=VS.80).aspx?TPSecNotice&rdquo;)）。于是便尝试了一下。</p>
+
+<p>代码：</p>
+
+<pre class='green'><code>        using System; 
+    using System.Collections.Generic; 
+    using System.Linq; 
+    using System.Text; 
+
+    namespace WindowsFormsApplication1 
+    { 
+        class TestControl : System.Windows.Forms.TextBox, Green.SmartUIControls.ISmartUIControl 
+        { 
+            [System.ComponentModel.Browsable(true)] 
+            [System.ComponentModel.DefaultValue(null)] 
+            [System.ComponentModel.Description("数据绑定匹配属性")] 
+            [System.ComponentModel.Category("Green.SmartUIControl")] 
+            [System.ComponentModel.DisplayName(ControlResource.Data)] 
+            public string Data 
+            { get; set; } 
+
+            #region ISmartUIControl 成员 
+            private Green.SmartUIControls.IDataBindSetting _DataBindSetting; 
+            [System.ComponentModel.Browsable(false)] 
+            public Green.SmartUIControls.IDataBindSetting DataBindSetting 
+            { 
+                get 
+                { 
+                    if (_DataBindSetting == null &amp;&amp; !this.DesignMode) 
+                    { 
+                        _DataBindSetting = new Green.SmartUIControls.DefaultDataBindSetting(this); 
+                    } 
+                    return _DataBindSetting; 
+                } 
+                set 
+                { 
+                    if (value != null) 
+                    { 
+                        _DataBindSetting = value; 
+                    } 
+                } 
+            } 
+            [System.ComponentModel.Browsable(true)] 
+            [System.ComponentModel.DefaultValue(null)] 
+            [System.ComponentModel.Description("数据绑定匹配属性")] 
+            [System.ComponentModel.Category("Green.SmartUIControl")] 
+            [System.ComponentModel.DisplayName(ControlResource.DataBindProperty)] 
+            public string DataBindProperty 
+            { 
+                get; 
+                set; 
+            } 
+
+            [System.ComponentModel.Browsable(true)] 
+            [System.ComponentModel.DefaultValue(null)] 
+            [System.ComponentModel.Description("Dock")] 
+            [System.ComponentModel.Category("Green.SmartUIControl")] 
+            [System.ComponentModel.DisplayName(ControlResource.Dock)] 
+            public override System.Windows.Forms.DockStyle Dock 
+            { 
+                get 
+                { 
+                    return base.Dock; 
+                } 
+                set 
+                { 
+                    base.Dock = value; 
+                } 
+            } 
+            #endregion 
+        } 
+
+        public class ControlResource 
+        { 
+    #if Debug 
+            public const string Dock = "Dock"; 
+            public const string DataBindProperty = "DataBindProperty"; 
+            public const string Data = "Data"; 
+    #else 
+
+            public const string Dock = "停靠"; 
+            public const string DataBindProperty = "数据绑定匹配属性"; 
+            public const string Data = "数据"; 
+    #endif 
+        } 
+    }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp; 最后需要特别说明的是对于Attribute我们只能传入常量。在我们的很多开发员使用控件等时候我们也许都习惯了英文对于中文不适应了，但是我们可以利用vs的条件编译绕过，编译出不同的dll包，开发版和用户使用版本。如上面的对于调试和发布版的显示设置。这个ControlResource我们可以开发一个简单的工具对其xml保存并生成我们需要的代码维护。</p>
+
+<p>看图：</p>
+
+<p>设置Dock=Top：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126194804.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126241645.png" title="QQ截图未命名2" alt="QQ截图未命名2" /></a></p>
+
+<p>设置Dock=Bottom：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126254842.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201202/201202112126261909.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 同时我也考虑到在我们的工作流自定义表单设计和代码生成工具等中我们也可以运用，表单设计的控件字段属性设置，保存为xml或者二级制，xaml存储之类。简单说一句对于silverlight，wpf 的对于我觉得保存为xaml是最简单的，我们可以直接保存xaml，并简单转换加入父容器中。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/11/2347096.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1896,81 +2039,6 @@ public class TestCallHandlerAttribute : HandlerAttribute
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/08/23/html5-xi-lie-mu-lu/">Html5系列目录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-23T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/08/23/html5-xi-lie-mu-lu/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/08/23/html5-xi-lie-mu-lu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; html5作为下一代web标准，年前轩起了html5热潮。对于html5我只是本着了解看看。关于html5和RIA（silverlight，flash，JavaFx等）我不想说什么，也没有什么可说的，存在就有其存在的理由。孰优孰劣，留给事实、时间来证明的。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在html5中出现了一些新特性：</p>
-
-<ul>
-<li>canvas 元素</li>
-<li>视频 video 和 声频audio 元素 ；</li>
-<li>对本地离线存储（localStorage，sessionStorage）的支持 ；</li>
-<li>新增特殊内容元素：article、footer、header、nav、section ；</li>
-<li>新增表单控件： calendar、date、time、email、url、search 。</li>
-<li>其他新特性&nbsp;</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;本博客中几个月前写的关于Html5博客有：</p>
-
-<h2>一：html5基础</h2>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/02/28/1967456.html">html5声频audio和视频video</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1968512.html">html5-Canvas绘图</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1969398.html">html5之Canvas坐标变换应用-时钟实例</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1970457.html">html5-web本地存储</a></li>
-</ol>
-
-
-<h2>二：html5应用</h2>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1969398.html">html5之Canvas坐标变换应用-时钟实例</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/15/2107520.html">Google Chrome 語音辨識</a></li>
-</ol>
-
-
-<p>　　关于html5我仍然时不时的会有些持续，将会更新目录。在这里对于html5表单，特殊内容元素这些，以及一些个别特性，如文件拖拽，还未曾提到。今天只是整理博客加了个目录便于查找，管理。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/08/23/2150145.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/12/">&larr; Older</a>
@@ -2001,6 +2069,10 @@ public class TestCallHandlerAttribute : HandlerAttribute
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
       </li>
     
@@ -2026,10 +2098,6 @@ public class TestCallHandlerAttribute : HandlerAttribute
     
       <li class="post">
         <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明和获取重载</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
       </li>
     
   </ul>

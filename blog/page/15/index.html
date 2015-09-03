@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 在上几节Linq动态组合查询时，在肖坤的Linq动态查询与模糊查询（带源码示例）时看到了微软的《Linq to SQL Dynamic 动态查询》，但是楼主说&#8220;可惜Dynamic.cs也是不能使用like的，恨啊！&#8221;。 &hellip;"> 
+    <meta name="description" content="制作Windows服务时候的Timer控件并不是在工具箱上直接拖拽过来的Timer，那是System.Windows.Forms命名空间下的组件，而我们这里使用的Timer应该是System.Timers.Timer. &nbsp; 解决方法有： 打开&#8221;工具箱&#8221;&mdash &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,137 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/">Windows服务中Timer组件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-25T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>制作Windows服务时候的Timer控件并不是在工具箱上直接拖拽过来的Timer，那是System.Windows.Forms命名空间下的组件，而我们这里使用的Timer应该是System.Timers.Timer.</p>
+
+<p>&nbsp; 解决方法有：</p>
+
+<p>打开&#8221;工具箱&#8221;&mdash;-右键&mdash;&ndash;&ldquo;选择项&rdquo;&mdash;-找到Timer控件,看好了,这个Timer控件的是system.Timer下的.可不是System.Windows.Form.然后添加.<img src="http://images.cnblogs.com/cnblogs_com/wxukie/timer.jpg" alt="" /></p>
+
+<p>&nbsp;</p>
+
+<p>我选择的是直接用code书写初始化代码。因为添加项速度真的太慢了，呵呵。</p>
+
+<p>MSDN上关于Timer如下：</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Timer</strong> 组件是基于服务器的计时器，它使您能够指定在应用程序中引发 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.elapsed(v=VS.80"><font color="#1364c4">Elapsed</font></a>.aspx) 事件的周期性间隔。然后可以操控此事件以提供定期处理。例如，假设您有一台关键性服务器，必须每周 7 天、每天 24 小时都保持运行。可以创建一个使用 <strong>Timer</strong> 的服务，以定期检查服务器并确保系统开启并在运行。如果系统不响应，则该服务可以尝试重新启动服务器或通知管理员。</p>
+
+<p>基于服务器的 <strong>Timer</strong> 是为在多线程环境中用于辅助线程而设计的。服务器计时器可以在线程间移动来处理引发的 <strong>Elapsed</strong> 事件，这样就可以比 Windows 计时器更精确地按时引发事件。有关基于服务器的计时器的更多信息，请参见&#8220;<a href="http://msdn.microsoft.com/zh-cn/library/tb9yt5e6(v=VS.80"><font color="#1364c4">基于服务器的计时器介绍</font></a>.aspx)&#8221;。</p>
+
+<p>基于 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.interval(v=VS.80"><font color="#1364c4">Interval</font></a>.aspx) 属性的值，<strong>Timer</strong> 组件引发 <strong>Elapsed</strong> 事件。可以处理该事件以执行所需的处理。例如，假设您有一个联机销售应用程序，它不断向数据库发送销售订单。编译发货指令的服务分批处理订单，而不是分别处理每个订单。可以使用 <strong>Timer</strong> 每 30 分钟启动一次批处理。</p>
+
+<p>注意:</p>
+
+<p>当 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.autoreset(v=VS.80"><font color="#1364c4">AutoReset</font></a>.aspx) 设置为 <strong>false</strong> 时，<strong>Timer</strong> 只在第一个 <strong>Interval</strong> 过后引发一次 <strong>Elapsed</strong> 事件。若要保持以 <strong>Interval</strong> 时间间隔引发 <strong>Elapsed</strong> 事件，请将 <strong>AutoReset</strong> 设置为 <strong>true</strong>。
+</td></tr></tbody></table></div></p>
+
+<p><strong>Elapsed</strong> 事件在 <a href="http://msdn.microsoft.com/zh-cn/library/system.threading.threadpool(v=VS.80"><font color="#1364c4">ThreadPool</font></a>.aspx) 线程上引发。如果 <strong>Elapsed</strong> 事件的处理时间比 <strong>Interval</strong> 长，在另一个 <strong>ThreadPool</strong> 线程上将会再次引发���事件。因此，事件处理程序应当是可重入的。</p>
+
+<p>注意:</p>
+
+<p>在一个线程调用 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.stop(v=VS.80"><font color="#1364c4">Stop</font></a>.aspx) 方法或将 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.enabled(v=VS.80"><font color="#1364c4">Enabled</font></a>.aspx) 属性设置为 <strong>false</strong> 的同时，可在另一个线程上运行事件处理方法。这可能导致在计时器停止之后引发 <strong>Elapsed</strong> 事件。<strong>Stop</strong> 方法的示例代码演示了一种避免此争用条件的方法。
+</td></tr></tbody></table></div></p>
+
+<p>如果和用户界面元素（如窗体或控件）一起使用 <strong>Timer</strong>，请将包含有 <strong>Timer</strong> 的窗体或控件赋值给 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.synchronizingobject(v=VS.80"><font color="#1364c4">SynchronizingObject</font></a>.aspx) 属性，以便将此事件封送到用户界面线程中。</p>
+
+<p><strong>Timer</strong> 在运行时是不可见的。</p>
+
+<p><span class="LW_CollapsibleArea_Title">示例</span></p>
+
+<div class="LW_CollapsibleArea_HrDiv">
+
+* * *
+
+</div>
+
+
+<p><a name="codeExampleToggle" xmlns="http://www.w3.org/1999/xhtml"></a></p>
+
+<p>下面的示例创建一个 <strong>Timer</strong>，它每隔五秒钟在控制台上显示一次&#8220;Hello World!&#8221;。</p>
+
+<p>&nbsp;</p>
+
+<pre class='green'><code>using System;
+using System.Timers;
+
+public class Timer1
+{
+    public static void Main()
+    {
+     // Normally, the timer is declared at the class level, so
+     // that it doesn't go out of scope when the method ends.
+    // In this example, the timer is needed only while Main 
+    // is executing. However, KeepAlive must be used at the
+    // end of Main, to prevent the JIT compiler from allowing 
+    // aggressive garbage collection to occur before Main 
+    // ends.
+    System.Timers.Timer aTimer = new System.Timers.Timer();
+
+    // Hook up the Elapsed event for the timer.
+    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+
+    // Set the Interval to 2 seconds (2000 milliseconds).
+    aTimer.Interval = 2000;
+    aTimer.Enabled = true;
+
+    Console.WriteLine("Press the Enter key to exit the program.");
+    Console.ReadLine();
+
+    // Keep the timer alive until the end of Main.
+    GC.KeepAlive(aTimer);
+}
+
+// Specify what you want to happen when the Elapsed event is 
+// raised.
+private static void OnTimedEvent(object source, ElapsedEventArgs e)
+{
+    Console.WriteLine("Hello World!");
+}
+</code></pre>
+
+<p>}
+&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/08/25/1808002.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1468,84 +1599,6 @@ if( r ) alert('You entered ' + r);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/">Visual Studio 2010网剧第四集：《为爱Debug》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/04/27/Visual-Studio-2010-wang-ju-di-si-ji-wei-ai-Debug/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>当爱有了bug&hellip;</p>
-
-<object data="http://player.ku6.com/refer/ginh8iOmOqJ0bm52/v.swf" width="480" height="400" type="application/x-shockwave-flash">
-<param name="data" value="http://player.ku6.com/refer/ginh8iOmOqJ0bm52/v.swf"   />
-<param name="align" value="middle"   />
-<param name="src" value="http://player.ku6.com/refer/ginh8iOmOqJ0bm52/v.swf"   />
-<param name="allowfullscreen" value="true"   />
-<param name="quality" value="high"   /></object>
-
-
-<p>   <div style="width:500px;"></p>
-
-<ul>
-<li><p><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721874.html">Visual
-            Studio 2010网剧第二集:《想做你的Cod》</a></p></li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721900.html">Visual
-            Studio 2010网剧第二集:《让爱延长》 </a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721904.html">Visual
-            Studio 2010网剧第三集:《幸福也需要敏捷》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html">Visual
-            Studio 2010网剧第四集:《为爱Debug》</a></li>
-</ul>
-</li>
-<li><ul>
-<li>**   <a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721908.html">Visual
-            Studio 2010网剧最终季:《让爱编译通过》</a>
-</div></li>
-</ul>
-</li>
-</ul>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/04/27/1721906.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/16/">&larr; Older</a>
@@ -1576,6 +1629,10 @@ if( r ) alert('You entered ' + r);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
       </li>
     
@@ -1601,10 +1658,6 @@ if( r ) alert('You entered ' + r);
     
       <li class="post">
         <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明和获取重载</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a>
       </li>
     
   </ul>
