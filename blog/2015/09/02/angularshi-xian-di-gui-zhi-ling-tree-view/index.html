@@ -179,7 +179,7 @@ ng-class="{'fa-minus': !isLeaf(item)&amp;&amp; item.$$isExpend, 'fa-plus': !isLe
 &lt;/ul&gt;
 </code></pre>
 
-<p>这里的技巧在于利用ng-include来加载子节点和数据，以及利用一个warpCallback方法来转接函数外部回调函数，利用angular.noop的空对象模式来避免未注册的回调场景。</p>
+<p>这里的技巧在于利用ng-include来加载子节点和数据，以及利用一个warpCallback方法来转接函数外部回调函数，利用angular.noop的空对象模式来避免未注册的回调场景。对于View交互的数据隔离采用了直接封装在元数据对象的方式，但它们都以$$开头，如$$isChecked、$$isExpend。在Angular程序中以$$开头的对象会被认为是内部的私有变量，在angular.toJson的时候，它们并不会被序列化，所以利用$http发回服务端更新的时候，它们并不会影响服务端传送的数据。同时，在客户端，我们也能利用对象的这些$$属性来控制View的状态，如item.$$isChecked来默认选中某一节点。</p>
 
 <p>我们就可以如下方式来使用这个tree-view：</p>
 
