@@ -68,7 +68,7 @@ categories: [angular,javascript]
 	    };
 	});
 
-则，在HTML就可以如下方式使用指令：
+则，在HTML就可以如下方式使用指令, demo效果参见[jsbin demo](http://jsbin.com/baqaso/edit?html,js,output)：
 
 	<input type="text" ng-model="demo.text" text-transform="capitalize" />
 	<input type="text" ng-model="demo.text" text-transform="uppercase" />
