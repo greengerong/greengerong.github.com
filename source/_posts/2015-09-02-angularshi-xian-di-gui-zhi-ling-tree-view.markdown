@@ -34,9 +34,9 @@ categories: [angular,javascript]
 
 JavaScript:
     
-    angular.module('ng.demo', [])
+	angular.module('ng.demo', [])
 	.directive('treeView',[function(){
-		 
+
 		 return {
 			  restrict: 'E',
 			  templateUrl: '/treeView.html',
@@ -45,12 +45,23 @@ JavaScript:
 				  canChecked: '=',
 				  textField: '@',
 				  itemClicked: '&',
-				  itemCheckedChanged: '&'
+				  itemCheckedChanged: '&',
+				  itemTemplateUrl: '@'
 			  },
 			 controller:['$scope', function($scope){
 				 $scope.itemExpended = function(item, $event){
 					 item.$$isExpend = ! item.$$isExpend;
 					 $event.stopPropagation();
+				 };
+				 
+				 $scope.getItemIcon = function(item){
+					 var isLeaf = $scope.isLeaf(item);
+					 
+					 if(isLeaf){
+						 return 'fa fa-leaf';
+					 }
+					 
+					 return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';	 
 				 };
 				 
 				 $scope.isLeaf = function(item){
@@ -65,6 +76,7 @@ JavaScript:
 				 };
 			 }]
 		 };
+	 }]);
 
 
 HTML:
@@ -77,11 +89,9 @@ HTML:
 
 每个item节点的HTML：/treeItem.html
 
-	<i ng-click="itemExpended(item, $event);" class="fa" 
-	ng-class="{'fa-minus': !isLeaf(item)&& item.$$isExpend, 'fa-plus': !isLeaf(item)&&!item.$$isExpend, 'fa-leaf': isLeaf(item)}">
-	</i>
+	<i ng-click="itemExpended(item, $event);" class="{{getItemIcon(item)}}"></i>
 
-	<input id="checkItem{{$index}}" type="checkbox" ng-model="item.$$isChecked" class="check-box" ng-if="canChecked" ng-change="warpCallback('itemCheckedChanged', item, $event)">
+    <input type="checkbox" ng-model="item.$$isChecked" class="check-box" ng-if="canChecked" ng-change="warpCallback('itemCheckedChanged', item, $event)">
 
 	<span class='text-field' ng-click="warpCallback('itemClicked', item, $event);">{{item[textField]}}</span>
 	<ul ng-if="!isLeaf(item)" ng-show="item.$$isExpend">
