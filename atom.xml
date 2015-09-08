@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-08T14:37:24+08:00</updated>
+  <updated>2015-09-08T17:08:49+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -3572,7 +3572,7 @@ console.log(oldest );
 
 <h4>4. 用户数组到用户Map的转换</h4>
 
-<p>在开发中我们经常会有把一堆素组形式的数据转换为Object形式的数组，便于根据属性key值查找，下面将以user对象来演示：</p>
+<p>在开发中我们经常会有把一堆数组形式的数据转换为Object形式的数组，便于根据属性key值查找，下面将以user对象来演示：</p>
 
 <pre class='green'><code>var userObj = _.chain(users)
   .map(function(user){
