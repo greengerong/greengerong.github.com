@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "前端获取定位元素位置的法宝"
+title: "前端获取元素定位位置的法宝"
 date: 2015-09-08 07:09:23 +0800
 comments: true
 categories: [javascript, angular]
