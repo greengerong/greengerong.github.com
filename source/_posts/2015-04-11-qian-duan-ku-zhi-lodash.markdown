@@ -77,7 +77,7 @@ lodash主要使用了延迟计算，使得lodash其性能远远超过Underscore�
 
 ####4. 用户数组到用户Map的转换
 
-在开发中我们经常会有把一堆素组形式的数据转换为Object形式的数组，便于根据属性key值查找，下面将以user对象来演示：
+在开发中我们经常会有把一堆数组形式的数据转换为Object形式的数组，便于根据属性key值查找，下面将以user对象来演示：
 
 	var userObj = _.chain(users)
 	  .map(function(user){
