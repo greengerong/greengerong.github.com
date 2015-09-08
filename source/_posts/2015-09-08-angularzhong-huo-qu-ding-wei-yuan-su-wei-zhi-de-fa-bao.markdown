@@ -6,6 +6,8 @@ comments: true
 categories: [javascript, angular]
 ---
 
+![box chrome](/images/blog_img/box-chrome.png)
+
 在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。对于稍复杂的场景我们可能需要考虑被positioned的祖先元素。
 
 但往往不是所有的事情都是这么简单的。笔者最新在项目开发中就遇见这样一个问题：这里的HTML是嵌入的，其来自jpedal商业软件从PDF文件自动生成的；为了展示的样式，jpedal统一使用了 position:absolute和relative来定位PDF元素。然而由于业务的需求，我们需要操作这类HTML。其中一个需求就是需要在每段文字附近显示操作工具条。
