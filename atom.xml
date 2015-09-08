@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-05T00:08:00+08:00</updated>
+  <updated>2015-09-08T14:19:13+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[前端获取定位元素位置的法宝]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/"/>
+    <updated>2015-09-08T07:09:23+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao</id>
+    <content type="html"><![CDATA[<p>在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。对于稍复杂的场景我们可能需要考虑被positioned的祖先元素。</p>
+
+<p>但往往不是所有的事情都是这么简单的。笔者最新在项目开发中就遇见这样一个问题：这里的HTML是嵌入的，其来自jpedal商业软件从PDF文件自动生成的；为了展示的样式，jpedal统一使用了 position:absolute和relative来定位PDF元素。然而由于业务的需求，我们需要操作这类HTML。其中一个需求就是需要在每段文字附近显示操作工具条。</p>
+
+<p>对于这类未知的DOM定位，那么我们就需要遍历它的DOM树来计算它的相对位置了。行为下面的这段代码：</p>
+
+<pre class='green'><code>    function isStaticPositioned(element) {
+      return (getStyle(element, 'position') || 'static' ) === 'static';
+    }
+
+    var parentOffsetEl = function(element) {
+      var docDomEl = $document[0];
+      var offsetParent = element.offsetParent || docDomEl;
+      while (offsetParent &amp;&amp; offsetParent !== docDomEl &amp;&amp; isStaticPositioned(offsetParent) ) {
+        offsetParent = offsetParent.offsetParent;
+      }
+      return offsetParent || docDomEl;
+    };
+</code></pre>
+
+<p>在这里，我们会根据元素递归查询它所在的的DOM树中被positioned的最接近的祖先元素，然后才计算它们的相对位置。</p>
+
+<p>这是一段来自Angular-UI bootstrap的$position服务的源码。这也是本文将要提到的获取定位元素位置的法宝。其源码位置在<a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js">https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js</a>。</p>
+
+<p>在$position服务中为我们提供了3个有用的位置服务：position、offset和positionElements。position是计算具体元素的定位位置，返回一个带有width、height、top、left的对象；positionElements则是返回某元素相对于其依赖容器元素的定位位置，一个带有top、left的对象。</p>
+
+<p>笔者为了测试这写API，在jsbin中写了一个特定的指令：</p>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", ['ui.bootstrap.position'])
+.directive('position', ['$position', function($position){
+    return {
+        restrict: 'EA',
+        templateUrl: '/position.html',
+        scope:{
+            title:"@"
+        },
+        link:function(scope, elm, iAttrs){
+        scope.data =  $position.position(elm);
+       }
+    };
+}]);
+</code></pre>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;script type="text/ng-template" id="/position.html"&gt;
+   &lt;table class="table"&gt;
+       &lt;thead&gt;
+           &lt;th colspan="2"&gt;&lt;/th&gt;
+       &lt;/thead&gt;
+    &lt;tbody&gt;
+       &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
+       &lt;td&gt;&lt;/td&gt;
+       &lt;td&gt;&lt;/td&gt;
+     &lt;/tr&gt;
+    &lt;/tbody&gt;
+   &lt;/table&gt;
+ &lt;/script&gt;
+</code></pre>
+
+<p>所以我们可以如下测试这类API：</p>
+
+<pre class='green'><code>&lt;position title ="no positioned parent"&gt;&lt;/position&gt;
+
+&lt;div style="position: relative;padding:50px;"&gt;
+    &lt;position title ="relative parent"&gt;&lt;/position&gt;
+
+     &lt;div style="position: absolute;top:250px; padding:50px;"&gt;
+         &lt;position title="relative-&gt;absolute parent"&gt;&lt;/position&gt;
+     &lt;/div&gt;
+ &lt;/div&gt;
+
+ &lt;div style="position: absolute;top:0px;left:250px; padding:50px;"&gt;
+         &lt;position title="absolute parent"&gt;&lt;/position&gt;
+ &lt;/div&gt;
+</code></pre>
+
+<p>其效果可以在<a href="http://jsbin.com/deximu/edit?html,js,output">jsbin demo</a>:</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/ng-$position-example.png" alt="$position demo" /></p>
+
+<p>同样你也可以在官方的文档中看见对它的测试: <a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html">https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html</a>。</p>
+
+<p>简单的说：如果我们需要获取某个元素的定位信息，则我们可以用 $position.position(element)；获取相对于固定元素的定位，则可以使用$position.positionElements(hostEl, targetEl, positionStr, appendToBody)。其中positionStr是一个横向和纵向的字符串，如：&#8221;top-left&#8221;、&#8221;bottom-left&#8221;。其默认值为center。如笔者项目所期望的在某文字段落的左上角显示工具条：</p>
+
+<pre class='green'><code>$position.after($toolbar);
+var elPosition = $position.positionElements($paragraph, $toolbar, “top-left”);
+$toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
+</code></pre>
+
+<p>当然也不要忘记为toolbar元素设置position: absolute;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Angular Input格式化]]></title>
@@ -4118,61 +4219,6 @@ prepare stmt from @v_sql;
 EXECUTE stmt;   
 deallocate prepare stmt; 
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TW2015技术雷达中文版发布]]></title>
-    <link href="http://greengerong.github.io/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/"/>
-    <updated>2015-01-29T09:55:53+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu</id>
-    <content type="html"><![CDATA[<p><img src="http://greengerong.github.io/images/blog_img/tw-%E6%8A%80%E6%9C%AF%E9%9B%B7%E8%BE%BE.png" alt="tw技术雷达" /></p>
-
-<p>今天thoughtworks 2015新版技术雷达pdf发布了，你可以从这里下载<a href="http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP">http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP</a>，在这里你可以了解到我们都在用什么技术，那些技术是推荐的，那么技术是不再推荐的。</p>
-
-<h2>thoughtworks技术雷达</h2>
-
-<p>thoughtworks技术雷达是以独特的形式记录ThoughtWorks技术顾问委员会的讨论结果，为从首席信息官到开发人员在内的各路利益相关方提供价值。这些内容只是简要的总结，但建议您探究这些技术以了解更多细节。这个雷达是图形性质的，把各种技术项目归类为技术、工具、平台和语言及框架四个象限。</p>
-
-<p>技术雷达还进一步将这些技术分为四个环以反映ThoughtWorks目前对其的态度。这四个环是：</p>
-
-<ul>
-<li>采用：强烈主张业界采用这些技术。</li>
-<li>试验：值得追求。必须理解如何建立此功能。企业应该在风险可控的计划中尝试此技术。</li>
-<li>评估：为了查明它将如何影响企业，值得作一番探究。</li>
-<li>暂缓：谨慎研究。</li>
-</ul>
-
-
-<h2>本期最新动态</h2>
-
-<h4>DevOps领域的爆炸式增长</h4>
-
-<p>本版本的技术雷达中，我们花了大量篇幅来评估DevOps领域中浩如烟海的各项技术，并且这些技术仍在以爆炸式的速度增长和创新。容器化、云产品以及它们的各种排列组合，使得在这个领域中的创新简直改用疯狂二字来形容。微服务架构风格的普及和流行，进一步扩大了架构技术与DevOps之间的交集，所以，我们预计，在这个领域中的疯狂创新仍将持续下去。</p>
-
-<h4>下一代数据平台引入注目</h4>
-
-<p>大数据并不是新名词(事实上，这段时间我们强烈反对炒作此概念)，但是，我们也开始关注相关技术并研究如何在企业中使用它们。像数据湖和Lambda架构这类技术是放眼“企业数据平台”的新方式，不管你是否真有“大”数据需要处理，它们都可以派上用场。</p>
-
-<h4>开发人员关注于于安全相关的工具</h4>
-
-<p>每周都有“数据泄露和滥用”的新“故事”发生，而社会公众对于“安全的、尊重隐私的系统”的需求一直在增长。本版的技术雷达中精选了很多工具，比如Blackbox、TOTP双重因数验证以及OpenID连接等，它们能帮助开发人员建立安全的系统以及基础设施</p>
-
-<h2>更多内容</h2>
-
-<p>更多内容您可以参见<a href="http://www.thoughtworks.com/cn/radar/techniques">技术雷达</a>和其<a href="http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP">中文版pdf</a>.</p>
-
-<p>另外本期thoughtworks技术雷达也基于大家的反馈加强了互动性:</p>
-
-<ul>
-<li><p><a href="http://engage.thoughtworks.com/f00pP0n05H00bD0QQQEgO07">雷达A到Z</a>:你现在可以在雷达上浏览任何曾经出现在雷达历史里的条目，你也可以直接搜索一项你感兴趣的技术。</p></li>
-<li><p><a href="http://engage.thoughtworks.com/lpDQh000nb5O0E0P70Q0I0Q">消退的条目</a>:那些曾经出现在早期技术雷达但现在已经消失的条目，现在会被清晰地标注为消退状态。</p></li>
-</ul>
-
-
-<p>希望技术雷达能够激励各位看官思考自己或者项目的技术选择，同时在可能的情况下提升您或者你项目团队的技术能力。 更希望您去&#8221;<a href="http://engage.thoughtworks.com/I0b0JQ50n7OiQP0Q0p0DE00">建立个人或者项目技术雷达</a>&ldquo;.</p>
-
-<p>博主也会经常为自己更新自己的技术雷达，根据雷达与圆心的距离标注优先级来指导自己的技术学习。以及为了团队成员快速掌握项目技术栈，以及团队成员的技术成长，也有在项目初期建立项目的技术雷达指导团队成员的学习和分享，保证项目交付的技术支持。</p>
 ]]></content>
   </entry>
   

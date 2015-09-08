@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="今天在Angularjs交流群中有位童学问道如何为Angular select的ngOptions像Angularjs的ngRepeat一样加上一个索引$index. 其实对于这个问题来说Angular本身并未提供$index之类的变量供使用。但是也不是说对于这个问题我们就没有解决方案。 &hellip;"> 
+    <meta name="description" content="从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步angularjs移除不必要的$watch. 也是一次偶然的机会，在Angular. &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,62 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-16T02:02:17+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/02/16/angularjs-chinese-guide-public/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/16/angularjs-chinese-guide-public/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
+
+<p>从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
+
+<p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
+
+<p>在经过一段时间的协调和大家付出工作之外的业余时间，如今Angularjs的中文本学习指南终于上线出炉</p>
+
+<p>地址为：</p>
+
+<pre class='green'><code>[http://www.ngnice.com/](http://www.ngnice.com/)
+</code></pre>
+
+<p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
+
+<p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
+
+<p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -942,84 +998,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Angularjs位于ng-switch中的ng-option,当select option改变了在IE上不会重新渲染 Issue解决方案</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-08T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/08/angualr-ie-select-do-not-render-when-option-change/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近遇见angularjs 在IE上当使用ng-options作为select的选项数据源，并且被套在ng-switch（ng-transclude）之类的，当angular上得ng-options数据源model改变后，在IE上并不渲染。</p>
-
-<p>在一阵的测试和阅读相关文档后最后确认为：因为ng-switch（ng-transclude）是为了使其scope为原来的父scope，在父scope上生成了DOM后才克隆(cloneNode)到指定的指令位置。然而IE在对于select克隆的节点，不会主动去触发重绘，所以才有了上面的issue。</p>
-
-<p>问题确定了，那我们所需要做的就是手动的去触发让IE对Select重绘，尝试了很多办法后最终确认有效的是：首先在options上用原生js去添加一个option，在马上移除掉这个option，所以解决方案如下：</p>
-
-<pre class='green'><code>angular.module('ie.select', [])
-.directive('ieSelectFix', [
-    function () {
-        return {
-            restrict: 'A',
-            require: 'select',
-            link: function (scope, element, attributes) {
-                var isIE = document.attachEvent;
-                if (!isIE) return;
-
-                var control = element[0];
-                scope.$watch(attributes.ieSelectFix, function () {
-                    //it should be use javascript way, not jquery way.
-                    var option = document.createElement("option");
-                    control.add(option, null);
-                    control.remove(control.options.length - 1);
-                });
-            }
-        }
-    }
-]);
-</code></pre>
-
-<p>使用方式如下：</p>
-
-<pre class='green'><code>&lt;select ie-select-fix="options" ng-model="demos" class="form-control"
-        ng-options="currOption.value as currOption.text for currOption in options"&gt;
-    &lt;option value="" default&gt;Select&lt;/option&gt;
-&lt;/select&gt;
-</code></pre>
-
-<p>我也在我的github专门创建了一个针对angularjs在IE上issue的项目，收录了这个指令，在后续也会加入我所遇见的angularjs关于ie的issue，也希望大家帮助完善这个项目，让我们的angularjs程序在IE工作的更美好，让我们这些辛苦的程序猿也少一点加班时间，多一点陪家人，泡咖啡的时间。哈哈。</p>
-
-<p>github项目地址：<a href="https://github.com/greengerong/angular-ie-enhancer">https://github.com/greengerong/angular-ie-enhancer</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1050,6 +1028,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取定位元素位置的法宝</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
       </li>
     
@@ -1075,10 +1057,6 @@
     
       <li class="post">
         <a href="/blog/2015/07/25/tui-jian-shu-ji-yi-dong-appce-shi-de-22tiao-jun-gui/">推荐书籍 -《移动App测试的22条军规》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明和获取重载</a>
       </li>
     
   </ul>
