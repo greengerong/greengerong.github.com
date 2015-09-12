@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "扩展bootstrap tooltip插件使其可交互"
+title: "扩展Bootstrap tooltip插件使其可交互"
 date: 2015-09-09 13:20:20 +0800
 comments: true
 categories: [javascript, bootstrap, jquery]
