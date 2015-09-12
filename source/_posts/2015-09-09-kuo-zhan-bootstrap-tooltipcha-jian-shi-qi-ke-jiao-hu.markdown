@@ -78,7 +78,7 @@ categories: [javascript, bootstrap, jquery]
 
 	  DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
 	    trigger: 'hover',
-		delay: {hide: 600}
+		delay: {hide: 300}
 	  });
 
 	  DelayTooltip.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype);
