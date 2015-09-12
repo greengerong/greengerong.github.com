@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-08T17:15:01+08:00</updated>
+  <updated>2015-09-12T18:49:11+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,190 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[扩展bootstrap Tooltip插件使其可交互]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/"/>
+    <updated>2015-09-09T13:20:20+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu</id>
+    <content type="html"><![CDATA[<p>最近在公司某项目开发中遇见一特殊需求，请笔者帮助，因此有了本文的插件。在前端开发中tooltip是一个极其常用的插件，它能更好向使用者展示更多的文档等帮助信息。它们通常都是一些静态文本信息。但同事他们的需求是需要动态交互，在文本信息中存在帮助网页的链接。如果使用常规tooltip，则在用户移出tooltip依赖DOM节点后，tooltip panel则将被隐藏。所以用户没有办法点击到这些交互链接。</p>
+
+<p>所以我们期望：给用户一定的时间使得用户能够将鼠标从依赖节点移动到tooltip panel；并且如果用户鼠标停留在tooltip上则不能隐藏，使得用户能够与位于tooltip上的链接或者是其他form表单控件交互。</p>
+
+<p>也许你觉得这并不难，在网上Google就有很多代码可直接使用。是的，如下面这段来自plnkr.co的代码（<a href="http://plnkr.co/edit/x2VMhh?p=preview">http://plnkr.co/edit/x2VMhh?p=preview</a>）：</p>
+
+<pre class='green'><code>$(".pop").popover({ trigger: "manual" , html: true, animation:false})
+    .on("mouseenter", function () {
+        var _this = this;
+        $(this).popover("show");
+        $(".popover").on("mouseleave", function () {
+            $(_this).popover('hide');
+        });
+    }).on("mouseleave", function () {
+        var _this = this;
+        setTimeout(function () {
+            if (!$(".popover:hover").length) {
+                $(_this).popover("hide");
+            }
+        }, 300);
+});
+</code></pre>
+
+<p>它是使用bootstrap的popover来实现的，从bootstrap的源码能看到popover是继承至tooltip的组件之一。这里是通过将popover的触发方式设为手动触发，由我们自己来控制显示和隐藏它的时机。并且在依赖节点离开的时候，给定300ms的延迟等待用户进入tooltip panel，如果300ms还没有进入tooltip则隐藏它。否则就阻止隐藏tooltip的逻辑。</p>
+
+<p>这代码虽然功能可用，但具有代码洁癖的博主并不太满意这样的代码。它难以阅读维护，同时重用性也将极差。所以笔者决定要以bootstrap插件方式来一bs way写这款插件。</p>
+
+<p>当笔者查阅bootstrap tooltip源码时，发现它是一个扩展性很不错的插件。tooltip的显示和隐藏依赖于它内部的hoverState状态来控制，in代表在依赖节点元素之上，out则代表移出了DOM元素。并且它也支持延迟动画机制。所以我们可以如下方式控制hoverState的状态：</p>
+
+<pre class='green'><code>var DelayTooltip = function (element, options) {
+    this.init('delayTooltip', element, options);
+    this.initDelayTooltip();
+};
+
+DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    trigger: 'hover',
+    delay: {hide: 600}
+});
+
+DelayTooltip.prototype.delayTooltipEnter = function(){
+        this.hoverState = 'in';
+    };
+
+    DelayTooltip.prototype.delayTooltipLeave = function(){
+        this.hoverState = 'out';
+        this.leave(this);
+    };
+
+  DelayTooltip.prototype.initDelayTooltip = function(){
+      this.tip()
+          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
+          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
+  };
+</code></pre>
+
+<p>这里在构造tooltip对象同时也注册tooltip panel的mouseenter、mouseleave.事件，并设置对应的hoverState状态。当移出tooltip panel时，这里需要手动的调用来自tooltip继类的leave方法。对于隐藏延时则设置在默认option中，使其能够可配置。</p>
+
+<p>上面的代码就是我们所需要扩展tooltip的所有的代码。当然要想作为一个通用的bootstrap插件，还需要它固定的插件配置代码。插件全部代码如下：</p>
+
+<pre class='green'><code>(function ($) {
+  'use strict';
+
+  var DelayTooltip = function (element, options) {
+    this.init('delayTooltip', element, options);
+    this.initDelayTooltip();
+  };
+
+  if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js');
+
+  DelayTooltip.VERSION  = '0.1';
+
+  DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    trigger: 'hover',
+    delay: {hide: 600}
+  });
+
+  DelayTooltip.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype);
+
+  DelayTooltip.prototype.constructor = DelayTooltip;
+
+  DelayTooltip.prototype.getDefaults = function () {
+    return DelayTooltip.DEFAULTS;
+  };
+
+    DelayTooltip.prototype.delayTooltipEnter = function(){
+        this.hoverState = 'in';
+    };
+
+    DelayTooltip.prototype.delayTooltipLeave = function(){
+        this.hoverState = 'out';
+        this.leave(this);
+    };
+
+  DelayTooltip.prototype.initDelayTooltip = function(){
+      this.tip()
+          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
+          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
+  };
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this);
+      var data    = $this.data('bs.delayTooltip');
+      var options = typeof option == 'object' &amp;&amp; option;
+
+      if (!data &amp;&amp; /destroy|hide/.test(option)) return;
+      if (!data) $this.data('bs.delayTooltip', (data = new DelayTooltip(this, options)));
+      if (typeof option == 'string') data[option]();
+    });
+  }
+
+  var old = $.fn.delayTooltip;
+
+  $.fn.delayTooltip             = Plugin;
+  $.fn.delayTooltip.Constructor = DelayTooltip;
+
+  $.fn.delayTooltip.noConflict = function () {
+    $.fn.delayTooltip = old;
+    return this;
+  };
+
+})(jQuery);
+</code></pre>
+
+<p>这里基本都是bootstrap插件机制的固定模板，仅仅需要套用上就行。有了这个插件扩展，那么我们就可以如下使用这款插件：你也可以在jsbin中查看效果<a href="http://jsbin.com/wicoki/edit?html,js,output">http://jsbin.com/wicoki/edit?html,js,output</a>:</p>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;div id="tooltip"&gt;bs tooltip:你能点击链接？&lt;/div&gt;
+&lt;hr&gt;
+&lt;div  id="delayTooltip"&gt;delay tooltip：尝试点击链接&lt;/div&gt;
+&lt;hr&gt;
+&lt;div id="delayTooltipInHtml" data-html="true" data-placement="bottom" data-toggle="delayTooltip"&gt;delay tooltip:利用html标签实现&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript 代码：</p>
+
+<pre class='green'><code>(function(global, $){
+
+    var page = function(){
+
+    };
+
+    page.prototype.bootstrap = function(){
+        var html = 'Weclome to my blog &lt;a target="_blank" href="greengerong.github.io"&gt;破狼博客&lt;/a&gt;!&lt;input type="text" placeholder="input some thing"/&gt;';
+        $('#tooltip').tooltip( {
+            html: true,
+            placement: 'top',
+            title: html
+        });
+
+        $('#delayTooltip').delayTooltip( {
+            html: true,
+            placement: 'bottom',
+            title: html
+        });
+
+  $('#delayTooltipInHtml').attr('title', html).delayTooltip();
+
+  return this;
+};
+
+     global.Page = page;
+
+})(this, jQuery);
+
+$(function(){
+    'use strict';
+  var page = new window.Page().bootstrap();
+    //
+});
+</code></pre>
+
+<p>这款插件既支持jQuery在HTML中声明属性的方式，同时也可以在javascript中使用。效果如下：</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/delay-tooltip-example.png" alt="bootstrap dealy-tooltip" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[前端获取元素定位位置的法宝]]></title>
@@ -70,12 +254,12 @@
 <pre class='green'><code>&lt;script type="text/ng-template" id="/position.html"&gt;
    &lt;table class="table"&gt;
        &lt;thead&gt;
-           &lt;th colspan="2"&gt;&lt;/th&gt;
+           &lt;th colspan="2"&gt;{{title}}&lt;/th&gt;
        &lt;/thead&gt;
     &lt;tbody&gt;
        &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
-       &lt;td&gt;&lt;/td&gt;
-       &lt;td&gt;&lt;/td&gt;
+       &lt;td&gt;{{field}}&lt;/td&gt;
+       &lt;td&gt;{{data[field] | number}}&lt;/td&gt;
      &lt;/tr&gt;
     &lt;/tbody&gt;
    &lt;/table&gt;
@@ -4036,191 +4220,6 @@ a non-parameterized type nested within a parameterized type.
 
 <p>你可以从这里下载<a href="http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java">ReflectionUtil.java</a>.
 原英文版地址： <a href="http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/">http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SQL 行列倒置]]></title>
-    <link href="http://greengerong.github.io/blog/2015/03/14/sql-xing-lie-dao-zhi/"/>
-    <updated>2015-03-14T17:06:28+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/03/14/sql-xing-lie-dao-zhi</id>
-    <content type="html"><![CDATA[<p>SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。</p>
-
-<p>首先我们需要创建数据库Schema：</p>
-
-<pre class='green'><code>    CREATE TABLE Chart
-        (`createTime` DateTime, `kpi` varchar(30), `field` varchar(30), `value` double);
-
-    INSERT INTO Chart
-        (`createTime`,`kpi`, `field`, `value`)
-    VALUES
-        ("2015-02-01 12:00:00", 'disk', 'disk', 20),
-        ("2015-02-01 12:15:00", 'disk', 'disk', 30),
-        ("2015-02-01 12:20:00", 'disk', 'disk', 25),
-        ("2015-02-01 12:30:00", 'disk', 'disk', 25),
-        ("2015-02-01 12:35:00", 'disk', 'disk', 25),
-        ("2015-02-01 12:40:00", 'disk', 'disk', 25),
-
-        ("2015-02-01 12:00:00", 'disk', 'disk-all', 20),
-        ("2015-02-01 12:20:00", 'disk', 'disk-all', 30),
-        ("2015-02-01 12:25:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:30:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:35:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:40:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:40:00", 'cpu', 'cpu-all', 25),
-        ("2015-02-01 12:40:00", 'cpu', 'cpu', 25)
-    ;
-</code></pre>
-
-<p>在这里字段分别代表：createTime = 数据采集时间，kpi = 数据采集指标，field = 作为指标的小类(一个kpi可以包含多个field)，value = 采集的数据</p>
-
-<p>当我们创建好了数据结构，下面因为我们希望获取出所有的 固定时间范围内的特定kpi的数据，注意因为可能一个kpi中的多个field，但是某些field漏采了部分时间的数据，所以这里我们需要补充异常点0. 并由于EChart这类图表库，希望我们输入的是横轴和纵轴为两个独立的数组对象表示。所以我们需要如下：</p>
-
-<pre class='green'><code>option = {
-    ....
-
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['周一','周二','周三','周四','周五','周六','周日']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} °C'
-            }
-        }
-    ],
-    series : [
-        {
-            ....
-            data:[11, 11, 15, 13, 12, 13, 10]
-        },
-        {
-           ....
-            data:[11, 11, 15, 13, 12, 13, 10]
-        }
-    ]
-};
-</code></pre>
-
-<p>取出横轴比较容易，如下：</p>
-
-<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
-</code></pre>
-
-<p>但是纵轴如果我们以同样方式取出，可能存在需要我们自动程序补值，并且需要保证每项数据和横轴对应，所以我们的程序处理会比较复杂，如下：</p>
-
-<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
-</code></pre>
-
-<p>结果为：</p>
-
-<pre class='green'><code>createTime  kpi field   value
-February, 01 2015 12:00:00  disk    disk    20
-February, 01 2015 12:15:00  disk    disk    30
-February, 01 2015 12:20:00  disk    disk    25
-February, 01 2015 12:00:00  disk    disk-all    20
-February, 01 2015 12:20:00  disk    disk-all    30
-February, 01 2015 12:25:00  disk    disk-all    25
-</code></pre>
-
-<p>有没有其他方案更佳的呢？当然那就是本文要说的sql的倒置，如果我们能够把返回数据转换为如下：</p>
-
-<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
-disk         20                            30                     25                       0
-disk-all     20                             0                     30                       25
-</code></pre>
-
-<p>那么程序就很好处理了。在上面我们已经能够取出所有的横轴数据并排序，接下来我们将可以很简单的做到行列倒置：如下：</p>
-
-<pre class='green'><code>SELECT field,
-SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
-SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
-SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
-SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
-FROM Chart
-WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
-GROUP BY field
-</code></pre>
-
-<p>这样返回数据满足我们的需求了。</p>
-
-<hr />
-
-<p>下面我们来分析下这句SQL，</p>
-
-<ol>
-<li>首先我们利用‘IF(createTime = &lsquo;2015-02-01 12:00:00&rsquo;, value, 0)’来处理插值，并对每行数据转为以时间为列数据,并可以利用IF来补’0‘，将会如下：</li>
-</ol>
-
-
-<p>SQL：</p>
-
-<pre class='green'><code>SELECT field,
-IF(createTime = '2015-02-01 12:00:00', value, 0) as '2015-02-01 12:00:00',
-IF(createTime = '2015-02-01 12:15:00', value, 0) as '2015-02-01 12:15:00',
-IF(createTime = '2015-02-01 12:20:00', value, 0) as '2015-02-01 12:20:00',
-IF(createTime = '2015-02-01 12:25:00', value, 0) as '2015-02-01 12:25:00' 
-FROM Chart
-WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
-</code></pre>
-
-<p>结果为：</p>
-
-<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
-disk               20                       0                       0                       0
-disk                0                       30                      0                       0
-disk                0                       0                       25                      0
-disk-all            20                      0                       0                       0
-disk-all            0                       0                       30                      0
-disk-all            0                       0                       0                       25
-</code></pre>
-
-<ol>
-<li>这下我们就可以利用sql的聚合函数sum和group by来聚合数据行：</li>
-</ol>
-
-
-<p>SQL:</p>
-
-<pre class='green'><code>SELECT field,
-SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
-SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
-SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
-SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
-FROM Chart
-WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
-GROUP BY field
-</code></pre>
-
-<p>效果如上。</p>
-
-<p>对于sql行列转置可以简述为分为两部分：</p>
-
-<ol>
-<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when(sql server 2005开始支持数据透视表pivot) ..)将 需要倒置的数据变为列。</li>
-<li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
-</ol>
-
-
-<p>我们也可以将上面两次请求合并为一次，这就需要mysql的动态拼接，如下：</p>
-
-<pre class='green'><code>SELECT 
-@time_sql := group_concat("SUM(IF(createTime = '", t.createTime, "', value, 0)) AS '" , t.createTime, "'")  
-FROM (
- SELECT DISTINCT createTime FROM Chart ORDER BY createTime
-) AS t;
-
- set @v_sql = CONCAT("SELECT field", IF(ISNULL(@time_sql) , " ", CONCAT(", ", @time_sql)) ," FROM Chart GROUP BY field");
-
-prepare stmt from @v_sql; 
-EXECUTE stmt;   
-deallocate prepare stmt; 
-</code></pre>
 ]]></content>
   </entry>
   

@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。 &hellip;"> 
+    <meta name="description" content="最近在公司某项目开发中遇见一特殊需求，请笔者帮助，因此有了本文的插件。在前端开发中tooltip是一个极其常用的插件，它能更好向使用者展示更多的文档等帮助信息。它们通常都是一些静态文本信息。但同事他们的需求是需要动态交互，在文本信息中存在帮助网页的链接。如果使用常规tooltip， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,220 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展bootstrap Tooltip插件使其可交互</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-09T13:20:20+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近在公司某项目开发中遇见一特殊需求，请笔者帮助，因此有了本文的插件。在前端开发中tooltip是一个极其常用的插件，它能更好向使用者展示更多的文档等帮助信息。它们通常都是一些静态文本信息。但同事他们的需求是需要动态交互，在文本信息中存在帮助网页的链接。如果使用常规tooltip，则在用户移出tooltip依赖DOM节点后，tooltip panel则将被隐藏。所以用户没有办法点击到这些交互链接。</p>
+
+<p>所以我们期望：给用户一定的时间使得用户能够将鼠标从依赖节点移动到tooltip panel；并且如果用户鼠标停留在tooltip上则不能隐藏，使得用户能够与位于tooltip上的链接或者是其他form表单控件交互。</p>
+
+<p>也许你觉得这并不难，在网上Google就有很多代码可直接使用。是的，如下面这段来自plnkr.co的代码（<a href="http://plnkr.co/edit/x2VMhh?p=preview">http://plnkr.co/edit/x2VMhh?p=preview</a>）：</p>
+
+<pre class='green'><code>$(".pop").popover({ trigger: "manual" , html: true, animation:false})
+    .on("mouseenter", function () {
+        var _this = this;
+        $(this).popover("show");
+        $(".popover").on("mouseleave", function () {
+            $(_this).popover('hide');
+        });
+    }).on("mouseleave", function () {
+        var _this = this;
+        setTimeout(function () {
+            if (!$(".popover:hover").length) {
+                $(_this).popover("hide");
+            }
+        }, 300);
+});
+</code></pre>
+
+<p>它是使用bootstrap的popover来实现的，从bootstrap的源码能看到popover是继承至tooltip的组件之一。这里是通过将popover的触发方式设为手动触发，由我们自己来控制显示和隐藏它的时机。并且在依赖节点离开的时候，给定300ms的延迟等待用户进入tooltip panel，如果300ms还没有进入tooltip则隐藏它。否则就阻止隐藏tooltip的逻辑。</p>
+
+<p>这代码虽然功能可用，但具有代码洁癖的博主并不太满意这样的代码。它难以阅读维护，同时重用性也将极差。所以笔者决定要以bootstrap插件方式来一bs way写这款插件。</p>
+
+<p>当笔者查阅bootstrap tooltip源码时，发现它是一个扩展性很不错的插件。tooltip的显示和隐藏依赖于它内部的hoverState状态来控制，in代表在依赖节点元素之上，out则代表移出了DOM元素。并且它也支持延迟动画机制。所以我们可以如下方式控制hoverState的状态：</p>
+
+<pre class='green'><code>var DelayTooltip = function (element, options) {
+    this.init('delayTooltip', element, options);
+    this.initDelayTooltip();
+};
+
+DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    trigger: 'hover',
+    delay: {hide: 600}
+});
+
+DelayTooltip.prototype.delayTooltipEnter = function(){
+        this.hoverState = 'in';
+    };
+
+    DelayTooltip.prototype.delayTooltipLeave = function(){
+        this.hoverState = 'out';
+        this.leave(this);
+    };
+
+  DelayTooltip.prototype.initDelayTooltip = function(){
+      this.tip()
+          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
+          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
+  };
+</code></pre>
+
+<p>这里在构造tooltip对象同时也注册tooltip panel的mouseenter、mouseleave.事件，并设置对应的hoverState状态。当移出tooltip panel时，这里需要手动的调用来自tooltip继类的leave方法。对于隐藏延时则设置在默认option中，使其能够可配置。</p>
+
+<p>上面的代码就是我们所需要扩展tooltip的所有的代码。当然要想作为一个通用的bootstrap插件，还需要它固定的插件配置代码。插件全部代码如下：</p>
+
+<pre class='green'><code>(function ($) {
+  'use strict';
+
+  var DelayTooltip = function (element, options) {
+    this.init('delayTooltip', element, options);
+    this.initDelayTooltip();
+  };
+
+  if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js');
+
+  DelayTooltip.VERSION  = '0.1';
+
+  DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    trigger: 'hover',
+    delay: {hide: 600}
+  });
+
+  DelayTooltip.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype);
+
+  DelayTooltip.prototype.constructor = DelayTooltip;
+
+  DelayTooltip.prototype.getDefaults = function () {
+    return DelayTooltip.DEFAULTS;
+  };
+
+    DelayTooltip.prototype.delayTooltipEnter = function(){
+        this.hoverState = 'in';
+    };
+
+    DelayTooltip.prototype.delayTooltipLeave = function(){
+        this.hoverState = 'out';
+        this.leave(this);
+    };
+
+  DelayTooltip.prototype.initDelayTooltip = function(){
+      this.tip()
+          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
+          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
+  };
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this);
+      var data    = $this.data('bs.delayTooltip');
+      var options = typeof option == 'object' &amp;&amp; option;
+
+      if (!data &amp;&amp; /destroy|hide/.test(option)) return;
+      if (!data) $this.data('bs.delayTooltip', (data = new DelayTooltip(this, options)));
+      if (typeof option == 'string') data[option]();
+    });
+  }
+
+  var old = $.fn.delayTooltip;
+
+  $.fn.delayTooltip             = Plugin;
+  $.fn.delayTooltip.Constructor = DelayTooltip;
+
+  $.fn.delayTooltip.noConflict = function () {
+    $.fn.delayTooltip = old;
+    return this;
+  };
+
+})(jQuery);
+</code></pre>
+
+<p>这里基本都是bootstrap插件机制的固定模板，仅仅需要套用上就行。有了这个插件扩展，那么我们就可以如下使用这款插件：你也可以在jsbin中查看效果<a href="http://jsbin.com/wicoki/edit?html,js,output">http://jsbin.com/wicoki/edit?html,js,output</a>:</p>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;div id="tooltip"&gt;bs tooltip:你能点击链接？&lt;/div&gt;
+&lt;hr&gt;
+&lt;div  id="delayTooltip"&gt;delay tooltip：尝试点击链接&lt;/div&gt;
+&lt;hr&gt;
+&lt;div id="delayTooltipInHtml" data-html="true" data-placement="bottom" data-toggle="delayTooltip"&gt;delay tooltip:利用html标签实现&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript 代码：</p>
+
+<pre class='green'><code>(function(global, $){
+
+    var page = function(){
+
+    };
+
+    page.prototype.bootstrap = function(){
+        var html = 'Weclome to my blog &lt;a target="_blank" href="greengerong.github.io"&gt;破狼博客&lt;/a&gt;!&lt;input type="text" placeholder="input some thing"/&gt;';
+        $('#tooltip').tooltip( {
+            html: true,
+            placement: 'top',
+            title: html
+        });
+
+        $('#delayTooltip').delayTooltip( {
+            html: true,
+            placement: 'bottom',
+            title: html
+        });
+
+  $('#delayTooltipInHtml').attr('title', html).delayTooltip();
+
+  return this;
+};
+
+     global.Page = page;
+
+})(this, jQuery);
+
+$(function(){
+    'use strict';
+  var page = new window.Page().bootstrap();
+    //
+});
+</code></pre>
+
+<p>这款插件既支持jQuery在HTML中声明属性的方式，同时也可以在javascript中使用。效果如下：</p>
+
+<p><img src="/images/blog_img/delay-tooltip-example.png" alt="bootstrap dealy-tooltip" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -147,12 +361,12 @@
 <pre class='green'><code>&lt;script type="text/ng-template" id="/position.html"&gt;
    &lt;table class="table"&gt;
        &lt;thead&gt;
-           &lt;th colspan="2"&gt;&lt;/th&gt;
+           &lt;th colspan="2"&gt;{{title}}&lt;/th&gt;
        &lt;/thead&gt;
     &lt;tbody&gt;
        &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
-       &lt;td&gt;&lt;/td&gt;
-       &lt;td&gt;&lt;/td&gt;
+       &lt;td&gt;{{field}}&lt;/td&gt;
+       &lt;td&gt;{{data[field] | number}}&lt;/td&gt;
      &lt;/tr&gt;
     &lt;/tbody&gt;
    &lt;/table&gt;
@@ -1357,135 +1571,6 @@ npm start
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-06-30T06:38:36+08:00" pubdate data-updated="true">Jun 30<span>th</span>, 2015</time>
-        
-           | <a href="/blog/2015/06/30/dong-tai-bang-ding-html/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2015/06/30/dong-tai-bang-ding-html/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在Web前端开发中，我们经常会遇见需要动态的将一些来自后端或者是动态拼接的HTML字符串绑定到页面DOM显示，特别是在内容管理系统（CMS：是Content Management System的缩写），这样的需求，更是遍地皆是。</p>
-
-<p>对于对angular的读者肯定首先会想到ngBindHtml，对,angular为我们提供了这个指令来动态绑定HTML，它会将计算出来的表达式结果用innerHTML绑定到DOM。但是，问题并不是这么简单。在Web安全中XSS（Cross-site scripting，脚本注入攻击），它是在Web应用程序中很典型的计算机安全漏洞。XSS攻击指的是通过对网页注入可执行客户端代码且成功地被浏览器执行，来达到攻击的目的，形成了一次有效XSS攻击，一旦攻击成功，它可能会获取到用户的一些敏感信息、改变用户的体验、诱导用户等非法行为，有时XSS攻击还会合其他攻击方式同时实施比如SQL注入攻击服务器和数据库、Click劫持、相对链接劫持等实施钓鱼，它带来的危害是巨大的，也是web安全的头号大敌。更多的Web安全问题，请参考wiki <a href="https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82">https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82</a></p>
-
-<p>在angular中默认是不相信添加的HTML内容，对于添加的HTML内容，首先必须利用$sce.trustAsHtml，告诉angular这是可信的HTML内容。否则你将会得到$sce:unsafe的异常错误。</p>
-
-<pre class='green'><code>Error: [$sce:unsafe] Attempting to use an unsafe value in a safe context.
-</code></pre>
-
-<p>下面是一个绑定简单的angular链接的demo：</p>
-
-<p>HTML：</p>
-
-<pre class='green'><code>&lt;div ng-controller="DemoCtrl as demo"&gt;
-    &lt;div ng-bind-html="demo.html"&gt;&lt;/div&gt;
-&lt;/div&gt;
-</code></pre>
-
-<p>JavaScript：</p>
-
-<pre class='green'><code>angular.module("com.ngbook.demo", [])
-    .controller("DemoCtrl", ["$sce", function($sce) {
-        var vm = this;
-
-        var html = '&lt;p&gt;hello &lt;a href="https://angular.io/"&gt;angular&lt;/a&gt;&lt;/p&gt;';
-        vm.html = $sce.trustAsHtml(html);
-
-        return vm;
-    }]);
-</code></pre>
-
-<p>对于简单的静态HTML，这个问题就解决了。但对于复杂的HTML，这里的复杂是指带有angular表达式、指令的HTML模板，对于它们来说，我们不仅希望绑定大DOM显示，同时还希望得到angular强大的双向绑定机制。ngBindHhtml并不会和$scope关联双向绑定，如果在HTML中存在ngClick、ngHref、ngSHow、ngHide等angular指令，它们并不会被compile，点击这些按钮，也不会发生任何反应，绑定的表达式也不会在更新。例如尝试将上次的链接变为：ng-href=&ldquo;demo.link&#8221;，链接并不会被解析，在DOM看见的仍然会是原样的HTML字符串。</p>
-
-<p>在angular中的所有指令要生效，都需要经过compile，在compile中包含了pre-link和post-link，连接上特定行为，才能工作。大部分情况下compile，是会在angular启动时，自动compile的。但如果是对于动态添加的模板，则需要手动的compile。angular中为我们提供了$compile服务来实现这一功能。下面是一个比较通用的compile例子：</p>
-
-<p>HTML：</p>
-
-<pre class='green'><code>&lt;body ng-controller="DemoCtrl as demo"&gt;
-    &lt;dy-compile html="{{demo.html}}"&gt; 
-    &lt;/dy-compile&gt;
-    &lt;button ng-click="demo.change();"&gt;change&lt;/button&gt;
-&lt;/body&gt;
-</code></pre>
-
-<p>JavaScript：</p>
-
-<pre class='green'><code>angular.module("com.ngbook.demo", [])
-    .directive("dyCompile", ["$compile", function($compile) {
-        return {
-            replace: true,
-            restrict: 'EA',
-            link: function(scope, elm, iAttrs) {
-                var DUMMY_SCOPE = {
-                        $destroy: angular.noop
-                    },
-                    root = elm,
-                    childScope,
-                    destroyChildScope = function() {
-                        (childScope || DUMMY_SCOPE).$destroy();
-                    };
-
-                iAttrs.$observe("html", function(html) {
-                    if (html) {
-                        destroyChildScope();
-                        childScope = scope.$new(false);
-                        var content = $compile(html)(childScope);
-                        root.replaceWith(content);
-                        root = content;
-                    }
-
-                    scope.$on("$destroy", destroyChildScope);
-                });
-            }
-        };
-    }])
-    .controller("DemoCtrl", [function() {
-        var vm = this;
-
-         vm.html = '&lt;h2&gt;hello : &lt;a ng-href="{{demo.link}}"&gt;angular&lt;/a&gt;&lt;/h2&gt;';  
-
-        vm.link = 'https://angular.io/';
-        var i = 0;
-        vm.change = function() {
-            vm.html = '&lt;h3&gt;change after : &lt;a ng-href="{{demo.link}}"&gt;' + (++i) + '&lt;/a&gt;&lt;/h3&gt;';  
-        };
-    }]);
-</code></pre>
-
-<p>这里创建了一个叫dy-compile的指令，它首先会监听绑定属性html值的变化，当html内容存在的时候，它会尝试首先创个一个子scope，然后利用$compile服务来动态连接传入的html，并替换掉当前DOM节点；这里创建子scope的原因，是方便在每次销毁DOM的时，也能容易的销毁掉scope，去掉HTML compile带来的watchers函数，并在最后的父scope销毁的时候，也会尝试销毁该scope。</p>
-
-<p>因为有了上边的compile的编译和连接，则ngHref指令就可以生效了。这里只是尝试给出动态compile angular模块的例子，具体的实现方式，请参照你的业务来声明特定的directive。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1514,6 +1599,10 @@ npm start
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展bootstrap Tooltip插件使其可交互</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取元素定位位置的法宝</a>
       </li>
     
@@ -1539,10 +1628,6 @@ npm start
     
       <li class="post">
         <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升IDE对JavaScript智能感知的能力</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/25/tui-jian-shu-ji-yi-dong-appce-shi-de-22tiao-jun-gui/">推荐书籍 -《移动App测试的22条军规》</a>
       </li>
     
   </ul>

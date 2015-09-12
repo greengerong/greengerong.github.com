@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-08T17:15:01+08:00</updated>
+  <updated>2015-09-12T18:49:11+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -70,12 +70,12 @@
 <pre><code>&lt;script type="text/ng-template" id="/position.html"&gt;
    &lt;table class="table"&gt;
        &lt;thead&gt;
-           &lt;th colspan="2"&gt;&lt;/th&gt;
+           &lt;th colspan="2"&gt;{{title}}&lt;/th&gt;
        &lt;/thead&gt;
     &lt;tbody&gt;
        &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
-       &lt;td&gt;&lt;/td&gt;
-       &lt;td&gt;&lt;/td&gt;
+       &lt;td&gt;{{field}}&lt;/td&gt;
+       &lt;td&gt;{{data[field] | number}}&lt;/td&gt;
      &lt;/tr&gt;
     &lt;/tbody&gt;
    &lt;/table&gt;
