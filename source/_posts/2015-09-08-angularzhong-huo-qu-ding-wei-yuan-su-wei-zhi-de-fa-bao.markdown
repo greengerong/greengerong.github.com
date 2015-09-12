@@ -57,12 +57,12 @@ HTML:
 	<script type="text/ng-template" id="/position.html">
 	   <table class="table">
 		   <thead>
-			   <th colspan="2">{{title}}</th>
+			   <th colspan="2">{% raw %}{{title}}{% endraw %}</th>
 		   </thead>
         <tbody>
            <tr ng-repeat="field in ['width', 'height', 'left', 'top']">
-           <td>{{field}}</td>
-           <td>{{data[field] | number}}</td>
+           <td>{% raw %}{{field}}{% endraw %}</td>
+           <td>{% raw %}{{data[field] | number}}{% endraw %}</td>
          </tr>
         </tbody>
        </table>
