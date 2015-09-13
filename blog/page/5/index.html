@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$ &hellip;"> 
+    <meta name="description" content="karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,222 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/03/karma-for-jquery-unit-test/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/03/karma-for-jquery-unit-test/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
+
+<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
+
+<h4>jasmime测试套件</h4>
+
+<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
+
+<h4>jasmine-jquery</h4>
+
+<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
+
+<pre class='green'><code>jasmine.getFixtures().fixturesPath = 'base path';
+loadFixtures('myfixture.html');
+jasmine.getFixtures().load(...);
+</code></pre>
+
+<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
+
+<h4>jasmine-ajax</h4>
+
+<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
+
+<pre class='green'><code> beforeEach(function() {
+    jasmine.Ajax.requests.when = function (url) {
+      return this.filter("/jquery/ajax")[0];
+    };
+    jasmine.Ajax.install();
+});
+
+it("jquery ajax success with getResponse", function() {
+    var result;
+
+    $.get("/jquery/ajax").success(function(data) {
+        result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+});
+
+
+afterEach(function() {
+    jasmine.Ajax.uninstall();
+});
+</code></pre>
+
+<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
+
+<h4>运用karma runner</h4>
+
+<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
+
+<p>所以分为以下几步：
+1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
+2：host 测试的html fixtures。
+3：加载html fixtures 与install ajax之前。</p>
+
+<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
+
+<pre class='green'><code>files: [
+    {
+      pattern: 'view/**/*.html',
+      watched: true,
+      included: false,
+      served: true
+    },
+    'bower_components/jquery/dist/jquery.js',
+    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+    'bower_components/jasmine-ajax/lib/mock-ajax.js',
+    'src/*.js',
+    'test/*.js'
+],
+</code></pre>
+
+<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
+
+<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+
+<p>测试html fixtures加载：</p>
+
+<pre class='green'><code>describe('console html content', function() {
+
+  beforeEach(function() {
+    jasmine.getFixtures().fixturesPath = 'base/view/';
+    loadFixtures("index.html");
+  });
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+})
+</code></pre>
+
+<p>测试mock ajax：</p>
+
+<pre class='green'><code>describe('console html content', function() {
+
+  beforeEach(function() {
+     jasmine.Ajax.requests.when = function(url) {
+         return this.filter("/jquery/ajax")[0];
+     };
+     jasmine.Ajax.install();
+ });
+
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+  it("ajax mock", function() {
+    var doneFn = jasmine.createSpy("success");
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(args) {
+      if (this.readyState == this.DONE) {
+        doneFn(this.responseText);
+      }
+    };
+
+    xhr.open("GET", "/some/cool/url");
+    xhr.send();
+
+    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
+    expect(doneFn).not.toHaveBeenCalled();
+
+    jasmine.Ajax.requests.mostRecent().response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'awesome response'
+    });
+
+    expect(doneFn).toHaveBeenCalledWith('awesome response');
+  });
+
+  it("jquery ajax success with getResponse", function() {
+    var result;
+    getResponse().then(function(data){
+      result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+  });
+
+  it("jquery ajax error", function() {
+    var status;
+    $.get("/jquery/ajax").error(function(response) {
+      status = response.status;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 400
+    });
+
+    expect(status).toEqual(400);
+  });
+
+  afterEach(function() {
+    jasmine.Ajax.uninstall();
+  });
+})      
+</code></pre>
+
+<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -882,55 +1098,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-28T00:27:22+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/02/28/nodejs-get-client-ip/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在网上看见很多问node.js如何获取客户端IP,所以记录下来，以供大家参考。</p>
-
-<pre class='green'><code>    function getClientIp(req) {
-        return req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
-    };
-</code></pre>
-
-<p>代码，第一段判断是否有反向代理IP(头信息：x-forwarded-for)，在判断connection的远程IP，以及后端的socket的IP。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -961,6 +1128,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展Bootstrap Tooltip插件使其可交互</a>
       </li>
     
@@ -986,10 +1157,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升IDE对JavaScript智能感知的能力</a>
       </li>
     
   </ul>

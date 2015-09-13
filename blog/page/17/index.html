@@ -10,9 +10,8 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp; System.Diagnostics命名空间里的Debug类和Trace类的用途
-摘要
-在 .NET 类库中有一个 System.Diagnostics 命名空间，该命名空间提供了一些与系统进程、事件日志、和性能计数器进行交互的类库。当中包括了两个对开发人员而言十分有用的类—— &hellip;"> 
+    <meta name="description" content="最近做WinForm程序，尽搞些动态生成控件的，每次寻找某个空间时总要一大堆代码，简单但是写的多，烦啊。突然想起了Linq里的表达式方式，但是项目用的类库是2.0的。最后仿照Linq用范型写了一个遍历类:减少了一大堆不必要的代码。
+代码很简单，就不用解释了，直接贴↑。 代码很简单，就不用解释了， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -65,6 +64,118 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">WinForm控件查找奇思</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近做WinForm程序，尽搞些动态生成控件的，每次寻找某个空间时总要一大堆代码，简单但是写的多，烦啊。突然想起了Linq里的表达式方式，但是项目用的类库是2.0的。最后仿照Linq用范型写了一个遍历类:减少了一大堆不必要的代码。
+代码很简单，就不用解释了，直接贴↑。</p>
+
+<p>代码很简单，就不用解释了，直接贴&#8593;。</p>
+
+<pre class='green'><code>    public delegate bool SearchHandler(Control ctrFind);
+        public class WinSearch&lt;T&gt;
+        {
+    //ctr：查找起点控件。
+            public static T Search(Control ctr, SearchHandler handler)
+            {
+                if (handler == null)
+                    throw new Exception("Handler must be not null");
+                if (ctr == null)
+                    throw new Exception("Parent Control must be not null");
+                if (!(ctr is Control))
+                    throw new Exception("The fist parameter must be innert from Control");
+                return SearchProxy(ctr, handler);
+            }
+
+            protected static T SearchProxy(Control ctr,SearchHandler handler)
+            {
+                if (ctr.Controls.Count &lt; 1)
+                {
+                    return default(T);
+                }
+                else
+                {
+                    foreach (Control child in ctr.Controls)
+                    {
+                        if (child is T  &amp;&amp; handler(child))//注意返回范型类型应是如此才会返回。
+                        {
+                            return (T)(object)child;
+                        }
+                        else
+                        {
+                            foreach (Control ch in child.Controls)
+                            {
+                                object obj = SearchProxy(ch, handler);
+                                if (obj !=null)
+                                {
+                                    return (T)obj;
+                                }
+                            }
+                        }
+                    }
+                    return default(T);
+                }
+            }
+
+
+        }
+</code></pre>
+
+<p> 测试代码：</p>
+
+<pre class='green'><code>    private void button1_Click(object sender, EventArgs e)
+            {
+                Button btn = WinSearch&lt;Button&gt;
+                .Search(this, new SearchHandler(mehtod));
+                if (btn != null)
+                {
+                    MessageBox.Show(btn.Text);
+                }
+            }
+            public bool mehtod(Control ctr)
+            {
+                if (ctr.Text =="button2")
+                    return true;
+                return false;
+            }
+</code></pre>
+
+<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606587.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1182,6 +1293,10 @@ public int MyProperty { get; set; },</p></li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展Bootstrap Tooltip插件使其可交互</a>
       </li>
     
@@ -1207,10 +1322,6 @@ public int MyProperty { get; set; },</p></li>
     
       <li class="post">
         <a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升IDE对JavaScript智能感知的能力</a>
       </li>
     
   </ul>
