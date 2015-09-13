@@ -6,7 +6,7 @@ comments: true
 categories: [javascript, angular, coffescript]
 ---
 
-[angualr meet coffeescript](/images/blog_img/Angular-meetting-CoffeeScript.jpg)
+![angualr meet coffeescript](/images/blog_img/Angular-meetting-CoffeeScript.jpg)
 
 CoffeeScript是基于JavaScript的一门扩展小巧语言，它需要编译成JavaScript，然后再运行与浏览器或者Nodejs平台。JavaScript由于商业原因10天时间就匆忙诞生，所以存在很多弊病。但如《JavaScript精粹》一书中所说：JavaScript也存在着一颗华丽的心脏，如果我们能避开JavaScript中的“坑”，使用其精华的部分，这将是一门令人爱不释手的语言. 而CoffeeScript则是尝试使用这部分简洁的方式展示JavaScript的这部分优秀的精华，避免那些困扰JavaScript开发者的“坑”.CoffeeScript借鉴于Python和Ruby这两门语言，函数式风格、鸭子类型、OO风格一体的一门简洁语言。
 
