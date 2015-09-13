@@ -14,7 +14,7 @@ Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module
 
 想让我们来看一眼笔者利用CoffeeScript对Angular1.x代码的封装后效果。
 
-	// controller
+	## controller
 	class DemoController extends NgComponent
 	   @inject 'demoService'
 	   @controller 'ng.green.demo'   
@@ -23,7 +23,7 @@ Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module
 	      @demoService.getLang().then (data) =>
 	        @lang = data 
 	      
-    // service  
+    ## service  
 	class DemoService extends NgComponent
 	   @inject '$q'
 	   @service 'ng.green.demo' 
@@ -32,7 +32,7 @@ Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module
 	      data = data : ['JavaScript', 'CoffeeScript', 'TypeScript', 'ES6']
 	      @$q.when(data)
   	
-  	// directive controller   
+  	## directive controller   
 	class JsonDumpController extends NgComponent
 	   @inject '$log'
 	   @controller 'ng.green.demo'   
@@ -40,7 +40,7 @@ Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module
 	   __init__: =>
 	      @$log.info('This is form directive controller')
 	 
-	// directive       
+	## directive       
 	class JsonDumpDirective extends NgComponent
 	  @inject '$timeout', '$http', '$cacheFactory', '$log'
 	  @directive 'ng.green.demo' 
