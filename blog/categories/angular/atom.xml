@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-13T14:21:43+08:00</updated>
+  <updated>2015-09-13T14:22:58+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -18,7 +18,7 @@
     <link href="http://greengerong.github.io/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/"/>
     <updated>2015-09-12T22:09:23+08:00</updated>
     <id>http://greengerong.github.io/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang</id>
-    <content type="html"><![CDATA[<p><a href="/images/blog_img/Angular-meetting-CoffeeScript.jpg">angualr meet coffeescript</a></p>
+    <content type="html"><![CDATA[<p><img src="/images/blog_img/Angular-meetting-CoffeeScript.jpg" alt="angualr meet coffeescript" /></p>
 
 <p>CoffeeScript是基于JavaScript的一门扩展小巧语言，它需要编译成JavaScript，然后再运行与浏览器或者Nodejs平台。JavaScript由于商业原因10天时间就匆忙诞生，所以存在很多弊病。但如《JavaScript精粹》一书中所说：JavaScript也存在着一颗华丽的心脏，如果我们能避开JavaScript中的“坑”，使用其精华的部分，这将是一门令人爱不释手的语言. 而CoffeeScript则是尝试使用这部分简洁的方式展示JavaScript的这部分优秀的精华，避免那些困扰JavaScript开发者的“坑”.CoffeeScript借鉴于Python和Ruby这两门语言，函数式风格、鸭子类型、OO风格一体的一门简洁语言。</p>
 
