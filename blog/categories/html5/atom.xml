@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Html5 | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/html5/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2015-09-15T15:05:49+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[HTML5特殊速记图]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/15/html5te-shu-su-ji-tu/"/>
+    <updated>2015-09-15T15:03:35+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/15/html5te-shu-su-ji-tu</id>
+    <content type="html"><![CDATA[<p>今天推荐大家一张HTML5特性速记图，供大家平时查阅，也可以打印放在电脑旁帮助速记、速查。此图笔者收集于网络图片。</p>
+
+<p><img src="/images/blog_img/HTML5%E7%89%B9%E6%AE%8A%E9%80%9F%E8%AE%B0%E5%9B%BE.PNG" alt="angualr meet coffeescript" /></p>
+]]></content>
+  </entry>
+  
+</feed>

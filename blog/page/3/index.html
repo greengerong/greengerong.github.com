@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="当我们声明了一个泛型的接口或类，或需要一个子类继承至这个泛型类，而我们又希望利用反射获取这些泛型参数信息。这就是本文将要介绍的ReflectionUtil就是为了解决这类问题的辅助工具类，为java.lang.reflect标准库的工具类。它提供了便捷的访问泛型对象类型(java.reflect. &hellip;"> 
+    <meta name="description" content="在 2 月 20 号 ECMAScript 第六版就正式推出了，这门语言一直保持稳定快速的发展而且新功能也在慢慢被现在主流的 JavaScript 引擎所接受。不过要想在浏览器端或者 Node 端直接运行 ES6 代码还得等上一些日子。幸好 TC39 (负责研究开发 EMCAScript &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,150 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/22/babel-kai-shi-es6ti-yan/">(转)Babel-现在开始使用 ES6</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T20:11:07+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time>
+        
+           | <a href="/blog/2015/03/22/babel-kai-shi-es6ti-yan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/03/22/babel-kai-shi-es6ti-yan/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在 2 月 20 号 ECMAScript 第六版就正式推出了，这门语言一直保持稳定快速的发展而且新功能也在慢慢被现在主流的 JavaScript 引擎所接受。不过要想在浏览器端或者 Node 端直接运行 ES6 代码还得等上一些日子。幸好 TC39 (负责研究开发 EMCAScript 规格的组织) 做了大量工作让我们现在可以使用 ES6 中的大部分特性了。</p>
+
+<h2>代码转换</h2>
+
+<p>能够实现 ES6 到 ES5 的代码转换多亏了 <a href="https://babeljs.io/">Babel</a> (以前叫 6to5) 以及 Traceur 之类的项目。这些转换器 (更准确地说是源代码到源代码的编译器) 可以把你写的符合 ECMAScript 6 标准的代码完美地转换为 ECMAScript 5 标准的代码，并且可以确保良好地运行在所有主流 JavaScript 引擎中。</p>
+
+<p>我们这里目前在使用 Babel，主要是因为它对 ES6 的支持程度比其它同类更高，而且 Babel 拥有完善的文档和一个很棒的<a href="https://babeljs.io/repl/">在线交互式编程环境</a>。</p>
+
+<h2>起步</h2>
+
+<p>在用 ES6 标准开始一个新项目的时候我们会建立一个目录结构来确保用 ES6 编写的代码能和编译出的 ES5 代码区分开。原始的 ES6 代码我们放在 src 目录下，而编译好的文件就是 lib 目录。这样的命名我们会在本文一直使用。（补充一点，lib 目录应该被加入 .gitignore 文件中）</p>
+
+<h2>安装 Babel</h2>
+
+<p>如果你还没安装 Babel 可以使用 npm 来安装：</p>
+
+<pre class='green'><code>npm install -g babel
+</code></pre>
+
+<p>Babel 一旦安装完成就可以开始编译你的 ES6 代码了。再确认一遍你已经在 src 目录放入了一些 ES6 文件，下面的命令将会把这个目录下所有 .es6, .es 和 .js 后缀的文件编译成符合 ES5 规范的代码到 lib 目录下：</p>
+
+<pre class='green'><code>babel -d lib/ src/
+</code></pre>
+
+<p>如果你想在文件有改动的时候自动完成这些编译工作可以使用这些常用的 JavaScript 构建工具：<a href="https://github.com/babel/grunt-babel">Grunt</a>, <a href="https://github.com/babel/gulp-babel">Gulp</a> 和 <a href="https://github.com/babel/broccoli-babel-transpiler">Brocolli</a>.</p>
+
+<h2>给 ES6 标准库一个&#8221;腻子&#8221;</h2>
+
+<p>Babel 作为一个源到源的编译器不可能呈现所有 ES6 标准库中的新特性，例如 Map 和 Set 构造器和 Array 下的一些新方法。要使用这些我们需要一个&#8221;腻子&#8221;来填补这些不足。现在有很多 ES6 的腻子比如 core-js，它适用与 Node, io.js 和浏览器。</p>
+
+<p>译者注: 本节原始标题为 Polyfilling the standard library，术语 polyfill 来自于一个家装产品Polyfilla:</p>
+
+<p>Polyfilla 是一个英国产品，在美国称之为 Spackling Paste (刮墙的,在中国称为腻子)。记住这一点就行: 把旧的浏览器想象成为一面有了裂缝的墙.这些 polyfill 会帮助我们把这面墙的裂缝抹平,还我们一个更好的光滑的墙壁 (浏览器)</p>
+
+<h2>编写 ES6 代码</h2>
+
+<p>现在构建 ES6 代码的工具已经备齐了那我们就开始真正有趣的部分。我们不会过多着眼于某个新特性，如果你有需要可以阅读 <a href="https://github.com/lukehoban">Luke Hoban</a> 的 <a href="https://github.com/lukehoban/es6features">feature list</a>.</p>
+
+<p>我们先在 src 目录下创建一个叫 person.es6 的文件：</p>
+
+<pre class='green'><code>import 'core-js/shim';
+
+export default class Person {
+
+  constructor( name ) {
+    this.name = name;
+  }
+
+  sayHello() {
+    return `Hello ${ this.name }!`;
+  }
+
+  sayHelloThreeTimes() {
+    let hello = this.sayHello();
+    return `${ hello } `.repeat(3);
+  }
+}
+</code></pre>
+
+<p>在这个很简单的例子中我们用了数个需要 Babel 来解决兼容性的语法，还有一个新的方法 String#repeat 须要由 core-js 处理。你可以用本文开头给出的 Babel 命令行代码或者用 <a href="http://ow.ly/JJyhz">REPL</a> 得到运行结果。</p>
+
+<h2>发布到 npm</h2>
+
+<p>目前为止我们可以编写、编译和运行 ES6 代码，不过你也许还想把你的代码发布到 npm 上。你显然不能直接发布然后期望每个人都来自己编译一次。</p>
+
+<p>幸好，npm 允许你在发布前用 <a href="https://docs.npmjs.com/misc/scripts">prepublish script</a> 选项来修改，这个特性在 CoffeeScript 项目中已经被广泛使用了。</p>
+
+<p>现在把 package.json 文件加入到项目根目录中：</p>
+
+<pre class='green'><code>{
+  "name": "person",
+  "version": "0.1.0",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile"
+  },
+  "main": "lib/person.js",
+  "dependencies": {
+    "core-js": "^0.6.0"
+  },
+  "devDependencies": {
+    "babel": "^4.6.0"
+  }
+}
+</code></pre>
+
+<p>注意这个 compile script 会直接运行你在右边提供 Babel 命令，这样你就可以直接运行 npm run compile 来编译而不需要键入文件目录了，而 prepublish script 会在你每次执行 npm publish 的时候自动运行。</p>
+
+<p>还有就是为什么 Babel 会被加入 development dependencies 中，这样如果有人想参与这个项目就不用全局安装 Babel 了，npm 会把你项目下包含可执行文件的 node_modules 目录加入到系统环境变量 path 中。</p>
+
+<h2>.npmignore 文件</h2>
+
+<p>最后你需要确保发布的是编译出的文件而不是原始的 ES6 文件。如果你的项目根目录有 .gitignore 而没有 .npmignore 那 npm 就会自动忽略你项目中包含在 .gitignore 里所有的 文件和目录。添加 .npmignore 这样你发布的包里就是编译好的文件：</p>
+
+<pre class='green'><code>src/
+</code></pre>
+
+<h2>总结</h2>
+
+<p>编写 ES6 代码并使用源到源的编译器如 <a href="https://babeljs.io/">Babel</a> 或者 <a href="https://github.com/google/traceur-compiler">Traceur</a> 来转换成标准 ES5 代码
+使用 ES6 标准库腻子如 <a href="https://github.com/zloirock/core-js">core-js</a>
+记得在发布到 npm 的时候添加 .npmignore 文件
+你可以在我们的 <a href="https://github.com/mammaldev/update-couch-designs">update-couch-designs</a> 项目中看到一个完整的例子，这个项目是我们用于更新和新建 CouchDB 设计文档的简单脚本。</p>
+
+<p>原文：<a href="http://www.kchanzen.com/using-es6-today/">懂香&mdash;《现在开始使用 ES6》</a>
+翻译自 <a href="http://mammal.io/articles/using-es6-today/">Using ES6 with npm today</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1714,196 +1858,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-21T20:41:30+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2014</time>
-        
-           | <a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Guava为Java并行编程Future提供了很多有用扩展，其主要接口为ListenableFuture，并借助于Futures静态扩展。</p>
-
-<p>继承至Future的ListenableFuture，允许我们添加回调函数在线程运算完成时返回值或者方法执行完成立即返回。</p>
-
-<p>对ListenableFuture添加回调函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">ListenableFuture</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;,</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;,</span> <span class="n">Executor</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中 FutureCallback<V>是一个包含onSuccess(V),onFailure(Throwable)的接口。</p>
-
-<p>使用如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">ListenableFuture</span><span class="o">,</span> <span class="k">new</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onSuccess with: %s%n&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">thrown</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onFailure %s%n&quot;</span><span class="o">,</span> <span class="n">thrown</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>同时Guava中Futures对于Future扩展还有：</p>
-
-<ul>
-<li><p>transform：对于ListenableFuture的返回值进行转换。</p></li>
-<li><p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p></li>
-<li><p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p></li>
-<li><p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p></li>
-<li><p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p></li>
-<li><p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p></li>
-</ul>
-
-
-<p>下边是一个对于Future的测试demo：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_test_furture</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">ListeningExecutorService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">MoreExecutors</span><span class="o">.</span><span class="na">listeningDecorator</span><span class="o">(</span><span class="n">Executors</span><span class="o">.</span><span class="na">newFixedThreadPool</span><span class="o">(</span><span class="mi">10</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">ListenableFuture</span> <span class="n">future1</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;call future 1.&quot;</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">ListenableFuture</span> <span class="n">future2</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;call future 2.&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="c1">//       throw new RuntimeException(&quot;----call future 2.&quot;);</span>
-</span><span class='line'>            <span class="k">return</span> <span class="mi">2</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">final</span> <span class="n">ListenableFuture</span> <span class="n">allFutures</span> <span class="o">=</span> <span class="n">Futures</span><span class="o">.</span><span class="na">allAsList</span><span class="o">(</span><span class="n">future1</span><span class="o">,</span> <span class="n">future2</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">final</span> <span class="n">ListenableFuture</span> <span class="n">transform</span> <span class="o">=</span> <span class="n">Futures</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">allFutures</span><span class="o">,</span> <span class="k">new</span> <span class="n">AsyncFunction</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;,</span> <span class="n">Boolean</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="nd">@Override</span>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">ListenableFuture</span> <span class="nf">apply</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">Futures</span><span class="o">.</span><span class="na">immediateFuture</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;success future:%d&quot;</span><span class="o">,</span> <span class="n">results</span><span class="o">.</span><span class="na">size</span><span class="o">()));</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">transform</span><span class="o">,</span> <span class="k">new</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;success with: %s%n&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">thrown</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onFailure%s%n&quot;</span><span class="o">,</span> <span class="n">thrown</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">transform</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
-
-<p>更多Guava博文：</p>
-
-<ol>
-<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
-<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1934,6 +1888,10 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特殊速记图</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
@@ -1959,10 +1917,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
     
       <li class="post">
         <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a>
       </li>
     
   </ul>
