@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "HTML5特殊速记图"
+title: "HTML5特性速记图"
 date: 2015-09-15 15:03:35 +0800
 comments: true
 categories: [html5]
