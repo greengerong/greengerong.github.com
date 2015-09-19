@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Verlet-js | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/verlet-js/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2015-09-19T22:10:05+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Verlet-js JavaScript物理引擎]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/19/verlet-js-javascriptwu-li-yin-qing/"/>
+    <updated>2015-09-19T21:46:18+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/19/verlet-js-javascriptwu-li-yin-qing</id>
+    <content type="html"><![CDATA[<p>作者subprotocol最近在Github上开源了verlet-js。地址为<a href="https://github.com/subprotocol/verlet-js">https://github.com/subprotocol/verlet-js</a>。verlet-js是一个集成Verlet的物理引擎，利用JavaScript编写。verlet-js支持粒子系统、距离限制、角度限制等。其Github声称基于这些基础，则可以帮助我们构建几乎任何我们所能想象到的东西。</p>
+
+<p>其官网为我们提供了一下几个demo：</p>
+
+<ol>
+<li><a href="http://subprotocol.com/verlet-js/examples/shapes.html">Shapes (verlet-js Hello world)</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/tree.html">Fractal Trees</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/cloth.html">Cloth</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/spiderweb.html">Spiderweb</a></li>
+</ol>
+
+
+<p>笔者觉得<a href="http://subprotocol.com/verlet-js/examples/spiderweb.html">Spiderweb</a>特别有意思，下面是它的效果截图：</p>
+
+<p><img src="/images/blog_img/verlet-js-Spiderweb.png" alt="verlet-js Spiderweb" /></p>
+
+<p>Github地址：<a href="https://github.com/subprotocol/verlet-js">https://github.com/subprotocol/verlet-js</a></p>
+]]></content>
+  </entry>
+  
+</feed>
