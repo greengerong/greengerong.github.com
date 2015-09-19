@@ -19,4 +19,6 @@ subprotocol最近在Github上开源了verlet-js。地址为[https://github.com/s
 
 ![verlet-js Spiderweb](/images/blog_img/verlet-js-Spiderweb.png)
 
+![verlet-js Spiderweb](/images/blog_img/verlet-js-cloth.png)
+
 Github地址：[https://github.com/subprotocol/verlet-js](https://github.com/subprotocol/verlet-js)
