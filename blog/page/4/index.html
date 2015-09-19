@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="Guava在guava-libraries中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。 不再多的废话，直奔Guava EventBus主题。 &hellip;"> 
+    <meta name="description" content="Guava为Java并行编程Future提供了很多有用扩展，其主要接口为ListenableFuture，并借助于Futures静态扩展。 继承至Future的ListenableFuture，允许我们添加回调函数在线程运算完成时返回值或者方法执行完成立即返回。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,160 +63,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/27/guava-eventbus/">Guava - EventBus(事件总线)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-27T21:49:40+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/11/27/guava-eventbus/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Guava在<a href="http://code.google.com/p/guava-libraries/">guava-libraries</a>中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。</p>
-
-<p>不再多的废话，直奔Guava EventBus主题。首先Guava为我们提供了同步事件EventBus和异步实现AsyncEventBus两个事件总线，他们都不是单例的，官方理由是并不想我们我们的使用方式。当然如果我们想其为单例，我们可以很容易封装它，一个单例模式保证只创建一个实例就对了。</p>
-
-<p>下面将以EventBus为例，AsyncEventBus使用方式与其一致的。</p>
-
-<h4>订阅</h4>
-
-<p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="k">new</span> <span class="nf">Object</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Integer</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%d from int%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
-
-<h4>发布</h4>
-
-<p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">EventBus</span> <span class="n">eventBus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventBus</span><span class="o">();</span>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Integer</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from int%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Number</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from Number%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">Long</span> <span class="n">integer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s from long%n&quot;</span><span class="o">,</span> <span class="n">integer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
-
-<p>所以博主建议对于每类时间封装一个特定的事件类型是必要的。</p>
-
-<h4>DeadEvent</h4>
-
-<p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">EventBus</span> <span class="n">eventBus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventBus</span><span class="o">();</span>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Subscribe</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">lister</span><span class="o">(</span><span class="n">DeadEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;%s=%s from dead events%n&quot;</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="na">getSource</span><span class="o">().</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">event</span><span class="o">.</span><span class="na">getEvent</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">eventBus</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>更多Guava博文：</p>
-
-<ol>
-<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
-<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -1690,6 +1536,133 @@ list[1] = 100;
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T15:53:45+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
+
+<pre class='green'><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+      StoreService.listStores().then(function(branches) {
+        Contact.retrieveContactInfo().then(function(userInfo) {
+            //more code here crossing user and stores data
+        });  
+      });
+    });
+</code></pre>
+
+<p>下面让我们来尝试如何用angular提供的$provide创建一个依赖的实现，以及利用jasmine帮助我们fake方法的返回值：</p>
+
+<p>代码如下，有详细注释帮助你去理解这段代码：</p>
+
+<pre class='green'><code>    describe("Store Controller", function() {
+      var $controller, Contact, StoreService, createController, scope;
+
+      beforeEach(function() {
+        module('myApp.store');
+
+        // Provide will help us create fake implementations for our dependencies
+        module(function($provide) {
+
+          // Fake StoreService Implementation returning a promise
+          $provide.value('StoreService', {
+            listStores: function() {
+              return { 
+                then: function(callback) {return callback([{ some: "thing", hoursInfo: {isOpen: true}}]);}
+              };
+            },
+            chooseStore: function() { return null;}
+          });
+
+          // Fake Contact Implementation return an empty object 
+          $provide.value('Contact', {
+            retrieveContactInfo: function() {
+              return {
+                then: function(callback) { return callback({});}
+              };
+            }
+          });
+
+          return null;
+        });
+      });
+
+      beforeEach(function() {
+
+        // When Angular Injects the StoreService and Contact dependencies, 
+        // it will use the implementation we provided above
+        inject(function($controller, $rootScope, _StoreService_, _Contact_) {
+          scope = $rootScope.$new();
+          StoreService = _StoreService_;
+          Contact = _Contact_;
+          createController = function(params) {
+            return $controller("StoresCtrl", {
+              $scope: scope,
+              $stateParams: params || {}
+            });
+          };
+        });
+      });
+
+      it("should call the store service to retrieve the store list", function() {
+        var user = { address: {street: 1}};
+
+        // Jasmine spy over the listStores service. 
+        // Since we provided a fake response already we can just call through. 
+        spyOn(StoreService, 'listStores').and.callThrough();
+
+        // Jasmine spy also allows to call Fake implementations via the callFake function 
+        // or we can return our own response via 'and.returnValue
+        // Here we can override the response we previously defined and return a promise with a user object
+        spyOn(Contact, 'retrieveContactInfo').and.callFake(function() {
+          return {
+            then: function(callback) { return callback(user); }
+          };
+        });
+
+        createController();
+        // Since we setup a spy we can now expect that spied function to have been called 
+        // or to have been called with certain parameters..etc
+        expect(StoreService.listStores).toHaveBeenCalled();
+      });
+    });
+</code></pre>
+
+<p>原文地址:<a href="http://ng-learn.org/2014/08/Testing_Promises_with_Jasmine_Provide_Spy/">Testing Promises with Jasmine &ndash; Provide and Spy</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -1720,10 +1693,6 @@ list[1] = 100;
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/09/15/verlet-js-javascriptwu-li-yin-qing/">Verlet-js JavaScript物理引擎</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
       </li>
     
@@ -1749,6 +1718,10 @@ list[1] = 100;
     
       <li class="post">
         <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a>
       </li>
     
   </ul>
