@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp; 在我们的silverlight项目中，是被打包为xap zip文件下载到客户端，所以silverlight中的app配置文件我们不能直接修改，而在其宿主web host中的web.config在服务端我们也不能直接访问。在我们的项目中遇见了这个问题所以我就有了此博客。 &nbsp;& &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; .NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,162 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">浅谈.NET编译时注入（C#&#8211;&gt;IL）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/07/26/qian-tan-NET-bian-yi-shi-zhu-ru-C-IL/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; .NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。ＪＩＴ编译分为经济编译器和普通编译器，在这里就不多说了，不是本文的重点。本文主要讨论下预编译过程中我们能做的改变编译情况，改变生成的ＩＬ，从编译前后看看微软Ｃ＃３．０一些语法糖，PostSharp的静态注入等等。</p>
+
+<p>１：我们先来看看最简单的var:</p>
+
+<p>Ｃ#:</p>
+
+<pre class='green'><code>public void TestVar() { 
+    var i = 0;    Console.WriteLine(i); }
+</code></pre>
+
+<p>使用Reflector查看生成</p>
+
+<p>ＩＬ：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124334478.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/20110726212434999.jpg" title="clip_image001" alt="clip_image001" /></a></p>
+
+<p>反编译后的Ｃ＃：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124353474.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124359853.jpg" title="clip_image002" alt="clip_image002" /></a></p>
+
+<p>这里ＶＳ在编译的时候将ｖａｒ为我们转变为了ｉｎｔ类型。</p>
+
+<p>２：Action&lt;int&gt;：</p>
+
+<p>Ｃ＃：</p>
+
+<pre class='green'><code>public void TestAction() { var i = 1; Func&lt;int,int&gt; f = t =&gt; t+1; i=10; f(i); }
+</code></pre>
+
+<p>反编译后Ｃ＃：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124351772.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124364737.jpg" title="clip_image004" alt="clip_image004" /></a></p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124369164.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124379131.jpg" title="clip_image005" alt="clip_image005" /></a></p>
+
+<p>编译器为我们在这里生成了代理方法。</p>
+
+<p>总结：</p>
+
+<p>关于lambda表达式的编译规则：</p>
+
+<p>当一个lambda expression被赋值给一个delegate类型，例如<a href="http://msdn2.microsoft.com/en-us/library/018hxwa8.aspx">Action&lt;T&gt;</a>或者<a href="http://msdn2.microsoft.com/en-us/library/bb549151.aspx">Func&lt;T, TResult&gt;</a>等，这个lambda expression会被编译器直接编译为
+1) 当lambda expression没有使用闭包内的非局部引用也没有使用到this时，编译为一个私有静态方法；
+2) 当lambda expression没有使用闭包内的非局部引用，但用到了this时，编译为一个私有成员方法；
+3) 当lambda expression中引用到非局部变量，则编译为一个私有的内部类，将引用到的非局部变量提升为内部类的。</p>
+
+<p>３：PostSharp：</p>
+
+<p>PostSharp是结合了 MSBuild Task 和 MSIL Injection 技术，编译时静态注入实现 AOP 编程。在编译时候改变VS的编译行为。更详细的信息，请访问 <a href="http://www.postsharp.org/">PostSharp</a> 网站</p>
+
+<p>原ｃ＃：</p>
+
+<pre class='green'><code>    using System;
+
+  using System.Collections.Generic;
+
+  using System.Linq;
+
+  using System.Text;
+
+  namespace ConsoleApplication1
+
+  {
+
+  class Program
+
+  {
+
+  static void Main(string[] args)
+
+  {
+
+  new Program().TestPostSharp();
+
+  }
+
+  [ErrorHandler()]
+
+  public void TestPostSharp()
+
+  {
+
+  throw new Exception("I will throw a exception!");
+
+  }
+
+  }
+
+  [Serializable]
+
+  public class ErrorHandlerAttribute : PostSharp.Laos.OnMethodBoundaryAspect
+
+  {
+
+  public override void OnException(PostSharp.Laos.MethodExecutionEventArgs eventArgs)
+
+  {
+
+  //do some AOP operation!
+
+  Console.WriteLine(eventArgs.Method+":" +eventArgs.Exception.Message);
+
+  eventArgs.FlowBehavior = PostSharp.Laos.FlowBehavior.Continue;
+
+  }
+
+  }
+
+  }
+</code></pre>
+
+<p>反编译后：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124385030.jpg"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107262124418146.jpg" title="clip_image007" alt="clip_image007" /></a></p>
+
+<p>今天就到此为至,只是简单的了解下IL注入实例,在后面会利用<strong>MSBuild Task+Mono Cecil</strong> 和<strong>PostSharp</strong>实现一些简单的注入实例.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1090,88 +1246,6 @@ namespace ConsoleApplication1
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/02/26/win7-xia-cheng-xu-yun-hang-quan-xian-wen-ti-jie-jue-fang-an/">Win7下程序运行权限问题解决方案</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-02-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2011/02/26/win7-xia-cheng-xu-yun-hang-quan-xian-wen-ti-jie-jue-fang-an/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2011/02/26/win7-xia-cheng-xu-yun-hang-quan-xian-wen-ti-jie-jue-fang-an/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天遇见一个win7下程序运行权限问题(需要对目录下文件有读写权限)：网上google下得到解决方案有,现记录下：</p>
-
-<h2>一：</h2>
-
-<p>&nbsp;&nbsp; windows 7和vista提高的系统的安全性，同时需要明确指定&#8220;以管理员身份运行&#8221;才可赋予被运行软件比较高级的权限，比如访问注册表等。否则，当以普通身份运行的程序需要访问较高级的系统资源时，将会抛出异常。</p>
-
-<p>　　如何让程序在启动时，自动要求&#8220;管理员&#8221;权限了，我们只需要修改app.manifest文件中的配置项即可。</p>
-
-<p>　　app.manifest文件默认是不存在的，我们可以通过以下操作来自动添加该文件。</p>
-
-<p>（1）进入项目属性页。</p>
-
-<p>（2）选择&#8220;安全性&#8221;栏目。</p>
-
-<p>（3）将&#8220;启用ClickOnce安全设置&#8221;勾选上。</p>
-
-<p>　　现在，在Properties目录下就自动生成了app.manifest文件，打开该文件，将trustInfo/security/requestedPrivileges节点的requestedExecutionLevel的level的值修改为requireAdministrator即可。如下所示：</p>
-
-<div class="cnblogs_code" onclick="cnblogs_code_show('196faf80-6c73-421d-a3a0-d3e648f2ca9c')">
-<div id="cnblogs_code_open_196faf80-6c73-421d-a3a0-d3e648f2ca9c">
-<div><!--
-
-Code highlighting produced by Actipro CodeHighlighter (freeware)
-
-http://www.CodeHighlighter.com/
-
---><span style="color: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;</span><span style="color: #000000">requestedPrivileges&nbsp;xmlns</span><span style="color: #000000">=</span><span style="color: #800000">&#8221;</span><span style="color: #800000">urn:schemas-microsoft-com:asm.v3</span><span style="color: #800000">&#8221;</span><span style="color: #000000">&gt;</span><span style="color: #000000">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="color: #000000">&lt;</span><span style="color: #000000">requestedExecutionLevel&nbsp;level</span><span style="color: #000000">=</span><span style="color: #800000">&#8221;</span><span style="color: red">**requireAdministrator**</span><span style="color: #800000">&#8221;</span><span style="color: #000000">&nbsp;uiAccess</span><span style="color: #000000">=</span><span style="color: #800000">&#8221;</span><span style="color: #800000">false</span><span style="color: #800000">&#8221;</span><span style="color: #000000">&nbsp;</span><span style="color: #000000">/&gt;</span><span style="color: #000000">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color: #000000">&lt;/</span><span style="color: #000000">requestedPrivileges</span><span style="color: #000000">&gt;</span></div></div></div>
-
-
-<p>&nbsp;</p>
-
-<p>　　记住，如果不需要ClickOnce，可以回到项目属性页将&#8220;启用ClickOnce安全设置&#8221;不勾选。&nbsp;　　</p>
-
-<p>　　接下来，重新编译你的程序就OK了。</p>
-
-<p>&nbsp;</p>
-
-<h2>二：</h2>
-
-<p>&nbsp; 可以把文件的安装路径默认在非系统目录下，如d:\sorftwarename\等。或者酱程序和读写数据分开，读写数据文件放在我的文档下等，避开文件访问读写权限，避开program files目录。像google德Chrome就是文件直接默认（不能改动）安装在AppData下。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/02/26/1965824.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/14/">&larr; Older</a>
@@ -1202,6 +1276,10 @@ http://www.CodeHighlighter.com/
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
       </li>
     
@@ -1227,10 +1305,6 @@ http://www.CodeHighlighter.com/
     
       <li class="post">
         <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a>
       </li>
     
   </ul>
