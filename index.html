@@ -10,7 +10,11 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="今天推荐大家一张HTML5特性速记图，供大家平时查阅，也可以打印放在电脑旁帮助速记、速查。此图笔者收集于网络图片。 "> 
+    <meta name="description" content="layout: post
+title: &ldquo;verlet-js JavaScript物理引擎&rdquo;
+date: 2015-09-19 21:46:18 +0800
+comments: true
+categories: &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +67,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/19/verlet-js-javascriptwu-li-yin-qing/">Verlet Js Javascriptwu Li Yin Qing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-19T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2015/09/19/verlet-js-javascriptwu-li-yin-qing/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/09/19/verlet-js-javascriptwu-li-yin-qing/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><hr />
+
+<p>layout: post
+title: &ldquo;verlet-js JavaScript物理引擎&rdquo;
+date: 2015-09-19 21:46:18 +0800
+comments: true
+categories:
+作者subprotocol最近在Github上开源了verlet-js。地址为<a href="https://github.com/subprotocol/verlet-js%E3%80%82verlet-js%E6%98%AF%E4%B8%80%E4%B8%AA%E9%9B%86%E6%88%90Verlet%E7%9A%84%E7%89%A9%E7%90%86%E5%BC%95%E6%93%8E%EF%BC%8C%E5%88%A9%E7%94%A8JavaScript%E7%BC%96%E5%86%99%E3%80%82verlet-js%E6%94%AF%E6%8C%81%E7%B2%92%E5%AD%90%E7%B3%BB%E7%BB%9F%E3%80%81%E8%B7%9D%E7%A6%BB%E9%99%90%E5%88%B6%E3%80%81%E8%A7%92%E5%BA%A6%E9%99%90%E5%88%B6%E7%AD%89%E3%80%82%E5%85%B6Github%E5%A3%B0%E7%A7%B0%E5%9F%BA%E4%BA%8E%E8%BF%99%E4%BA%9B%E5%9F%BA%E7%A1%80%EF%BC%8C%E5%88%99%E5%8F%AF%E4%BB%A5%E5%B8%AE%E5%8A%A9%E6%88%91%E4%BB%AC%E6%9E%84%E5%BB%BA%E5%87%A0%E4%B9%8E%E4%BB%BB%E4%BD%95%E6%88%91%E4%BB%AC%E6%89%80%E8%83%BD%E6%83%B3%E8%B1%A1%E5%88%B0%E7%9A%84%E4%B8%9C%E8%A5%BF%E3%80%82">https://github.com/subprotocol/verlet-js%E3%80%82verlet-js%E6%98%AF%E4%B8%80%E4%B8%AA%E9%9B%86%E6%88%90Verlet%E7%9A%84%E7%89%A9%E7%90%86%E5%BC%95%E6%93%8E%EF%BC%8C%E5%88%A9%E7%94%A8JavaScript%E7%BC%96%E5%86%99%E3%80%82verlet-js%E6%94%AF%E6%8C%81%E7%B2%92%E5%AD%90%E7%B3%BB%E7%BB%9F%E3%80%81%E8%B7%9D%E7%A6%BB%E9%99%90%E5%88%B6%E3%80%81%E8%A7%92%E5%BA%A6%E9%99%90%E5%88%B6%E7%AD%89%E3%80%82%E5%85%B6Github%E5%A3%B0%E7%A7%B0%E5%9F%BA%E4%BA%8E%E8%BF%99%E4%BA%9B%E5%9F%BA%E7%A1%80%EF%BC%8C%E5%88%99%E5%8F%AF%E4%BB%A5%E5%B8%AE%E5%8A%A9%E6%88%91%E4%BB%AC%E6%9E%84%E5%BB%BA%E5%87%A0%E4%B9%8E%E4%BB%BB%E4%BD%95%E6%88%91%E4%BB%AC%E6%89%80%E8%83%BD%E6%83%B3%E8%B1%A1%E5%88%B0%E7%9A%84%E4%B8%9C%E8%A5%BF%E3%80%82</a></p>
+
+<p>其官网为我们提供了一下几个demo：</p>
+
+<ol>
+<li><a href="http://subprotocol.com/verlet-js/examples/shapes.html">Shapes (verlet-js Hello world)</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/tree.html">Fractal Trees</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/cloth.html">Cloth</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/spiderweb.html">Spiderweb</a></li>
+</ol>
+
+
+<p>笔者觉得<a href="http://subprotocol.com/verlet-js/examples/spiderweb.html">Spiderweb</a>特别有意思，下面是它的效果截图：</p>
+
+<p><img src="/images/blog_img/verlet-js-Spiderweb.png" alt="verlet-js Spiderweb" /></p>
+
+<p>Github地址：<a href="https://github.com/subprotocol/verlet-js">https://github.com/subprotocol/verlet-js</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1477,90 +1543,6 @@ npm start
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升IDE对JavaScript智能感知的能力</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-07-26T00:55:31+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time>
-        
-           | <a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。</p>
-
-<p>追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索，然后展示出已经使用过的对象成员。这种方式的缺点是，其智能感知的的能力并不精准，经常会显示出很多无关的代码提示。</p>
-
-<p>在很多现代化开发方式中，IDE的强大支持和模块化组织这种“工程化”的思想是我们应对大规模开发的方式之一，这也已经被业界所认同。所以在最近两年，JavaScript的世界也提出了大规模开发的方案，其中有Google的Dart和微软的TypeScript。随着Angular2.0放弃了自家的Dart，而选择了TypeScript，也标志着TypeScript的逐渐成熟。TypeScript是微软总架构师Anders Hejlsberg设计的新语言，他是软件界的传奇人物，是Delphi和.NET的设计者。TypeScript是一种可以编译成传统JavaScript的语言，它并不是完全的创造了一门新语言，而TypeScript是JavaScript语言的超集，它最大的特点就是引入了类型系统。并在编译为JavaScript文件后，可以输出“.ts”的类型元数据信息，为我们IDE的智能感知和重构提供了重要的依据。</p>
-
-<p>关于TypeScript的更多知识，在这里笔者就不在叙述过多。有兴趣的读者可以到<a href="http://www.typescriptlang.org/">http://www.typescriptlang.org/</a>学习，本节要讲的，是它的另一个特性：它编译输出的元数据信息文件（<code>*.d.ts</code>），它可以在不需要修改原有JavaScript文件的情况下，而给JavaScript添加元数据类型信息，而这些类型信息则可以辅助IDE，给出有智能的提示信息，以及重构的依据。</p>
-
-<p>在TypeScript的开源社区，已经为很多的第三方库实现了这类模板文件，我们可以很快的应用在我们的项目之中。当然这里所说的额第三方包含我们常用的：Angular、jQuery、underscore、lodash、jasmine等。</p>
-
-<p>在官方同时也为我们提供了一个方便的工具叫TSD（全称为：TypeScript Definition manager for DefinitelyTyped），它是借鉴NPM包管理工具的思想，实现了一个类似的包管理工具，我们不需要任何的学习成本，只管像使用NPM一样使用它。</p>
-
-<p>这里是TSD主页:<a href="http://definitelytyped.org/tsd/">http://definitelytyped.org/tsd/</a>，你可以在这里深入了解它，或者是查询你所需要的模板库是否存在于TSD仓库。</p>
-
-<p>TSD也是一个Nodejs的工具，所以我们安装它非常容易，只需要在命令行中输入（对于有些Linux用户需要sudo）：</p>
-
-<pre class='green'><code>npm install tsd -g
-</code></pre>
-
-<p>安装我们需要的模板库，也很简单，如jQuery和Angular的安装：</p>
-
-<pre class='green'><code>tsd install jquery angular --save
-</code></pre>
-
-<p>这样TSD就会帮助我们下载jQuery和Angular的d.ts文件，并存放在当前目录的typings独立子目录下，并且它会将我们需要的依赖信息保存在一个叫tsd.json的文件，如NPM的package.json一样，方便于我们的版本管理，以及团队之间的共享。我们只需要共享这个tsd.json文件给其他同事，然后</p>
-
-<pre class='green'><code>tsd install
-</code></pre>
-
-<p>一切都可以满意就绪了。</p>
-
-<p>tsd.json文件的格式如下：</p>
-
-<p><img src="/images/blog_img/tsd-install.png" alt="tsd文件目录" /></p>
-
-<p>同时候TSD工具还会为我们在typing目录下生产一个tsd.d.ts文件，它会为我们引入这些模板文件，使得IDE能够识别出这样模板文件：</p>
-
-<pre class='green'><code>/// &lt;reference path="angularjs/angular.d.ts" /&gt;
-/// &lt;reference path="jquery/jquery.d.ts" /&gt;
-</code></pre>
-
-<p>下面是我们在Intellij中得到的智能感知图：</p>
-
-<p><img src="/images/blog_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
-
-<p>目前能够很好支持TypeScript这一特性的工具有：Intellij家族、微软自家的VS工具、Sublime。有了TSD这一工具，也许我们虽然还不能尝试TypeScript的特性，但我们仍然可以利用它来帮助我们的普通JavaScript开发。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1589,6 +1571,10 @@ npm start
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/19/verlet-js-javascriptwu-li-yin-qing/">Verlet Js Javascriptwu Li Yin Qing</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
       </li>
     
@@ -1614,10 +1600,6 @@ npm start
     
       <li class="post">
         <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a>
       </li>
     
   </ul>
