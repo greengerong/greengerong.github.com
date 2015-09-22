@@ -40,33 +40,11 @@ Python中的装潢器如下：
 
 	f = @log (a, b) -> a + b
 
-不如作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：
-
-	@log = (type) ->
-	  logger = new Logger('#console')
-	  (fun)->
-	    (args...) ->
-	        logger.info "(#{type}) before function execute: f(#{args}) = ?"
-	        try
-	          ret = fun(args...)
-	          logger.info "(#{type})after function execute: f(#{args}) => #{ret}"
-	        catch error
-	          logger.error "(#{type}) function execute error: f(#{args}) => #{error}"
-	        finally
-	          logger.info "(#{type}) function execute done: f(#{args}) => #{ret}"
-	        ret
-	      
-	f = @log('test1') (a, b) -> a + b
-	f(1, 2)
-
-	f = @log('test2') (a, b) -> a * b
-	f(3, 2)
-
-	f = @log('test3') () -> throw 'Something is wrong!'
-	f()
-
-这里利用了高姐函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。
+不知作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：
 
 <p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+这里利用了高阶函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。
+
 
