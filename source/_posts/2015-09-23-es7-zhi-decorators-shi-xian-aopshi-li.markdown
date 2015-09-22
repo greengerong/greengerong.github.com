@@ -48,7 +48,7 @@ categories: [javascript,es7,decorators]
 	    }
 	}
 
-首先我们将原来的方法体缓存起来，直到方法调用时，实现方法调用前后的日志拦截，打印相关信息。它的效果如下：
+首先我们将原来的方法体缓存起来，直到方法调用时，才会被调用以实现方法调用前后的日志拦截，打印相关信息。示例的效果如下：
 
 ![es7 decorators log aop](/images/blog_img/es7-decorators-log-aop.png)
 
