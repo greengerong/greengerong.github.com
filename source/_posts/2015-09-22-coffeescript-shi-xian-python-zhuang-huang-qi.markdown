@@ -1,0 +1,72 @@
+---
+layout: post
+title: "CoffeeScript实现Python装潢器"
+date: 2015-09-22 21:09:03 +0800
+comments: true
+categories: [javascript, coffeescript]
+---
+在上篇[Angular遇上CoffeeScript - NgComponent封装](http://greengerong.com/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/)中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + Babel或者TypeScript这类鲜明特性的JavaScript写法。但是CoffeeScript也不失为一门不错的JavaScript扩展语法，它特别在Ruby社区仍然是一个很好的选择。
+
+在本节中，我们将会利用CoffeeScript来模拟Python中的装潢器实现。Python的装潢器是属于一中来自于语言层次的AOP实现。AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考[http://en.wikipedia.org/wiki/Aspect-oriented_programming](http://en.wikipedia.org/wiki/Aspect-oriented_programming)。
+
+在Python中的装潢器也是一个普通的函数，我们只需要使用@符号将方法标注在另一个方法签名上就能实现对被标注方法的装潢。这也是Python这门函数式语言中高阶函数的运用。被装潢的方法将会被传入装潢函数中，被装潢包裹以实现方法的拦截。
+
+Python中的装潢器如下：
+
+	def deco(func):
+	    def _deco(*args, **kwargs):
+	        print("before %s called." % func.__name__)
+	        ret = func(*args, **kwargs)
+	        print("  after %s called. result: %s" % (func.__name__, ret))
+	        return ret
+	    return _deco
+	 
+	@deco
+	def myfunc(a, b):
+	    print(" myfunc(%s,%s) called." % (a, b))
+	    return a+b
+
+这里的装潢器deco，将会包裹myfunc方法，实现调用前后的日志信息拦截。
+
+在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高级函数，可以如下包裹：
+
+	log(myfunc)
+
+在CoffeeScript中，我们也可以简化去掉方法（）符号：
+
+	log myfunc
+
+如果我们再像Python一样强制加上@符号，并将log函数放在方法声明右边，则似乎雨点接近Python的装潢器：
+
+	f = @log (a, b) -> a + b
+
+不如作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：
+
+	@log = (type) ->
+	  logger = new Logger('#console')
+	  (fun)->
+	    (args...) ->
+	        logger.info "(#{type}) before function execute: f(#{args}) = ?"
+	        try
+	          ret = fun(args...)
+	          logger.info "(#{type})after function execute: f(#{args}) => #{ret}"
+	        catch error
+	          logger.error "(#{type}) function execute error: f(#{args}) => #{error}"
+	        finally
+	          logger.info "(#{type}) function execute done: f(#{args}) => #{ret}"
+	        ret
+	      
+	f = @log('test1') (a, b) -> a + b
+	f(1, 2)
+
+	f = @log('test2') (a, b) -> a * b
+	f(3, 2)
+
+	f = @log('test3') () -> throw 'Something is wrong!'
+	f()
+
+这里利用了高姐函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。
+
+<p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
