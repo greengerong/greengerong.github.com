@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp; 今天遇见一个win7下程序运行权限问题(需要对目录下文件有读写权限)：网上google下得到解决方案有,现记录下： 一： &nbsp;&nbsp; windows 7和vista提高的系统的安全性，同时需要明确指定&#8220;以管理员身份运行&#8221; &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp; 在html5中我觉得最重要的就是引入了Canvas，使得我们可以在web中绘制各种图形。给人感觉单在这点上有点模糊我们web和桌面程序的感觉。在html5外web中也有基于xml的绘图如：VML、SVG。而Canvas为基于像素的绘图。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,196 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/02/html5-Canvas-hui-tu/">html5-Canvas绘图</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-02T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2011/03/02/html5-Canvas-hui-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2011/03/02/html5-Canvas-hui-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在html5中我觉得最重要的就是引入了Canvas，使得我们可以在web中绘制各种图形。给人感觉单在这点上有点模糊我们web和桌面程序的感觉。在html5外web中也有基于xml的绘图如：VML、SVG。而Canvas为基于像素的绘图。Canvas是一个相当于画板的html节点，我们必须以js操作绘图。</p>
+
+<p>如下：</p>
+
+<p>&lt;canvas id=&ldquo;myCanvas&rdquo; width=&ldquo;600&rdquo; height=&ldquo;300&rdquo;&gt;你的浏览器还不支持哦&lt;/canvas&gt;定义。</p>
+
+<p>我们可以获取canvas对象为var c=document.getElementById(&ldquo;myCanvas&rdquo;);其应有js属性方法如下列举：</p>
+
+<p>1：绘制渲染对象，c.getContext(&ldquo;2d&rdquo;),获取2d绘图对象，无论我们调用多少次获取的对象都将是相同的对象。</p>
+
+<p>2：绘制方法：</p>
+
+<p>clecrRect(left,top,width,height)清除制定矩形区域，</p>
+
+<p>fillRect(left,top,width,height)绘制矩形，并以fillStyle填充。</p>
+
+<p>fillText（text,x,y）绘制文字；</p>
+
+<p>strokeRect(left,top,width,height)绘制矩形，以strokeStyle绘制边界。</p>
+
+<p>beginPath():开启路径的绘制,重置path为初始状态；</p>
+
+<p>closePath():绘制路径path结束，它会绘制一个闭合的区间，添加一条起始位置到当前坐标的闭合曲线；</p>
+
+<p>moveTo（x，y）：设置绘图其实坐标。</p>
+
+<p>lineTo(x，y);绘制从当前其实位置到x，y直线。</p>
+
+<p>fill（），stroke（），clip（）：在完成绘制的最后的填充和边界轮廓，剪辑区域。</p>
+
+<p>arc（）：绘制弧,圆心位置、起始弧度、终止弧度来指定圆弧的位置和大小；</p>
+
+<p>rect():矩形路径;</p>
+
+<p>drawImage（Imag img）：绘制图片；</p>
+
+<p>quadraticCurveTo():二次样条曲线路径,参数两个控制点；</p>
+
+<p>bezierCurveTo（）：贝塞尔曲线，参数三个控制点；</p>
+
+<p>createImageData,getImageData，putImageData:为Canvas中像素数据。ImageData为记录width、height、和数据 data，其中data为我们色素的记录为</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; argb，所以数组大小长度为width<em>height</em>4，顺序分别为rgba。getImageData为获取矩形区域像素，而putImageData则为设置矩形区域像素；</p>
+
+<p>&#8230; and so on！</p>
+
+<p>3：坐标变换：</p>
+
+<p>translate（x,y）：平移变换，原点移动到坐标（x，y）；</p>
+
+<p>rotate（a）：旋转变换，旋转a度角；</p>
+
+<p>scale（x，y）：伸缩变换；</p>
+
+<p>save（），restore（）：提供和一个堆栈，保存和恢复绘图状态，save将当前绘图状态压入堆栈，restore出栈，恢复绘图状态；</p>
+
+<p>&#8230; and so on！</p>
+
+<p>好了，也晚了。附我的测试代码，：</p>
+
+<pre class='green'><code>&lt;html&gt; 
+  &lt;head&gt; 
+  &lt;/head&gt; 
+  &lt;body&gt; 
+  &lt;canvas id="myCanvas" width="600" height="300"&gt;你的浏览器还不支持哦&lt;/canvas&gt; 
+  &lt;script type="text/javascript"&gt; 
+
+  var width,height,top,left; 
+  width=height=100; 
+  top=left=5; 
+  var x=10; 
+  var y=10; 
+
+  var c=document.getElementById("myCanvas"); 
+
+  var maxwidth=c.width-5; 
+  var maxheight=c.height-5; 
+  var cxt=c.getContext("2d"); 
+  cxt.strokeStyle="#00f"; 
+  cxt.strokeRect(0,0,c.width,c.height); 
+
+  var img=new Image(); 
+  img.src="1.gif"; 
+  var MyInterval=null; 
+  start(); 
+  function Refresh(){ 
+  cxt.clearRect(left,top,width,height); 
+  if((left+x)&gt;(maxwidth-width)||left+x&lt;0){ 
+  x=-x; 
+  } 
+
+  if((top+y)&gt;(maxheight-height)||top+y&lt;0){ 
+  y=-y; 
+  } 
+
+  left=left+x;    
+  top=top+y; 
+  cxt.drawImage(img,left,top,width,height); 
+  cxt.font="20pt 宋体"; 
+  cxt.fillText("破狼",left,top+25); 
+
+  } 
+
+  function start(){ 
+  if(MyInterval==null){ 
+  MyInterval=setInterval("Refresh()",100); 
+  } 
+  } 
+
+  function stop(){ 
+  if(MyInterval!=null){ 
+  clearInterval(MyInterval); 
+  MyInterval=null; 
+  } 
+  } 
+  function InRectangle(x,y,rectx,recty,rwidth,rheight){ 
+  return (x&gt;=rectx&amp;&amp;x&lt;=rectx+rwidth)&amp;&amp;(y&gt;=recty&amp;&amp;y&lt;=recty+rheight) 
+  } 
+  c.onmouseover=function(e){ 
+  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
+  stop(); 
+  } 
+
+  c.onmouseout=function(e){ 
+  start(); 
+  } 
+
+  c.onmousemove=function(e){ 
+  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
+  if(MyInterval!=null){ 
+  stop(); 
+  } 
+  }else{ 
+  start(); 
+  } 
+  } 
+
+  } 
+  &lt;/script&gt; 
+  &lt;/body&gt; 
+  &lt;/html&gt;
+</code></pre>
+
+<p>参考火狐html文档：<a href="https://developer.mozilla.org/en/HTML/HTML5" title="https://developer.mozilla.org/en/HTML/HTML5">https://developer.mozilla.org/en/HTML/HTML5</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 我的html5系列：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1968512.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1488,126 +1678,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">(翻译)31天Windows Phone学习-1-项目模板</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>的 <a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">31 Days of Windows Phone</a> 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习，所以准备拿来对Windows Phone 7的简单入门学习。并翻译出来供像我一样的菜鸟学习，我的E文并不好，所以翻译难免会有一些不对的忘大家原谅和多多指教。说道E文又想起大学时，就是因为这个E文让我少的了一大笔奖学金，哎。翻译这个系列，也顺便提高一下我的E文吧，呵呵。</p>
-
-<p>&nbsp;&nbsp; 步入正题：今天是我们Windows Phone学习的第一天，是一些关于项目模板的。</p>
-
-<p>&nbsp; 首先： 在学习Windows Phone7之前我们假设你已经对Microsoft 的Silverlight有了一定的了解，如果你还不了解，你也可以参考作者的&nbsp; 20天Silverlight这个系列&nbsp; ，讲解的都是一些Silverlight的基础级知识。</p>
-
-<p>&nbsp; 再者我们假设你已经安装了Microsoft 所有Windows Phone Tools，如果你没有安装，你可以从这里下载<a href="http://developer.windowsphone.com/">http://developer.windowsphone.com/</a>，从这里我们会获得Visual Studio 2010 for Windows Phone和 Expression Blend 4 for&nbsp; Windows Phone。如果在你的机子已经安装了官方的正式版，你仅需要更新添加一些新的模板。</p>
-
-<p>&nbsp;&nbsp; 在今天我们会预览一下Visual Studio 2010为我们的Windows Phone应用程序生成的默认模板。</p>
-
-<p><img src="http://www.jeffblankenburg.com/image.axd?picture=NewProject.png" title="NewProject" alt="NewProject" /></p>
-
-<h4><font style="font-weight: bold">Solution Explorer：</font></h4>
-
-<p>下面是vs2010默认为我们生成的解决方案，我不准备详细介绍各个文件，你可以从<a target="_blank"><a href="http://bit.ly/8XcWaO"><font color="#3d81ee">安装上所有Tools</font></a>&nbsp;</a>并自己尝试，比较简单。</p>
-
-<h4><img src="http://www.jeffblankenburg.com/image.axd?picture=SolutionExplorer.png" title="SolutionExplorer" alt="SolutionExplorer" /></h4>
-
-<h4><font style="font-weight: bold">ApplicationIcon.png:</font></h4>
-
-<p>&nbsp; 是Phone application List现实的图标，你也可以替换成你想要的图标。</p>
-
-<h4><font style="font-weight: bold">App.xaml：</font></h4>
-
-<h4>&nbsp; 有点像ASP.NET web.config 文件，保存了我们应用程序的常用数据和设置，我更喜欢防止我的style在这里，但这不是必须的。</h4>
-
-<h4><font style="font-weight: bold">App.xaml.cs：</font></h4>
-
-<p>是前一文件（App.xaml）的Code-Behind文件，和前一个文件一起定义我们应用程序的入口点，初始化应用程序级别的全局静态资源(StaticResource)和启动程序的页面。</p>
-
-<h4><font style="font-weight: bold">AssemblyInfo.cs：</font></h4>
-
-<p>定义了我们应用程序的程序集信息，入 版本，名称等。个人觉得和我们的WinForm、Asp.net程序应该差不多。</p>
-
-<h4><font style="font-weight: bold">Background.png：</font></h4>
-
-<p>是我们应用程启动时的屏幕背景，我们也可以替换为你需要的图标。</p>
-
-<h4><font style="font-weight: bold">MainPage.xaml：</font></h4>
-
-<p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
-
-<pre class='green'>&lt;Tasks&gt;</pre>
-
-
-<pre class='green'>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
-
-
-<pre class='green'> &lt;/Tasks&gt;</pre>
-
-
-<h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
-
-<p>前一个文件(MainPage.xaml)的Code-Behind文件，在这里需要我们编辑页面启动页面的Code.</p>
-
-<h4><font style="font-weight: bold">SplashScreenImage.jpg:</font></h4>
-
-<p>应用程序加载图标（即：我的应用程序启动，第一个页面还没有显示时）。我们也可以替换这个图标。在这里只是为了让我们的用户了解程序正在加载。</p>
-
-<h4><font style="font-weight: bold">WMAppManifest.xml：</font></h4>
-
-<p>用于定义我们应用程序打包的文件(manifest)。 Silverlight程序最终会打成xap包（zip格式），里面包含了程序需要用到的所有资源（例如图片，声音文件等等），和依赖 的第三方DLL等等。AppManifest.xml文件用于定义打包的结构。</p>
-
-<p>&nbsp;</p>
-
-<p>第一天学习很简单，就到这里的作者给我们提供了Code下载，其实我觉得没有必要。所以偷个懒了。</p>
-
-<p>本文E文原文：<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
-
-<p>关于Windows Phone的一些学习资料：</p>
-
-<p>1：首先是翻译的原文：&nbsp;<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>博客<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
-
-<p>2: 园友<a href="#">306Room</a>的一起学Windows Phone系列<a href="http://www.cnblogs.com/randylee/category/258713.html" title="http://www.cnblogs.com/randylee/category/258713.html">http://www.cnblogs.com/randylee/category/258713.html</a></p>
-
-<p>3：<a href="http://windowsteamblog.com/windows_phone/" title="http://windowsteamblog.com/windows_phone/">http://windowsteamblog.com/windows_phone/</a></p>
-
-<p>4：<a href="http://create.msdn.com/en-US/" title="http://create.msdn.com/en-US/">http://create.msdn.com/en-US/</a></p>
-
-<p>还有其他的我在后续看见了，也会一一不上。也希望大家给我提供一些学习资料，共同进步。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/10/1873273.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/15/">&larr; Older</a>
@@ -1638,6 +1708,10 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
       </li>
     
@@ -1663,10 +1737,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
     
       <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
       </li>
     
   </ul>

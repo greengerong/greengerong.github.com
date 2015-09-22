@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。 追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索， &hellip;"> 
+    <meta name="description" content="前后端分离 按照现在的趋势，前后端分离几乎已经是业界对开发和部署方式所达成的一种共识。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人只做前端（HTML/CSS/JavaScript等等），另一部分人只做后端（或者叫服务端），因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,87 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-29T10:39:02+08:00" pubdate data-updated="true">Jul 29<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>前后端分离</h3>
+
+<p>按照现在的趋势，前后端分离几乎已经是业界对开发和部署方式所达成的一种共识。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人只做前端（HTML/CSS/JavaScript等等），另一部分人只做后端（或者叫服务端），因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法将前后端开发和部署做到真正的分离。</p>
+
+<p>通常，前后端分别有着自己的开发流程，构建工具，测试等。做前端的谁也不会想要用Maven或者Gradle作为构建工具，同样的道理，做后端的谁也不会想要用Grunt或者Gulp作为构建工具。前后端仅仅通过接口来协作，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。但是这种想法依然还是很理想化，前后端集成往往还是一个很头痛的问题。比如在最后需要集成的时候，我们才发现最开始商量好的数据结构发生了变化，而且这种变化往往是在所难免的，这样就会增加大量的集成时间。</p>
+
+<p>归根结底，还是前端或者后端感知到变化的时间周期太长，不能“及时协商，尽早解决”，最终导致集中爆发。怎么解决这个问题呢？我们需要提前协商好一些契约，并将这些契约作为可以被测试的中间产品，然后前后端都通过自动化测试来检验这些契约，一旦契约发生变化，测试就会失败。这样，每个失败的测试都会驱动双方再次协商，有效的缩短了反馈周期，并且降低集成风险。具体的实践方式，请参加我同事的一篇博文，“前后端分离了，然后呢？”<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/</a>。</p>
+
+<p>不过，仅仅靠纪律是不够的，还需要通过工具的辅助来提高效率。下面，我们就来看一下，一个API设计工具——Swagger，将如何帮助我们更好的实现“前后端分离”。</p>
+
+<h3>Swagger</h3>
+
+<p>Swagger包括库、编辑器、代码生成器等很多部分，这里我们主要讲一下Swagger Editor。这是一个完全开源的项目，并且它也是一个基于Angular的成功案例，我们可以下载源码并自己部署它，也可以修改它或集成到我们自己的软件中。</p>
+
+<p>在Swagger Editor中，我们可以基于YAML语法定义我们的RESTful API，然后它会自动生成一篇排版优美的API文档，并且提供实时预览。相信大多数朋友都遇到过这样一个场景：明明调用的是之前约定好的API，拿到的结果却不是想要的。可能因为是有人修改了API的接口，却忘了更新文档；或者是文档更新的不及时；又或者是文档写的有歧义，大家的理解各不相同。总之，让API文档总是与API定义同步更新，是一件非常有价值的事。下面我们通过一个例子来感受一下Swagger给我们带来的好处。</p>
+
+<p>首先我们需要安装一个Swagger Editor，或者也可以直接使用在线版本<a href="http://editor.swagger.io/">http://editor.swagger.io/</a>。如果需要在本地启动编辑器，执行以下三行命令即可（前提是已经安装好了Node.js）：</p>
+
+<pre class='green'><code>git clone https://github.com/swagger-api/swagger-editor.git
+cd swagger-editor
+npm start
+</code></pre>
+
+<p>当我们修改了API的定义之后，在编辑器右侧就可以看到相应的API文档了，而且永远是最新的。</p>
+
+<p><img src="/images/blog_img/SwaggerEditor.png" alt="Swagger editor" /></p>
+
+<p>不仅如此，它还能够自动生成Mock server所需要的代码，这样一来前端开发就再也不用等着后端API
+的实现了。除此之外，它还有一个更强大的功能，甚至能够帮助我们自动生成不同语言的客户端的代码。Swagger是基于插件来实现各种不同的语言的，所以，如果已经提供的语言中没有你正在用的，你也可以自己实现相应的插件，甚至是从源代码级别进行定制化。</p>
+
+<p><img src="/images/blog_img/SwaggerGenerateClient.png" alt="Swagger generate client" /></p>
+
+<h3>契约测试</h3>
+
+<p>谈到了前后端分离，那么在所难免，会遇到一些集成的问题：一拨人在全心全意的进行前端开发，另一拨人在心无旁骛的做后端开发，那么谁应该为集成买单呢？在现在这个持续集成、持续交付的年代里，我们应该如何去保证双方不会分道扬镳、越走越远呢？</p>
+
+<p>所以，在一开始就定一个契约就成了迫在眉睫的事情，双方就API相关的内容，包括路径、参数、类型等达成一致，当然，这份契约并不是一旦创建就不能修改的，而且，如果一开始没有设计好，很有可能会频繁的修改。这个时候，要让双方都能够实时的跟踪最新的API就成了一个难题。还好，在总结了前人的经验和教训之后，我们早已有了应对之策，那就是<code>契约测试</code>。</p>
+
+<p>老马（Martin Fowler）早在2011年的时候就发表了一篇博客<a href="http://martinfowler.com/bliki/IntegrationContractTest.html">http://martinfowler.com/bliki/IntegrationContractTest.html</a>，专门讨论了如何做契约测试。</p>
+
+<p>首先，我们先假设我们已经有了一份契约，可能是基于JSON格式的，有可能是基于XML格式的，这都不重要。然后，前端会根据这份契约建立一个Mock server，所有的测试都发往这个Mock server。有两方面的原因：一是这个时候可能后台的API还没有开发完成；二是有可能因为网络等其他方面的原因导致直接调用真实的后台API会很不稳定或者很耗时。到这里，可能有人就要说了，如果后台的API实现和之前约定的并不一样，怎么能保证到了集成的时候双方还能很顺利的集成呢？其实这个问题并不难，只需要让前端的测试定期连接真实的API执行一遍就能尽早的发现差异性。比方说，在我们平常的build pipeline上添加一个job，让这些测试每天在午夜里连着真实的API执行。如果，第二天发现这些测试有的失败了，那么就需要和开发后台API的人员进行一次沟通了，很有可能由于真实的业务逻辑发生了变化，API在实现的时候，已经和之前的契约不一致了，如果是这样，那么相应的测试和契约定义就需要更新以满足最新的业务需求。</p>
+
+<p>总之，进行契约测试的目的就是尽早的发现差异性，并作出调整，将最后集成的风险降到最低。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2813,206 +2894,6 @@ $("#myLink").on("click", myEventHandler);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-04-12T16:52:50+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2015</time>
-        
-           | <a href="/blog/2015/04/12/typescript-modules-mo-kuai/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>简介</h2>
-
-<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
-
-<h2>第一步</h2>
-
-<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
-
-<h4>单文件的验证逻辑</h4>
-
-<pre class='green'><code>interface StringValidator {
-    isAcceptable(s: string): boolean;
-}
-
-var lettersRegexp = /^[A-Za-z]+$/;
-var numberRegexp = /^[0-9]+$/;
-
-class LettersOnlyValidator implements StringValidator {
-    isAcceptable(s: string) {
-        return lettersRegexp.test(s);
-    }
-}
-
-class ZipCodeValidator implements StringValidator {
-    isAcceptable(s: string) {
-        return s.length === 5 &amp;&amp; numberRegexp.test(s);
-    }
-}
-
-// Some samples to try
-var strings = ['Hello', '98052', '101'];
-// Validators to use
-var validators: { [s: string]: StringValidator; } = {};
-validators['ZIP code'] = new ZipCodeValidator();
-validators['Letters only'] = new LettersOnlyValidator();
-// Show whether each string passed each validator
-strings.forEach(s =&gt; {
-    for (var name in validators) {
-        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
-    }
-});
-</code></pre>
-
-<h4>增加模块化</h4>
-
-<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
-
-<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
-
-<h4>模块化的Validators</h4>
-
-<pre class='green'><code>module Validation {
-    export interface StringValidator {
-        isAcceptable(s: string): boolean;
-    }
-
-    var lettersRegexp = /^[A-Za-z]+$/;
-    var numberRegexp = /^[0-9]+$/;
-
-    export class LettersOnlyValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return lettersRegexp.test(s);
-        }
-    }
-
-    export class ZipCodeValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return s.length === 5 &amp;&amp; numberRegexp.test(s);
-        }
-    }
-}
-
-// Some samples to try
-var strings = ['Hello', '98052', '101'];
-// Validators to use
-var validators: { [s: string]: Validation.StringValidator; } = {};
-validators['ZIP code'] = new Validation.ZipCodeValidator();
-validators['Letters only'] = new Validation.LettersOnlyValidator();
-// Show whether each string passed each validator
-strings.forEach(s =&gt; {
-    for (var name in validators) {
-        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
-    }
-});
-</code></pre>
-
-<h2>分离模块文件</h2>
-
-<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
-
-<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
-
-<h4>多文件的内部模块</h4>
-
-<h6>Validation.ts</h6>
-
-<pre class='green'><code>module Validation {
-    export interface StringValidator {
-        isAcceptable(s: string): boolean;
-    }
-}
-</code></pre>
-
-<h6>LettersOnlyValidator.ts</h6>
-
-<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
-module Validation {
-    var lettersRegexp = /^[A-Za-z]+$/;
-    export class LettersOnlyValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return lettersRegexp.test(s);
-        }
-    }
-}
-</code></pre>
-
-<h6>ZipCodeValidator.ts</h6>
-
-<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
-module Validation {
-    var numberRegexp = /^[0-9]+$/;
-    export class ZipCodeValidator implements StringValidator {
-        isAcceptable(s: string) {
-            return s.length === 5 &amp;&amp; numberRegexp.test(s);
-        }
-    }
-}
-</code></pre>
-
-<h6>Test.ts</h6>
-
-<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
-/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
-/// &lt;reference path="ZipCodeValidator.ts" /&gt;
-
-// Some samples to try
-var strings = ['Hello', '98052', '101'];
-// Validators to use
-var validators: { [s: string]: Validation.StringValidator; } = {};
-validators['ZIP code'] = new Validation.ZipCodeValidator();
-validators['Letters only'] = new Validation.LettersOnlyValidator();
-// Show whether each string passed each validator
-strings.forEach(s =&gt; {
-    for (var name in validators) {
-        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
-    }
-});
-</code></pre>
-
-<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
-
-<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
-
-<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
-
-<h6>#MyTestPage.html (excerpt)</h6>
-
-<pre class='green'><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
-&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
-&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
-&lt;script src="Test.js" type="text/javascript" /&gt;
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -3043,6 +2924,10 @@ strings.forEach(s =&gt; {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
       </li>
     
@@ -3068,10 +2953,6 @@ strings.forEach(s =&gt; {
     
       <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
       </li>
     
   </ul>

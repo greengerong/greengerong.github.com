@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 在昨天一个大学师弟，他问我能不能将LinqToSql文件转化为创建表的TSql语句，他是刚开始学习.NET，所以在网上下些示例看，但苦于没有数据库。所以就有了这一篇博客，作为我的Code生成技术的CodeSimth的最后一篇示例。在下一步Code &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了Jeff Blankenburg的 31 Days of Windows Phone 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,126 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">(翻译)31天Windows Phone学习-1-项目模板</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-10T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/11/10/fan-yi-31-tian-Windows-Phone-xue-xi-1-xiang-mu-mo-ban/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 今天在在外文网站Google关于Windows Phone 7的学习资料，无疑间Google到了<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>的 <a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">31 Days of Windows Phone</a> 这个系列，感觉写的比较基础和浅显易懂，适合我这种入们级的人学习，所以准备拿来对Windows Phone 7的简单入门学习。并翻译出来供像我一样的菜鸟学习，我的E文并不好，所以翻译难免会有一些不对的忘大家原谅和多多指教。说道E文又想起大学时，就是因为这个E文让我少的了一大笔奖学金，哎。翻译这个系列，也顺便提高一下我的E文吧，呵呵。</p>
+
+<p>&nbsp;&nbsp; 步入正题：今天是我们Windows Phone学习的第一天，是一些关于项目模板的。</p>
+
+<p>&nbsp; 首先： 在学习Windows Phone7之前我们假设你已经对Microsoft 的Silverlight有了一定的了解，如果你还不了解，你也可以参考作者的&nbsp; 20天Silverlight这个系列&nbsp; ，讲解的都是一些Silverlight的基础级知识。</p>
+
+<p>&nbsp; 再者我们假设你已经安装了Microsoft 所有Windows Phone Tools，如果你没有安装，你可以从这里下载<a href="http://developer.windowsphone.com/">http://developer.windowsphone.com/</a>，从这里我们会获得Visual Studio 2010 for Windows Phone和 Expression Blend 4 for&nbsp; Windows Phone。如果在你的机子已经安装了官方的正式版，你仅需要更新添加一些新的模板。</p>
+
+<p>&nbsp;&nbsp; 在今天我们会预览一下Visual Studio 2010为我们的Windows Phone应用程序生成的默认模板。</p>
+
+<p><img src="http://www.jeffblankenburg.com/image.axd?picture=NewProject.png" title="NewProject" alt="NewProject" /></p>
+
+<h4><font style="font-weight: bold">Solution Explorer：</font></h4>
+
+<p>下面是vs2010默认为我们生成的解决方案，我不准备详细介绍各个文件，你可以从<a target="_blank"><a href="http://bit.ly/8XcWaO"><font color="#3d81ee">安装上所有Tools</font></a>&nbsp;</a>并自己尝试，比较简单。</p>
+
+<h4><img src="http://www.jeffblankenburg.com/image.axd?picture=SolutionExplorer.png" title="SolutionExplorer" alt="SolutionExplorer" /></h4>
+
+<h4><font style="font-weight: bold">ApplicationIcon.png:</font></h4>
+
+<p>&nbsp; 是Phone application List现实的图标，你也可以替换成你想要的图标。</p>
+
+<h4><font style="font-weight: bold">App.xaml：</font></h4>
+
+<h4>&nbsp; 有点像ASP.NET web.config 文件，保存了我们应用程序的常用数据和设置，我更喜欢防止我的style在这里，但这不是必须的。</h4>
+
+<h4><font style="font-weight: bold">App.xaml.cs：</font></h4>
+
+<p>是前一文件（App.xaml）的Code-Behind文件，和前一个文件一起定义我们应用程序的入口点，初始化应用程序级别的全局静态资源(StaticResource)和启动程序的页面。</p>
+
+<h4><font style="font-weight: bold">AssemblyInfo.cs：</font></h4>
+
+<p>定义了我们应用程序的程序集信息，入 版本，名称等。个人觉得和我们的WinForm、Asp.net程序应该差不多。</p>
+
+<h4><font style="font-weight: bold">Background.png：</font></h4>
+
+<p>是我们应用程启动时的屏幕背景，我们也可以替换为你需要的图标。</p>
+
+<h4><font style="font-weight: bold">MainPage.xaml：</font></h4>
+
+<p>是我们应用程序启动的默认页面，这只是一个一般习惯，我们也可以在WMAppManifest.xml 中修改：</p>
+
+<pre class='green'>&lt;Tasks&gt;</pre>
+
+
+<pre class='green'>       &lt;DefaultTask  Name ="_default" NavigationPage="MainPage.xaml"/&gt;    </pre>
+
+
+<pre class='green'> &lt;/Tasks&gt;</pre>
+
+
+<h4><font style="font-weight: bold">MainPage.xaml.cs：</font></h4>
+
+<p>前一个文件(MainPage.xaml)的Code-Behind文件，在这里需要我们编辑页面启动页面的Code.</p>
+
+<h4><font style="font-weight: bold">SplashScreenImage.jpg:</font></h4>
+
+<p>应用程序加载图标（即：我的应用程序启动，第一个页面还没有显示时）。我们也可以替换这个图标。在这里只是为了让我们的用户了解程序正在加载。</p>
+
+<h4><font style="font-weight: bold">WMAppManifest.xml：</font></h4>
+
+<p>用于定义我们应用程序打包的文件(manifest)。 Silverlight程序最终会打成xap包（zip格式），里面包含了程序需要用到的所有资源（例如图片，声音文件等等），和依赖 的第三方DLL等等。AppManifest.xml文件用于定义打包的结构。</p>
+
+<p>&nbsp;</p>
+
+<p>第一天学习很简单，就到这里的作者给我们提供了Code下载，其实我觉得没有必要。所以偷个懒了。</p>
+
+<p>本文E文原文：<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>关于Windows Phone的一些学习资料：</p>
+
+<p>1：首先是翻译的原文：&nbsp;<a href="http://www.jeffblankenburg.com/author/jeffblankenburg.aspx">Jeff Blankenburg</a>博客<a href="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx" title="http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx">http://www.jeffblankenburg.com/post/31-Days-of-Windows-Phone-7c-Day-1-Project-Template.aspx</a></p>
+
+<p>2: 园友<a href="#">306Room</a>的一起学Windows Phone系列<a href="http://www.cnblogs.com/randylee/category/258713.html" title="http://www.cnblogs.com/randylee/category/258713.html">http://www.cnblogs.com/randylee/category/258713.html</a></p>
+
+<p>3：<a href="http://windowsteamblog.com/windows_phone/" title="http://windowsteamblog.com/windows_phone/">http://windowsteamblog.com/windows_phone/</a></p>
+
+<p>4：<a href="http://create.msdn.com/en-US/" title="http://create.msdn.com/en-US/">http://create.msdn.com/en-US/</a></p>
+
+<p>还有其他的我在后续看见了，也会一一不上。也希望大家给我提供一些学习资料，共同进步。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/10/1873273.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1465,83 +1585,6 @@ this.rtbCode.Text = code;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/">jQuery系列之目录汇总</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2010/06/09/jQuery-xi-lie-zhi-mu-lu-hui-zong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp; 最近一个月写了些关于jQuery的文章，谢谢大家的支持。文章仅我个人观点，也许有不对的地方，请指出。这个系列还在更新中</p>
-
-<p>一：jQuery基础系列：&nbsp;</p>
-
-<ol>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/23/1717994.html"><span style="font-size: 10pt;">jQuery温习篇&mdash;-强大的JQuery选择器</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/29/1723579.html"><span style="font-size: 10pt;">jQuery之工具函数</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/01/1725700.html"><span style="font-size: 10pt;">jQuery之筛选函数</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/04/23/1718526.html"><span style="font-size: 10pt;">jQuery1.4.2新特性（翻译）</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/13/1734152.html"><span style="font-size: 10pt;">jQuery Ajax 回顾</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/27/1786188.html"><span style="font-size: 10pt;">jQuery 1.4 版本的十五个新特性-转载</span></a></h4></li>
-</ol>
-
-
-<p>二：jQuery插件系列：</p>
-
-<ol>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/09/1731120.html"><span style="font-size: 10pt;">jQuery Alert Dialogs (Alert, Confirm, &amp; Prompt Replacements)(翻译)</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/05/11/1733069.html"><span style="font-size: 10pt;">jQuery File </span><span style="font-size: 10pt;">Tree(翻译)</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754727.html"><span style="font-size: 10pt;">关于jConfirm回传的解决方案</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/03/25/1994481.html"><span style="font-size: 10pt;">我的jQuery动态表格插件</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/04/13/2014621.html"><span style="font-size: 10pt;">我的jQuery动态表格插件二</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/09/28/2194795.html"><font color="#6699cc"><span style="font-size: 10pt;">jQuery右键菜单contextMenu实例</span></font></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/10/09/2204185.html"><font color="#6699cc"><span style="font-size: 10pt;">JQuery模板插件-jquery.tmpl</span></font></a></h4></li>
-</ol>
-
-
-<p>三：jQuery实践系列：</p>
-
-<ol>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/26/1784971.html"><span style="font-size: 10pt;">用一句JQuery代码实现表格的简单筛选</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2010/07/27/1786168.html"><span style="font-size: 10pt;">jquery:利用jsonp跨域访问&mdash;转载</span></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/09/21/2184488.html"><font color="#6699cc"><span style="font-size: 10pt;">StringTemplate遇见jQuery的冲突</span></font></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/09/26/2192253.html"><font color="#6699cc"><span style="font-size: 10pt;">jQuery Ajax 仿AjaxPro.Utility.RegisterTypeForAjax辅助方法</span></font></a></h4></li>
-<li><h4><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/09/2243571.html"><font color="#6699cc"><span style="font-size: 10pt;">JQuery模板插件jquery.tmpl-动态ajax扩展</span></font></a></h4></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/06/09/1754988.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/16/">&larr; Older</a>
@@ -1572,6 +1615,10 @@ this.rtbCode.Text = code;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
       </li>
     
@@ -1597,10 +1644,6 @@ this.rtbCode.Text = code;
     
       <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
       </li>
     
   </ul>

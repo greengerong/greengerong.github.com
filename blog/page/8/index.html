@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件， &hellip;"> 
+    <meta name="description" content="&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,155 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">集成服务监控器-green.monitor发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常，在这里浪费了大量时间，在笔者为所在项目建立了一个第三方集成服务监控的Monitor，去实时监控项目所依赖的所有集成服务，数据库。现在开源在github <a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a>，在其sample目录下有个使用demo。</p>
+
+<h2><em>maven&nbsp;</em>dependency</h2>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>com.github.greengerong<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>green.monitor<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>1.2<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>
+<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<h2>demo效果如下：</h2>
+
+<p><img src="http://images.cnitblog.com/blog/63184/201305/26183719-93e330e6d3b04c219f0ea423b973a356.png" alt="" /></p>
+
+<h1>建立自己的monitor：</h1>
+
+<p>1：首先在你spring mvc web project 的 pom文件中引 入green-monitor的dependency。(spring 3.0以上)
+2：在spring mvc的 ioc context config中启用annotation dirver，如下xml：</p>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">beans </span><span style="color: #ff0000;">xmlns</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans"</span><span style="color: #ff0000;">
+         xmlns:xsi</span><span style="color: #0000ff;">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #ff0000;">
+         xmlns:p</span><span style="color: #0000ff;">="http://www.springframework.org/schema/p"</span><span style="color: #ff0000;">
+         xmlns:mvc</span><span style="color: #0000ff;">="http://www.springframework.org/schema/mvc"</span><span style="color: #ff0000;">
+         xmlns:context</span><span style="color: #0000ff;">="http://www.springframework.org/schema/context"</span><span style="color: #ff0000;">
+         xmlns:util</span><span style="color: #0000ff;">="http://www.springframework.org/schema/util"</span><span style="color: #ff0000;">
+         xsi:schemaLocation</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"</span><span style="color: #0000ff;">&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">mvc:annotation-driven</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">context:component-scan </span><span style="color: #ff0000;">base-package</span><span style="color: #0000ff;">="green.monitor"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"</span><span style="color: #0000ff;">/&gt;</span>
+
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">id</span><span style="color: #0000ff;">="viewResolver"</span><span style="color: #ff0000;"> class</span><span style="color: #0000ff;">="org.springframework.web.servlet.view.InternalResourceViewResolver"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="prefix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>/WEB-INF/pages/<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="suffix"</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>.jsp<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">bean</span><span style="color: #0000ff;">&gt;</span>
+  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">beans</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>3:在项目resources(mian/resources)下建立monitor-config.xml。如果需要 在不同环境配置不同信息，可以在运行机器上加入key为appenv的环境变量，程序会根据不同agent加载monitor-config.[appenv].xml配置文件.或者利用mavn，gradle这类构建工具按环境输出配置信息。</p>
+
+<p>配置文件形如：</p>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
+      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitoring </span><span style="color: #ff0000;">version</span><span style="color: #0000ff;">="1.0"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="monitor-sample"</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitor </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #0000ff;">&gt;</span>green.monitor.demo.MockMonitorRunner<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitor</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="hello service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/hello<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=success<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for hello service.should be success.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="error service 2"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=must be failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for error service.should be failed.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="Random failed Service"</span><span style="color: #0000ff;">&gt;</span>
+                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This monitor will be random failed!<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
+              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
+          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
+      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitoring</span><span style="color: #0000ff;">&gt;</span></pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>这样你就可以运行monitor了，url为host + &ldquo;/monitor&rdquo;</p>
+
+<h1>扩展</h1>
+
+<p>1：扩展runner 同时monitor为你提供了自我特定需求扩展的机会，在xml config中你应该主意到了有个monitor的配置节，这里就可以配置你自定义runner（其实现MonitorRunner接口),配置节name则作为后边item的引用name。</p>
+
+<p>系统默认加入了web-service,dababase,http-connection3个常用runner。具体使用请看demo。
+2：系统提供了service为基于spring restfull api,所以你可以在其他地方展示该monitor状况。(在下一个版本将提供jsonp的跨域处理)。</p>
+
+<p>&nbsp; &nbsp;monitor project repo:&nbsp;<a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/26/3100241.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1195,162 +1344,6 @@ grep --color=auto node
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/">JavaScript 函数replace揭秘</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-14T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;在JavaScript中replace函数作为字符串替换函数，这是一个威力强大的字符串操作函数，对于常见字符串操作的推荐用法。这篇随笔就来更加深入的理解它。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; replace函数接受两个参数,第一个参数为字符串或正则表达式，第一个参数同样可以接受一个字符串，还可能是一个函数。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先对于第一个参数为字符串的我们不再需要多说&#8221;I am a boy&#8221;.replace(&ldquo;boy&rdquo;,&ldquo;girl&rdquo;),输出：&#8221;I am a girl&#8221;。在这里想说的是第一个参数为正则的情形。对于正则表达式来说首先会根据是否全局的（全局//g）决定替换行为，如果是全部的则替换全部替换，非全局的只有替换首个匹配的字符串。例如：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">"Ha Ha".replace(/\b\w+\b/g, "He")  // He He
-
-"Ha Ha".replace(/\b\w+\b/, "He")  //He Ha
-</pre>
-</div>
-
-
-<p>1:第二个参数为字符串：</p>
-
-<p>&nbsp;&nbsp;&nbsp; 对于正则replace约定了一个特殊标记符$：</p>
-
-<ol>
-<li>$i (i:1-99) : 表示从左到右正则子表达式所匹配的文本。</li>
-<li>$&amp;:表示与正则表达式匹配的全文本。</li>
-<li>$<code>(</code>:切换技能键)：表示匹配字符串的左边文本。</li>
-<li>$&rsquo;(&lsquo;:单引号)：表示匹配字符串的右边文本。</li>
-<li>$$：表示$转移。</li>
-</ol>
-
-
-<p>下面来几个demo:</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">"boy &amp; girl".replace(/(\w+)\s*&amp;\s*(\w+)/g,"$2 &amp; $1") //girl &amp; boy
-
-"boy".replace(/\w+/g,"$&amp;-$&amp;") // boy-boy
-
-"javascript".replace(/script/,"$&amp; != $`") //javascript != java
-
-"javascript".replace(/java/,"$&amp;$' is ") // javascript is script
-</pre>
-</div>
-
-
-<p>2：第二个参数为函数：</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;在ECMAScript3推荐使用函数方式，实现于JavaScript1.2.当replace方法执行的时候每次都会调用该函数，返回值作为替换的新值。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 函数参数的规定：</p>
-
-<ol>
-<li>第一个参数为每次匹配的全文本（$&amp;）。</li>
-<li>中间参数为子表达式匹配字符串，个数不限.( $i (i:1-99))</li>
-<li>倒数第二个参数为匹配文本字符串的匹配下标位置。</li>
-<li>最后一个参数表示字符串本身。</li>
-</ol>
-
-
-<p>这就是本文所要说replace威力强大的地方，理论的东西都是干货，我们需要示例解决一切空洞的问题：</p>
-
-<p>1：字符串首字母大写：</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">String.prototype.capitalize = function(){
-
-    return this.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase();
-
-    } );
-
-};
-</pre>
-</div>
-
-
-<p>console.log(&ldquo;i am a boy !&rdquo;.capitalize())</p>
-
-<p>输出：I Am A Boy !</p>
-
-<p>2:对字符串&ldquo;张三56分， 李四74分， 王五92分， 赵六84分&rdquo;的分数提取汇总，算出平均分并输出每个人的平均分差距。</p>
-
-<div class="cnblogs_Highlighter">
-<pre class="brush:javascript;gutter:false;">var s = "张三56分， 李四74分， 王五92分， 赵六84分";
-
-var a = s.match(/\d+/g);
-
-var sum = 0;
-
-for(var i = 0 ; i &lt; a.length; i++){
-
-            sum += parseFloat(a[i]);
-
-}
-
-var avg = sum / a.length;
-
-function f(){
-
-            var n = parseFloat(arguments[1]);
-
-            return n + "分" + "(" + ((n &gt; avg) ? ("超出平均分" + (n - avg)) :
-
-                        ("低于平均分" + (avg - n))) + "分)";
-
-}
-
-var result = s.replace(/(\d+)分/g, f);
-
-console.log(result);
-</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>输出：</p>
-
-<p>张三56分(低于平均分20.5分)， 李四74分(低于平均分2.5分)， 王五92分(超出平均分15.5分)， 赵六84分(超出平均分7.5分)</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JavaScript的replace函数再加上正则的高级应用，JavaScript的replace将会发回更大的威力所在，在这里将不再深入正则高级应用断言之类的。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/14/2958720.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -1381,6 +1374,10 @@ console.log(result);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
       </li>
     
@@ -1406,10 +1403,6 @@ console.log(result);
     
       <li class="post">
         <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a>
       </li>
     
   </ul>
