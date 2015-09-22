@@ -36,7 +36,7 @@ Python中的装潢器如下：
 
 	log myfunc
 
-如果我们再像Python一样强制加上@符号，并将log函数放在方法声明右边，则似乎雨点接近Python的装潢器：
+如果我们再像Python一样强制加上@符号，并将log函数放在方法声明右边，则似乎就有点接近Python的装潢器：
 
 	f = @log (a, b) -> a + b
 
