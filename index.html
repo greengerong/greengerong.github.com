@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在上篇Angular遇上CoffeeScript &ndash; NgComponent封装中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + &hellip;"> 
+    <meta name="description" content="在上篇博文CoffeeScript实现Python装潢器中，笔者利用CoffeeScript支持的高阶函数，以及方法调用可省略括符的特性，实现了一个类似Python装潢器的日志Demo。这只是一种伪实现，JavaScript实现装潢器，我们需要等到ECMAScript7才行， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,102 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-23T07:11:07+08:00" pubdate data-updated="true">Sep 23<span>rd</span>, 2015</time>
+        
+           | <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上篇博文<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>中，笔者利用CoffeeScript支持的高阶函数，以及方法调用可省略括符的特性，实现了一个类似Python装潢器的日志Demo。这只是一种伪实现，JavaScript实现装潢器，我们需要等到ECMAScript7才行，在ES7特性中带来了Decorators，它就是我们所需要的装潢器特性。但虽然它是ES7的特性，但在Babel流行了今天，我们可以利用Babel来使用它。关于Babel的推荐文章，请参见另一篇文章<a href="http://greengerong.com/blog/2015/03/22/babel-kai-shi-es6ti-yan/">Babel-现在开始使用 ES6</a>。</p>
+
+<p>下面我们让然和上节<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>一样来实现一个ES7 Decorators版的日志拦截示例。我们希望的使用如下：</p>
+
+<pre class='green'><code>class MyClass {
+  @log('MyClass add')
+  add(a, b){
+    return a + b;
+  }
+  @log('MyClass product')
+  product(a, b){
+    return a * b;
+  }
+  @log('MyClass error')
+  error(){
+     throw 'Something is wrong!';
+   }
+}
+</code></pre>
+
+<p>在ES7中Decorators，也是一个函数，我们只需要在它前面加上@符号，并将它标注在特定的目标，如class、method等，则可以实现方法的包裹拦截。它的传入参数有：target, name, descriptor。它们分别标记目标，标记目标名称，以及目标描述信息。在descriptor中，包括configurable、enumerable、writable，value四个属性。它们分别可以控制目标的读写、枚举，以及目标值。</p>
+
+<p>所以我们可以如下实现：</p>
+
+<pre class='green'><code>let log = (type) =&gt; {
+    const logger = new Logger('#console');
+    return (target, name, descriptor) =&gt; {
+      const method = descriptor.value;
+      descriptor.value =  (...args) =&gt; {
+            logger.info(`(${type}) before function execute: ${name}(${args}) = ?`);
+            let ret;
+            try {
+                ret = method.apply(target, args);
+                logger.info(`(${type})after function execute success: ${name}(${args}) =&gt; ${ret}`);
+            } catch (error) {
+                logger.error(`(${type}) function execute error: ${name}(${args}) =&gt; ${error}`);
+            } finally {
+                logger.info(`(${type}) function execute done: ${name}(${args}) =&gt; ${ret}`);
+            }
+            return ret;
+        }
+    }
+}
+</code></pre>
+
+<p>首先存储原来方法体，再等到调用时，实现方法调用前后的日志拦截，打印相关信息。它的效果如下：</p>
+
+<p><img src="/images/blog_img/es7-decorators-log-aop.png" alt="es7 decorators log aop" /></p>
+
+<p>整个demo示例，你也可以在codepen上细细把玩：</p>
+
+<p data-height="350" data-theme-id="0" data-slug-hash="epzbMV" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/epzbMV/'>ES7 Decorators</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1182,363 +1278,6 @@ olderUser(users); // Object {user: "fred", age: 40}
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-07T16:12:35+08:00" pubdate data-updated="true">Aug 7<span>th</span>, 2015</time>
-        
-           | <a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文来自<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">hxfirefox</a>，他是笔者在某国内大型企业提供敏捷XP咨询项目的内部教练。本文也是由他交给笔者帮助review，同时也授权发布在笔者的博客中。</p>
-
-<p>原文地址为：<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">直接不等于简单</a>。</p>
-
-<h4>码农的博弈</h4>
-
-<p>了解XP(极限编程)的人都知道，XP有一项实践叫做简单设计(simple design)，站在这项实践对立面的是过度设计。当我们从客户价值的中心视角去审视那些我们遇到过的过度设计，自然而然就会得出一个结论：</p>
-
-<p><em>“又TM被那些美其名曰项目经理和程序员的孙子们给忽悠了，这些功能我其实都用不到，但我还花了这么多冤枉钱去购买，下次议价时一定要砍掉80%的预算。”</em></p>
-
-<p><img src="http://ano.lolcathost.org/pics/pcartoon1.jpg" alt="img1" /></p>
-
-<p>一旦得出这个结论，那么很快客户和开发团队将陷入无止境的撕逼状态，群体攻击增强300%，单体理智降低80%，所以为了避免程序猿的世界被破坏，并从根本上保障码农群体可怜的经济来源，就应当想办法给客户这样一种错觉：</p>
-
-<p><em>“你要的功能必须值这个价，如果想要新增一个功能就应该要额外收费。”</em></p>
-
-<p>对于开发人员而言，想在这场博弈中获胜的最佳方法就是砍掉那些完全只为满足自我虚荣心(以此证明自己技艺是如何炉火纯青)的多余设计和实现，只完美地产出客户真正需要和关心的功能，这就是简单设计。</p>
-
-<h4>似乎简单的直接设计</h4>
-
-<p>理论总是非常easy，但是，请注意这里的<strong>但是</strong>，由于汉字的博大精深和内涵丰富，再遇上程序员这种伴随二进制进化的只有0和1二个极端的特殊生物，“简单”一词的含义被引申到了更广的范围，演化成了简单粗暴，出现了一种在编码中随处可见的风景——我称之为<strong>直接设计(directly design)</strong>。</p>
-
-<p>直接设计看上去像是一种“按图索骥”的编程方法，开发人员将流程图上的处理及分支用直白的代码表达出来，比如最近在工作中遇到的一个例子：</p>
-
-<p>设备对于端口的获得信息默认情况下需要进行处理，当端口被配置为A或B类型时，则该端口获得的信息无需处理，转化为流程图如下。</p>
-
-<p><img src="https://www.processon.com/chart_image/thumb/55c438d6e4b08c136f0791c9.png" width = "300" height = "300" alt="flowchart" align=center /></p>
-
-<p>产生的代码如下：
-例1</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也许团队中有那么一两个了解过clean code和重构的人，那么这段代码可能演变成如下：
-例2</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span> <span class="o">||</span> <span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但这还不够，再改造一下：
-例3</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">isPortTypeAOrB</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">isPortTypeAOrB</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span> <span class="o">||</span> <span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>现在看上去似乎舒服多了，代码也好理解了，进行到这一步代码可以算是大的提升，但是这就结束了吗？其实这只是转嫁了问题，问题并没有结束，因为现在isPortTypeAOrB方法开始变得复杂难懂起来。不论编码资历深浅，大多数开发人员都写过类似例1的代码，这些直接设计总是自觉或不自觉地跑出来，像个幽灵一样。那么这些直接设计从何而来？</p>
-
-<p>审视自己的经历，直接设计代码产生的原因有很多，归结起来有以下几种可能性：</p>
-
-<ul>
-<li>习惯于面向过程编程的开发人员转向面向对象，惯性使然</li>
-<li>新手们被要求严格地按规划的流程编码，这是最快地让新手熟练起来的方法</li>
-<li>开发人员误解了简单的含义，认为简单就是直接，忽视了设计，也即简单而不设计</li>
-</ul>
-
-
-<p>人人都爱直接设计，不只是开发人员，因为那样不费脑力，有章可循，且按图索骥后责任就变成了流程的设计人员，既可以轻轻松松，又能趋利避害，不这么做似乎于情于理都很难说过去。其实直接设计并不代表代码质量有问题，相反只要意图足够清晰和简单，那么还是要推荐直接设计，毕竟开发人员都是这样被教育出来的。但是直接设计有一个很突出的缺陷——丑陋，因为总是会把过多的细节暴露出来，尤其是在分支处理上，就像上面的例1那样。</p>
-
-<p>也许有人觉得这样直接挺清晰，挺容易理解，其实问题也就在这里，现在这样的分支只有两个，当用户觉得这样的需求还不能满足需要时，就会要求更多，也许会有5个，10个甚至近百个分支，那时对于开发人员而言就要不断地增加新的分支代码，就像下面的代码这样。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">C</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">D</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">E</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'>    <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>并且在新增分支时还要小心翼翼地考虑与原有分支的逻辑关系，嵌套分支看来是在所难免了，用不了几个迭代，这些代码就会变得一堆意大利面条。</p>
-
-<p><img src="http://richkeycafe.com/UploadFile/201142631318888.jpg" alt="pasta_img" /></p>
-
-<p>也许，万幸的是，功能都实现，你幸福地点上一根烟，满足地看着自己的杰作，突然，有个新手菜鸟心怀崇敬地问你：“大牛，这段代码是什么意思？”，你盯着代码半天心里嘀咕着，这TM是什么鬼，我怎么也看不懂了，然后只好敷衍地回答一句“这个不明白吗？回去看看设计文档！”，好不容易打发走了这个新手，项目经理找到了你，告诉了你一个晴天霹雳，客户又改需求了，可能又要新增十几个分支，你眼前一黑，感叹一声又要加班了，但又不得不重新重头解读一遍自己创作的一切，看看哪里能够插入一个新需求，于是加班又开始了。</p>
-
-<p><img src="http://hackles.org/strips/cartoon75.png" alt="bad_condition" /></p>
-
-<h4>简单设计需要设计</h4>
-
-<p>直截了当地设计过多地暴露细节造成扩展性和维护性也直截了当地下降，这种结局是所有开发人员都努力想避免的，如此看来简单设计并不简单，<strong>关键是设计，因为简单设计更需要设计</strong>，套用一句经典的广告语：<strong>简约而不简单</strong>，这才是简单设计想到达到的目的。现在试着重新解读简单设计，个人认为简单设计原则可以分成三个层次：</p>
-
-<ul>
-<li>实现具有用户价值的需求，简单的说就是用户要什么你就给他什么</li>
-<li>代码设计应当职责简单，简单地说就是做好一件事</li>
-<li>设计应尽可能针对一到两个问题展开，做到即设计要简单，足够针对性的解决问题即可</li>
-</ul>
-
-
-<p>让我们看看从上面角度怎么来设计，仍然以上面的例子为例。根据这个原则，将上述需求实例化，可以得到：</p>
-
-<ul>
-<li>when port type == A, it should not handle message</li>
-<li>when port type == B, it should not handle message</li>
-<li>when port type != A &amp;&amp; != B, it should handle message</li>
-</ul>
-
-
-<p>将端口类型进行归纳，可以发现其实端口是否处理消息由端口类型决定，一种端口类型是不需要处理消息类型，而另一种则是需要处理类型，因此端口消息处理只需要关心哪些端口是属于需要处理的类型即可。从这点出发可以看出例1做了太多可以委托他人去做的事情，因此设计上需要考虑将功能分离，特别是判断逻辑与功能主体剥离，使得单个主体的功能尽量简单来满足简单设计的第二条原则，按照上述思路，转化为如下代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">parseMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">parseMsg</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">filter</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// only ports not in disabled list could be parsed</span>
-</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="n">doRecord</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">filter</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">DisabledPortFilter</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">());</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而DisabledPortFilter负责管理禁用端口，提供注册及过滤功能，如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DisabledPortFilter</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">// FilterRule in HashMap means rule for filting with port</span>
-</span><span class='line'>    <span class="c1">// Sometimes you need to composite multi-conditions to filting, not only type of port</span>
-</span><span class='line'>    <span class="c1">// FilterRule is an interface, so any one wants to use filter should offer an implementation</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">InPort</span><span class="o">,</span> <span class="n">FilterRule</span><span class="o">&gt;</span> <span class="n">disableHandleList</span> <span class="o">=</span> <span class="n">Maps</span><span class="o">.</span><span class="na">newHashMap</span><span class="o">();</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">DisabledPortFilter</span> <span class="n">portFilter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DisabledPortFilter</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="nf">DisabledPortFilter</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">DisabledPortFilter</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">portFilter</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">registDisabledPort</span><span class="o">(</span><span class="n">InPort</span> <span class="n">inPort</span><span class="o">,</span> <span class="n">FilterRule</span> <span class="n">rule</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">disableHandleList</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">inPort</span><span class="o">,</span> <span class="n">rule</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">unregistDisabeldPort</span><span class="o">(</span><span class="n">InPort</span> <span class="n">inPort</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">disableHandleList</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">inPort</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">InPort</span> <span class="n">in</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="o">!</span><span class="n">disableHandleList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">in</span><span class="o">).</span><span class="na">matchFilter</span><span class="o">(</span><span class="n">in</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>FilterRule定义如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FilterRule</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matchFilter</span><span class="o">(</span><span class="n">InPort</span> <span class="n">inPort</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将例1中在一个方法中执行的过程分解到多个类中，每个类的职责更为单一，将复杂的过滤逻辑通过转化放在各个实现类中，也可以帮助开发者及维护者能够在某一时间点只关注其中某一中过滤规则。完成上述转化后，原来可能冗余繁复的分支处理消失了，取而代之的是短短的几行简单易懂的代码。并且转化后还带来了维护上的便利与代码扩展性的提升，当客户新增需求时，只需要增加对应的FilterRule实现，并注册到DisabledPortFilter中就可以，而不用去修改原有代码，不知不觉中又契合了OCP原则。
-对照前后例子，发生变化原因是针对逻辑判断与功能主体分离这一点问题进行了设计，后面的设计都是在此基础上展开，一次只设计一个切入点使得开发人员更容易控制开发思路，而不至于过多复杂的设计带来的思维混乱，因此简单设计原则中的第三条显得尤为重要，很多时候是我们自己想的太多而导致停滞不前，举步维艰。</p>
-
-<h4>简单设计之路</h4>
-
-<p>简单设计是一条光明大道，但通向简单设计的路却并不简单，布满荆棘，很多时候并非我们不知道简单设计，而是在一次次与时间、进度博弈的过程中自觉或不自觉地放弃了简单设计，不少简单设计只需要我们再多想那么一点点，捅破这层窗户纸并不难，要做的只是多想一点，多看一眼，往往这片刻的思考就会对我们的编码产生巨大的影响，这也正是通向简单设计道路上唯一可以依靠的工具，你要做的只是多想一点，多看一眼。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1567,6 +1306,10 @@ olderUser(users); // Object {user: "fred", age: 40}
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
       </li>
     
@@ -1592,10 +1335,6 @@ olderUser(users); // Object {user: "fred", age: 40}
     
       <li class="post">
         <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
       </li>
     
   </ul>

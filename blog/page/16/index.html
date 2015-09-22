@@ -10,9 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp; 最近一个月写了些关于jQuery的文章，谢谢大家的支持。文章仅我个人观点，也许有不对的地方，请指出。这个系列还在更新中 一：jQuery基础系列：&nbsp; jQuery温习篇&mdash;-强大的JQuery选择器
-jQuery之工具函数
-jQuery之筛选函数 &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeDom这个东西个人觉得知识点不多，前几个续节写的已差不多了。在这节将演示一个CodeDom示例： 数据库实体类的生成。这里先声明在如今的CodeSmith或者是T4模板中实现这些都很简单，并且更实用，在这 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -65,6 +63,170 @@ jQuery之筛选函数 &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/">CodeDom六&#8211;实体类生成示例</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-07-08T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2010/07/08/CodeDom-liu-shi-ti-lei-sheng-cheng-shi-li/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CodeDom这个东西个人觉得知识点不多，前几个续节写的已差不多了。在这节将演示一个CodeDom示例：</p>
+
+<p>数据库实体类的生成。这里先声明在如今的CodeSmith或者是T4模板中实现这些都很简单，并且更实用，在这</p>
+
+<p>里只是一个CodeDom示例，为了演示CodeDom。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在代码中位了简单、简化数据库数据信息的提取，引用了CodeSimth的SchemaExplorer.dll和SchemaExplorer.</p>
+
+<p>SqlSchemaProvider.dll。可以在Demo中的CodeSimth目录下找到。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 先贴上代码，需要讲解的东西没有什么：</p></blockquote>
+
+<pre class='green'><code>using System;
+using System.Text;
+using System.Windows.Forms;
+using SchemaExplorer;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+namespace CodeDomDemo
+{
+public partial class Form1 : Form
+{
+public Form1()
+{
+InitializeComponent();
+}
+private void Form1_Load(object sender, EventArgs e)
+{
+IDbSchemaProvider provider = new SqlSchemaProvider();
+string connectionString = System.Configuration.ConfigurationManager.
+?
+AppSettings["ConnectionString"].ToString();
+if (string.IsNullOrEmpty(connectionString))
+{
+MessageBox.Show(this, "Connection String is requested,in app configuration.",
+?
+"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+Application.Exit();
+}
+DatabaseSchema db = new DatabaseSchema(provider, connectionString);
+lboxTables.Items.AddRange(db.Tables.ToArray());
+}
+?
+        public CodeCompileUnit GenTableCompilerUnit(TableSchema item)
+{
+if (item == null)
+throw new ArgumentNullException("item");
+CodeTypeDeclaration tableClass = new CodeTypeDeclaration();
+tableClass.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+tableClass.Name = item.Name;
+?
+            foreach (var col in item.Columns)
+{
+CodeMemberField field = new CodeMemberField(
+?
+new CodeTypeReference(col.SystemType), "_" + col.Name);
+CodeMemberProperty property = new CodeMemberProperty();
+property.Name = col.Name;
+property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+property.Type = new CodeTypeReference(col.SystemType);
+property.SetStatements.Add(new CodeAssignStatement(
+?
+new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
+field.Name), new CodePropertySetValueReferenceExpression()));
+property.GetStatements.Add(new CodeMethodReturnStatement(
+?
+new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field.Name)));
+tableClass.Members.Add(field);
+tableClass.Members.Add(property);
+}
+CodeNamespace nspace = new CodeNamespace(item.Database.Name);
+nspace.Imports.Add(new CodeNamespaceImport("System"));
+nspace.Types.Add(tableClass);
+CodeCompileUnit unit=new CodeCompileUnit();
+unit.Namespaces.Add(nspace);
+return unit;
+}
+public string GenTanleCodeFromCompilerUnit(CodeCompileUnit unit, string language)
+{
+CodeGeneratorOptions option=new CodeGeneratorOptions();
+option.BlankLinesBetweenMembers =true;
+option.BracingStyle ="c";
+option.ElseOnClosing=true;
+option.IndentString="    ";
+StringBuilder sb=new StringBuilder();
+System.IO.StringWriter sw=new System.IO.StringWriter(sb);
+CodeDomProvider.CreateProvider(language).GenerateCodeFromCompileUnit(unit, sw, option);
+sw.Close();
+return sb.ToString();
+}
+?
+        private void lboxTables_SelectedIndexChanged(object sender, EventArgs e)
+{
+int index = lboxTables.SelectedIndex;
+if (index &gt; -1 &amp;&amp; index &lt; lboxTables.Items.Count)
+{
+object obj = lboxTables.Items[index];
+if (obj is TableSchema)
+{
+CodeCompileUnit unit= GenTableCompilerUnit(obj as TableSchema);
+string language="c#";
+if(!string.IsNullOrEmpty(this.toolStripComboBox1.Text))
+language=this.toolStripComboBox1.Text;
+string code = GenTanleCodeFromCompilerUnit(unit,language);
+this.rtbCode.Text = code;
+}
+}
+}
+}
+}
+</code></pre>
+
+<p>运行示图:c#图
+<a href="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_2.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb.png" title="c#图" alt="imagec#图" /></a></p>
+
+<p> vb图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/WindowsLiveWriter/CodeDom_12400/image_thumb_1.png" title="vb图" alt="imagevb图" /></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 代码比较简单界面也做得太简洁了，呵呵导出文件都没有，我觉得没有什么必要讲解的，如果有什么不懂的或者是写的不对</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 不好的，请留言，我会尽快回复。</p>
+
+<blockquote><p><a href="http://files.cnblogs.com/whitewolf/CodeDomDemo-GeneratorCode.rar">CodeDom代码下载；</a></p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/08/1773361.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1305,87 +1467,6 @@ if( r ) alert('You entered ' + r);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">仓央嘉措《那一天，那一月，那一年，那一世》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-12-24T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><pre class='green'><code>        那一天， 
-    　　我闭目在经殿的香雾中， 
-    　　蓦然听见你颂经中的真言； 
-    　　
-    　　那一月， 
-    　　我摇动所有的经筒， 
-    　　不为超度， 
-    　　只为触摸你的指尖； 
-    　　
-    　　那一年， 
-    　　磕长头匍匐在山路， 
-    　　不为觐见， 
-    　　只为贴着你的温暖； 
-    　　
-    　　那一世， 
-    　　转山转水转佛塔， 
-    　　不为修来世， 
-    　　只为途中与你相见。 
-    　　
-    　　那一月， 
-    　　我轻转过所有经筒， 
-    　　不为超度，
-    只为触摸你的指纹； 
-    　　
-    　　那一年，
-    我磕长头拥抱尘埃， 
-    　　不为朝佛，
-    只为贴着你的温暖； 
-    　　
-    　　那一世，
-    我翻遍十万大山， 
-    　　不为修来世，
-    只为路中能与你相遇； 
-    　　
-    　　只是，
-    就在那一夜，
-    我忘却了所有， 
-    　　抛却了信仰，
-    舍弃了轮回， 
-    　　只为，
-    那曾在佛前哭泣的玫瑰， 
-    　　早已失去旧日的光泽
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/17/">&larr; Older</a>
@@ -1416,6 +1497,10 @@ if( r ) alert('You entered ' + r);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
       </li>
     
@@ -1441,10 +1526,6 @@ if( r ) alert('You entered ' + r);
     
       <li class="post">
         <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
       </li>
     
   </ul>

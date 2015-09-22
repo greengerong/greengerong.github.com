@@ -10,10 +10,10 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="如果你是一个angular的开发者的话，对于ng-html2js你应该
-很熟悉。对于angular的指令，我们经常需要定义模板(
-directive template/templateUrl),你可以选择讲html page
-放在真正的的web容器中寄宿，也可以选择angular的ng- &hellip;"> 
+    <meta name="description" content="Maven archetype plugin为我们提供了方便的创建
+project功能,Archtype指我们项目的骨架，作为项目的脚手架。
+如fornt end的yo之类。我们能够通过简单的一行控制台command
+line创建你所需要的项目结构： mvn archetype:generate &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -66,6 +66,89 @@ directive template/templateUrl),你可以选择讲html page
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-16T07:51:08+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/16/intellij-remove-archetype-plugin/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Maven archetype plugin为我们提供了方便的创建
+project功能,Archtype指我们项目的骨架，作为项目的脚手架。
+如fornt end的yo之类。我们能够通过简单的一行控制台command
+line创建你所需要的项目结构：</p>
+
+<pre class='green'><code>mvn archetype:generate
+  -DarchetypeGroupId=&lt;archetype-groupId&gt;
+  -DarchetypeArtifactId=&lt;archetype-artifactId&gt;
+  -DarchetypeVersion=&lt;archetype-version&gt;
+  -DgroupId=&lt;my.groupid&gt;
+  -DartifactId=&lt;my-artifactId&gt;
+</code></pre>
+
+<p>常用的Maven archetype plugin有：</p>
+
+<ul>
+<li>org.apache.maven.archetypes:maven-archetype-quickstart</li>
+<li>org.apache.maven.archetypes:maven-archetype-site</li>
+<li>org.apache.maven.archetypes:maven-archetype-webapp</li>
+<li>以及spring或者第三方提供了一些archetype plugin。</li>
+</ul>
+
+
+<p>同时在java世界强大的IDE Intellij也支持按照maven archetype
+创建java项目。你只需要选择maven 创建项目，在最后选择你希望的
+archetype plugin，然后就可以喝杯coffe等待build success。</p>
+
+<p>关于如何自定义项目的Maven archetype plugin，博主将会
+在后续的文章介绍。在此次博文将是记录如果去掉你手动在intellij中添加
+的archetype plugin。</p>
+
+<p>mac版本，你可以找到文件：</p>
+
+<pre class='green'><code>~/Library/Caches/IntelliJIdea&lt;version&gt;/Maven/Indices/UserArchetypes.xml
+</code></pre>
+
+<p>然后用你喜欢的编辑器打开它(例如博主当前使用的Atom)：</p>
+
+<pre class='green'><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;archetypes&gt;
+&lt;archetype groupId="com.github.greengerong" artifactId="components-archetype" version="1.0.0" /&gt;
+&lt;/archetypes&gt;
+</code></pre>
+
+<p>你可以在xml的archetypes节点增加或者删除修改配置，然后重新启动你的Intellij。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -889,133 +972,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-24T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>今天要和大家分享的是angular从1.2版本开始带来了新语法Controller as。再次之前我们对于angular在view上的绑定都必须使用直接的scope对象，对于controller来说我们也得必须注入$scope这个service。如下：</p>
-
-<pre class='green'><code>angular.module("app",[])
-.controller("demoController",["$scope",function($scope){
-    $scope.title = "angualr";
- }])
-
-&lt;div ng-app="app" ng-controller="demoController"&gt;
-    hello : {{title}} !
-&lt;/div&gt;
-</code></pre>
-
-<p>有些人觉得即使这样我们的controller还是不够POJO，以及对于coffescript爱好者不足够友好，所以在angular在1.2给我带来了一个新的语法糖这就是本文将要说的controller as的语法糖，修改上面的demo将会变成：</p>
-
-<pre class='green'><code>angular.module("app",[])
-.controller("demoController",[function(){
-    this.title = "angualr";
-}])
-
-&lt;div ng-app="app" ng-controller="demoController as demo"&gt;
-     hello : {{demo.title}} !
-&lt;/div&gt;
-</code></pre>
-
-<p>这里我们可以看见现在controller不再有$scope的注入了，感觉controller就是一个很简单的平面的JavaScript对象了，不存在任何的差别了。再则就是view上多增加了个demoController as demo，给controller起了一个别名，在此后的view模板中靠这个别名来访问数据对象。</p>
-
-<p>或许看到这里你会问为什么需要如此啊，不就是个语法糖而已，先别着急，我们会在后边分析$scope和他的差别。在此之前我们先来看看angular源码的实现这样才会有助于我们的分析：</p>
-
-<p>下面是一段来自angular的code：在1499行开始(行数只能保证在写作的时候有效)</p>
-
-<pre class='green'><code>  if (directive.controllerAs) {
-          locals.$scope[directive.controllerAs] = controllerInstance;
-   }
-</code></pre>
-
-<p>如果你希望看更完全的code请猛击这里<a href="https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js">https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js</a>.</p>
-
-<p>从上面的代码我们能看见的是：angular只是把controller这个对象实例以其as的别名在scope上创建了一个新的对象属性。靠，就这么一行代码搞定！</p>
-
-<p>先别急，既然是语法糖，那么它肯定有他出现的原因，让我们来和直接用$scope对比下：</p>
-
-<p>在此文之前我在angularjs的群中和大家讨论了下我的看法，得到大家不错的反馈，所以有了本文，记录和分享下来。</p>
-
-<p>我规定对于controller as的写法如下：</p>
-
-<pre class='green'><code>angular.module("app",[])
- .controller("demoController",[function(){
-        var vm = this;
-
-        vm.title = "angualr";
-
-        return vm;
- }])
-</code></pre>
-
-<p>其优势为：</p>
-
-<ol>
-<li>定义vm这样会让我们更好的避免JavaScript的this的坑。</li>
-<li>如果某个版本的angular不再支持controller as,可以轻易的注入$scope,修改为 var vm = $scope;</li>
-<li>因为不再注入$scope了，controller更加的POJO，就是一个很普通的JavaScript对象。</li>
-<li>也因为没有了$scope，而controller实例将会成为scope上的一个属性，所以在controller中我们再也不能使用$watch,$emit,$on之类的特殊方法，因为这些东西往往不该出现在controller中的，给大家一个警告，更好的控制。但是一旦如果没办法必须用的话，可以在征得项目组一致同意，将此controller退回$scope.</li>
-<li>因为controller实例将会只是$scope的一个属性，所以view模板上的所有字段都会在一个引用的属性上，这可以避开JavaScript原型链继承对于值类型的坑。参加<a href="https://github.com/angular/angular.js/wiki/Understanding-Scopes">https://github.com/angular/angular.js/wiki/Understanding-Scopes</a>.</li>
-<li>controller as 对于 coffescript,liveScript更友好。
-7.模板上定义的每个字段方法都会在scope寄存在controller as别名上的引用上，所以在controller继承中，不会在出现命名冲突的问题。</li>
-</ol>
-
-
-<p>注释:对于route，也有个controllerAs的属性可以设置，下面代码来之angular doc文档：</p>
-
-<pre class='green'><code>    angular.module('ngViewExample', ['ngRoute', 'ngAnimate'],
-     function($routeProvider, $locationProvider) {
-    $routeProvider.when('/Book/:bookId', {
-      templateUrl: 'book.html',
-      controller: BookCntl,
-      controllerAs: 'book'
-    });
-    $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-      templateUrl: 'chapter.html',
-      controller: ChapterCntl,
-      controllerAs: 'chapter'
-    });
-
-    // configure html5 to get links working on jsfiddle
-         $locationProvider.html5Mode(true);
-     });
-</code></pre>
-
-<p>今天就到这里，谢谢。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1046,6 +1002,10 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
       </li>
     
@@ -1071,10 +1031,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a>
       </li>
     
   </ul>
