@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-22T08:39:52+08:00</updated>
+  <updated>2015-09-22T08:41:44+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,7 +20,7 @@
     <id>http://greengerong.github.io/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi</id>
     <content type="html"><![CDATA[<p>在上篇<a href="http://greengerong.com/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript &ndash; NgComponent封装</a>中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + Babel或者TypeScript这类鲜明特性的JavaScript语法。但是CoffeeScript也不失为一门不错的JavaScript扩展语言，特别在Ruby社区仍然是一个很好的选择。</p>
 
-<p>在本节中，我们将会利用CoffeeScript来模拟Python中的装潢器实现。Python的装潢器是属于一中来自于语言层次的AOP实现。AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a>。</p>
+<p>在本节中，我们将会利用CoffeeScript来模拟Python中的装潢器实现。Python的装潢器是属于一类来自于语言层次的AOP实现。AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可复用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a>。</p>
 
 <p>在Python中的装潢器也是一个普通的函数，我们只需要使用@符号将方法标注在另一个方法签名上就能实现对被标注方法的装潢。这也是Python这门函数式语言中高阶函数的运用。被装潢的方法将会被传入装潢函数中，被装潢包裹以实现方法的拦截。</p>
 
