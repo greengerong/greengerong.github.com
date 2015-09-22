@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Es7 | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/es7/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-23T07:45:50+08:00</updated>
+  <updated>2015-09-23T07:47:10+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,7 +20,7 @@
     <id>http://greengerong.github.io/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li</id>
     <content type="html"><![CDATA[<p>在上篇博文<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>中，笔者利用CoffeeScript支持的高阶函数，以及方法调用可省略括符的特性，实现了一个类似Python装潢器的日志Demo。这只是一种伪实现，JavaScript实现装潢器，我们需要等到ECMAScript7才行，在ES7特性中带来了Decorators，它就是我们所需要的装潢器特性。虽然它是ES7的特性，但在Babel大势流行的今天，我们可以利用Babel来使用它。关于Babel的推荐文章，请参见另一篇文章<a href="http://greengerong.com/blog/2015/03/22/babel-kai-shi-es6ti-yan/">Babel-现在开始使用 ES6</a>。</p>
 
-<p>下面我们让然和上节<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>一样来实现一个ES7 Decorators版的日志拦截示例。我们希望的使用如下：</p>
+<p>下面我们仍然和上节<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>一样，实现一个ES7 Decorators版的日志拦截示例。我们希望得到的代码效果如下：</p>
 
 <pre><code>class MyClass {
   @log('MyClass add')
