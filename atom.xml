@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-09-23T07:48:29+08:00</updated>
+  <updated>2015-09-24T13:07:35+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -108,7 +108,7 @@ def myfunc(a, b):
 
 <p>这里的装潢器deco，将会包裹myfunc方法，实现调用前后的日志信息拦截。</p>
 
-<p>在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高级函数，可以如下包裹：</p>
+<p>在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高阶函数，可以如下包裹：</p>
 
 <pre class='green'><code>log(myfunc)
 </code></pre>
