@@ -28,7 +28,7 @@ Python中的装潢器如下：
 
 这里的装潢器deco，将会包裹myfunc方法，实现调用前后的日志信息拦截。
 
-在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高级函数，可以如下包裹：
+在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高阶函数，可以如下包裹：
 
 	log(myfunc)
 
