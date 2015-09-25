@@ -8,7 +8,7 @@ categories: [es7, javascript, decorators]
 
 ##开篇概述
 
-在上篇的[ES7之Decorators实现AOP示例](http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/)中，我们预先体验了ES7的Decorators，虽然只是一个简单的日志AOP拦截实现。但是它足以让我们体会到ES7 Decorators的强大魅力所在。所谓为什么博主会为它而专门写作此文。在Angular2中的TypeScript Annotate就是标注装潢器的另一类实现。同样如果你也是一个React的爱好者，你应该已经发现了redux2中也开始利用ES7的Decorators进行了大量重构。
+在上篇的[ES7之Decorators实现AOP示例](http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/)中，我们预先体验了ES7的Decorators，虽然它只是一个简单的日志AOP拦截Demo。但它也足以让我们体会到ES7 Decorators的强大魅力所在。所以为什么博主会为它而专门写作此文。在Angular2中的TypeScript Annotate就是标注装潢器的另一类实现。同样如果你也是一个React的爱好者，你应该已经发现了redux2中也开始利用ES7的Decorators进行了大量重构。
 
 尝试过Python的同学们，我相信你做难忘的应该是装潢器。由[Yehuda Katz](https://github.com/wycats)提出的[decorator模式](https://github.com/wycats/javascript-decorators)，就是借鉴于Python的这一特性。作为读者的你，可以从上一篇博文[ES7之Decorators实现AOP示例](http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/)中看到它们之间的联系。
 
@@ -130,7 +130,7 @@ ES7的Decorators让我们能够在设计时对类、属性等进行标注和修�
 
 ####也可以是一个工厂方法
 
-对于装潢器来说，它同样也可以是一个工厂方法，接受配置参数信息，并返回一个应用于目标函数的装换函数。如下例子，对类可测试性的标记：
+对于装潢器来说，它同样也可以是一个工厂方法，接受配置参数信息，并返回一个应用于目标函数的装潢函数。如下例子，对类可测试性的标记：
 
 	@isTestable(true)
 	class MyClass { }
