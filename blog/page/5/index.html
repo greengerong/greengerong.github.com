@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="[原文发表地址]Introducing Gulp, Grunt, Bower, and npm support for Visual Studio Web 开发，特别是前端 Web 开发，正迅速变得像传统的后端开发一样复杂和精密。大多数项目不仅仅是通过 FTP上传一些 JS 和 CSS 文件。 &hellip;"> 
+    <meta name="description" content="在TDD开发中，也许我们会遇见对一些重要的无返回值的行为测试，比如在用户的积分DB中增加用户的积分，这个行为对于我们的业务具有重要的价值，所以我们也希望能测试覆盖这部分业务价值。这个时候我们就得使用mockito带来的verify断言，但verify的参数断言主要有eq，或者any常见的方式。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,123 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T13:53:13+08:00" pubdate data-updated="true">Nov 12<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/11/12/mockito-custom-verify-matcher/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2014/11/12/mockito-custom-verify-matcher/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在TDD开发中，也许我们会遇见对一些重要的无返回值的行为测试，比如在用户的积分DB中增加用户的积分，这个行为对于我们的业务具有重要的价值，所以我们也希望能测试覆盖这部分业务价值。这个时候我们就得使用mockito带来的verify断言，但verify的参数断言主要有eq，或者any常见的方式。有时我们也希望能够断言对象的一部分属性，比如上文的积分数值，对于不同的场景增加的用户积分可能不同。</p>
+
+<p>回到Mockito的参数Matcher，Mockito给我们提供了ArgumentMatcher，以供我们来扩展Matcher。下面假设一个增加用户积分的场景：</p>
+
+<pre class='green'><code>     public class Game {
+        private String type;
+        private int rate;
+
+        public Game(String type, int rate) {
+            this.type = type;
+            this.rate = rate;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public int getRate() {
+            return rate;
+        }
+
+    }
+
+    public class GameDao {
+        public void addRate(Game game) {
+            //TODO: insert to db
+        }
+    }
+</code></pre>
+
+<p>我们希望能够对verify GameDao调用了addRate，并且是积分rate为特定值。</p>
+
+<p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
+
+<pre class='green'><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+    private Object value;
+    private Function&lt;T, Object&gt; function;
+
+    public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
+        this.value = value;
+        this.function = getProperty;
+    }
+
+    public static &lt;F&gt; PartyMatcher&lt;F&gt; partyMatcher(Function&lt;F, Object&gt; getProperty, Object value) {
+        return new PartyMatcher&lt;F&gt;(getProperty, value);
+    }
+
+    @Override
+    public boolean matches(Object o) {
+        return function.apply((T) o).equals(value);
+    }
+}
+</code></pre>
+
+<p>所以我们的测试可以如下：</p>
+
+<pre class='green'><code>    @Test
+    public void should_run_customer_mockito_matcher() throws Exception {
+
+        final GameDao gameDao = mock(GameDao.class);
+        gameDao.addRate(new Game("签到", 7));
+
+        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
+            @Override
+            public Object apply(Game game) {
+                return game.getRate();
+            }
+        }, 7)));
+
+        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
+            @Override
+            public Object apply(Game game) {
+                return game.getType();
+            }
+        }, "签到")));
+    }
+</code></pre>
+
+<p>Mockito给我们提供了很多关于Matcher扩展的方法，本文只是ArgumentMatcher的实例。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -955,184 +1072,6 @@ ORM(Object Relation Mapping)框架辅助。</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/17/create-yourself-archetypes-plugin/">自定义项目脚手架- Maven Archetypes</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-17T05:14:21+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2014</time>
-        
-           | <a href="/blog/2014/03/17/create-yourself-archetypes-plugin/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2014/03/17/create-yourself-archetypes-plugin/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在上篇<a href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>
-中我们已经简单介绍了关于archetype的作用。</p>
-
-<p>简单来说maven archetype插件就是创建项目的脚手架,通过命令行或者IDE集成简化项目创建的工作。例如：</p>
-
-<ul>
-<li>org.apache.maven.archetypes:maven-archetype-quickstart</li>
-<li>org.apache.maven.archetypes:maven-archetype-site</li>
-<li>org.apache.maven.archetypes:maven-archetype-webapp</li>
-<li>以及spring或者第三方提供了一些archetype plugin。</li>
-</ul>
-
-
-<p>同时maven archetype插件也是一个简单的maven artifact，它包含了创建项目所需要的所有资源。
-主要分为几类原型信息：</p>
-
-<ul>
-<li>archetype描述文件(src/main/resources/META-INF/maven/archetype.xml),这为<a href="http://maven.apache.org/plugins/maven-archetype-plugin-1.0-alpha-7/">archetype 1.0</a>,
-包含所有创建项目的文件信息和路径信息。在(archetype 2.0)[<a href="http://maven.apache.org/archetype/maven-archetype-plugin/">http://maven.apache.org/archetype/maven-archetype-plugin/</a>]增加了更灵活的archetype-metadata.xml(src/main/resources/META-INF/maven/下),
-archetype元数据信息，并且完全支持1.0.</li>
-<li>项目的原型文件(src/main/resources/archetype-resources/之下)，将会被archetype插件
-copy到项目目录结构去。</li>
-<li>创建项目的pom文件(src/main/resources/archetype-resources下)</li>
-<li>archetype pom文件，在archetype项目根目录下。</li>
-</ul>
-
-
-<h4>创建archetype插件</h4>
-
-<ol>
-<li><p>首先在archetype中加入一个pom文件，如下：</p>
-
-<pre class='green'><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-      &lt;groupId&gt;com.github.greengerong&lt;/groupId&gt;
-      &lt;artifactId&gt;component&lt;/artifactId&gt;
-      &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
-      &lt;packaging&gt;jar&lt;/packaging&gt;
-
-      &lt;name&gt;component&lt;/name&gt;
-      &lt;url&gt;http://maven.apache.org&lt;/url&gt;
-
-      &lt;properties&gt;
-          &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-      &lt;/properties&gt;
-
-      &lt;dependencies&gt;
-      &lt;/dependencies&gt;
-&lt;/project&gt;
-</code></pre></li>
-<li><p>创建archetype-metadata.xml,位于src/main/resources/META-INF/maven/目录下，例如：</p>
-
-<pre class='green'><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;archetype-descriptor name="app-server"&gt;
-    &lt;fileSets&gt;
-        &lt;fileSet filtered="true" encoding="UTF-8"&gt;
-            &lt;directory&gt;src/main/java&lt;/directory&gt;
-            &lt;includes&gt;
-                &lt;include&gt;**/*.**&lt;/include&gt;
-            &lt;/includes&gt;
-        &lt;/fileSet&gt;
-        &lt;fileSet filtered="true" encoding="UTF-8"&gt;
-            &lt;directory&gt;src/test/java&lt;/directory&gt;
-            &lt;includes&gt;
-                &lt;include&gt;**/*.**&lt;/include&gt;
-            &lt;/includes&gt;
-        &lt;/fileSet&gt;
-    &lt;/fileSets&gt;
-&lt;/archetype-descriptor&gt;
-</code></pre></li>
-</ol>
-
-
-<p>更多配置信息参考<a href="https://maven.apache.org/archetype/archetype-common/archetype-descriptor.html">archetype-descriptor</a>.</p>
-
-<ol>
-<li><p>为将创建的项目增加pom.xml文件，以${artifactId} / ${groupId} 变量作为占位符，例如：</p>
-
-<pre class='green'><code>  &lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-      &lt;groupId&gt;${groupId}&lt;/groupId&gt;
-      &lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;
-      &lt;version&gt;${version}&lt;/version&gt;
-      &lt;packaging&gt;jar&lt;/packaging&gt;
-
-      &lt;name&gt;${artifactId}&lt;/name&gt;
-
-      &lt;properties&gt;
-          &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-      &lt;/properties&gt;
-
-      &lt;dependencies&gt;
-          &lt;dependency&gt;
-              &lt;groupId&gt;junit&lt;/groupId&gt;
-              &lt;artifactId&gt;junit&lt;/artifactId&gt;
-              &lt;version&gt;4.11&lt;/version&gt;
-              &lt;scope&gt;test&lt;/scope&gt;
-          &lt;/dependency&gt;
-      &lt;/dependencies&gt;
-
-      &lt;build&gt;
-          &lt;pluginManagement&gt;
-              &lt;plugins&gt;
-                  &lt;plugin&gt;
-                      &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
-                      &lt;configuration&gt;
-                          &lt;source&gt;1.6&lt;/source&gt;
-                          &lt;target&gt;1.6&lt;/target&gt;
-                      &lt;/configuration&gt;
-                  &lt;/plugin&gt;
-              &lt;/plugins&gt;
-          &lt;/pluginManagement&gt;
-      &lt;/build&gt;
-  &lt;/project&gt;
-</code></pre></li>
-<li><p>接下来在archetype项目下install plugin：mvn clean install.</p></li>
-<li><p>利用已有archetype plugin创建项目：</p>
-
-<p>命令行：</p>
-
-<pre class='green'><code>mvn archetype:generate -DarchetypeGroupId=&lt;archetype-groupId&gt;  -DarchetypeArtifactId=&lt;archetype-artifactId&gt; -DarchetypeVersion=&lt;archetype-version&gt;  -DgroupId=&lt;my.groupid&gt; -DartifactId=&lt;my-artifactId&gt;
-</code></pre></li>
-</ol>
-
-
-<p>  intellij选择增加archetype plugin：
-  <img src="/images/blog_img/Intellij-archetype-plugin.png" alt="/images/blog_img/Intellij-archetype-plugin.png" /></p>
-
-<p>对于删除intellij测试archetype信息，请参见<a href="http://greengerong.github.io/blog/2014/03/16/intellij-remove-archetype-plugin/">Intellij修改archetype Plugin配置</a>.</p>
-
-<p>注意：</p>
-
-<ul>
-<li><p>如果你也需要文件名字或者目录名字，则需要用特殊变量__artifactId__(双下划线)作为占位符。</p>
-
-<p> 本文demo,请移到到github <a href="https://github.com/greengerong/maven-archetypes-demo">maven-archetypes-demo</a>.</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -1163,6 +1102,10 @@ copy到项目目录结构去。</li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/24/es7-javascript-decorators/">ES7 JavaScript Decorators</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
       </li>
     
@@ -1188,10 +1131,6 @@ copy到项目目录结构去。</li>
     
       <li class="post">
         <a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取元素定位位置的法宝</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
       </li>
     
   </ul>

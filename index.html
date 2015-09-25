@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在上篇博文CoffeeScript实现Python装潢器中，笔者利用CoffeeScript支持的高阶函数，以及方法调用可省略括符的特性，实现了一个类似Python装潢器的日志Demo。这只是一种伪实现，JavaScript实现装潢器，我们需要等到ECMAScript7才行， &hellip;"> 
+    <meta name="description" content="开篇概述 在上篇的ES7之Decorators实现AOP示例中，我们预先体验了ES7的Decorators，虽然只是一个简单的日志AOP拦截实现。但是它足以让我们体会到ES7 Decorators的强大魅力所在。所谓为什么博主会为它而专门写作此文。在Angular2中的TypeScript &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,211 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/24/es7-javascript-decorators/">ES7 JavaScript Decorators</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-24T15:00:40+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2015</time>
+        
+           | <a href="/blog/2015/09/24/es7-javascript-decorators/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2015/09/24/es7-javascript-decorators/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>开篇概述</h2>
+
+<p>在上篇的<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中，我们预先体验了ES7的Decorators，虽然只是一个简单的日志AOP拦截实现。但是它足以让我们体会到ES7 Decorators的强大魅力所在。所谓为什么博主会为它而专门写作此文。在Angular2中的TypeScript Annotate就是标注装潢器的另一类实现。同样如果你也是一个React的爱好者，你应该已经发现了redux2中也开始利用ES7的Decorators进行了大量重构。</p>
+
+<p>尝试过Python的同学们，我相信你做难忘的应该是装潢器。由<a href="https://github.com/wycats">Yehuda Katz</a>提出的<a href="https://github.com/wycats/javascript-decorators">decorator模式</a>，就是借鉴于Python的这一特性。作为读者的你，可以从上一篇博文<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中看到它们之间的联系。</p>
+
+<h2>Decorators</h2>
+
+<h4>背后原理</h4>
+
+<p>ES7的Decorators让我们能够在设计时对类、属性等进行标注和修改成为了可能。Decorators利用了ES5的</p>
+
+<pre class='green'><code>Object.defineProperty(target, name, descriptor);
+</code></pre>
+
+<p>来实现这一特性。如果你还不了解Object.defineProperty，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">MDN文档</a>。首先我们来考虑一个普通的ES6类：</p>
+
+<pre class='green'><code>class Person {
+  name() { return `${this.first} ${this.last}` }
+}
+</code></pre>
+
+<p>执行这一段class，给Person.prototype注册一个name属性，粗略的和如下代码相似：</p>
+
+<pre class='green'><code>Object.defineProperty(Person.prototype, 'name', {
+  value: specifiedFunction,
+  enumerable: false,
+  configurable: true,
+  writable: true
+});
+</code></pre>
+
+<p>如果利用装潢器来标注一个属性呢？</p>
+
+<pre class='green'><code>class Person {
+  @readonly
+  name() { return `${this.first} ${this.last}` }
+}
+</code></pre>
+
+<p>在这种装潢下的属性，则会在利用Object.defineProperty为Person.prototype注册name属性之前，执行这段装潢器：</p>
+
+<pre class='green'><code>let descriptor = {
+  value: specifiedFunction,
+  enumerable: false,
+  configurable: true,enumerable、
+  writable: true
+};
+
+descriptor = readonly(Person.prototype, 'name', descriptor) || descriptor;
+Object.defineProperty(Person.prototype, 'name', descriptor);
+</code></pre>
+
+<p>从上面的伪代码中，我们能看出，装潢器只是在Object.defineProperty为Person.prototype注册属性之前，执行一个装饰函数，其属于一类对Object.defineProperty的拦截。所以它和Object.defineProperty具有一致的方法签名，它们的3个参数分别为：</p>
+
+<ol>
+<li>obj：作用的目标对象；</li>
+<li>prop：作用的属性名；</li>
+<li>descriptor: 针对该属性的描述符。</li>
+</ol>
+
+
+<p>这里最重要的是descriptor这个参数，它是一个数据或访问器的属性描述对象。在对数据和访问器属性描述时，它们都具有configurable、enumerable属性可用。而在数据描述时，value、writable属性则是数据所特有的。get、set属性则是访问器属性描述所特有的。属性描述器中的属性决定了对象prop属性的一些特性。比如 enumerable，它决定了目标对象是否可被枚举，能够在for…in循环中遍历到，或者出现在Object.keys法的返回值中；writable则决定了目标对象的属性是否可以被更改。完整的属性描述，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description">MDN文档</a>。</p>
+
+<p>对于descriptor中的属性，它们可以被我们在Decorators中使用，或者修改的，以达到我们标注或者拦截的目的。这也是装潢器拦截的主体信息。</p>
+
+<h4>作用于访问器</h4>
+
+<p>装潢器也可以作用与属性的getter/setter访问器之上，如下将属性标注为不可枚举的代码：</p>
+
+<pre class='green'><code>class Person {
+  @nonenumerable
+  get kidCount() { return this.children.length; }
+}
+
+function nonenumerable(target, name, descriptor) {
+  descriptor.enumerable = false;
+  return descriptor;
+}
+</code></pre>
+
+<p>下面是一个更复杂的对访问器的备用录模式运用：</p>
+
+<pre class='green'><code>class Person {
+  @memoize
+  get name() { return `${this.first} ${this.last}` }
+  set name(val) {
+    let [first, last] = val.split(' ');
+    this.first = first;
+    this.last = last;
+  }
+}
+
+let memoized = new WeakMap();
+function memoize(target, name, descriptor) {
+  let getter = descriptor.get, setter = descriptor.set;
+
+  descriptor.get = function() {
+    let table = memoizationFor(this);
+    if (name in table) { return table[name]; }
+    return table[name] = getter.call(this);
+  }
+
+  descriptor.set = function(val) {
+    let table = memoizationFor(this);
+    setter.call(this, val);
+    table[name] = val;
+  }
+}
+
+function memoizationFor(obj) {
+  let table = memoized.get(obj);
+  if (!table) { table = Object.create(null); memoized.set(obj, table); }
+  return table;
+}   
+</code></pre>
+
+<h4>作用域类上</h4>
+
+<p>同样Decorators也可以为class装潢，如下对类是否annotated的标注：</p>
+
+<pre class='green'><code>// A simple decorator
+@annotation
+class MyClass { }
+
+function annotation(target) {
+   // Add a property on target
+   target.annotated = true;
+}
+</code></pre>
+
+<h4>也可以是一个工厂方法</h4>
+
+<p>对于装潢器来说，它同样也可以是一个工厂方法，接受配置参数信息，并返回一个应用于目标函数的装换函数。如下例子，对类可测试性的标记：</p>
+
+<pre class='green'><code>@isTestable(true)
+class MyClass { }
+
+function isTestable(value) {
+   return function decorator(target) {
+      target.isTestable = value;
+   }
+}
+</code></pre>
+
+<p>同样工厂方法，也可以被应用于属性之上，如下对可枚举属性的配置：</p>
+
+<pre class='green'><code>class C {
+  @enumerable(false)
+  method() { }
+}
+
+function enumerable(value) {
+  return function (target, key, descriptor) {
+     descriptor.enumerable = value;
+     return descriptor;
+  }
+}
+</code></pre>
+
+<p>同样在上篇<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中对于日志拦截的日志类型配置信息，也是利用工厂方法来实现的。它是一个更复杂的工厂方式的Decorators实现。</p>
+
+<h4>后续</h4>
+
+<p>如上一篇博问所说：虽然它是ES7的特性，但在Babel大势流行的今天，我们可以利用Babel来使用它。我们可以利用Babel命令行工具，或者grunt、gulp、webpack的babel插件来使用Decorators。</p>
+
+<p>关于ES7 Decorators的更有意思的玩法，你可以参见牛人实现的常用的Decorators：<a href="https://github.com/jayphelps/core-decorators.js">core-decorators</a>。以及<a href="http://raganwald.com/">raganwald</a>的<a href="http://raganwald.com/2015/06/26/decorators-in-es7.html">如何用Decorators来实现Mixin</a>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1096,188 +1301,6 @@ $toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-30T11:46:30+08:00" pubdate data-updated="true">Aug 30<span>th</span>, 2015</time>
-        
-           | <a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/images/blog_img/ramda-logo.png" alt="ramdajs函数式编程" /></p>
-
-<p>在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承自Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。在JavaScript世界中有很多的函数式编程库能辅助我们的JavaScript函数式体验，在它们之中最为成功的要数Underscore或lodash。</p>
-
-<p>如下lodash实例代码：</p>
-
-<pre class='green'><code>var users = [
-  { 'user': 'barney',  'age': 36 },
-  { 'user': 'fred',    'age': 40 },
-  { 'user': 'pebbles', 'age': 18 }
-];
-
-var names = _.chain(users)
-    .pluck('user')
-    .join(" , ")
-    .value();
-console.log(names);
-</code></pre>
-
-<p>它以链式、惰性求值著称，形成了一套自有的DSL风格。更多关于lodash的编程可以参见博主的另一篇文章<a href="http://greengerong.com/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>。</p>
-
-<p>函数式思想展现的是一种纯粹的数学思维。函数并不代表任何物质（对象，相对于面向对象思想而言），而它仅仅代表一种针对数据的转换行为。一个函数可以是原子的算法子（函数），也可以是多个原子算法子组成的组合算法子。它们是对行为的最高抽象，具有非凡的抽象能力和表现力。</p>
-
-<p>虽然Underscore或lodash也提供了<em>.compose（或</em>.flowRight）函数来实现函数组合的能力，但ramdajs具有更强的组合力。</p>
-
-<p>ramdajs是一个更具有函数式代表的JavaScript库，可以在这里了解更多关于它的信息<a href="http://ramdajs.com/0.17/">http://ramdajs.com/0.17/</a>。它的这种能力主要来自它自有的两大能力：自动柯里化和函数参数优先于数据。</p>
-
-<h4>自动柯里化</h4>
-
-<p>在计算机科学中，柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数的技术。这个技术由 Christopher Strachey 以逻辑学家 Haskell Curry 命名的，尽管它是 Moses Schnfinkel 和 Gottlob Frege 发明的。</p>
-
-<p>在理论计算机科学中，柯里化提供了在简单的理论模型中比如只接受一个单一参数的lambda 演算中研究带有多个参数的函数的方式。</p>
-
-<p>ramdajs利用这一技术，默认所有API函数都支持自动柯里化。这为它提供了可以将另一个函数组合的先决条件。如常用的map操作需要接受两个参数，在ramdajs中可以如下两种方式实现：</p>
-
-<pre class='green'><code>R.map(function(item){
-    return item *2;
- }, 
- [2,3,5]
-); //输出[4, 6, 10]
-
-
-var map = R.map(function(item){
-    return item *2;
-});
-map([2,3,5]); //输出[4, 6, 10]
-</code></pre>
-
-<p>如果我们传入2个完备的参数，则R.map函数将会直接执行。否则，它将返回另一个函数，等待参数完备时才执行。</p>
-
-<p>关于JavaScript函数的柯里化，你还可以从博主的《JavaScript函数柯里化》中了解更多<a href="http://www.cnblogs.com/whitewolf/p/4495517.html">http://www.cnblogs.com/whitewolf/p/4495517.html</a></p>
-
-<h4>函数参数优先于数据</h4>
-
-<p>在UnderScore和lodash这类库中，都要求首先传入数据，然后才是转换函数。而在ramdajs却是颠覆性的改变。在它的规约中数据参数是最后一个参数，而转换函数和配置参数则优于数据参数，排在前面。</p>
-
-<p>将转换函数放置在前面，再加上函数的自动柯里化，就可以在不触及数据的情况下，将一个函数算法子包装进另一个算法子中，实现两个独立转换功能的组合。</p>
-
-<p>假设，我们拥有如下两个基础算法子:</p>
-
-<ol>
-<li>R.multiply(a, b)：实现 a *b；
-2：R.map(func, data)：实现集合 a &ndash;> b的map。</li>
-</ol>
-
-
-<p>因为可以自动柯里化，所以有</p>
-
-<pre class='green'><code>R.multiply(10, 2); // 20
-
-R.multiply(10) (2); // 20
-</code></pre>
-
-<p>所以上面对数组map的例子则可以转为如下形式：</p>
-
-<pre class='green'><code>R.map(R.multiply(2)) ([2, 5, 10, 80]); // [4, 10, 20, 160]
-</code></pre>
-
-<p>R.map(R.multiply(2))的返回值也是一个函数，它是一个组合转换函数。它组合了map和multiply行为。它利用R.map组合封装了R.multiply(2)返回的柯里化函数，它等待map函数传入对应的被乘数。</p>
-
-<h4>ramdajs的组合</h4>
-
-<p>有了上面的两个条件，再加上ramdajs为我们提供的R.compose方法，我们就能很容易的实现更多算法子的组合。R.compose是从右向左执行的数据流向。</p>
-
-<p>用ramdajs的组合来实现开篇lodash一样的用户名拼接的例子，则我们可以分为2个算法子的组合：</p>
-
-<ol>
-<li>R.pluck(prop)：选择对象固定属性；</li>
-<li>R.join(data)：对数组的字符串拼接。</li>
-</ol>
-
-
-<p>则代码如下所示：</p>
-
-<pre class='green'><code>var joinUserName = R.compose(R.join(" , "), R.pluck("user"));
-joinUserName(users); // "barney , fred , pebbles"
-</code></pre>
-
-<p>这里的函数式组合可表示为下图：</p>
-
-<p><img src="/images/blog_img/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%AE%97%E6%B3%95%E5%AD%90%E7%BB%84%E5%90%88.png" alt="函数式组合" /></p>
-
-<p>如果我们希望join用户的年龄，则如下：</p>
-
-<pre class='green'><code>var joinUserAge = R.compose(R.join(" , "), R.pluck("age"));
-joinUserAge(users); // "36 , 40 , 18"
-</code></pre>
-
-<p>假设我们希望输出的不是用户年龄，而是用户生日，则我们可以轻易组合上一个减法的算法子：</p>
-
-<ol>
-<li>R.subtract(a, b)：实现 a &ndash; b 数学算法。</li>
-</ol>
-
-
-<p>则代码如下：</p>
-
-<pre class='green'><code>var joinUserBrithDay = R.compose(R.join(","),R.map(R.subtract(new Date().getFullYear())),R.pluck("age"));
-joinUserBrithDay(users); // "1979,1975,1997"
-</code></pre>
-
-<p>再如，我们希望获取最年轻的用户：</p>
-
-<p>lodash实现：</p>
-
-<pre class='green'><code>_.chain(users)
-  .sortBy("age")
-  .first()
-  .value();
-</code></pre>
-
-<p>ramdajs则，可以组合获取第一个元素的R.head算法子和排序算法子R.sortBy：</p>
-
-<pre class='green'><code>var youngestUser = R.compose(R.head, R.sortBy(R.prop("age")));
-youngestUser(users); // Object {user: "pebbles", age: 18}
-</code></pre>
-
-<p>比如我们希望获取年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
-
-<pre class='green'><code>var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
-olderUser(users); // Object {user: "fred", age: 40}         
-</code></pre>
-
-<p>希望你也能像我一样喜欢上ramdajs，关于它的更多资料，请参见其官网 <a href="http://ramdajs.com/0.17/">http://ramdajs.com/0.17/</a>。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1306,6 +1329,10 @@ olderUser(users); // Object {user: "fred", age: 40}
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/24/es7-javascript-decorators/">ES7 JavaScript Decorators</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
       </li>
     
@@ -1331,10 +1358,6 @@ olderUser(users); // Object {user: "fred", age: 40}
     
       <li class="post">
         <a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取元素定位位置的法宝</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a>
       </li>
     
   </ul>
