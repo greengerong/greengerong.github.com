@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "ES7 JavaScript Decorators"
+title: "细说ES7 JavaScript Decorators"
 date: 2015-09-24 15:00:40 +0800
 comments: true
 categories: [es7, javascript, decorators]
