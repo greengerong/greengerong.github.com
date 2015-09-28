@@ -11,7 +11,7 @@ Chrome中的控制台console，是我们检查程序允许是否正常的常用�
 
 ![百度console招聘](/images/blog_img/baidu-console-recruitment.png)
 
-在Console中打印日志的方式有log、info、warn、error这几类方式。但它们并不是今天的主题。对于日志信息打印来说，一直都显得很单调。直到最新版的Chrome和Firefox (+31)后，我们可以尝试更多多彩的打印样式了。在最新的Google chrome文档中console.log支持如下的格式：
+在Console中打印日志的方式有log、info、warn、error这几类方式。但它们并不是本文的主题。对于日志信息打印来说，一直都显得很单调。直到最新版的Chrome和Firefox (+31)，我们可以尝试更多多彩的打印格式了。在最新的Google chrome文档中console.log支持如下的格式：
 
 1. %s	字符串格式化；
 2. %d/%i	整数格式化；
@@ -20,16 +20,17 @@ Chrome中的控制台console，是我们检查程序允许是否正常的常用�
 5. %O	可扩展的JavaScript对象格式化；
 6. %c	利用CSS来自定义样式格式化输出。
 
-当然我们今天要说的是%c这类格式化。我们可以利用CSS样式来控制打印信息的输出。这样我们就可以得到一个多彩的日志信息，或者就是招聘广告了。
+本文将要说的就是%c这个格式化器。我们可以利用CSS样式来控制打印信息的输出。这样我们就可以得到一个多彩的日志信息，或者就是招聘广告了。
 
 下面代码输出效果为：
 
 	console.log('%c [破狼]-[双狼说]!', 'background: #008000; color: #fff');
 
+效果：
 
 ![彩色的console log](/images/blog_img/console-log-po-lang.png)
 
-下面是一段来自http://stackoverflow.com/questions/7505623/colors-in-javascript-console的一段：文字光影的效果：
+再如：下面这段来自[http://stackoverflow.com/questions/7505623/colors-in-javascript-console](http://stackoverflow.com/questions/7505623/colors-in-javascript-console)示例，文字光影的效果：
 
 代码比较长，请移步到stackoverflow查看。这里主要是利用的text-shadow这个CSS3特性来实现的，文字光影效果：
 
