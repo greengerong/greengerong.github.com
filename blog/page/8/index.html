@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp; &nbsp; &nbsp; 在动态语言的世界里一直流传着一种叫做鸭子类型的风格，其来自谚语：&ldquo;如果行鸭子一样走路，像鸭子一样呱呱叫，那它就是一只鸭子&rdquo;。 &nbsp;&nbsp;&nbsp;&nbsp; 从鸭子类型，我们可以联想到它的推导， &hellip;"> 
+    <meta name="description" content="Sublime command for mac : execute those command: sudo ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/01/sublime-2-for-mac-link-to-command/">Sublime 2 for Mac Link to Command</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2013/07/01/sublime-2-for-mac-link-to-command/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2013/07/01/sublime-2-for-mac-link-to-command/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><span>Sublime command for mac :</span></p>
+
+<p><span>execute those command:</span></p>
+
+<p><span>sudo ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime</span></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/07/01/3165484.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1213,125 +1258,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/">edge.js架起node.js和.net互操作桥梁</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-31T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-           | <a href="/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/#disqus_thread"
-             data-disqus-identifier="http://greengerong.github.io/blog/2013/03/31/edge-js-jia-qi-node-js-he-net-hu-cao-zuo-qiao-liang/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天要介绍的是edge.js这个github上刚兴起的开源项目，它可以让node.js和.net之间在in-process下互操作。.net版本在4.5及以上，因为.net4.5带来的Task，asyn，await关键字和node.js的Event模型正好匹配。如果你感兴趣的话，可以参见github<a href="https://github.com/tjanczuk/edge" title="https://github.com/tjanczuk/edge">https://github.com/tjanczuk/edge</a> 和<a href="http://tjanczuk.github.com/edge">Edge.js overview</a>.</p>
-
-<p>下面这幅图展示了edge.js在node.js和.net之间互操作的桥梁。Fun&lt;object,Task&lt;object&gt;&gt;表示输入为object类型，输出为Task&lt;object&gt;,后者对应node.js中的回调函数，前者则为.net方法输入参数。更多详情请参见github readme。</p>
-
-<p>&nbsp;&nbsp; <img src="https://f.cloud.github.com/assets/822369/234085/b305625c-8768-11e2-8de0-e03ae98e7249.PNG" alt="edge.js interop model" /></p>
-
-<p>&nbsp;&nbsp; 下面我们写个菲波基数作为demo尝鲜：完整项目寄宿在github：<a href="https://github.com/greengerong/edge-demo">edge-demo</a>。</p>
-
-<div class="cnblogs_code">
-<pre class='green'><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> edge = require('edge'<span style="color: #000000;">);
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span> <span style="color: #0000ff;">var</span> fib =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;"> 4</span>     source: <span style="color: #0000ff;">function</span>() {<span style="color: #008000;">/*</span>
-<span style="color: #008080;"> 5</span> 
-<span style="color: #008080;"> 6</span> <span style="color: #008000;">        using System;
-</span><span style="color: #008080;"> 7</span> <span style="color: #008000;">        using System.Linq;
-</span><span style="color: #008080;"> 8</span> <span style="color: #008000;">        using System.Threading.Tasks;
-</span><span style="color: #008080;"> 9</span> 
-<span style="color: #008080;">10</span> <span style="color: #008000;">        public class Startup
-</span><span style="color: #008080;">11</span> <span style="color: #008000;">        {       
-</span><span style="color: #008080;">12</span> <span style="color: #008000;">             public async Task&lt;object&gt; Invoke(object input)
-</span><span style="color: #008080;">13</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">14</span> <span style="color: #008000;">                int v = (int)input;
-</span><span style="color: #008080;">15</span> <span style="color: #008000;">                var fib = Fix&lt;int, int&gt;(f =&gt; x =&gt; x &lt;= 1 ? 1 : f(x - 1) + f(x - 2));
-</span><span style="color: #008080;">16</span> <span style="color: #008000;">                return fib(v);
-</span><span style="color: #008080;">17</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span> <span style="color: #008000;">            static Func&lt;T, TResult&gt; Fix&lt;T, TResult&gt;(Func&lt;Func&lt;T, TResult&gt;, Func&lt;T, TResult&gt;&gt; f)
-</span><span style="color: #008080;">20</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">21</span> <span style="color: #008000;">                return x =&gt; f(Fix(f))(x);
-</span><span style="color: #008080;">22</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">23</span> 
-<span style="color: #008080;">24</span> <span style="color: #008000;">            static Func&lt;T1, T2, TResult&gt; Fix&lt;T1, T2, TResult&gt;(Func&lt;Func&lt;T1, T2, TResult&gt;, Func&lt;T1, T2, TResult&gt;&gt; f)
-</span><span style="color: #008080;">25</span> <span style="color: #008000;">            {
-</span><span style="color: #008080;">26</span> <span style="color: #008000;">                return (x, y) =&gt; f(Fix(f))(x, y);
-</span><span style="color: #008080;">27</span> <span style="color: #008000;">            }
-</span><span style="color: #008080;">28</span> <span style="color: #008000;">        }
-</span><span style="color: #008080;">29</span> 
-<span style="color: #008080;">30</span>     <span style="color: #008000;">*/</span><span style="color: #000000;">},
-</span><span style="color: #008080;">31</span>     references: ['System.Core.dll'<span style="color: #000000;">]
-</span><span style="color: #008080;">32</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">33</span> 
-<span style="color: #008080;">34</span> fib(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">35</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">36</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">37</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">38</span> 
-<span style="color: #008080;">39</span> <span style="color: #0000ff;">var</span> fibFromFile = edge.func(__dirname  + "/fib.cs"<span style="color: #000000;">);
-</span><span style="color: #008080;">40</span> fibFromFile(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">41</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">42</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">43</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">44</span> 
-<span style="color: #008080;">45</span> <span style="color: #0000ff;">var</span> fibFromDll =<span style="color: #000000;"> edge.func({
-</span><span style="color: #008080;">46</span>     assemblyFile: 'edge.demo.dll'<span style="color: #000000;">,
-</span><span style="color: #008080;">47</span>     typeName: 'edge.demo.Startup'<span style="color: #000000;">,
-</span><span style="color: #008080;">48</span>     methodName: 'Invoke'
-<span style="color: #008080;">49</span> <span style="color: #000000;">});
-</span><span style="color: #008080;">50</span> fibFromDll(5, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, result) {
-</span><span style="color: #008080;">51</span>     <span style="color: #0000ff;">if</span><span style="color: #000000;"> (error) console.log(error);
-</span><span style="color: #008080;">52</span> <span style="color: #000000;">    console.log(result);
-</span><span style="color: #008080;">53</span> });</pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>效果:</p>
-
-<p><a href="http://images.cnitblog.com/blog/63184/201303/31010346-272ac9bd26634985a6884e51c25a586e.png"><img src="http://images.cnitblog.com/blog/63184/201303/31010347-37d768d0e0e0441882aa1a34909245f9.png" title="image" alt="image" /></a></p>
-
-<p>这里分为3类调用，直接源码嵌入node.js和文件外置，以后编译后的dll，多的不用说，其实很简单，如果你和一样同样喜欢js和.net的话。</p>
-
-<p>在当下node.js刚兴起，成型的框架还不够多，或者有时我们必须以c或者c++来完成node.js的本地扩展的时候，edge.js给我们提供了另一个可选的途径就是 强大的.net大家族。</p>
-
-<p>&nbsp;</p>
-
-<iframe src="http://tjanczuk.github.com/edge/#/" frameborder="0" width="100%" height="350"></iframe>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/31/2991200.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -1362,6 +1288,10 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console新玩法</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
@@ -1387,10 +1317,6 @@ Travs CI 支持多中语言如ruby，java的maven，gradle,Go等请参见文档<
     
       <li class="post">
         <a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展Bootstrap Tooltip插件使其可交互</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取元素定位位置的法宝</a>
       </li>
     
   </ul>
