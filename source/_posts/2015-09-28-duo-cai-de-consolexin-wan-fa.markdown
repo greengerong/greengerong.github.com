@@ -5,9 +5,9 @@ date: 2015-09-28 08:53:40 +0800
 comments: true
 categories: [chrome]
 ---
-Chrome应该是每一个Web开发者必备的工具之一。它有而强大的Devtool，辅助我们的JavaScript调试，审视DOM袁术，CSS即时修改等。以及它还有一个的庞大的插件系统，你也可以很容易的自定义属于自己的插件扩展。如果希望了解更多的Chrome常用调试，请参见笔者早期的微信推送文章[《15个必须知道的chrome开发者技巧》](http://mp.weixin.qq.com/s?__biz=MjM5NTM1NDcyOQ==&mid=204026297&idx=1&sn=47294644cc7298ea3c57736ed0a75173&scene=23&srcid=0928aP9a3QHDyTOtc2Nhrszw#rd)。
+Chrome应该是每一个Web开发者必备的工具之一。它有而强大的Devtool，辅助我们的JavaScript调试，审视DOM元素，CSS即时修改等。以及它还有一个的庞大的插件系统，同时我们也可以很容易的扩展属于自己的Chrome插件。如果希望了解更多的Chrome常用调试，请参见笔者早期的微信推送文章[《15个必须知道的chrome开发者技巧》](http://mp.weixin.qq.com/s?__biz=MjM5NTM1NDcyOQ==&mid=204026297&idx=1&sn=47294644cc7298ea3c57736ed0a75173&scene=23&srcid=0928aP9a3QHDyTOtc2Nhrszw#rd)。
 
-Chrome中的控制台console，是我们检查程序允许是否正常的常用的工具之一，同时它也是我们打印调试日志信息，运行调试代码的常用工具。在国内近几年，它也成为了程序员招聘的渠道之一。如下面百度的招聘信息：
+Chrome中的控制台console，是我们检查程序允许是否正常的常用工具之一，同时它也是我们打印调试日志信息，运行调试代码的常用工具。在国内近几年，它也成为了程序员招聘的渠道之一。如下面百度的招聘信息：
 
 ![百度console招聘](/images/blog_img/baidu-console-recruitment.png)
 
