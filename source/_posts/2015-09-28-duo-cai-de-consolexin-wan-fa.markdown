@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "多彩的Console新玩法"
+title: "多彩的Console打印新玩法"
 date: 2015-09-28 08:53:40 +0800
 comments: true
 categories: [chrome]
