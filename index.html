@@ -97,11 +97,11 @@
 
   <div class="entry-content"><p>Chrome应该是每一个Web开发者必备的工具之一。它有而强大的Devtool，辅助我们的JavaScript调试，审视DOM元素，CSS即时修改等。以及它还有一个的庞大的插件系统，同时我们也可以很容易的扩展属于自己的Chrome插件。如果希望了解更多的Chrome常用调试，请参见笔者早期的微信推送文章<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTM1NDcyOQ==&amp;mid=204026297&amp;idx=1&amp;sn=47294644cc7298ea3c57736ed0a75173&amp;scene=23&amp;srcid=0928aP9a3QHDyTOtc2Nhrszw#rd">《15个必须知道的chrome开发者技巧》</a>。</p>
 
-<p>Chrome中的控制台console，是我们检查程序允许是否正常的常用的工具之一，同时它也是我们打印调试日志信息，运行调试代码的常用工具。在国内近几年，它也成为了程序员招聘的渠道之一。如下面百度的招聘信息：</p>
+<p>Chrome中的控制台console，是我们检查程序允许是否正常的常用工具之一，同时它也是我们打印调试日志信息，运行调试代码的常用工具。在国内近几年，它也成为了程序员招聘的渠道之一。如下面百度的招聘信息：</p>
 
 <p><img src="/images/blog_img/baidu-console-recruitment.png" alt="百度console招聘" /></p>
 
-<p>在Console中打印日志的方式有log、info、warn、error这几类方式。但它们并不是今天的主题。对于日志信息打印来说，一直都显得很单调。直到最新版的Chrome和Firefox (+31)后，我们可以尝试更多多彩的打印样式了。在最新的Google chrome文档中console.log支持如下的格式：</p>
+<p>在Console中打印日志的方式有log、info、warn、error这几类方式。但它们并不是本文的主题。对于日志信息打印来说，一直都显得很单调。直到最新版的Chrome和Firefox (+31)，我们可以尝试更多多彩的打印格式了。在最新的Google chrome文档中console.log支持如下的格式：</p>
 
 <ol>
 <li>%s   字符串格式化；</li>
@@ -113,16 +113,18 @@
 </ol>
 
 
-<p>当然我们今天要说的是%c这类格式化。我们可以利用CSS样式来控制打印信息的输出。这样我们就可以得到一个多彩的日志信息，或者就是招聘广告了。</p>
+<p>本文将要说的就是%c这个格式化器。我们可以利用CSS样式来控制打印信息的输出。这样我们就可以得到一个多彩的日志信息，或者就是招聘广告了。</p>
 
 <p>下面代码输出效果为：</p>
 
 <pre class='green'><code>console.log('%c [破狼]-[双狼说]!', 'background: #008000; color: #fff');
 </code></pre>
 
+<p>效果：</p>
+
 <p><img src="/images/blog_img/console-log-po-lang.png" alt="彩色的console log" /></p>
 
-<p>下面是一段来自<a href="http://stackoverflow.com/questions/7505623/colors-in-javascript-console%E7%9A%84%E4%B8%80%E6%AE%B5%EF%BC%9A%E6%96%87%E5%AD%97%E5%85%89%E5%BD%B1%E7%9A%84%E6%95%88%E6%9E%9C%EF%BC%9A">http://stackoverflow.com/questions/7505623/colors-in-javascript-console%E7%9A%84%E4%B8%80%E6%AE%B5%EF%BC%9A%E6%96%87%E5%AD%97%E5%85%89%E5%BD%B1%E7%9A%84%E6%95%88%E6%9E%9C%EF%BC%9A</a></p>
+<p>再如：下面这段来自<a href="http://stackoverflow.com/questions/7505623/colors-in-javascript-console">http://stackoverflow.com/questions/7505623/colors-in-javascript-console</a>示例，文字光影的效果：</p>
 
 <p>代码比较长，请移步到stackoverflow查看。这里主要是利用的text-shadow这个CSS3特性来实现的，文字光影效果：</p>
 
