@@ -48,9 +48,9 @@ CSS：
 		width: 80%
 	}
 
-则其效果图为：
+则其效果图为([http://jsbin.com/xihusojale/edit?html,css,output](http://jsbin.com/xihusojale/edit?html,css,output))：
 
-![em percentage demo](/images/blog_img/em-percentage-demo.jpg)
+![em percentage demo](/images/blog_img/em-percentage-demo.png)
 
 从图上我们可以看出：设置5em的div的第一行字符刚好为5个字符大小，因为如上所说，它是相对于当前元素字体的尺寸， 5 * 18 = 90px。而百分比显示则会比较大一些，因为它是相对于父元素的尺寸比例， 200 * 80% = 160px。
 
