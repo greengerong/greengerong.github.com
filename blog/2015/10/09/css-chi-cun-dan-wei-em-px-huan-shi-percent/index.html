@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>CSS 尺寸和字体单位- Em、px还是% - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在页面整体布局中，页面元素的尺寸大小（长度、宽度、内外边距等）和页面字体的大小也是重要的工作之一。一个合理设置，则会让页面看起来层次分明，重点鲜明，赏心悦目。反之，一个不友好的页面尺寸和字体大小设置，则会增加页面的复杂性，增加用户对页面理解的复杂性；甚至在当下访问终端（iPhone、iPad、PC &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CSS 尺寸和字体单位- Em、px还是%</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-09T07:00:04+08:00" pubdate data-updated="true">Oct 9<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在页面整体布局中，页面元素的尺寸大小（长度、宽度、内外边距等）和页面字体的大小也是重要的工作之一。一个合理设置，则会让页面看起来层次分明，重点鲜明，赏心悦目。反之，一个不友好的页面尺寸和字体大小设置，则会增加页面的复杂性，增加用户对页面理解的复杂性；甚至在当下访问终端（iPhone、iPad、PC、Android&hellip;）层出不穷的今天，适应各式各样的访问终端，将成为手中的一块“烫手的山芋”。所以在近几年，“九宫格”式的“流式布局”再度回归。为了提供页面布局，及其它的可维护性、可扩展性，我们尝试将页面元素的大小，以及字体大小都设置为相对值，不再是孤立的固定像素点。使其能在父元素的尺寸变化的同时，子元素也能随之适应变化。以及结合少量最新CSS3的@media查询，来实现“响应式布局”，bootstrap这类CSS框架大势兴起。</p>
+
+<p>然而在CSS中，W3C文档把尺寸单位划为为两类：相对长度单位和绝对长度单位。然而相对长度单位按照不同的参考元素，又可以分为字体相对单位和视窗相对单位。字体相对单位有：em、ex、ch、rem；视窗相对单位则包含：vw、vh、vmin、vmax几种。绝对定位则是固定尺寸，它们采用的是物理度量单位：cm、mm、in、px、pt以及pc。但在实际应用中，我们使用最广泛的则是em、rem、px以及百分比（%）来度量页面元素的尺寸。</p>
+
+<ol>
+<li>px：为像素单位。它是显示屏上显示的每一个小点，为显示的最小单位。它是一个绝对尺寸单位；</li>
+<li>em：它是描述相对于应用在当前元素的字体尺寸，所以它也是相对长度单位。一般浏览器字体大小默认为16px，则2em == 32px；</li>
+<li>%： 百分比，它是一个更纯粹的相对长度单位。它描述的是相对于父元素的百分比值。如50%，则为父元素的一半。</li>
+</ol>
+
+
+<p>这里需要注意的是：em是相对于应用于当前当前元素的字体尺寸；而百分比则是相对于父元素的尺寸。如下面示例：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div class="parent"&gt;
+     &lt;div class="em-demo"&gt;
+      设置长度为5em demo
+     &lt;/div&gt;
+
+     &lt;div class="percentage-demo"&gt;
+      设置长度为80% demo
+     &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>CSS：</p>
+
+<pre class='green'><code>div{
+    border: 1px dashed #808080;
+    margin:10px
+}
+
+.parent{
+    width: 200px;
+    font-size: 18px;
+}
+
+.em-demo{
+    width: 5em;
+}
+
+.percentage-demo{
+    width: 80%
+}
+</code></pre>
+
+<p>则其效果图为：</p>
+
+<p><img src="/images/blog_img/em-percentage-demo.jpg" alt="em percentage demo" /></p>
+
+<p>从图上我们可以看出：设置5em的div的第一行字符刚好为5个字符大小，因为如上所说，它是相对于当前元素字体的尺寸， 5 * 18 = 90px。而百分比显示则会比较大一些，因为它是相对于父元素的尺寸比例， 200 * 80% = 160px。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-09T07:00:04+08:00" pubdate data-updated="true">Oct 9<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/css/'>css</a>
+  
+</span>
+
+
+    </p>
+    
+      <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/" title="Previous Post: 多彩的Console打印新玩法">&laquo; 多彩的Console打印新玩法</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS 尺寸和字体单位- Em、px还是%</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://greengerong.github.io/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/';
+        var disqus_url = 'http://greengerong.github.io/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+ 
+ 
+ 
+ 
+
+
+</body>
+</html>

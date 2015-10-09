@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp; 这里只是几个f#简单的算法应用，请各位别怕砖。 代码 Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt; 1 // Learn &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在这里总结一下我在语言学习之路。我是一个信息与计算科学的学习，属于应用数学，走上了程序员之路，回想起觉得有些诧异。我并不是科班出生的合格程序员。我走上这条道理也是一种偶然，或许该说是兴趣所致吧。在大学之前， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,553 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/12/13/wo-di-cheng-xu-ren-sheng-yu-yan-xue-xi-zhi-lu/">我的程序人生&#8211;语言学习之路</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-13T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在这里总结一下我在语言学习之路。我是一个信息与计算科学的学习，属于应用数学，走上了程序员之路，回想起觉得有些诧异。我并不是科班出生的合格程序员。我走上这条道理也是一种偶然，或许该说是兴趣所致吧。在大学之前，我一个僻远山区的孩子，计算机这个东西碰都没有碰过得，记得高中会考时候连复制、新建这些简单操作都不知道的我，大学在第一个语言课C学习中感到了乐趣所在，在编写出每一个code，都能让我有一种自豪感。慢慢的我爱上的Code，又等到了两个老师的帮助，进入了某大企业实习。大二开始就在外边做项目，给我了许多程序基础理论和设计思想等方面的积累。使我的程序之路走的比较顺利，毕业时，虽然某些企业对我的经验有所怀疑。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在大学语言的学习之路我学了好几门语言，在这里和大家一一分享下我的这条学习之路。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 按时间来说我接触的首先是c这门古老的语言，也是他带着我走上了这条程序之路。在刚学完C的时候我一个非科班的师弟（当时大一下期）在校程序大赛中拿的大奖，树立的我软件的梦想，虽然在毕业后有些徘徊，但是在学生期间对我的程序学习之路是很大的鼓励，当时我还学习的C的一些高级编程Socket等（现在已忘的差不多了），还参加了学校的单片机创新课题用C Show了一下，哈哈。下面是我当时的最后综合实验程序-多种排序集合：</p>
+
+<pre class='green'><code> #include&lt;stdio.h&gt; 
+        #define M  20
+
+        void disp1(int *a,int n) 
+        {    int i; 
+        printf("\nsort before  :*****\n"); 
+          for(i=1;i&lt;=n;i++) 
+            printf(" %3d",a[i]); 
+        }
+
+        void disp2(int *a,int n) 
+        { int i; 
+          printf("\nsort after  :*****\n"); 
+        for(i=1;i&lt;=n;i++) 
+             printf(" %3d",a[i]); 
+              a[0]=-1; 
+        }
+
+        void create(int *a,int *b,int  *n) 
+        {int i; 
+          printf("input the toall\n"); 
+             scanf("%d",n); 
+            for(i=1;i&lt;=*n;i++) 
+            {  printf("input the %d\n",i); 
+                scanf("%d",&amp;a[i]); 
+                 b[i]=a[i]; 
+              } 
+           a[0]=b[0]=0; 
+        }
+
+        void  insertsort(int *a,int n) 
+        { int i,j;
+
+          for(i=2;i&lt;=n;i++) 
+           {  a[0]=a[i]; 
+             for(j=i-1;a[0]&lt;a[j];j--) 
+                        a[j+1]=a[j]; 
+                  a[j+1] =a[0]; 
+            }
+
+        }
+
+
+        void xiersort(int *a,int n) 
+        { int d[3]={5,3,1}; 
+           int i,j,k=0;
+
+           while(k&lt;3) 
+        {  for(i=d[k]+1;i&lt;=n;i++) 
+             {   a[0]=a[i]; 
+                 for(j=i-d[k];j&gt;0&amp;&amp;a[j]&gt;a[0];j=j-d[k]) 
+                        a[j+d[k]]=a[j]; 
+                  a[j+d[k]]=a[0]; 
+              } 
+            k++; 
+        }
+
+        }
+
+
+        void maopaosort(int *a,int n) 
+        {  int i,j,change,t;
+
+          for(i=1;i&lt;n;i++) 
+           { change=0; 
+               for(j=1;j&lt;=n-i;j++) 
+                  if(a[j]&gt;a[j+1]) 
+                      { t=a[j]; 
+                         a[j]=a[j+1]; 
+                          a[j+1]=t; 
+                           change=1; 
+                       }
+
+               if(change==0) 
+                           break; 
+              } 
+        }
+
+
+        void quicksort(int *a,int t, int n) 
+        {  int i=t,j=n;
+
+          while(i&lt;j) 
+        {   if(i&lt;j) 
+            {   a[0]=a[i]; 
+                 while(i&lt;j&amp;&amp;a[j]&gt;a[0]) 
+                             j--; 
+                 if(i&lt;j) 
+                   {  a[i]=a[j]; 
+                         i++; 
+                     }
+
+               while(i&lt;j&amp;&amp;a[i]&lt;a[0]) 
+                             i++; 
+                 if(i&lt;j) 
+                   {  a[j]=a[i]; 
+                         j--; 
+                     } 
+            } 
+               a[i]=a[0]; 
+             quicksort(a,1,i-1); 
+             quicksort(a,i+1,n);
+
+        } 
+        }
+
+
+        void jiandansort(int *a,int n) 
+        { int i,j,t; 
+          for(i=1;i&lt;n;i++) 
+          { for(j=i+1;j&lt;=n;j++) 
+               if(a[i]&gt;a[j]) 
+               {  t=a[i]; 
+                    a[i]=a[j]; 
+                   a[j]=t; 
+                } 
+           } 
+        }
+
+
+
+        void main( ) 
+        {int a[M+1],b[M+1],n=0,i; 
+        char ch1='y',ch2; 
+        create(a,b,&amp;n);
+
+        while(ch1=='y'||ch1=='Y') 
+        { printf("\n input 1---------  insert sort"); 
+           printf("\n input 2---------  xi er sort"); 
+           printf("\n input 3---------mao pao sort"); 
+           printf("\n input 4---------  quick sort"); 
+            printf("\n input 5--------  jian dan sort"); 
+            printf("\n inputc(C)---------  creat"); 
+            printf("\n input n(N)---------  exit\n");
+
+            scanf("\n%c",&amp;ch2); 
+             if(a[0]==-1) 
+               for(i=1;i&lt;=n;i++) 
+                 a[i]=b[i];
+
+        switch(ch2) 
+        { case  '1': disp1(a,n);     insertsort(a,n) ; 
+                           disp2(a,n);      break; 
+           case  '2': disp1(a,n);     xiersort(a,n); 
+                            disp2(a,n);    break; 
+           case  '3': disp2(a,n);     maopaosort(a,n); 
+                           disp2(a,n);       break; 
+           case  '4': disp1(a,n);    quicksort(a,1,n); 
+                          disp2(a,n);      break; 
+            case  '5':disp1(a,n);       jiandansort(a,n); 
+                            disp2(a,n);     break; 
+            case  'c': 
+            case  'C':create(a,b,&amp;n);   break; 
+            case  'n': 
+            case  'N' :ch1='n'; 
+        } 
+        } 
+        }
+</code></pre>
+
+<p> 现在看起代码是比较糟糕!</p>
+
+<p>&nbsp; 接着我学习的汇编这门更古老的语言的，个人感觉汇编若只是说语法和学习，并不难。在这里也贴出我学习时候的一个打字游戏的小Code.</p>
+
+<pre class='green'><code>    ;;;;任意掉落字符,按空格和ESC暂停并再ESC结束,空格继续;; 
+    .model small 
+    clear_screen macro op1,op2,op3,op4 ;清屏宏定义   
+    push ax 
+    push bx 
+    push cx 
+    push dx 
+        mov ah,06h          
+        mov al,00h 
+        mov bh,06h 
+        mov ch,op1 
+        mov cl,op2 
+        mov dh,op3 
+        mov dl,op4 
+        int 10h 
+        mov ah,02h 
+        mov bh,0h 
+        mov dh,00h 
+        mov dl,00h 
+        int 10h 
+    pop dx 
+    pop cx 
+    pop bx 
+    pop ax 
+    endm
+
+    set  macro p1,p2,p3 ;;;设置光标并显示p1 
+    push cx 
+    mov ah,02h 
+    mov bh,0h
+
+    mov dx,p3 
+    mov dh,p2 
+    int 10h 
+    mov ah,0ah 
+    mov al,p1 
+    mov cx,1 
+    mov bl,12 
+    int 10h 
+    pop cx 
+    endm
+
+    delay macro;;;拖延时间 
+    local sg1,sg2,nextdelay,nextdelay1 
+    push cx 
+    push dx 
+    push  ax 
+    mov dx,speed 
+    mov cx,1000 
+    sg1 : 
+    sg2 : 
+       loop sg2 
+    dec dx 
+    jnz sg2 
+    mov ah,0bh 
+    int 21h 
+    cmp al,0h;;无字符可以读取 
+    je nextdelay 
+    mov ah,7 
+    int 21h 
+    cmp al,' ' 
+    je calll 
+    cmp al,1bh 
+    jne nextdelay1 
+    calll : 
+    call justment 
+      jmp  nextdelay 
+    nextdelay1: 
+    cmp al,letters[si] 
+      jne  nextdelay 
+      call disp 
+    nextdelay: 
+    pop ax 
+    pop dx 
+    pop  cx 
+    endm
+
+    menu  macro op1,op2,op3 ;菜单显示宏定义      
+       mov ah,02h 
+       mov bh,00h 
+       mov dh,op1 
+       mov dl,op2 
+       int 10h 
+       mov ah,09h 
+       lea dx,op3 
+       int 21h 
+    endm
+
+
+    .model 
+    .stack 256 
+    .data 
+    letters db "jwmilzoeucgpravskntxhdyqfb" 
+            db 'iytpkwnxlsvxrmofzhgaebudjq' 
+            db 'nwimzoexrphysfqtvdcgljukdas' 
+    count equ $-letters ;;79 
+    menu0 db "Welcome to play !$"   
+    menu1 db 'input enter to game!',0dh,0ah,'$' 
+    menu2 db 'input space to halt!',0dh,0ah,'$' 
+    menu3 db 'input esc to exit!',0dh,0ah,'$' 
+    menu40 db 'this is agame which pritise keyin,',0dh,0ah,'$' 
+    menu41    db ' when you are exit from the ' 
+                     db 'game ,you will',0dh,0ah,'$' 
+    menu42 db ' kown how much you can hit ',0dh,0ah,'$' 
+    msg db 'choise speed:f--fast;s--slow;other character--orditional ! ' 
+    msg0 db 'you hit:$' 
+    msg1 db 'Help : space--- halt   Esc---home$' 
+    speed dw  800 
+    h dw ? 
+    l  db ? 
+    gs db 0 
+    .code 
+    mov ax,@data 
+    mov ds,ax 
+    menulist : 
+    clear_screen 0d,00d,25d,79d  ;;24*80(0开始) 
+    menu 07,20,menu0       ;菜单信息的宏调用 
+             menu 09,20,menu1 
+             menu 11,20,menu2 
+             menu 13,20,menu3 
+             menu 15,20,menu40 
+             menu 17,22,menu41 
+             menu 19,22,menu42 
+    again: 
+    mov ah,0 
+    int 16h 
+    cmp al,1bh 
+      jne nextmain1 
+    jmp overmain 
+    nextmain1 : 
+    cmp al,0dh 
+    jne  again 
+    clear_screen 0d,00d,25d,79d  ;;24*80(0开始) 
+    call setspeed 
+    clear_screen 0d,00d,25d,79d  ;;24*80(0开始) 
+    menu 0,5,msg1;;help menu 
+    mov dx,0 
+    ag0: 
+    call outdb 
+    call rand 
+    mov di,si 
+    call rand 
+      add di,si 
+    shr di,1;;;列坐标 
+    mov cx,1 
+    call rand 
+    push ax 
+    mov ax,si 
+      call rand 
+      add si,ax 
+      shr si,1;;;产生字符去两次的平均值 
+    pop ax 
+    ag : 
+    mov h,di 
+    mov l,cl 
+    mov al,letters[si] 
+    set al,cl,di 
+      delay 
+    dispag : 
+    set ' ',cl,di 
+      inc cx 
+    cmp cx,23 
+    je next 
+    jmp ag 
+    next : 
+    inc dx 
+    cmp dx,5 
+    je  overmain 
+    jmp ag0 
+    overmain:
+
+
+    call outdb 
+    mov ah,4ch 
+    int 21h
+
+    ;;;;;; 
+    rand proc 
+    push ax 
+    push bx 
+    push cx 
+    push dx 
+
+    sti;允许中断1ah:0 
+    mov ah,0 
+    int 1ah 
+    mov ax,dx 
+    and  ah,0;;清除高6位 
+    mov bl,count 
+    div  bl 
+    mov al,ah 
+    mov ah,0 
+    mov si,ax 
+    pop dx 
+    pop  cx 
+    pop bx 
+    pop ax 
+    ret 
+    rand endp 
+    ;;;;;;;; 
+    justment proc
+
+    cmp al,' ' 
+    call stop;;暂停
+
+    ret 
+    justment endp 
+    ;;;;;;;;;;;;;;; 
+    stop proc 
+    ;;;;;;;;;;;;;;local agstop 
+    agstop : 
+    mov ah,0bh 
+    int 21h 
+    cmp al,0 
+    je  agstop 
+    mov ah,7 
+    int 21h 
+    cmp al,' ' 
+    je overstop 
+    cmp al,1bh 
+    jne nextagstop1 
+    jmp menulist 
+    nextagstop1: 
+    jmp agstop 
+    overstop: 
+    ret 
+    stop endp
+
+    ;;;; 
+    disp proc 
+    set ' ',l,h 
+    inc gs 
+    call ring
+
+    call outdb 
+    jmp ag0 
+    ret 
+    disp endp 
+    ;;;;;;;;;; 
+    outdb proc 
+    push ax 
+    push bx 
+      push cx 
+    push dx
+
+    mov ah,02h 
+       mov bh,0h 
+       mov dh,0 
+       mov dl,60 
+       int 10h
+
+    mov ah,9 
+    mov dx,offset msg0 
+    int 21h 
+    mov al,gs
+
+      mov ch,10 
+    mov cl,0;记数 
+    mov bh,0;;bh=0 
+    agodb : 
+      mov ah,0 
+      div ch 
+      mov bl,ah;;存余数入栈 
+       add bl,'0' 
+    push bx 
+       inc cl 
+       cmp al,0 
+        jg agodb 
+      mov ch,0
+
+    agodb1 : 
+    pop bx 
+    mov dx,bx 
+    mov ah,2 
+    int 21h 
+    loop agodb1
+
+    ;;mov dl,0dh 
+    ;; mov ah,2 
+    ;;int 21h 
+    ;; mov dl,0ah 
+    ;; mov ah,2 
+    ;;int 21h
+
+    pop dx 
+    pop cx 
+    pop bx 
+    pop ax 
+    ret 
+    outdb endp 
+    ;;;;;;;;;;;;;; 
+    setspeed proc 
+    push ax 
+    menu 15,5,msg 
+    mov  ah,1h 
+    int 21h 
+    cmp al,'f' 
+    je nextspeed1 
+    cmp al,'s' 
+      jne nextspeed2 
+    mov speed,1000 
+    jmp  nextspeed2 
+    nextspeed1 : 
+    mov speed,500 
+    nextspeed2: 
+    pop ax 
+      ret 
+    setspeed endp
+
+    ;;;;;;;;;;;;; 
+    ring proc 
+    push ax 
+    push cx 
+    push dx
+
+    mov cx,3 
+    ringed : 
+    mov ah,02h 
+    mov dl,07h 
+    int 21h 
+    clear_screen 1d,00d,25d,79d  ;;24*80(0开始) 
+    loop ringed 
+    pop dx 
+    pop cx 
+    pop ax 
+    ret 
+    ring endp
+
+    end
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 紧接着遇见的上面说的两位老师他们用的是c#语言，和他们一起做些小开发，所以我也走上了,NET之路，刚开始做了几个Web的开发。其中一个老师是某企业的架构师，所以在他的帮助和介绍下，我和他一同学习并进入企业实习，做了一些Winform的开发，平时空闲的时候就在老师的指导下位他的快速开发平台，添加一些新东西，改进等工作。那时虽然辛苦一些，但是过的挺充实的，读书的时候还有比较好的外快，挺兴奋的。同时，我也没有拉下一门课程学习，虽然经常不去上课，老师们都挺支持和理解我的，期末时考试也考得很好。在这里我感谢每一位关心和支持我的老师们，你们辛苦了。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 在.NET平台上C#肯定和必备的，在这里也挑不出来典型的code展示，同时在,NET平台的唯一函数式编程语言出来后，我带着多函数式思想的理解的心情，学习了这门语言，第一次感觉到函数式编程的魅力所在，并不是写一些code（博客里贴出了两篇<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/29/1891322.html"><font color="#6699cc">F#初试（2）</font></a> 、<a href="http://www.cnblogs.com/whitewolf/archive/2010/07/14/1777408.html"><font color="#6699cc">F#初试&mdash;打印目录文件树</font></a>）。&nbsp;&nbsp;&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp; 后来我也学习了我们的面向对象的语言C++，Java，MathLab（对于数学专业的尅定是必须的，呵呵）。在c++学习时候学的感觉挺好的，但是到了准备学习MFC，看着他的函数名称等一大堆的字母，比起C#是难，这是我的c#也学得有一定基础，所以我放弃了。对于Java我还是很指着的学习了一段时间，会Java Bean，model1的开发，但只能说是基础的，当时让我苦恼的是Java一大堆的东西需要自己手工配置，还有就是那个IDE的智能提示速度让人还郁闷.绕了一圈还是继续我的.NET之路，因为在外边我所做的都是基于c# WinForm的开发，它有一个优秀的类库和IDE支持。虽然我没有继续Java，c++的学习，但是我觉得他们也是很优秀的，并不比c#差。对于一个程序不管你是c#，Java编写的能满足客户需求就是一个好的code，程序只是各种语言抒写的艺术，不该存在语言之争。毕业之时我希望走的c的编程，但是没有这样的基于，还有就是.NET已经具有了一定基础，更好找工作些，如果有机会我觉得我还想走c的编程，前提是工资与我.NET持平，呵呵。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 本想写的好些，但是我的文字功底太差了，构思的时候挺多的，一到写的时候感觉痛困难的，需要多多练习。请大家多多指教。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 随笔收尾了，虽然现实与梦想存在差距，但是我的程序之路然在继续&#8230;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/12/13/1904361.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1427,134 +1974,6 @@ return db.ExecuteCommand(sql, dbparams.ToArray());
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/08/25/Windows-fu-wu-zhong-Timer-zu-jian/">Windows服务中Timer组件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-08-25T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>制作Windows服务时候的Timer控件并不是在工具箱上直接拖拽过来的Timer，那是System.Windows.Forms命名空间下的组件，而我们这里使用的Timer应该是System.Timers.Timer.</p>
-
-<p>&nbsp; 解决方法有：</p>
-
-<p>打开&#8221;工具箱&#8221;&mdash;-右键&mdash;&ndash;&ldquo;选择项&rdquo;&mdash;-找到Timer控件,看好了,这个Timer控件的是system.Timer下的.可不是System.Windows.Form.然后添加.<img src="http://images.cnblogs.com/cnblogs_com/wxukie/timer.jpg" alt="" /></p>
-
-<p>&nbsp;</p>
-
-<p>我选择的是直接用code书写初始化代码。因为添加项速度真的太慢了，呵呵。</p>
-
-<p>MSDN上关于Timer如下：</p>
-
-<p>&nbsp;</p>
-
-<p><strong>Timer</strong> 组件是基于服务器的计时器，它使您能够指定在应用程序中引发 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.elapsed(v=VS.80"><font color="#1364c4">Elapsed</font></a>.aspx) 事件的周期性间隔。然后可以操控此事件以提供定期处理。例如，假设您有一台关键性服务器，必须每周 7 天、每天 24 小时都保持运行。可以创建一个使用 <strong>Timer</strong> 的服务，以定期检查服务器并确保系统开启并在运行。如果系统不响应，则该服务可以尝试重新启动服务器或通知管理员。</p>
-
-<p>基于服务器的 <strong>Timer</strong> 是为在多线程环境中用于辅助线程而设计的。服务器计时器可以在线程间移动来处理引发的 <strong>Elapsed</strong> 事件，这样就可以比 Windows 计时器更精确地按时引发事件。有关基于服务器的计时器的更多信息，请参见&#8220;<a href="http://msdn.microsoft.com/zh-cn/library/tb9yt5e6(v=VS.80"><font color="#1364c4">基于服务器的计时器介绍</font></a>.aspx)&#8221;。</p>
-
-<p>基于 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.interval(v=VS.80"><font color="#1364c4">Interval</font></a>.aspx) 属性的值，<strong>Timer</strong> 组件引发 <strong>Elapsed</strong> 事件。可以处理该事件以执行所需的处理。例如，假设您有一个联机销售应用程序，它不断向数据库发送销售订单。编译发货指令的服务分批处理订单，而不是分别处理每个订单。可以使用 <strong>Timer</strong> 每 30 分钟启动一次批处理。</p>
-
-<p>注意:</p>
-
-<p>当 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.autoreset(v=VS.80"><font color="#1364c4">AutoReset</font></a>.aspx) 设置为 <strong>false</strong> 时，<strong>Timer</strong> 只在第一个 <strong>Interval</strong> 过后引发一次 <strong>Elapsed</strong> 事件。若要保持以 <strong>Interval</strong> 时间间隔引发 <strong>Elapsed</strong> 事件，请将 <strong>AutoReset</strong> 设置为 <strong>true</strong>。
-</td></tr></tbody></table></div></p>
-
-<p><strong>Elapsed</strong> 事件在 <a href="http://msdn.microsoft.com/zh-cn/library/system.threading.threadpool(v=VS.80"><font color="#1364c4">ThreadPool</font></a>.aspx) 线程上引发。如果 <strong>Elapsed</strong> 事件的处理时间比 <strong>Interval</strong> 长，在另一个 <strong>ThreadPool</strong> 线程上将会再次引发���事件。因此，事件处理程序应当是可重入的。</p>
-
-<p>注意:</p>
-
-<p>在一个线程调用 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.stop(v=VS.80"><font color="#1364c4">Stop</font></a>.aspx) 方法或将 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.enabled(v=VS.80"><font color="#1364c4">Enabled</font></a>.aspx) 属性设置为 <strong>false</strong> 的同时，可在另一个线程上运行事件处理方法。这可能导致在计时器停止之后引发 <strong>Elapsed</strong> 事件。<strong>Stop</strong> 方法的示例代码演示了一种避免此争用条件的方法。
-</td></tr></tbody></table></div></p>
-
-<p>如果和用户界面元素（如窗体或控件）一起使用 <strong>Timer</strong>，请将包含有 <strong>Timer</strong> 的窗体或控件赋值给 <a href="http://msdn.microsoft.com/zh-cn/library/system.timers.timer.synchronizingobject(v=VS.80"><font color="#1364c4">SynchronizingObject</font></a>.aspx) 属性，以便将此事件封送到用户界面线程中。</p>
-
-<p><strong>Timer</strong> 在运行时是不可见的。</p>
-
-<p><span class="LW_CollapsibleArea_Title">示例</span></p>
-
-<div class="LW_CollapsibleArea_HrDiv">
-
-* * *
-
-</div>
-
-
-<p><a name="codeExampleToggle" xmlns="http://www.w3.org/1999/xhtml"></a></p>
-
-<p>下面的示例创建一个 <strong>Timer</strong>，它每隔五秒钟在控制台上显示一次&#8220;Hello World!&#8221;。</p>
-
-<p>&nbsp;</p>
-
-<pre class='green'><code>using System;
-using System.Timers;
-
-public class Timer1
-{
-    public static void Main()
-    {
-     // Normally, the timer is declared at the class level, so
-     // that it doesn't go out of scope when the method ends.
-    // In this example, the timer is needed only while Main 
-    // is executing. However, KeepAlive must be used at the
-    // end of Main, to prevent the JIT compiler from allowing 
-    // aggressive garbage collection to occur before Main 
-    // ends.
-    System.Timers.Timer aTimer = new System.Timers.Timer();
-
-    // Hook up the Elapsed event for the timer.
-    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-
-    // Set the Interval to 2 seconds (2000 milliseconds).
-    aTimer.Interval = 2000;
-    aTimer.Enabled = true;
-
-    Console.WriteLine("Press the Enter key to exit the program.");
-    Console.ReadLine();
-
-    // Keep the timer alive until the end of Main.
-    GC.KeepAlive(aTimer);
-}
-
-// Specify what you want to happen when the Elapsed event is 
-// raised.
-private static void OnTimedEvent(object source, ElapsedEventArgs e)
-{
-    Console.WriteLine("Hello World!");
-}
-</code></pre>
-
-<p>}
-&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/08/25/1808002.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/16/">&larr; Older</a>
@@ -1585,6 +2004,10 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS 尺寸和字体单位- Em、px还是%</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
       </li>
     
@@ -1610,10 +2033,6 @@ private static void OnTimedEvent(object source, ElapsedEventArgs e)
     
       <li class="post">
         <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展Bootstrap Tooltip插件使其可交互</a>
       </li>
     
   </ul>
