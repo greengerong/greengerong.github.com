@@ -92,6 +92,9 @@ pinboard_count: 3
 delicious_user:
 delicious_count: 3
 
+#comment way: disqus or you_yan
+comment_way: you_yan
+
 # Disqus Comments
 disqus_short_name: greengerong
 disqus_show_comment_count: true

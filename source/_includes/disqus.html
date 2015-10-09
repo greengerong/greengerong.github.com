@@ -1,3 +1,4 @@
+{% if site.comment_way == 'disqus'%}
 {% comment %} Load script if disquss comments are enabled and `page.comments` is either empty (index) or set to true {% endcomment %}
 {% if site.disqus_short_name and page.comments != false %}
 <script type="text/javascript">
@@ -18,4 +19,12 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
+{% endif %}
+{% endif %}
+
+{% if site.comment_way == 'you_yan'%}
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
 {% endif %}
