@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下服务层，SOA面向服务架构，架构设计-业务逻辑层，以及一些面面向设计原则理解和软件架构设计箴言。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质 &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,158 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/09/PowerShell-qiang-da-guan-dao/">PowerShell强大管道</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-09T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; PowerShell是在Window是的外壳语言，提供了多Windows的更多操作，让我们于windows的操作更简单方便，以及就是就是管理员的命令行更好的管理。PowerShell提供了与.net FCL（.net类库）的操作性，我们可以利用强大的.net FCL在PowerShell中。PowerShell提供强大的管道模型，管道指的是一个命令的输出可以利用操作符（|）方便的传递到下个命令作为输入。PowerShell不同传统管道模型的是它是一门基于对象的管道流，即在命令之间传递的对象不是简单的文本。下面我们就以本地文件操作来实践PowerShell的管道常见命令：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 1：集合遍历ForEach-Object：可以简写为foreach，或者%代替，提供了管道传入的对集合的遍历，同时提供了操作前begin，操作process，结束end命令，其中$_提供对当前索引的指代。</p>
+
+<p>&nbsp; 示例：下面我们实践利用ForEach-Object来计算本地文件目录的文件大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531544186.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153154315.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 2：条件选择Where-Object：可以简写为where或者？代替。提供了对管道输入集合的过滤筛选，类似于SQL中的where条件，$_提供对当前索引的指代。</p>
+
+<p>&nbsp;&nbsp; 示例：输出文件大于100KB的文件名字和大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091531563054.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153159287.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp; 3：选择Select-Object：简写select，提供了对对象的选择类似于sql的select，.net的new匿名对象。同时select支持-first和-last取最前面或者最后面的几个相当于sql 中top，与下例中Sort-Object结合将很有用。</p>
+
+<p>&nbsp; 示例：选择目录下文件的文件名和大小输出：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532005959.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/20120609153202584.png" title="SNAGHTML3b707d0" alt="SNAGHTML3b707d0" /></a></p>
+
+<p>&nbsp;&nbsp; 4：排序Sort-Object：简写sort，对于集合对象参照一个或者多个属性排序，可以指定-descending为倒序。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：获取最大的前5个文件：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532038731.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532053422.png" title="SNAGHTML3bc4128" alt="SNAGHTML3bc4128" /></a></p>
+
+<p>&nbsp;&nbsp; 5：管道树Tee-Object：简写为tee，可以把管道模型传入的对象记录在文件日志或者赋值给变量保存等。提供-inputObject ，-filePath ，-variable</p>
+
+<p>&nbsp; 示例：保存文件对象时$test变量：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532061570.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532075638.png" title="SNAGHTML3c03d8f" alt="SNAGHTML3c03d8f" /></a></p>
+
+<p>&nbsp;&nbsp;&nbsp; 6：分组Group-Object：简写group，提供依据属性分组类似sql group by。</p>
+
+<p>&nbsp;&nbsp; 示例：按照文件类型分组并按照组内文件个数排序
+ <a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532082149.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532092772.png" title="SNAGHTML3c30688" alt="SNAGHTML3c30688" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp; 7：集合统计Measure-Object：简写：measure，提供了对集合的统计，简便的方法来获取最小值、最大值及平均值属性。</p>
+
+<p>&nbsp; 示例：统计文件大小的最小值，最大值，平均值，总大小：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532109524.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532117920.png" title="SNAGHTML3c60aad" alt="SNAGHTML3c60aad" /></a></p>
+
+<p>&nbsp;&nbsp; 8：比较Compare-Object：简写diff，提供了对两个对象或集合的比较，其中有单侧指向器，=&gt;表达此对象出现在右边，&lt;=表示差异对象存在于左边。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 示例：新建一个文件夹2，比较连个目录的不同：</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532123592.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201206/201206091532124215.png" title="SNAGHTML3cb035d" alt="SNAGHTML3cb035d" /></a></p>
+
+<p>今天就到这里，PowerShell很强大，继续学习。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/09/2543247.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/06/jia-gou-she-ji-mu-lu/">架构设计目录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-06T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 架构引用<a href="http://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84">维基百科</a>：软件体系结构是构建<a href="http://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BD%AF%E4%BB%B6">计算机软件</a>实践的基础。与建筑师设定建筑项目的设计原则和目标，作为绘图员画图的基础一样，一个<a href="http://zh.wikipedia.org/w/index.php?title=%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">软件架构师</a>或者<a href="http://zh.wikipedia.org/w/index.php?title=%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;amp;action=edit&amp;amp;redlink=1" title="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%B8%88&amp;action=edit&amp;redlink=1">系统架构师</a>陈述软件构架以作为满足不同客户需求的实际系统设计方案的基础。从和目的、主题、材料和结构的联系上来说，软件架构可以和建筑物的<a href="http://zh.wikipedia.org/w/index.php?title=%E6%9E%B6%E6%9E%84&amp;amp;action=edit&amp;amp;redlink=1" title="%E6%9E%B6%E6%9E%84&amp;action=edit&amp;redlink=1">架构</a>相比拟。一个软件架构师需要有广泛的软件理论知识和相应的经验来实施和管理软件产品的高级设计。软件架构师定义和设计软件的模块化，模块之间的交互，用户界面风格，对外接口方法，创新的设计特性，以及高层事物的对象操作、逻辑和流程。</p>
+
+<p>软件架构师与客户商谈概念上的事情，与经理商谈广泛的设计问题，与软件工程师商谈创新的结构特性，与程序员商谈实现技巧，外观和风格。</p>
+
+<p>软件架构是一个系统的草图。软件架构描述的对象是直接构成系统的抽象组件。各个组件之间的连接则明确和相对细致地描述组件之间的通讯。在实现阶段，这些抽象组件被细化为实际的组件，比如具体某个类或者对象。在<a href="http://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">面向对象</a>领域中，组件之间的连接通常用<a href="http://zh.wikipedia.org/wiki/%E6%8E%A5%E5%8F%A3_%28%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%29">接口</a>来实现。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 架构来源于建筑工程学，描述对软件密集型系统设计蓝图。在不同软件领域，有其不同特征，但有一部分共同基础设计原则和共性。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 在这里将进行一些软件架构设计系列，此系列已经完成了架构层次设计，此系列仍在继续更新中&#8230;</p>
+
+<ol>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/09/2493458.html">架构设计&mdash;逻辑层 vs 物理层</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
+<li>  <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a></li>
+<li>   <a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html">存储过程传言</a></li>
+<li> 表现层及其模式</li>
+<li> <a href="http://www.cnblogs.com/whitewolf/archive/2012/07/07/2580630.html"><font color="#6699cc">表现层模式-MVC</font></a></li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/06/2537593.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -905,1173 +1057,6 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/29/Green-AgileMapper-kai-yuan-xiang-mu-di-shi-yong-1/">Green.AgileMapper开源项目的使用(1)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-29T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在架构设计中，利用领域驱动开发时，涉及到do（领域对象）和dto（数据传输对象）的相互装换匹配，这段代码简单但是重复频率太多，写得我很冒火（我有个职责是wcf SOA包装），我是个不喜欢重复劳动的懒人，我在网上搜索等到很多实体匹配的框架EmitMapper，AutoMapper等，但是他们都不能满足dto和do的对象的按规则匹配包装。最后我只得花了半个小时写了一个简单的代码生成器，完成了我的任务。但是事后总觉得不爽，于是有了写下这个AgileMapper框架来适应领域开发中的po，do，dto，vo着一些列对象的相互包装，建立一个按规则包装的Mapper框架。项目已经完成上传于CodePlex <a href="http://agilemapper.codeplex.com/" title="http://agilemapper.codeplex.com/">http://agilemapper.codeplex.com/</a> ，目前刚成型，希望大家能够帮助测试，提出bug，或者修复。我不是很清楚开源协议，选择了一个 协议。大家可以随便使用和修改应用来满足各自的需求，但是如果有些bug修复或者好的通用的修改希望大家能够，提交供我和其他人学习共同进步，但是这不是必须的，你也可以选择保留。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AgileMapper架构设计类图：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333323869.png" title="AgileMapper" alt="AgileMapper" /></p>
-
-<p>&nbsp;&nbsp;&nbsp; 在AgileMapper中支持多种MappingConfigurator（匹配管理器）都集成至MappingConfiguratorBase（MappingConfiguratorBase中拥有唯一的对象之间对于相等的默认表达式守信，针对于dto转化为do对象级联删除情况），内置了AttributeMappingConfigurator，XMLMappingConfigurator，DataRowMappingConfigurator三种匹配管理器。支持xml书写，attribute标记规则。由这些管理器根据具体标记标记方式产生一组IMappingRule（匹配规则），内置了5中匹配规则（简单，集合，表达式，对象，datarow）。</p>
-
-<p>&nbsp;&nbsp; 在AgileMapper为我们提供了MappingConfiguratorBase的扩展，IMappingRule的扩展，已经多余Attribute标注的扩展CustomerMappingAttribute，已经xml的配置扩展。</p>
-
-<p>下面我们来使用AgileMapper提供的内置Mapper。</p>
-
-<p>测试预备：</p>
-
-<p>Domain Object：</p>
-
-<pre class='green'><code>public class StudenDo 
-
-{ 
-
-   public int ID 
-
-   { 
-
-       get; 
-
-       set; 
-
-   } 
-
-
-
-   public string Name 
-
-   { get; set; } 
-
-
-
-   public Sex Sex 
-
-   { get; set; } 
-
-
-
-   public Address Address 
-
-   { get; set; } 
-
-
-
-   public ContactWay ContactWay 
-
-   { get; set; } 
-
-
-
-   public List&lt;string&gt; CourseIds 
-
-   { get; set; } 
-
-
-
-   public List&lt;KeyValuePair&gt; Propertys 
-
-   { get; set; } 
-
-
-
-} 
-
-
-
-public class KeyValuePair 
-
-{ 
-
-   public string Key 
-
-   { get; set; } 
-
-
-
-   public string Value 
-
-   { get; set; } 
-
-} 
-
-
-
- public enum Sex 
-
-{ 
-
-   男, 女 
-
- }
-
-
-
-public class ContactWay 
-
-{ 
-
-  public string Phone 
-
-  { 
-
-      get; 
-
-      set; 
-
-  } 
-
-
-
-  public string Email 
-
-  { 
-
-      get; 
-
-      set; 
-
-  } 
-
-
-
-  public string QQ 
-
-  { 
-
-      get; 
-
-      set; 
-
-  } 
-
-}
-
-
-public class Address 
-
- { 
-
-   public string Country 
-
-   { 
-
-       get; 
-
-       set; 
-
-   } 
-
-
-
-   public string Province 
-
-   { get; set; } 
-
-
-
-   public string Street 
-
-   { get; set; } 
-
-
-
-   public string Particular 
-
-   { get; set; } 
-
-}
-</code></pre>
-
-<p>Dto：</p>
-
-<pre class='green'><code>public class StudenDto 
-
-   { 
-
-       public int ID 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-       public string Name 
-
-       { get; set; } 
-
-
-
-       public Sex Sex 
-
-       { get; set; } 
-
-
-
-       [Mapping("Address.Country")] 
-
-       public string Country 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-       [Mapping("Address.Province")] 
-
-       public string Province 
-
-       { get; set; } 
-
-
-
-       // [Mapping("Address.Street")] 
-
-       [IgnoreMapping] 
-
-       public string Street 
-
-       { get; set; } 
-
-
-
-       [ExpressionMapping("Address.Country +\" 国籍 \"+Address.Province +\" 省 \"")] 
-
-       public string Particular 
-
-       { get; set; } 
-
-
-
-       [ObjectMappingAttribute] 
-
-       public ContactWayDto ContactWay 
-
-       { get; set; } 
-
-
-
-       [CollectionMapping()] 
-
-       public List&lt;string&gt; CourseIds 
-
-       { get; set; } 
-
-
-
-       [CollectionMapping(EqualExpression="from.Key==to.Key",IsDeleteNotInFromItem=true)] 
-
-       public List&lt;KeyValuePair&gt; Propertys 
-
-       { get; set; } 
-
-
-
-       [ExpressionMapping("Propertys[0].Key")] 
-
-       public string FirstPropertyKey 
-
-       { 
-
-           get; 
-
-           set; 
-
-       } 
-
-
-
-
-
-
-
-public class ContactWayDto 
-
-    { 
-
-        public string Phone 
-
-        { 
-
-            get; 
-
-            set; 
-
-        } 
-
-
-
-        public string Email 
-
-        { 
-
-            get; 
-
-            set; 
-
-        } 
-
-
-
-        public string QQ 
-
-        { 
-
-            get; 
-
-            set; 
-
-        } 
-
-    }
-
-
-
-public class AddressDto 
-
-{ 
-
-    public string Country 
-
-    { 
-
-        get; 
-
-        set; 
-
-    } 
-
-
-
-    public string Province 
-
-    { get; set; } 
-
-
-
-    public string Street 
-
-    { get; set; } 
-
-
-
-    public string Particular 
-
-    { get; set; } 
-
-}
-</code></pre>
-
-<p>一：Attribute标注：</p>
-
-<pre class='green'><code>        [TestMethod] 
-
-     public void AttributeConfig_SimpleMapping_Gen() 
-
-     { 
-
-
-
-         StudenDo stu = new StudenDo() 
-
-         { 
-
-             ID = 1, 
-
-             Name = "test1", 
-
-             Sex = Sex.女, 
-
-             Address = new Address() 
-
-             { 
-
-                 Country = "中国", 
-
-                 Province = "四川", 
-
-                 Street = "高新区" 
-
-             }, 
-
-             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
-
-             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
-
-             ContactWay = new ContactWay() 
-
-             { 
-
-                 Phone = "1111111111111111", 
-
-                 Email = "xxxx@12f", 
-
-                 QQ = "7889789999889" 
-
-             } 
-
-         }; 
-
-
-
-         var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(); 
-
-
-
-         var dt1 = DateTime.Now; 
-
-         var stuDto = mapper.Warp(stu); 
-
-         var sp = DateTime.Now - dt1; 
-
-
-
-         dt1 = DateTime.Now; 
-
-         stuDto = mapper.Warp(stu); 
-
-         var sp1 = DateTime.Now - dt1; 
-
-
-
-         Assert.AreEqual(stuDto.ID, stu.ID); 
-
-         Assert.AreEqual(stuDto.Name, stu.Name); 
-
-         Assert.AreEqual(stuDto.Sex, stu.Sex); 
-
-         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
-
-         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
-
-         Assert.AreEqual(stuDto.Street, null);//Ignore 
-
-         //object 
-
-         // Assert.AreEqual(stuDto.ContactWay,null); 
-
-         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
-
-         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
-
-         //expression 
-
-         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
-
-         Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
-
-         //collection            
-
-         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
-
-         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
-
-
-
-         Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
-
-         Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
-
-         Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
-
-
-
-         //Warp 2 
-
-         var stuDo = new StudenDo(); 
-
-         mapper.Warp(stuDto, stuDo); 
-
-
-
-         Assert.AreEqual(stuDo.ID, stuDto.ID); 
-
-         Assert.AreEqual(stuDo.Name, stuDto.Name); 
-
-         Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
-
-         Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
-
-         Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
-
-         //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
-
-         //object 
-
-         Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
-
-         Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
-
-         //collection 
-
-
-
-         Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
-
-         Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
-
-
-
-         Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
-
-         Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
-
-         Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
-
-     } 
-
-
-
-     [TestMethod] 
-
-     public void AttributeConfig_SimpleMapping() 
-
-     { 
-
-         StudenDo stu = new StudenDo() 
-
-         { 
-
-             ID = 1, 
-
-             Name = "test1", 
-
-             Sex = Sex.女, 
-
-             Address = new Address() 
-
-             { 
-
-                 Country = "中国", 
-
-                 Province = "四川", 
-
-                 Street = "高新区" 
-
-             }, 
-
-             CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
-
-             Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
-
-             ContactWay = new ContactWay() 
-
-             { 
-
-                 Phone = "1111111111111111", 
-
-                 Email = "xxxx@12f", 
-
-                 QQ = "7889789999889" 
-
-             } 
-
-         }; 
-
-
-
-         var mapper = ObjectMapperManager.Default.GetMapper(); 
-
-         var stuDto = mapper.Warp(typeof(StudenDto), stu) as StudenDto; 
-
-
-
-         Assert.AreEqual(stuDto.ID, stu.ID); 
-
-         Assert.AreEqual(stuDto.Name, stu.Name); 
-
-         Assert.AreEqual(stuDto.Sex, stu.Sex); 
-
-         Assert.AreEqual(stuDto.Country, stu.Address.Country); 
-
-         Assert.AreEqual(stuDto.Province, stu.Address.Province); 
-
-         Assert.AreEqual(stuDto.Street, null);//Ignore 
-
-         //object 
-
-         Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
-
-         Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
-
-         //expression 
-
-         Assert.AreEqual(stuDto.Particular, string.Format("{0} 国籍 {1} 省 ", stu.Address.Country, stu.Address.Province)); 
-
-         //collection            
-
-         Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
-
-         Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
-
-     }
-</code></pre>
-
-<p>二：xml配置标注规则：&nbsp;</p>
-
-<pre class='green'><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
-
-&lt;AgileMapper&gt; 
-
-  &lt;Extensions&gt; 
-
-    &lt;Extension Name="SimpleMappingRule" Type="Green.AgileMapper.SimpleMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
-
-    &lt;Extension Name="ObjectMappingRule" Type="Green.AgileMapper.ObjectMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
-
-    &lt;Extension Name="CollectionMappingRule" Type="Green.AgileMapper.CollectionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
-
-    &lt;Extension Name="ExpressionMappingRule" Type="Green.AgileMapper.ExpressionMappingRule,Green.AgileMapper"&gt;&lt;/Extension&gt; 
-
-  &lt;/Extensions&gt; 
-
-  &lt;Mappings&gt; 
-
-    &lt;Mapping FromType="AgileMapper.Test.StudenDto,AgileMapper.Test"  &gt; 
-
-      &lt;SimpleMappingRule FromPoperty="Country" ToPoperty="Address.Country"&gt;&lt;/SimpleMappingRule&gt; 
-
-      &lt;SimpleMappingRule FromPoperty="Province" ToPoperty="Address.Province"&gt;&lt;/SimpleMappingRule&gt;           
-
-      &lt;ObjectMappingRule  FromPoperty="ContactWay" ToPoperty="ContactWay"&gt;&lt;/ObjectMappingRule&gt; 
-
-      &lt;CollectionMappingRule FromPoperty="CourseIds" ToPoperty="CourseIds"&gt;&lt;/CollectionMappingRule&gt; 
-
-      &lt;CollectionMappingRule FromPoperty="Propertys" ToPoperty="Propertys" EqualExpression="from.Key==to.Key" IsDeleteNotInFromItem="true"&gt;&lt;/CollectionMappingRule&gt; 
-
-      &lt;ExpressionMappingRule  FromPoperty="Particular" Expression="Address.Country +Address.Province"&gt;&lt;/ExpressionMappingRule&gt; 
-
-      &lt;ExpressionMappingRule  FromPoperty="FirstPropertyKey" Expression="Propertys[0].Key"&gt;&lt;/ExpressionMappingRule&gt; 
-
-      &lt;Ignores&gt; 
-
-        &lt;Ignore Name="Street"&gt;&lt;/Ignore&gt; 
-
-      &lt;/Ignores&gt; 
-
-    &lt;/Mapping&gt; 
-
-  &lt;/Mappings&gt; 
-
-&lt;/AgileMapper&gt;
-</code></pre>
-
-<p>测试代码：</p>
-
-<p>[TestMethod]</p>
-
-<pre class='green'><code>    public void XMlConfig_SimpleMapping_Gen() 
-
-    { 
-
-
-
-        StudenDo stu = new StudenDo() 
-
-        { 
-
-            ID = 1, 
-
-            Name = "test1", 
-
-            Sex = Sex.女, 
-
-            Address = new Address() 
-
-            { 
-
-                Country = "中国", 
-
-                Province = "四川", 
-
-                Street = "高新区" 
-
-            }, 
-
-            CourseIds = new List&lt;string&gt;() { "1", "2", "3" }, 
-
-            Propertys = new List&lt;KeyValuePair&gt;() { new KeyValuePair() { Key = "1", Value = "1" } }, 
-
-            ContactWay = new ContactWay() 
-
-            { 
-
-                Phone = "1111111111111111", 
-
-                Email = "xxxx@12f", 
-
-                QQ = "7889789999889" 
-
-            } 
-
-        }; 
-
-
-
-        var mapper = ObjectMapperManager.Default.GetMapper&lt;StudenDto, StudenDo&gt;(new XMLMappingConfigurator(@"E:\Project\OpenSource\AgileMapper\AgileMappper.Test\XMLConfigurator\AgileMapper.xml")); 
-
-
-
-        var stuDto = mapper.Warp(stu);           
-
-
-
-        Assert.AreEqual(stuDto.ID, stu.ID); 
-
-        Assert.AreEqual(stuDto.Name, stu.Name); 
-
-        Assert.AreEqual(stuDto.Sex, stu.Sex); 
-
-        Assert.AreEqual(stuDto.Country, stu.Address.Country); 
-
-        Assert.AreEqual(stuDto.Province, stu.Address.Province); 
-
-        Assert.AreEqual(stuDto.Street, null);//Ignore 
-
-        //object 
-
-        // Assert.AreEqual(stuDto.ContactWay,null); 
-
-        Assert.AreEqual(stuDto.ContactWay.QQ, stu.ContactWay.QQ); 
-
-        Assert.AreEqual(stuDto.ContactWay.Email, stu.ContactWay.Email); 
-
-        //expression 
-
-        Assert.AreEqual(stuDto.Particular.Replace(" ", ""), string.Format("{0}{1}", stu.Address.Country, stu.Address.Province)); 
-
-        Assert.AreEqual(stuDto.FirstPropertyKey, stu.Propertys[0].Key); 
-
-        //collection            
-
-        Assert.AreEqual(stuDto.CourseIds[0], stu.CourseIds[0]); 
-
-        Assert.AreEqual(stuDto.CourseIds.Count, stu.CourseIds.Count); 
-
-
-
-        Assert.AreEqual(stuDto.Propertys[0].Key, stu.Propertys[0].Key); 
-
-        Assert.AreEqual(stuDto.Propertys[0].Value, stu.Propertys[0].Value); 
-
-        Assert.AreEqual(stuDto.Propertys.Count, stu.Propertys.Count); 
-
-
-
-        //Warp 2 
-
-        var stuDo = new StudenDo(); 
-
-        mapper.Warp(stuDto, stuDo); 
-
-
-
-        Assert.AreEqual(stuDo.ID, stuDto.ID); 
-
-        Assert.AreEqual(stuDo.Name, stuDto.Name); 
-
-        Assert.AreEqual(stuDo.Sex, stuDto.Sex); 
-
-        Assert.AreEqual(stuDo.Address.Country, stuDto.Country); 
-
-        Assert.AreEqual(stuDo.Address.Province, stuDto.Province); 
-
-        //Assert.AreEqual(stuDo.Address.Street, null);//Ignore 
-
-        //object 
-
-        Assert.AreEqual(stuDo.ContactWay.QQ, stuDto.ContactWay.QQ); 
-
-        Assert.AreEqual(stuDo.ContactWay.Email, stuDto.ContactWay.Email); 
-
-        //collection 
-
-
-
-        Assert.AreEqual(stuDo.CourseIds.Count, stuDto.CourseIds.Count); 
-
-        Assert.AreEqual(stuDo.CourseIds[0], stuDto.CourseIds[0]); 
-
-
-
-        Assert.AreEqual(stuDo.Propertys.Count, stuDto.Propertys.Count); 
-
-        Assert.AreEqual(stuDo.Propertys[0].Key, stuDto.Propertys[0].Key); 
-
-        Assert.AreEqual(stuDo.Propertys[0].Value, stuDto.Propertys[0].Value); 
-
-    }
-</code></pre>
-
-<p>三：DataRow的测试：&nbsp;</p>
-
-<p>测试预备StudentModelForDataRow：</p>
-
-<pre class='green'><code>public class StudentModelForDataRow 
-
-  { 
-
-      public int ID 
-
-      { get; set; } 
-
-
-
-      public string Name 
-
-      { get; set; } 
-
-  }
-</code></pre>
-
-<p>测试代码：&nbsp;</p>
-
-<pre class='green'><code>    [TestMethod] 
-
-     public void DataRowConfig_SameTable_DataRowCloneMapping() 
-
-     { 
-
-         DataTable dt = new DataTable(); 
-
-         dt.Columns.AddRange(new DataColumn[] { 
-
-             new DataColumn("ID",typeof(int)), 
-
-             new DataColumn("Name",typeof(string)) 
-
-         }); 
-
-
-
-         var row = dt.NewRow(); 
-
-         row[0] = 1; 
-
-         row[1] = "Green"; 
-
-         dt.Rows.Add(row); 
-
-
-
-         var rowClone = dt.NewRow(); 
-
-
-
-         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
-
-         mapper.Warp(typeof(DataRow), row, rowClone); 
-
-         Assert.AreEqual(row[0], rowClone[0]); 
-
-         Assert.AreEqual(row[1], rowClone[1]); 
-
-     } 
-
-
-
-     [TestMethod] 
-
-     public void DataRowConfig_UnSameTable_MutipleRule_DataRowCloneMapping() 
-
-     { 
-
-         DataTable dt = new DataTable(); 
-
-         dt.Columns.AddRange(new DataColumn[] { 
-
-             new DataColumn("ID",typeof(int)), 
-
-             new DataColumn("Name",typeof(string)) 
-
-         }); 
-
-
-
-         DataTable dt2 = new DataTable(); 
-
-         dt2.Columns.AddRange(new DataColumn[] { 
-
-             new DataColumn("ID",typeof(int)), 
-
-             new DataColumn("Name",typeof(string)), 
-
-              new DataColumn("Sex",typeof(string)) 
-
-         }); 
-
-
-
-         var row = dt2.NewRow(); 
-
-         row[0] = 1; 
-
-         row[1] = "Green"; 
-
-         row[2] = "Nan"; 
-
-         dt2.Rows.Add(row); 
-
-
-
-         var rowClone = dt.NewRow(); 
-
-
-
-         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
-
-         mapper.Warp(row, rowClone); 
-
-         Assert.AreEqual(row[0], rowClone[0]); 
-
-         Assert.AreEqual(row[1], rowClone[1]); 
-
-     } 
-
-
-
-     [TestMethod] 
-
-     public void DataRowConfig_UnSameTable_Not_MutipleRule_DataRowCloneMapping() 
-
-     { 
-
-         DataTable dt = new DataTable(); 
-
-         dt.Columns.AddRange(new DataColumn[] { 
-
-             new DataColumn("ID",typeof(int)), 
-
-             new DataColumn("Name",typeof(string)) 
-
-         }); 
-
-
-
-         DataTable dt2 = new DataTable(); 
-
-         dt2.Columns.AddRange(new DataColumn[] { 
-
-             new DataColumn("ID",typeof(int)), 
-
-             new DataColumn("Name",typeof(string)), 
-
-              new DataColumn("Sex",typeof(string)) 
-
-         }); 
-
-
-
-         var row = dt.NewRow(); 
-
-         row[0] = 1; 
-
-         row[1] = "Green"; 
-
-         dt.Rows.Add(row); 
-
-
-
-         var rowClone = dt2.NewRow(); 
-
-
-
-         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
-
-         mapper.Warp(row, rowClone); 
-
-         Assert.AreEqual(row[0], rowClone[0]); 
-
-         Assert.AreEqual(row[1], rowClone[1]); 
-
-     } 
-
-
-
-     [TestMethod] 
-
-     public void DataRowConfig_To_Object_CloneMapping() 
-
-     { 
-
-         DataTable dt = new DataTable(); 
-
-         dt.Columns.AddRange(new DataColumn[] { 
-
-             new DataColumn("ID",typeof(int)), 
-
-             new DataColumn("Name",typeof(string)) 
-
-         }); 
-
-
-
-         var row = dt.NewRow(); 
-
-         row[0] = 1; 
-
-         row[1] = "Green"; 
-
-         dt.Rows.Add(row); 
-
-         StudentModelForDataRow model = new StudentModelForDataRow(); 
-
-
-
-         var mapper = ObjectMapperManager.Default.GetMapper(new DataRowMappingConfigurator()); 
-
-         mapper.Warp(row, model); 
-
-         Assert.AreEqual(model.ID, row[0]); 
-
-         Assert.AreEqual(model.Name, row[1]); 
-
-     }
-</code></pre>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; DataRow匹配针对相同的表结构和不同表结构，以及实体类和DataRow之间的转化。&nbsp;</p>
-
-<p>单元测试结果：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/201203291333394223.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201203/20120329133348267.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 对于xml配置的架构还没做，以及基于T4模板的按照规则代码生成模板还在进一步开发中，敬请期待。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 今天就写在这里了，欢迎大家的指正和修改，希望你的修改如果更好能通知我，给我好的建议和探讨，谢谢。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/03/29/AgileMapper1.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/12/IOC-AOP-sui-bi-mu-lu/">IOC/AOP随笔目录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-12T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在当前软件开发OO设计中，面对软件需求的各种潜在变化，我们可能会采用领域驱动开发，把我们的各个业务逻辑分层次隔离解除耦合，这就出现了N层架构（这面值得是逻辑上的分层，当然我们的逻辑分层层次需要比物理架构层次多），这样将会使得我们的软件能够适应更多的需求变化。关于领域驱动开发的实例网上都很多，不得不推荐的是微软开源实例项目的NLayerApp：<a href="http://microsoftnlayerapp.codeplex.com/" title="http://microsoftnlayerapp.codeplex.com/">http://microsoftnlayerapp.codeplex.com/</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然而在于我们的逻辑分层的每一层次之间的耦合度解耦也是一个常见的问题.这样在层次的变化中我们需要实现不变更服务层次，这是我们的设计必须依赖于不变接口（抽象）。对于分层的接口对象创建我们当前流程的解决方案是IOC框架，负责不变对象的创建组合，当下流行的IOC框架有：<a href="http://code.google.com/p/autofac/">Autofac</a>，<a href="http://sourceforge.net/projects/castleproject/files/Windsor/2.5/Castle.Windsor.2.5.3.zip/download">Castle Windsor</a>，<a href="http://entlib.codeplex.com/">Unity</a>，<a href="http://www.springframework.net/">Spring.NET</a>，<a href="http://sourceforge.net/projects/structuremap/files/">StructureMap</a>，<a href="http://ninject.org/download">Ninject</a>，当然这么多IOC框架供我们选择。我本人只了解 <a href="http://sourceforge.net/projects/castleproject/files/Windsor/2.5/Castle.Windsor.2.5.3.zip/download">Castle Windsor</a>，<a href="http://entlib.codeplex.com/">Unity</a>，更喜欢<a href="http://entlib.codeplex.com/">Unity</a>这套微软自身的轻量级ioc框架。关于IOC框架的测试园友<a href="http://home.cnblogs.com/u/liping13599168/">Leepy</a>有测试<a href="http://www.cnblogs.com/liping13599168/archive/2011/07/17/2108734.html">各大主流.Net的IOC框架性能测试比较</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 另外我还想说的是我们的业务处理中有很多共性，并非业务本身的，比如权限，日志，缓存等功能模块，如果我们每次都重复将是一个巨大的工作量和难以维护的成本。应运而生的AOP框架，就是一种从业务纵向切入，对目标实现权限，日志等。对于AOP的实现主流框架主要有透明代理和静态植入两大类。Castle和EL中的PIAB就是一种透明代理的实现方式，PostSharp则是编译时静态注入框架。其他框架还有<a href="http://setpoint.codehaus.org/Downloads">SetPoint</a>，<a href="http://sourceforge.net/projects/aopnet/files">NAop</a>，<a href="http://aspectsharpcomp.sourceforge.net/download.htm">NKalore</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 今天整理一下本博客汇总关于IOC，AOP的随笔，忘大家不辞吝啬多多指教，共同进步。</p>
-
-<p>一：IOC目录：</p>
-
-<ol>
-<li><p>IOC应用篇：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html">利用Attribute简化Unity框架IOC注入</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/02/07/2342071.html">WCF利用企业库Unity框架的IOC层次解耦</a></li>
-</ol>
-</li>
-</ol>
-
-
-<p>二：AOP目录：</p>
-
-<ol>
-<li><p>AOP静态植入原理：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html">浅谈.NET编译时注入（C#&#8212;&gt;IL）</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html">编译时MSIL注入&mdash;实践Mono Cecil(1)</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2132217.html">MSBuild + MSILInect实现编译时AOP之预览</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/09/2133106.html">MSBuild + MSILInect实现编译时AOP-改变前后对比</a></li>
-</ol>
-</li>
-<li><p>PostSharp AOP：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html">AOP之PostSharp初见-OnExceptionAspect</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html">AOP之PostSharp2-OnMethodBoundaryAspect</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html">AOP之PostSharp3-MethodInterceptionAspect</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html">AOP之PostSharp5-LocationInterceptionAspect</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html">AOP之PostSharp6-EventInterceptionAspect(事件异步调用)</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/18/PostSharp7.html">AOP之PostSharp7-解决IOC 不能直接new问题，简化IOC开发和IOC对象LazyLoad</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/08/18/2144153.html">PostSharp &ndash; Thread Dispatching（GUI多线程）</a></li>
-</ol>
-</li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp; 本系列中的随笔还有继续，我会不断更新。忘大家不辞吝啬多多指教，共同进步。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/12/2348521.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/12/">&larr; Older</a>
@@ -2102,6 +1087,14 @@ public class AddressDto
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -2123,14 +1116,6 @@ public class AddressDto
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>

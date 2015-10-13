@@ -10,13 +10,9 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="怎样调整代码排版的格式？
-选择：编辑—>高级—>设置文档的格式 或 编辑—>高级—>设置选中代码的格式。
-格式化cs代码：Ctrl+k+f 格式化aspx代码：Ctrl+k+d
-怎样跳转到指定的某一行？
-两种方法：Ⅰ. Ctrl+G Ⅱ. 单击状态栏中的行号
-怎样创建矩形选区？
-两种方法：Ⅰ. &hellip;"> 
+    <meta name="description" content="&nbsp; System.Diagnostics命名空间里的Debug类和Trace类的用途
+摘要
+在 .NET 类库中有一个 System.Diagnostics 命名空间，该命名空间提供了一些与系统进程、事件日志、和性能计数器进行交互的类库。当中包括了两个对开发人员而言十分有用的类—— &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -69,6 +65,227 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/">System.Diagnostics命名空间里的Debug类和Trace类的用途</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>&nbsp;</h1>
+
+<p>System.Diagnostics命名空间里的Debug类和Trace类的用途
+摘要
+在 .NET 类库中有一个 System.Diagnostics 命名空间，该命名空间提供了一些与系统进程、事件日志、和性能计数器进行交互的类库。当中包括了两个对开发人员而言十分有用的类——Debug类和Trace类。本文介绍了这两个类的一些基本用途，旨在提高广大开发人员的开发效率。
+目录
+使用Debug类来帮助调试
+Debug类和Trace类的区别
+使用Trace类来做程序日志
+小结
+参考资料
+使用Debug类来帮助调试
+调试程序对每个程序员来说是家常便饭。可是我们会经常遇到一些情况让我们头疼，例如：
+当我们在开发一个界面控件的时候，简单的设断点会增加Paint事件的响应次数，而造成的环境参数改变。
+断点设多了，程序常常停在正常运行的地方；这样一来，调试一个错误要花费大量时间去寻找错误。
+这时，我们就需要利用System.Diagnostics.Debug类来帮助我们调试。我们可以通过调用Debug.WriteLine(String message)函数，将我们所关心的信息打印在Visual Studio IDE的Output窗口中。也可以利用Debug.Assert(bool condition)来让程序停在错误的地方，并且显示Call stack。
+Debug类中所有函数的调用都不会在Release版本里有效。也就是说，我们通过这种方法所加的代码可以仅用于调试；在发布的时候无需删任何代码，就可以给用户一个没有调试指令的程序了。
+下面的这个例子演示了这两个函数来帮助调试的方法：
+1、 新建一个Visual Studio C# Project，采用默认的项目名。
+2、 往Form1上拖一个label，并采用其缺省ID。
+3、 在Form1.cs中的Form1类中添加下面的函数代码：</p>
+
+<pre class='green'><code>private int time=0;
+protected override void OnPaint(PaintEventArgs e)
+{
+    time++;
+    this.label1.Text="OnPain called "+time.ToString()+" Times.";
+}
+protected override void OnResize(EventArgs e)
+{
+    System.Diagnostics.Debug.Assert(this.Width&gt;200,"Width should be larger than 200.");
+    System.Diagnostics.Debug.WriteLine(Size.ToString());
+}
+</code></pre>
+
+<p>4、 编译并运行项目的Debug版本。
+5、 切换Visual Studio .NET IDE到Output窗口。
+6、 切换到刚才的程序，改变主窗口的大小，您可以在IDE中看到Form1窗口的实时大小，并在Form1上看到OnPaint被调用的次数。当窗口的宽度小于等于200个像素的时候，系统会弹出一个Assertion Fail的对话框。里面显示了当前程序的Call Stack。如果您在OnPaint中设置了断点，想要调试程序的话，那么您会进入一个死循环，直到您停止调试。</p>
+
+<p>Debug类和Trace类的区别
+您一定发现了在System.Diagnostics命名空间中还有一个名为Trace的类。它的函数功能和Debug非常相似。为什么要有这样两个功能类似的类呢？
+原因是这样的，Debug类里所提供的函数仅在编译时带#Debug宏参数才奏效，一旦到了Release版本中，这些函数都会被忽略。也就是说Debug类的功能仅在程序员开发的时候能用。而Trace则不同，它能在Release版本的程序中也被运行，这样程序员就可以在Release版本的程序中添加一些Debug类提供的功能了。
+使用Trace类来做程序日志
+接下来的问题就是：我们程序员能利用Trace类的功能做些什么呢？我们可以用它来做程序的日志。
+1、 打开刚刚的project。
+2、 用下面的代码覆盖刚才第2步的代码：</p>
+
+<pre class='green'><code>private void Calculate()
+    {
+    int a=1,b=1;
+    try
+    {
+    System.Random r = new Random();
+    while (true)
+    {
+    a=(int)(r.NextDouble()*10);
+    b=(int)(r.NextDouble()*10);
+    System.Diagnostics.Trace.WriteLine(System.DateTime.Now.ToString()+": "+
+    a.ToString()+"/"+b.ToString()+"="+(a/b).ToString());
+    }
+    }
+    catch (Exception ex)
+    {
+    System.Diagnostics.Trace.WriteLine(System.DateTime.Now.ToString()+": "+a.ToString()+
+    "/"+b.ToString()+"="+" ERROR: "+ex.Message);
+    MessageBox.Show(ex.Message);
+    }
+    }
+</code></pre>
+
+<p>3、 在构造函数Form1()的最后添加下面的代码，将Trace的输出重定向到app.log文件中：</p>
+
+<pre class='green'><code>System.Diagnostics.Trace.Listeners.Clear();
+System.Diagnostics.Trace.AutoFlush=true;
+System.Diagnostics.Trace.Listeners.Add(new  System.Diagnostics.TextWriterTraceListener("app.log"));
+</code></pre>
+
+<p>4、 拖一个按钮到该Form上，双击按钮，在button1_Click函数中添加如下代码：
+Calculate();
+Application.Exit();
+5、 运行该程序的Release版本，点击添加的按钮，程序便开始执行一位随机数除法。由于是随机数，可能会出现出数为0的情况，这样程序就会抛出Exception，这是程序会自动中止。
+6、 在该程序所在的目录里您可以发现出现了一个新的文件app.log，里面记录了各个时刻的运算纪录，并把Exception纪录在日志中</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606891.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/18/winform-hui-che-Tab-fang-fa/">Winform 回车&#8211;&gt;Tab方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-18T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>方法有：</p>
+
+<ol>
+<li><p>示例</p>
+
+<p> if(e.KeyChar = &lsquo;\r&rsquo;)
+ {
+  SendKeys.Send(&ldquo;{TAB}&rdquo;);
+ }</p></li>
+</ol>
+
+
+<p>但是 也许是我程序里处理了太多的键盘事件，用它总是反映很慢，有时候还死机。</p>
+
+<ol>
+<li><p>把Form的<span style="color: red">KeyPreView设为true</span>，然后在Form的KeyPress中增加下列代码即可：</p>
+
+<p> private void Form1_KeyPress(object sender,      KeyPressEventArgs e)
+       {          <br/>
+             this.SelectNextControl(this.ActiveControl,      true, true, true, true);
+     }</p></li>
+<li><p>用nextControl.Focus();//nextControl 为Control；</p></li>
+</ol>
+
+
+<p>4:Control.rocessTabKey（true）；也可以实现
+方法2对于对于我这个CODE很使用，因为我的控件时动态生成的(及处理它时他的下一个控件还没产生呢)；</p>
+
+<p>关于方法2 查了下MSDN,记录如下：</p>
+
+<pre class='green'><code>public bool SelectNextControl (
+    Control ctl,
+    bool forward,
+    bool tabStopOnly,
+    bool nested,
+    bool wrap
+)
+</code></pre>
+
+<p>参数
+ctl
+从其上开始搜索的 Control。</p>
+
+<p>forward
+如果为 true 则在 Tab 键顺序中前移；如果为 false 则在 Tab 键顺序中后移。</p>
+
+<p>tabStopOnly
+true 表示忽略 TabStop 属性设置为 false 的控件；false 表示不忽略。</p>
+
+<p>nested
+true 表示包括嵌套子控件（子控件的子级）；false 表示不包括。</p>
+
+<p>wrap
+true 表示在到达最后一个控件之后从 Tab 键顺序中第一个控件开始继续搜索；false 表示不继续搜索。</p>
+
+<p>返回值
+如果控件已激活，则为 true；否则为 false。
+备注
+如果在 ControlStyles 中将控件的 Selectable 样式位设置为 true，且该控件包含在另一个控件中，并且其所有父控件都可见并已启用，则</p>
+
+<p>SelectNextControl 方法将激活 Tab 键顺序中的下一个控件。</p>
+
+<p>下面列表中的 Windows 窗体控件是不可选择的。从该列表中的控件派生的控件也是不可选择的。</p>
+
+<p>Label Panel GroupBox PictureBox ProgressBar Splitter LinkLabel（当控件中没有链接时）</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/18/1605280.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -947,6 +1164,14 @@ public int MyProperty { get; set; },</p></li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -968,14 +1193,6 @@ public int MyProperty { get; set; },</p></li>
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>

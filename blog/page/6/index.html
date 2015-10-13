@@ -10,9 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在软件开发设计中我们经常会面对业务分析，提取领域问题，从而实现软件架构设计。关于
-软件架构设计Martin Fowler在2004出版的《企业应用架构模式》中
-概括了四种方式的架构模式。它们分别为事务性脚本，表驱动模式，活动记录模式，领域驱动设计。前两者事务性脚本，表驱动模式作为 &hellip;"> 
+    <meta name="description" content="angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$ &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -65,6 +63,143 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-02T22:59:05+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$http默认request/response格式转化方式。</p>
+
+<p>所幸的是ng $http给我们提供了多种可用方式转化数据格式(下面demo将以form提交方式为例):</p>
+
+<p>***对于部分单独的http request设置：</p>
+
+<p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
+
+<pre class='green'><code>$http.post("/url", {
+      id: 1,
+      name: "greengerong"
+    }, {
+      transformRequest: function(request) {
+        return $.param(request);
+    }
+});
+</code></pre>
+
+<p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
+
+<pre class='green'><code>id=1&amp;name=greengerong
+</code></pre>
+
+<p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
+
+<p>***对于整个app的http request设置：</p>
+
+<p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
+
+<pre class='green'><code>angular.module("app", [])
+.config(["$httpProvider", function($httpProvider) {
+      $httpProvider.defaults.transformRequest = [
+        function(request) {
+          return $.param(request);
+        }
+      ];
+    }
+]);
+</code></pre>
+
+<p>这样我们就可以轻易的转化为form提交方式。</p>
+
+<p>同样$http也为我们提供了transformResponse方式，我们也可以创建自己的response转化，比如json之前加入自定义前缀防止json array攻击等等。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/24/angularjs-browsertrigger/">angularjs之browserTrigger</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-24T20:42:33+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天推荐一款来自angularjs源码的单元测试辅助库browserTrigger，这是来自于ngScenario的一段代码。主要用户触发浏览器型行为更新ng中scope view model的值。</p>
+
+<p>这是angularjs源码中单元测试的使用browserTrigger的实例：</p>
+
+<pre class='green'><code>it('should set the model to empty string when empty option is selected', function() {
+    scope.robot = 'x';
+    compile('&lt;select ng-model="robot"&gt;' +
+              '&lt;option value=""&gt;--select--&lt;/option&gt;' +
+              '&lt;option value="x"&gt;robot x&lt;/option&gt;' +
+              '&lt;option value="y"&gt;robot y&lt;/option&gt;' +
+            '&lt;/select&gt;');
+    expect(element).toEqualSelect('', ['x'], 'y');
+
+    browserTrigger(element.find('option').eq(0));
+    expect(element).toEqualSelect([''], 'x', 'y');
+    expect(scope.robot).toBe('');
+  });
+</code></pre>
+
+<p>在这段代码中给browserTrigger传入你希望选择的select option，则它会帮助你tigger change，选中当前option，更触发更新ng select的viewmodel。</p>
+
+<p>在browserTrigger中还为我们做了很多其他输入框或者html控件的触发接口，同时也加入了浏览器的兼容性。使得我们的测试更加方便不用考虑浏览器兼容性或者不同的html控件trigger不同的事件去更新scope的值。</p>
+
+<p>具体更多信息请参考<a href="https://github.com/angular/angular.js/blob/accd35b7471bbf58cd5b569a004824fa60fa640a/test/ng/directive/selectSpec.js">ng的官方测试</a>和<a href="https://raw.githubusercontent.com/angular/angular.js/dafb8a3cd12e7c3247838f536c25eb796331658d/src/ngScenario/browserTrigger.js">browserTrigger源码</a>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -766,209 +901,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-21T17:24:37+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在本篇博文中，我们将接触angular的验证。angular的验证是由form 指令和ngModel协调完成的。今天博主在这里想要说的是在验证在的一种特殊情况，当验证控件没有没有name属性这是不会被form捕获的。或者是你希望在ngRepeat中使用动态表达式。</p>
-
-<p>下面且让我们先来从angular源码中看起如下：</p>
-
-<p>首先是ngModel：</p>
-
-<pre class='green'><code>    var ngModelDirective = function() {
-      return {
-        require: ['ngModel', '^?form'],
-        controller: NgModelController,
-        link: function(scope, element, attr, ctrls) {
-          // notify others, especially parent forms
-
-          var modelCtrl = ctrls[0],
-              formCtrl = ctrls[1] || nullFormCtrl;
-
-          formCtrl.$addControl(modelCtrl);
-
-          scope.$on('$destroy', function() {
-            formCtrl.$removeControl(modelCtrl);
-          });
-        }
-      };
-    };
-</code></pre>
-
-<p>从上面我们能够看出ngModel指令会在编译时期的post link阶段会通过form的 <strong>addControl</strong>方法把自己的controller注册到父节点上的form的formController中。</p>
-
-<p>在看看ngModel controller初始化代码：</p>
-
-<pre class='green'><code>    var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-        function($scope, $exceptionHandler, $attr, $element, $parse) {
-     ....
-      this.$pristine = true;
-      this.$dirty = false;
-      this.$valid = true;
-      this.$invalid = false;
-      this.$name = $attr.name;
-</code></pre>
-
-<p>我们从上面我们可以看到 <strong>ngModel的$name属性并不支持表达式计算</strong>。</p>
-
-<p>而FormController的addControl代码则是：</p>
-
-<pre class='green'><code>    /**
-     * @ngdoc function
-     * @name ng.directive:form.FormController#$addControl
-     * @methodOf ng.directive:form.FormController
-     *
-     * @description
-     * Register a control with the form.
-     *
-     * Input elements using ngModelController do this automatically when they are linked.
-     */
-    form.$addControl = function(control) {
-      // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
-      // and not added to the scope.  Now we throw an error.
-      assertNotHasOwnProperty(control.$name, 'input');
-      controls.push(control);
-
-      if (control.$name) {
-        form[control.$name] = control;
-      }
-    };
-</code></pre>
-
-<p>从上面我们可以清楚的看见虽然ngModel注册了自己，但是这里也不一定能注册成功，<strong>ngModel心必须有自己的$name才能被注册成功</strong>。</p>
-
-<p>从上面的代码中可以得出，当我们的验证失效的时候，我们可以有一个万能的方式就是 <strong>手动注册到form controller</strong></p>
-
-<h3>手动注册form controller</h3>
-
-<p>为了我写了一个dy-name的插件，其会在post link阶段解析表达式，并把自己注册到父form controller。</p>
-
-<p>如下：</p>
-
-<pre class='green'><code>    .directive("dyName", [
-
-        function() {
-          return {
-            require: "ngModel",
-            link: function(scope, elm, iAttrs, ngModelCtr) {
-              ngModelCtr.$name = scope.$eval(iAttrs.dyName)
-              var formController = elm.controller('form') || {
-                $addControl: angular.noop
-              };
-              formController.$addControl(ngModelCtr);
-
-              scope.$on('$destroy', function() {
-                formController.$removeControl(ngModelCtr);
-              });
-
-            }
-          };
-        }
-      ])
-</code></pre>
-
-<p>使用方式：</p>
-
-<pre class='green'><code>    &lt;div ng-repeat="item in demo.fields"&gt;
-      &lt;div class="control-group"&gt;
-        &lt;label class="control-label"&gt; : &lt;/label&gt;
-        &lt;div class="controls"&gt;
-          &lt;input type="number"  dy-name="item.field" ng-model="demo.data[item.field]" min="10" max="500" ng-required="true"/&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-</code></pre>
-
-<p>其实实现为在post link阶段获取到form controller，并把自己注册到form controller，而且为了消除对象的级联，将会在scope摧毁阶段remove自己。</p>
-
-<p>其效果请看<a href="http://jsbin.com/docow/1/edit?html,js,output">jsbin $addControl</a></p>
-
-<p><strong>注意</strong>:在formController.$addControl方法的参数传入的不是界面控件，而是ngModelController.或者名字为$addController更合适。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-16T02:02:17+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="http://angularjs.org/img/AngularJS-large.png" alt="http://angularjs.org/img/AngularJS-large.png" /></p>
-
-<p>从本人开始在写关于Angularjs的文章开始，也算是见证了Angularjs在国内慢慢的火起来，如今的Angularjs正式如日中天。想知道为什么Angularjs会这么火，请移步<a href="http://www.cnblogs.com/whitewolf/p/angularjs-remove-unused-watch.html">angularjs移除不必要的$watch</a>.</p>
-
-<p>也是一次偶然的机会，在Angular.js中文社区群里相遇一群Angular的爱好者，在一次巧妙的交谈，大家对于Angular官方的Guide最新版本没有中文版本表示无助，所以为了诸君更好的了解学习Angularjs，大家临时组织了一个Angular 开发指南翻译团队。</p>
-
-<p>在经过一段时间的协调和大家付出工作之外的业余时间，如今Angularjs的中文本学习指南终于上线出炉</p>
-
-<p>地址为：</p>
-
-<pre class='green'><code>[http://www.ngnice.com/](http://www.ngnice.com/)
-</code></pre>
-
-<p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些&#8221;译者注&#8221;之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
-
-<p>最后虽然大家都很努力的翻译力求精准，但也会难免有些issue，请不辞指出，可以提交在github repo issue,或者本文后边加上评论。</p>
-
-<p>同时在本博客中也会很多关于Angularjs实践方面的博客，欢迎大家不辞指教。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -999,6 +931,14 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -1020,14 +960,6 @@ app 或者是浏览器，或者winform gui的图形化程序，因为对于同�
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>

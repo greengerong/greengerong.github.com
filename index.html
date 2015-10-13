@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在页面整体布局中，页面元素的尺寸大小（长度、宽度、内外边距等）和页面字体的大小也是重要的工作之一。一个合理设置，则会让页面看起来层次分明，重点鲜明，赏心悦目。反之，一个不友好的页面尺寸和字体大小设置，则会增加页面的复杂性，增加用户对页面理解的复杂性；甚至在当下访问终端（iPhone、iPad、PC &hellip;"> 
+    <meta name="description" content="今天为大家介绍一款近期github上很不错的开源库 &ndash; smartcrop.js。它是一款图片处理智能裁剪库。在很多项目开发中，经常会遇见上传图片的场景，它可能是用户照片信息，也可能是商品图片等，这类图片在我们的网页中展示，往往都具有一定的宽度和高度限制， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,106 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-13T21:58:21+08:00" pubdate data-updated="true">Oct 13<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天为大家介绍一款近期github上很不错的开源库 &ndash; <a href="https://github.com/jwagner/smartcrop.js">smartcrop.js</a>。它是一款图片处理智能裁剪库。在很多项目开发中，经常会遇见上传图片的场景，它可能是用户照片信息，也可能是商品图片等，这类图片在我们的网页中展示，往往都具有一定的宽度和高度限制，对于不合法的图片我们会经常为用户提供裁剪的方式来满足这些外在的要求。但是对于网站默认的裁剪区域往往显示在一个固定的位置，而它往往不是精准的用户裁剪位置。而今天为大家所介绍的这一款开源库，就是为了解决这类问题的，为用户提供更好的用户体验。</p>
+
+<p>首先我们可以使用<code>npm install smartcrop</code>或者<code>bower install smartcrop</code>来下载它。然后像如下方式使用它：</p>
+
+<pre class='green'><code>SmartCrop.crop(image, {
+        width: 100,
+        height: 100
+    }, 
+    function(result){
+        console.log(result); // {topCrop: {x: 300, y: 200, height: 200, width: 200}}
+    });
+</code></pre>
+
+<p>它将会输出一个比较好的最佳图片裁剪位置，如<code>{topCrop: {x: 300, y: 200, height: 200, width: 200}}</code>的数据。</p>
+
+<p>下面是一副来自它的展示网站的案例，请欣赏：</p>
+
+<p><img src="/images/blog_img/smartcrop-%E5%9B%BE%E7%89%87%E8%A3%81%E5%89%AA-%E6%A1%88%E4%BE%8B.png" alt="smartcrop-图片裁剪-案例" /></p>
+
+<p>更多案例：</p>
+
+<ol>
+<li><a href="http://29a.ch/sandbox/2014/smartcrop/examples/testsuite.html">http://29a.ch/sandbox/2014/smartcrop/examples/testsuite.html</a>：这里有超过1000个图片效果展示（流量用户请谨慎点击，图片众多）；</li>
+<li><a href="http://29a.ch/sandbox/2014/smartcrop/examples/testbed.html">http://29a.ch/sandbox/2014/smartcrop/examples/testbed.html</a>：这里允许你上传自己的图片，体验其效果；</li>
+<li><a href="http://29a.ch/sandbox/2014/smartcrop/examples/slideshow.html">http://29a.ch/sandbox/2014/smartcrop/examples/slideshow.html</a>：在这里可以尝试用它创建幻灯片。</li>
+</ol>
+
+
+<p>最后，更多关于smartcrop.js的信息，请参见其github：<a href="https://github.com/jwagner/smartcrop.js">https://github.com/jwagner/smartcrop.js</a>。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-13T21:36:54+08:00" pubdate data-updated="true">Oct 13<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -886,347 +986,6 @@ class JsonDumpDirective extends NgComponent
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展Bootstrap Tooltip插件使其可交互</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-09T13:20:20+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近在公司某项目开发中遇见一特殊需求，请笔者帮助，因此有了本文的插件。在前端开发中tooltip是一个极其常用的插件，它能更好向使用者展示更多的文档等帮助信息。它们通常都是一些静态文本信息。但同事他们的需求是需要动态交互，在文本信息中存在帮助网页的链接。如果使用常规tooltip，则在用户移出tooltip依赖DOM节点后，tooltip panel则将被隐藏。所以用户没有办法点击到这些交互链接。</p>
-
-<p>所以我们期望：给用户一定的时间使得用户能够将鼠标从依赖节点移动到tooltip panel；并且如果用户鼠标停留在tooltip上则不能隐藏，使得用户能够与位于tooltip上的链接或者是其他form表单控件交互。</p>
-
-<p>也许你觉得这并不难，在网上Google就有很多代码可直接使用。是的，如下面这段来自plnkr.co的代码（<a href="http://plnkr.co/edit/x2VMhh?p=preview">http://plnkr.co/edit/x2VMhh?p=preview</a>）：</p>
-
-<pre class='green'><code>$(".pop").popover({ trigger: "manual" , html: true, animation:false})
-    .on("mouseenter", function () {
-        var _this = this;
-        $(this).popover("show");
-        $(".popover").on("mouseleave", function () {
-            $(_this).popover('hide');
-        });
-    }).on("mouseleave", function () {
-        var _this = this;
-        setTimeout(function () {
-            if (!$(".popover:hover").length) {
-                $(_this).popover("hide");
-            }
-        }, 300);
-});
-</code></pre>
-
-<p>它是使用bootstrap的popover来实现的，从bootstrap的源码能看到popover是继承至tooltip的组件之一。这里是通过将popover的触发方式设为手动触发，由我们自己来控制显示和隐藏它的时机。并且在依赖节点离开的时候，给定300ms的延迟等待用户进入tooltip panel，如果300ms还没有进入tooltip则隐藏它。否则就阻止隐藏tooltip的逻辑。</p>
-
-<p>这代码虽然功能可用，但具有代码洁癖的博主并不太满意这样的代码。它难以阅读维护，同时重用性也将极差。所以笔者决定要以bootstrap插件方式来一bs way写这款插件。</p>
-
-<p>当笔者查阅bootstrap tooltip源码时，发现它是一个扩展性很不错的插件。tooltip的显示和隐藏依赖于它内部的hoverState状态来控制，in代表在依赖节点元素之上，out则代表移出了DOM元素。并且它也支持延迟动画机制。所以我们可以如下方式控制hoverState的状态：</p>
-
-<pre class='green'><code>var DelayTooltip = function (element, options) {
-    this.init('delayTooltip', element, options);
-    this.initDelayTooltip();
-};
-
-DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
-    trigger: 'hover',
-    delay: {hide: 600}
-});
-
-DelayTooltip.prototype.delayTooltipEnter = function(){
-        this.hoverState = 'in';
-    };
-
-    DelayTooltip.prototype.delayTooltipLeave = function(){
-        this.hoverState = 'out';
-        this.leave(this);
-    };
-
-  DelayTooltip.prototype.initDelayTooltip = function(){
-      this.tip()
-          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
-          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
-  };
-</code></pre>
-
-<p>这里在构造tooltip对象同时也注册tooltip panel的mouseenter、mouseleave.事件，并设置对应的hoverState状态。当移出tooltip panel时，这里需要手动的调用来自tooltip继类的leave方法。对于隐藏延时则设置在默认option中，使其能够可配置。</p>
-
-<p>上面的代码就是我们所需要扩展tooltip的所有的代码。当然要想作为一个通用的bootstrap插件，还需要它固定的插件配置代码。插件全部代码如下：</p>
-
-<pre class='green'><code>(function ($) {
-  'use strict';
-
-  var DelayTooltip = function (element, options) {
-    this.init('delayTooltip', element, options);
-    this.initDelayTooltip();
-  };
-
-  if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js');
-
-  DelayTooltip.VERSION  = '0.1';
-
-  DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
-    trigger: 'hover',
-    delay: {hide: 300}
-  });
-
-  DelayTooltip.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype);
-
-  DelayTooltip.prototype.constructor = DelayTooltip;
-
-  DelayTooltip.prototype.getDefaults = function () {
-    return DelayTooltip.DEFAULTS;
-  };
-
-    DelayTooltip.prototype.delayTooltipEnter = function(){
-        this.hoverState = 'in';
-    };
-
-    DelayTooltip.prototype.delayTooltipLeave = function(){
-        this.hoverState = 'out';
-        this.leave(this);
-    };
-
-  DelayTooltip.prototype.initDelayTooltip = function(){
-      this.tip()
-          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
-          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
-  };
-
-  function Plugin(option) {
-    return this.each(function () {
-      var $this   = $(this);
-      var data    = $this.data('bs.delayTooltip');
-      var options = typeof option == 'object' &amp;&amp; option;
-
-      if (!data &amp;&amp; /destroy|hide/.test(option)) return;
-      if (!data) $this.data('bs.delayTooltip', (data = new DelayTooltip(this, options)));
-      if (typeof option == 'string') data[option]();
-    });
-  }
-
-  var old = $.fn.delayTooltip;
-
-  $.fn.delayTooltip             = Plugin;
-  $.fn.delayTooltip.Constructor = DelayTooltip;
-
-  $.fn.delayTooltip.noConflict = function () {
-    $.fn.delayTooltip = old;
-    return this;
-  };
-
-})(jQuery);
-</code></pre>
-
-<p>这里基本都是bootstrap插件机制的固定模板，仅仅需要套用上就行。有了这个插件扩展，那么我们就可以如下使用这款插件：你也可以在jsbin中查看效果<a href="http://jsbin.com/wicoki/edit?html,js,output">http://jsbin.com/wicoki/edit?html,js,output</a>:</p>
-
-<p>HTML:</p>
-
-<pre class='green'><code>&lt;div id="tooltip"&gt;bs tooltip:你能点击链接？&lt;/div&gt;
-&lt;hr&gt;
-&lt;div  id="delayTooltip"&gt;delay tooltip：尝试点击链接&lt;/div&gt;
-&lt;hr&gt;
-&lt;div id="delayTooltipInHtml" data-html="true" data-placement="bottom" data-toggle="delayTooltip"&gt;delay tooltip:利用html标签实现&lt;/div&gt;
-</code></pre>
-
-<p>JavaScript 代码：</p>
-
-<pre class='green'><code>(function(global, $){
-
-    var page = function(){
-
-    };
-
-    page.prototype.bootstrap = function(){
-        var html = 'Weclome to my blog &lt;a target="_blank" href="greengerong.github.io"&gt;破狼博客&lt;/a&gt;!&lt;input type="text" placeholder="input some thing"/&gt;';
-        $('#tooltip').tooltip( {
-            html: true,
-            placement: 'top',
-            title: html
-        });
-
-        $('#delayTooltip').delayTooltip( {
-            html: true,
-            placement: 'bottom',
-            title: html
-        });
-
-  $('#delayTooltipInHtml').attr('title', html).delayTooltip();
-
-  return this;
-};
-
-     global.Page = page;
-
-})(this, jQuery);
-
-$(function(){
-    'use strict';
-  var page = new window.Page().bootstrap();
-    //
-});
-</code></pre>
-
-<p>这款插件既支持jQuery在HTML中声明属性的方式，同时也可以在javascript中使用。效果如下：</p>
-
-<p><img src="/images/blog_img/delay-tooltip-example.png" alt="bootstrap dealy-tooltip" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取元素定位位置的法宝</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-08T07:09:23+08:00" pubdate data-updated="true">Sep 8<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/images/blog_img/box-chrome.png" alt="box chrome" /></p>
-
-<p>在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。对于稍复杂的场景我们可能需要考虑被positioned的祖先元素。</p>
-
-<p>但往往不是所有的事情都是这么简单的。笔者最新在项目开发中就遇见这样一个问题：这里的HTML是嵌入的，其来自jpedal商业软件从PDF文件自动生成的；为了展示的样式，jpedal统一使用了 position:absolute和relative来定位PDF元素。然而由于业务的需求，我们需要操作这类HTML。其中一个需求就是需要在每段文字附近显示操作工具条。</p>
-
-<p>对于这类未知的DOM定位，那么我们就需要遍历它的DOM树来计算它的相对位置了。行为下面的这段代码：</p>
-
-<pre class='green'><code>    function isStaticPositioned(element) {
-      return (getStyle(element, 'position') || 'static' ) === 'static';
-    }
-
-    var parentOffsetEl = function(element) {
-      var docDomEl = $document[0];
-      var offsetParent = element.offsetParent || docDomEl;
-      while (offsetParent &amp;&amp; offsetParent !== docDomEl &amp;&amp; isStaticPositioned(offsetParent) ) {
-        offsetParent = offsetParent.offsetParent;
-      }
-      return offsetParent || docDomEl;
-    };
-</code></pre>
-
-<p>在这里，我们会根据元素递归查询它所在的的DOM树中被positioned的最接近的祖先元素，然后才计算它们的相对位置。</p>
-
-<p>这是一段来自Angular-UI bootstrap的$position服务的源码。这也是本文将要提到的获取定位元素位置的法宝。其源码位置在<a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js">https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js</a>。</p>
-
-<p>在$position服务中为我们提供了3个有用的位置服务：position、offset和positionElements。position是计算具体元素的定位位置，返回一个带有width、height、top、left的对象；positionElements则是返回某元素相对于其依赖容器元素的定位位置，一个带有top、left的对象。</p>
-
-<p>笔者为了测试这写API，在jsbin中写了一个特定的指令：</p>
-
-<p>JavaScript:</p>
-
-<pre class='green'><code>angular.module("com.ngbook.demo", ['ui.bootstrap.position'])
-.directive('position', ['$position', function($position){
-    return {
-        restrict: 'EA',
-        templateUrl: '/position.html',
-        scope:{
-            title:"@"
-        },
-        link:function(scope, elm, iAttrs){
-        scope.data =  $position.position(elm);
-       }
-    };
-}]);
-</code></pre>
-
-<p>HTML:</p>
-
-<pre class='green'><code>&lt;script type="text/ng-template" id="/position.html"&gt;
-   &lt;table class="table"&gt;
-       &lt;thead&gt;
-           &lt;th colspan="2"&gt;{{title}}&lt;/th&gt;
-       &lt;/thead&gt;
-    &lt;tbody&gt;
-       &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
-       &lt;td&gt;{{field}}&lt;/td&gt;
-       &lt;td&gt;{{data[field] | number}}&lt;/td&gt;
-     &lt;/tr&gt;
-    &lt;/tbody&gt;
-   &lt;/table&gt;
- &lt;/script&gt;
-</code></pre>
-
-<p>所以我们可以如下测试这类API：</p>
-
-<pre class='green'><code>&lt;position title ="no positioned parent"&gt;&lt;/position&gt;
-
-&lt;div style="position: relative;padding:50px;"&gt;
-    &lt;position title ="relative parent"&gt;&lt;/position&gt;
-
-     &lt;div style="position: absolute;top:250px; padding:50px;"&gt;
-         &lt;position title="relative-&gt;absolute parent"&gt;&lt;/position&gt;
-     &lt;/div&gt;
- &lt;/div&gt;
-
- &lt;div style="position: absolute;top:0px;left:250px; padding:50px;"&gt;
-         &lt;position title="absolute parent"&gt;&lt;/position&gt;
- &lt;/div&gt;
-</code></pre>
-
-<p>其效果可以在<a href="http://jsbin.com/deximu/edit?html,js,output">jsbin demo</a>:</p>
-
-<p><img src="/images/blog_img/ng-$position-example.png" alt="$position demo" /></p>
-
-<p>同样你也可以在官方的文档中看见对它的测试: <a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html">https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html</a>。</p>
-
-<p>简单的说：如果我们需要获取某个元素的定位信息，则我们可以用 $position.position(element)；获取相对于固定元素的定位，则可以使用$position.positionElements(hostEl, targetEl, positionStr, appendToBody)。其中positionStr是一个横向和纵向的字符串，如：&#8221;top-left&#8221;、&#8221;bottom-left&#8221;。其默认值为center。如笔者项目所期望的在某文字段落的左上角显示工具条：</p>
-
-<pre class='green'><code>$position.after($toolbar);
-var elPosition = $position.positionElements($paragraph, $toolbar, “top-left”);
-$toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
-</code></pre>
-
-<p>当然也不要忘记为toolbar元素设置position: absolute;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1255,6 +1014,14 @@ $toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -1276,14 +1043,6 @@ $toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>

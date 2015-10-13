@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在开始介绍angular原理之前，我们有必要先了解下mvvm模式在angular中运用。虽然在angular社区一直将angular统称为前端MVC框架，同时angular团队也称它为MVW（Whatever）框架，但angular框架整体上更接近MVVM模式。下面是Igor &hellip;"> 
+    <meta name="description" content="在Web前端开发中，我们经常会遇见需要动态的将一些来自后端或者是动态拼接的HTML字符串绑定到页面DOM显示，特别是在内容管理系统（CMS：是Content Management System的缩写），这样的需求，更是遍地皆是。 对于对angular的读者肯定首先会想到ngBindHtml，对, &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,368 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-30T06:38:36+08:00" pubdate data-updated="true">Jun 30<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在Web前端开发中，我们经常会遇见需要动态的将一些来自后端或者是动态拼接的HTML字符串绑定到页面DOM显示，特别是在内容管理系统（CMS：是Content Management System的缩写），这样的需求，更是遍地皆是。</p>
+
+<p>对于对angular的读者肯定首先会想到ngBindHtml，对,angular为我们提供了这个指令来动态绑定HTML，它会将计算出来的表达式结果用innerHTML绑定到DOM。但是，问题并不是这么简单。在Web安全中XSS（Cross-site scripting，脚本注入攻击），它是在Web应用程序中很典型的计算机安全漏洞。XSS攻击指的是通过对网页注入可执行客户端代码且成功地被浏览器执行，来达到攻击的目的，形成了一次有效XSS攻击，一旦攻击成功，它可能会获取到用户的一些敏感信息、改变用户的体验、诱导用户等非法行为，有时XSS攻击还会合其他攻击方式同时实施比如SQL注入攻击服务器和数据库、Click劫持、相对链接劫持等实施钓鱼，它带来的危害是巨大的，也是web安全的头号大敌。更多的Web安全问题，请参考wiki <a href="https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82">https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82</a></p>
+
+<p>在angular中默认是不相信添加的HTML内容，对于添加的HTML内容，首先必须利用$sce.trustAsHtml，告诉angular这是可信的HTML内容。否则你将会得到$sce:unsafe的异常错误。</p>
+
+<pre class='green'><code>Error: [$sce:unsafe] Attempting to use an unsafe value in a safe context.
+</code></pre>
+
+<p>下面是一个绑定简单的angular链接的demo：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div ng-controller="DemoCtrl as demo"&gt;
+    &lt;div ng-bind-html="demo.html"&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("DemoCtrl", ["$sce", function($sce) {
+        var vm = this;
+
+        var html = '&lt;p&gt;hello &lt;a href="https://angular.io/"&gt;angular&lt;/a&gt;&lt;/p&gt;';
+        vm.html = $sce.trustAsHtml(html);
+
+        return vm;
+    }]);
+</code></pre>
+
+<p>对于简单的静态HTML，这个问题就解决了。但对于复杂的HTML，这里的复杂是指带有angular表达式、指令的HTML模板，对于它们来说，我们不仅希望绑定大DOM显示，同时还希望得到angular强大的双向绑定机制。ngBindHhtml并不会和$scope关联双向绑定，如果在HTML中存在ngClick、ngHref、ngSHow、ngHide等angular指令，它们并不会被compile，点击这些按钮，也不会发生任何反应，绑定的表达式也不会在更新。例如尝试将上次的链接变为：ng-href=&ldquo;demo.link&#8221;，链接并不会被解析，在DOM看见的仍然会是原样的HTML字符串。</p>
+
+<p>在angular中的所有指令要生效，都需要经过compile，在compile中包含了pre-link和post-link，连接上特定行为，才能工作。大部分情况下compile，是会在angular启动时，自动compile的。但如果是对于动态添加的模板，则需要手动的compile。angular中为我们提供了$compile服务来实现这一功能。下面是一个比较通用的compile例子：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;body ng-controller="DemoCtrl as demo"&gt;
+    &lt;dy-compile html="{{demo.html}}"&gt; 
+    &lt;/dy-compile&gt;
+    &lt;button ng-click="demo.change();"&gt;change&lt;/button&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .directive("dyCompile", ["$compile", function($compile) {
+        return {
+            replace: true,
+            restrict: 'EA',
+            link: function(scope, elm, iAttrs) {
+                var DUMMY_SCOPE = {
+                        $destroy: angular.noop
+                    },
+                    root = elm,
+                    childScope,
+                    destroyChildScope = function() {
+                        (childScope || DUMMY_SCOPE).$destroy();
+                    };
+
+                iAttrs.$observe("html", function(html) {
+                    if (html) {
+                        destroyChildScope();
+                        childScope = scope.$new(false);
+                        var content = $compile(html)(childScope);
+                        root.replaceWith(content);
+                        root = content;
+                    }
+
+                    scope.$on("$destroy", destroyChildScope);
+                });
+            }
+        };
+    }])
+    .controller("DemoCtrl", [function() {
+        var vm = this;
+
+         vm.html = '&lt;h2&gt;hello : &lt;a ng-href="{{demo.link}}"&gt;angular&lt;/a&gt;&lt;/h2&gt;';  
+
+        vm.link = 'https://angular.io/';
+        var i = 0;
+        vm.change = function() {
+            vm.html = '&lt;h3&gt;change after : &lt;a ng-href="{{demo.link}}"&gt;' + (++i) + '&lt;/a&gt;&lt;/h3&gt;';  
+        };
+    }]);
+</code></pre>
+
+<p>这里创建了一个叫dy-compile的指令，它首先会监听绑定属性html值的变化，当html内容存在的时候，它会尝试首先创个一个子scope，然后利用$compile服务来动态连接传入的html，并替换掉当前DOM节点；这里创建子scope的原因，是方便在每次销毁DOM的时，也能容易的销毁掉scope，去掉HTML compile带来的watchers函数，并在最后的父scope销毁的时候，也会尝试销毁该scope。</p>
+
+<p>因为有了上边的compile的编译和连接，则ngHref指令就可以生效了。这里只是尝试给出动态compile angular模块的例子，具体的实现方式，请参照你的业务来声明特定的directive。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/">ngModel 值不更新/显示</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-29T06:50:10+08:00" pubdate data-updated="true">Jun 29<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>angular中的$scope是页面（view）和数据（model）之间的桥梁，它链接了页面元素和model，也是angular双向绑定机制的核心。</p>
+
+<p>而ngModel是angular用来处理表单（form）的最重要的指令，它链接了页面表单中的可交互元素和位于$scope之上的model，它会自动把ngModel所指向的model值渲染到form表单的可交互元素上，同时也会根据用户在form表单的输入或交互来更新此model值。</p>
+
+<p>在源码中，model值的格式化、解析、验证都是由ngModel指令所对应的控制器ngModelController来实现的。</p>
+
+<p>在笔者所维护的国内ng群中，经常被问到一个问题：</p>
+
+<pre class='green'><code>    为什么我的ng-model=“xxx”值不能在页面显示了呢?
+</code></pre>
+
+<p>对于ngModel的这类问题主要分为两类：</p>
+
+<ul>
+<li>model值不满足表单验证条件,所以angular不会渲染它</li>
+<li>由于JavaScript特殊的原型链继承机制，对$scope中属性的赋值并不能更新到父$scope</li>
+</ul>
+
+
+<p>在本节中，我们将会详细分析此类问题，借此深入剖析ngModel的工作原理。</p>
+
+<h4>验证引起的model值不显示</h4>
+
+<p>我们先来看一个修改商品数量的例子，要求为必须输入1-100的个数；</p>
+
+<p>下面是对应的html代码：</p>
+
+<pre class='green'><code>&lt;body class="container"&gt;
+  &lt;div ng-controller="DemoCtrl as demo"&gt;
+   &lt;div ng-form="form" class="form-horizontal"&gt;
+      &lt;div class="form-group" ng-class="{'has-error': form.amount.$invalid }"&gt;
+      &lt;label for="amount"&gt;Amount&lt;/label&gt;
+      &lt;!-- 这个input将工作不正常 --&gt;
+    &lt;input id="amount" name="amount" type="number" ng-model="demo.amount" class="form-control" placeholder="1 - 100" min="1" max="100"/&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>javascript代码：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("DemoCtrl", [function(){
+    var vm = this;
+
+    vm.amount = 0;
+
+    return vm;
+}]);
+</code></pre>
+
+<p> 在代码中我们已经为ngModel变量amount赋值了整数“0”，可是界面显示效果仍然显示&#8221;1 &ndash; 100&#8221;的placeholder(如下图)。</p>
+
+<p><img src="/images/blog_img/ngModel-vadation-question.png" alt="ng-model绑定值不改变:验证" /></p>
+
+<p>下面是关于angular number组件ngModel转换函数代码：</p>
+
+<pre class='green'><code>var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+
+function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+    textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+    ctrl.$parsers.push(function(value) {
+        var empty = ctrl.$isEmpty(value);
+        if (empty || NUMBER_REGEXP.test(value)) {
+            ctrl.$setValidity('number', true);
+            return value === '' ? null : (empty ? value : parseFloat(value));
+        } else {
+            ctrl.$setValidity('number', false);
+            return undefined;
+        }
+    });
+
+    addNativeHtml5Validators(ctrl, 'number', numberBadFlags, null, ctrl.$$validityState);
+
+    ctrl.$formatters.push(function(value) {
+        return ctrl.$isEmpty(value) ? '' : '' + value;
+    });
+
+    if (attr.min) {
+        var minValidator = function(value) {
+            var min = parseFloat(attr.min);
+            return validate(ctrl, 'min', ctrl.$isEmpty(value) || value &gt;= min, value);
+        };
+
+        ctrl.$parsers.push(minValidator);
+        ctrl.$formatters.push(minValidator);
+    }
+
+    if (attr.max) {
+        var maxValidator = function(value) {
+            var max = parseFloat(attr.max);
+            return validate(ctrl, 'max', ctrl.$isEmpty(value) || value &lt;= max, value);
+        };
+
+        ctrl.$parsers.push(maxValidator);
+        ctrl.$formatters.push(maxValidator);
+    }
+
+    ctrl.$formatters.push(function(value) {
+        return validate(ctrl, 'number', ctrl.$isEmpty(value) || isNumber(value), value);
+    });
+}
+</code></pre>
+
+<p>ngModel作为angular双向绑定中的重要组成部分，负责view控件交互数据到$scope上model的同步。当然这里存在一些差异，view上的显示和输入都是字符串类型，而在model上的数据则是有特定类型的，如常用的int、float、Date、Array、Object等。ngModel为了实现数据到model的类型转换，在ngModelController中提供了两个管道数组$formatters和$parsers，它们分别是将model的数据转换为view交互控件显示的值和将交互控件得到的view值转换为model数据，它们都是一个数组对象，在ngModel启动数据转换时，会以UNIX管道式传递执行这一些列的转换。我们也可以手动的添加$formatters和$parsers的转换函数（unshift、push），当然在这里也是做数据验证的最佳时机，能够转换意味应该是合法的数据。</p>
+
+<p>在number组件代码中，我们清晰看见：依次添加了对数字验证转换、最小值合法性验证、最大值合法验证。首先会启动$parsers转换，如果在转换过程中出现不合法验证则会设置ngModelController.$setValidity验证错误，则返回undefined。对于model数据到交互控件显示，同样也会经过$formatters转换管道，对于没有通过验证的逻辑，同样也会ngModelController.$setValidity设置验证错误，返回undefined，因此这不合法的model数据不会显示在交互控件上。</p>
+
+<h4>原型链继承问题</h4>
+
+<p>JavaScript中每个对象都会链接到一个原型对象，并且他可以从中继承属性。即使通过字面量创建的对象也会链接到Object.prototype，它是JavaScript中的标配对象。JavaScript的原型链继承相对于其他语言常见的继承，是一种另类的继承，它是实施于对象上的动态继承方式，而非常见的实施与类型class之上的静态继承体系。JavaScript的这种继承方式很灵活，一个对象可以被多个对象继承，而且他们共享同一实例对象，但理解起来显得格外复杂，从JavaScript原型和原型链可以看出它的复杂性。在Javascript中，每个函数都有一个原型属性prototype指向自身的原型，而由这个函数创建的对象也有一个<strong>proto</strong>属性指向这个原型，而函数的原型是一个对象，所以这个对象也会有一个<strong>proto</strong>指向自己的原型，这样逐层深入直到Object对象的原型，这样就形成了原型链。下面的是JavaScript原型继承基础原型和原型链展示图。</p>
+
+<p><img src="/images/blog_img/javascript-%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF.png" alt="javascript-原型继承" /></p>
+
+<p>函数是由Function函数创建的对象，因此函数也有一个<strong>proto</strong>属性指向Function函数的原型。需要注意的是，真正形成原型链的是每个对象的<strong>proto</strong>属性，而不是函数的prototype属性。更多的内容关于原型和原型链的知识，请参考《Javascript模式》这本书。</p>
+
+<p>JavaScript的原型链连接只在属性检索的时候才会启用，如果我们尝试去获取对象的某个属性值，但该对象没有此属性名，则JavaScript会试着从原型对象中获取该属性值。如果那个对象也没有该属性名，那么在继续从它的原型中寻找，依次类推，直到Object.prototype，如果仍然没有找到该属性值，则返回结果为undefined。不幸的是，这种原型链连接检索，只会在属性检索的的时候启用，并不会在更新属性值时启用，因此当我们对于基础类型（非引用对象上的属性，换句通俗的话来说，就是不会出现“.”运算符）的属性更新的时候，它并不能更新父对象的属性，替代方式是在自身对象上创建了该属性。这也是angular中对于基础类型的属性，不能在子controller中被修改的原因，导致在子controller中ngModel的更新并不会反应在父controller上。</p>
+
+<p>下边是关于该问题的一个简化例子：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div ng-controller="ParentCtrl"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;h4&gt;Parent Controller:&lt;/h4&gt;
+        &lt;pre&gt;&lt;/pre&gt;
+        &lt;input type="text" ng-model="greet" class="form-control" /&gt;
+    &lt;/div&gt;
+    &lt;div ng-controller="ChildCtrl"&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h4&gt;Child controller:&lt;/h4&gt;
+            &lt;pre&gt;&lt;/pre&gt;
+            &lt;input type="text" ng-model="greet" class="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("ParentCtrl", ["$scope", function($scope) {
+
+        $scope.greet = "hello angular!";
+
+    }])
+    .controller("ChildCtrl", angular.noop);
+</code></pre>
+
+<p>从初始化显示效果中，我们能看出子$scope之继承了来自父$scope的greet属性，都显示为&#8221;hello angular!&ldquo;。如果我们尝试利用父controller提供了input控件改变父$scope的greet属性，你也能看见子controller区域的显示也会被及时更新。对于ngController默认会使用原型链继承其父对象的属性，所有的$scope的根$scope或称祖$scope是来自ngApp节点创建的$rootScope，换句话说，$rootScope是万物之源，所有的$scope都直接或者间接继承至它。</p>
+
+<p><img src="/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-1.png" alt="ngModel-controller继承" /></p>
+
+<p>当我们尝试去改变输入框的greet属性的时，则发生了下面的情况：子controller区域发生了更新，父controller区域却无法更新。因为上面所说的JavaScript的原型链检索并不对更新启用，对于基础类型JavaScript在自身对象（这里是子$scope）上创建了一个同名的变量。你也想可以从下面angular调试插件batarang截图中看出来。一旦利用子controller的input控件修改了greet属性，再次之后我再次尝试修改父controller区域的greet属性，子controller区别不会在像初始化时候那样及时同步了，它们之间完全独立了，各自拥有了自己的greet属性。</p>
+
+<p><img src="/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-2.png" alt="ngModel-controller继承" /></p>
+
+<p>batarang插件截图</p>
+
+<p><img src="/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-3.png" alt="ngModel-controller继承" /></p>
+
+<p>经过上面的例子分析，相信作为读者的你已经能够理解这类由于继承链引用问题导致的ngModel不能更新问题了，请记住：这是JavaScript原型继承的issue，并不是angular的issue。</p>
+
+<p>那么我们在子controller中如何更新父controller的属性值呢？这个问题已经很简单了，issue的问题在于没有启用原型链的检索，那么如果我们将ngModel的属性变为引用对象，换句话说：在ngModel的属性值中加了“.”，那么在JavaScript的原型链检索就会启动了。</p>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;div ng-controller="ParentCtrl"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;h4&gt;Parent Controller:&lt;/h4&gt;
+        &lt;pre&gt;&lt;/pre&gt;
+        &lt;input type="text" ng-model="vm.greet" class="form-control" /&gt;
+    &lt;/div&gt;
+    &lt;div ng-controller="ChildCtrl"&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h4&gt;Child controller:&lt;/h4&gt;
+            &lt;pre&gt;&lt;/pre&gt;
+            &lt;input type="text" ng-model="vm.greet" class="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("ParentCtrl", ["$scope", function($scope) {
+
+        $scope.vm = {
+            greet: "hello angular!"
+        };
+
+    }])
+    .controller("ChildCtrl", angular.noop);
+</code></pre>
+
+<p>jsbin demo: <a href="http://jsbin.com/metufi/1/edit?html,js,output">http://jsbin.com/metufi/1/edit?html,js,output</a></p>
+
+<p>这里在ngModel属性值多引入了“vm”变量，这个时候，不管我们尝试修改greet值，整个页面都会得到相应的同步。关于这个问题，作者更推荐使用angular 1.2后的controller as vm的方式解决，更多的信息请阅读《使用controller as vm方式.md》一节。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2975,300 +3337,6 @@ a non-parameterized type nested within a parameterized type.
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-14T17:06:28+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。</p>
-
-<p>首先我们需要创建数据库Schema：</p>
-
-<pre class='green'><code>    CREATE TABLE Chart
-        (`createTime` DateTime, `kpi` varchar(30), `field` varchar(30), `value` double);
-
-    INSERT INTO Chart
-        (`createTime`,`kpi`, `field`, `value`)
-    VALUES
-        ("2015-02-01 12:00:00", 'disk', 'disk', 20),
-        ("2015-02-01 12:15:00", 'disk', 'disk', 30),
-        ("2015-02-01 12:20:00", 'disk', 'disk', 25),
-        ("2015-02-01 12:30:00", 'disk', 'disk', 25),
-        ("2015-02-01 12:35:00", 'disk', 'disk', 25),
-        ("2015-02-01 12:40:00", 'disk', 'disk', 25),
-
-        ("2015-02-01 12:00:00", 'disk', 'disk-all', 20),
-        ("2015-02-01 12:20:00", 'disk', 'disk-all', 30),
-        ("2015-02-01 12:25:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:30:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:35:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:40:00", 'disk', 'disk-all', 25),
-        ("2015-02-01 12:40:00", 'cpu', 'cpu-all', 25),
-        ("2015-02-01 12:40:00", 'cpu', 'cpu', 25)
-    ;
-</code></pre>
-
-<p>在这里字段分别代表：createTime = 数据采集时间，kpi = 数据采集指标，field = 作为指标的小类(一个kpi可以包含多个field)，value = 采集的数据</p>
-
-<p>当我们创建好了数据结构，下面因为我们希望获取出所有的 固定时间范围内的特定kpi的数据，注意因为可能一个kpi中的多个field，但是某些field漏采了部分时间的数据，所以这里我们需要补充异常点0. 并由于EChart这类图表库，希望我们输入的是横轴和纵轴为两个独立的数组对象表示。所以我们需要如下：</p>
-
-<pre class='green'><code>option = {
-    ....
-
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['周一','周二','周三','周四','周五','周六','周日']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} °C'
-            }
-        }
-    ],
-    series : [
-        {
-            ....
-            data:[11, 11, 15, 13, 12, 13, 10]
-        },
-        {
-           ....
-            data:[11, 11, 15, 13, 12, 13, 10]
-        }
-    ]
-};
-</code></pre>
-
-<p>取出横轴比较容易，如下：</p>
-
-<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
-</code></pre>
-
-<p>但是纵轴如果我们以同样方式取出，可能存在需要我们自动程序补值，并且需要保证每项数据和横轴对应，所以我们的程序处理会比较复杂，如下：</p>
-
-<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
-</code></pre>
-
-<p>结果为：</p>
-
-<pre class='green'><code>createTime  kpi field   value
-February, 01 2015 12:00:00  disk    disk    20
-February, 01 2015 12:15:00  disk    disk    30
-February, 01 2015 12:20:00  disk    disk    25
-February, 01 2015 12:00:00  disk    disk-all    20
-February, 01 2015 12:20:00  disk    disk-all    30
-February, 01 2015 12:25:00  disk    disk-all    25
-</code></pre>
-
-<p>有没有其他方案更佳的呢？当然那就是本文要说的sql的倒置，如果我们能够把返回数据转换为如下：</p>
-
-<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
-disk         20                            30                     25                       0
-disk-all     20                             0                     30                       25
-</code></pre>
-
-<p>那么程序就很好处理了。在上面我们已经能够取出所有的横轴数据并排序，接下来我们将可以很简单的做到行列倒置：如下：</p>
-
-<pre class='green'><code>SELECT field,
-SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
-SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
-SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
-SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
-FROM Chart
-WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
-GROUP BY field
-</code></pre>
-
-<p>这样返回数据满足我们的需求了。</p>
-
-<hr />
-
-<p>下面我们来分析下这句SQL，</p>
-
-<ol>
-<li>首先我们利用‘IF(createTime = &lsquo;2015-02-01 12:00:00&rsquo;, value, 0)’来处理插值，并对每行数据转为以时间为列数据,并可以利用IF来补’0‘，将会如下：</li>
-</ol>
-
-
-<p>SQL：</p>
-
-<pre class='green'><code>SELECT field,
-IF(createTime = '2015-02-01 12:00:00', value, 0) as '2015-02-01 12:00:00',
-IF(createTime = '2015-02-01 12:15:00', value, 0) as '2015-02-01 12:15:00',
-IF(createTime = '2015-02-01 12:20:00', value, 0) as '2015-02-01 12:20:00',
-IF(createTime = '2015-02-01 12:25:00', value, 0) as '2015-02-01 12:25:00' 
-FROM Chart
-WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
-</code></pre>
-
-<p>结果为：</p>
-
-<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
-disk               20                       0                       0                       0
-disk                0                       30                      0                       0
-disk                0                       0                       25                      0
-disk-all            20                      0                       0                       0
-disk-all            0                       0                       30                      0
-disk-all            0                       0                       0                       25
-</code></pre>
-
-<ol>
-<li>这下我们就可以利用sql的聚合函数sum和group by来聚合数据行：</li>
-</ol>
-
-
-<p>SQL:</p>
-
-<pre class='green'><code>SELECT field,
-SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
-SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
-SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
-SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
-FROM Chart
-WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
-GROUP BY field
-</code></pre>
-
-<p>效果如上。</p>
-
-<p>对于sql行列转置可以简述为分为两部分：</p>
-
-<ol>
-<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when(sql server 2005开始支持数据透视表pivot) ..)将 需要倒置的数据变为列。</li>
-<li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
-</ol>
-
-
-<p>我们也可以将上面两次请求合并为一次，这就需要mysql的动态拼接，如下：</p>
-
-<pre class='green'><code>SELECT 
-@time_sql := group_concat("SUM(IF(createTime = '", t.createTime, "', value, 0)) AS '" , t.createTime, "'")  
-FROM (
- SELECT DISTINCT createTime FROM Chart ORDER BY createTime
-) AS t;
-
- set @v_sql = CONCAT("SELECT field", IF(ISNULL(@time_sql) , " ", CONCAT(", ", @time_sql)) ," FROM Chart GROUP BY field");
-
-prepare stmt from @v_sql; 
-EXECUTE stmt;   
-deallocate prepare stmt; 
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-29T09:55:53+08:00" pubdate data-updated="true">Jan 29<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/images/blog_img/tw-%E6%8A%80%E6%9C%AF%E9%9B%B7%E8%BE%BE.png" alt="tw技术雷达" /></p>
-
-<p>今天thoughtworks 2015新版技术雷达pdf发布了，你可以从这里下载<a href="http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP">http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP</a>，在这里你可以了解到我们都在用什么技术，那些技术是推荐的，那么技术是不再推荐的。</p>
-
-<h2>thoughtworks技术雷达</h2>
-
-<p>thoughtworks技术雷达是以独特的形式记录ThoughtWorks技术顾问委员会的讨论结果，为从首席信息官到开发人员在内的各路利益相关方提供价值。这些内容只是简要的总结，但建议您探究这些技术以了解更多细节。这个雷达是图形性质的，把各种技术项目归类为技术、工具、平台和语言及框架四个象限。</p>
-
-<p>技术雷达还进一步将这些技术分为四个环以反映ThoughtWorks目前对其的态度。这四个环是：</p>
-
-<ul>
-<li>采用：强烈主张业界采用这些技术。</li>
-<li>试验：值得追求。必须理解如何建立此功能。企业应该在风险可控的计划中尝试此技术。</li>
-<li>评估：为了查明它将如何影响企业，值得作一番探究。</li>
-<li>暂缓：谨慎研究。</li>
-</ul>
-
-
-<h2>本期最新动态</h2>
-
-<h4>DevOps领域的爆炸式增长</h4>
-
-<p>本版本的技术雷达中，我们花了大量篇幅来评估DevOps领域中浩如烟海的各项技术，并且这些技术仍在以爆炸式的速度增长和创新。容器化、云产品以及它们的各种排列组合，使得在这个领域中的创新简直改用疯狂二字来形容。微服务架构风格的普及和流行，进一步扩大了架构技术与DevOps之间的交集，所以，我们预计，在这个领域中的疯狂创新仍将持续下去。</p>
-
-<h4>下一代数据平台引入注目</h4>
-
-<p>大数据并不是新名词(事实上，这段时间我们强烈反对炒作此概念)，但是，我们也开始关注相关技术并研究如何在企业中使用它们。像数据湖和Lambda架构这类技术是放眼“企业数据平台”的新方式，不管你是否真有“大”数据需要处理，它们都可以派上用场。</p>
-
-<h4>开发人员关注于于安全相关的工具</h4>
-
-<p>每周都有“数据泄露和滥用”的新“故事”发生，而社会公众对于“安全的、尊重隐私的系统”的需求一直在增长。本版的技术雷达中精选了很多工具，比如Blackbox、TOTP双重因数验证以及OpenID连接等，它们能帮助开发人员建立安全的系统以及基础设施</p>
-
-<h2>更多内容</h2>
-
-<p>更多内容您可以参见<a href="http://www.thoughtworks.com/cn/radar/techniques">技术雷达</a>和其<a href="http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP">中文版pdf</a>.</p>
-
-<p>另外本期thoughtworks技术雷达也基于大家的反馈加强了互动性:</p>
-
-<ul>
-<li><p><a href="http://engage.thoughtworks.com/f00pP0n05H00bD0QQQEgO07">雷达A到Z</a>:你现在可以在雷达上浏览任何曾经出现在雷达历史里的条目，你也可以直接搜索一项你感兴趣的技术。</p></li>
-<li><p><a href="http://engage.thoughtworks.com/lpDQh000nb5O0E0P70Q0I0Q">消退的条目</a>:那些曾经出现在早期技术雷达但现在已经消失的条目，现在会被清晰地标注为消退状态。</p></li>
-</ul>
-
-
-<p>希望技术雷达能够激励各位看官思考自己或者项目的技术选择，同时在可能的情况下提升您或者你项目团队的技术能力。 更希望您去&#8221;<a href="http://engage.thoughtworks.com/I0b0JQ50n7OiQP0Q0p0DE00">建立个人或者项目技术雷达</a>&ldquo;.</p>
-
-<p>博主也会经常为自己更新自己的技术雷达，根据雷达与圆心的距离标注优先级来指导自己的技术学习。以及为了团队成员快速掌握项目技术栈，以及团队成员的技术成长，也有在项目初期建立项目的技术雷达指导团队成员的学习和分享，保证项目交付的技术支持。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -3299,6 +3367,14 @@ deallocate prepare stmt;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -3320,14 +3396,6 @@ deallocate prepare stmt;
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>

@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; html5作为下一代web标准，年前轩起了html5热潮。对于html5我只是本着了解看看。关于html5和RIA（silverlight，flash，JavaFx等）我不想说什么，也没有什么可说的，存在就有其存在的理由。 &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,650 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/29/li-yong-Attribute-jian-hua-Unity-kuang-jia-IOC-zhu-ru/">利用Attribute简化Unity框架IOC注入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-29T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在我们的领域驱动设计(DDD)开发中,我们经常需要IOC框架使得我的框架依赖翻转，依赖抽象，避免直接new依赖于我们的具体实现。这些使得我们的框架整个项目结构不变，很方便的改变具体实现，使得项目提供可测试性，模块之间实现高内聚低耦合，减少我们的后期维护成本。IOC框架一般基于容器，在容器中存储着各个抽象和具体实现的依赖关系，当我们需要发出请求的时候，IOC框架会在当前容器中找到我们所需要的具体实现返回给我们，当然这里还有DI注入（属性，方法，构造），在我们的使用者（客户端）不需要了解具体实现，如何初始化，如何流转等具体，只需明白我们的契约接口暴露给我们的服务，IOC框架是解决抽象和具体直接的创建问题。其他资料可以参见<strong><a href="http://martinfowler.com/articles/injection.html">Inversion of Control Containers and the Dependency Injection pattern</a>。</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 当然Unity框架中为我们提供了RegisterInstance，RegisterType方法我们可以在代码中注册到容器，比如NLayerApp中就在<code>IoCFactory中注册一大堆抽象-具体关联。但是在我们的实际实践中一般会选择另一种方式xml配置配置，因为这样我们会得到更大的灵活性，需求变化只要抽象接口不变，我们也只需要在xml配置文件中修改一行配置加入我们的具体实现，加入我们的程序集，就可以适应需求变化，这更满足oo设计&amp;#8220;开闭原则&amp;#8221;。</code></p>
+
+<p><code>&amp;nbsp;&amp;nbsp; 在这里个人实践利用抽象（接口）定义Attribute制定具体ConfigFile（配置文件），Container（容器），Name（名称）解决IOC植入，减少我们多次去读取配置文件。Unity为我们提供了在Web.config,App.config中配置注入信息，或者注册外部配置，但是很多时候我们更希望，在我们的 不同模块下，应用不同的IOC配置信息，这些可以减少维护的关联少些，清晰，同时文件夹的出现便于我们的配置信息的管理。</code></p>
+
+<p><code>Attribute实现：UnityInjectionAttribute</code></p>
+
+<pre class='green'><code>[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)] 
+
+   public class UnityInjectionAttribute : Attribute 
+
+   { 
+
+
+
+       public UnityInjectionAttribute(string Container) 
+
+       { 
+
+           this.Container = Container;            
+
+       } 
+
+
+
+       public string Container 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string ConfigFile 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public string Name 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+       public Microsoft.Practices.Unity.Configuration.UnityConfigurationSection GetUnityConfigurationSection() 
+
+       { 
+
+           if (!string.IsNullOrEmpty(this.ConfigFile)) 
+
+           { 
+
+               var fileMap = new System.Configuration.ExeConfigurationFileMap { ExeConfigFilename = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, this.ConfigFile) }; 
+
+               System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(fileMap, System.Configuration.ConfigurationUserLevel.None); 
+
+               return configuration == null ? null : configuration.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+           } 
+
+           return System.Configuration.ConfigurationManager.GetSection(Microsoft.Practices.Unity.Configuration.UnityConfigurationSection.SectionName) as Microsoft.Practices.Unity.Configuration.UnityConfigurationSection; 
+
+       } 
+
+   }
+</code></pre>
+
+<p>&nbsp; 在这里我们GetUnityConfigurationSection根据ConfigFile获取UnityConfigurationSection ，ConfigFile为空则当前应用配置文件，不空则为路径。在这里我们为了性能，减少过多的IOC操作，读取配置文件，我们可以更具具体需要加入对配置文件UnityConfigurationSection的缓存（ConfigFile作为key，UnityConfigurationSection为value ）。</p>
+
+<p>&nbsp;&nbsp; 同时提供操作辅助方法：ELUnityUtility</p>
+
+<pre class='green'><code> public static class ELUnityUtility 
+
+   { 
+
+       public static T Resolve&lt;T&gt;() where T : class 
+
+       { 
+
+           return Resolve(typeof(T)) as T; 
+
+       } 
+
+
+
+       public static object Resolve(this Type type) 
+
+       { 
+
+           var attrs = type.GetCustomAttributes(typeof(Utils.UnityInjectionAttribute), true) as Utils.UnityInjectionAttribute[]; 
+
+           if (attrs != null &amp;&amp; attrs.Length &gt; 0) 
+
+           { 
+
+               var attr = attrs[0]; 
+
+               var unitySection = attr.GetUnityConfigurationSection(); 
+
+               if (unitySection != null) 
+
+               { 
+
+                   var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(attr.Container) ? unitySection.Containers.Default.Name : attr.Container); 
+
+                   var obj = string.IsNullOrEmpty(attr.Name) ? container.Resolve(type) : container.Resolve(type, attr.Name); 
+
+                   if (obj != null) 
+
+                   { 
+
+                       var piabAtttr = obj.GetType().GetCustomAttributes(typeof(ELPolicyinjectionAttribute), false) as ELPolicyinjectionAttribute[]; 
+
+                       if (piabAtttr.Length &gt; 0) 
+
+                       { 
+
+                           obj = Microsoft.Practices.EnterpriseLibrary.PolicyInjection.PolicyInjection.Wrap(type, obj); 
+
+                       } 
+
+                       return obj; 
+
+                   } 
+
+               } 
+
+           } 
+
+           return null; 
+
+       } 
+
+
+
+       public static IEnumerable&lt;T&gt; ResolveAll&lt;T&gt;() where T : class 
+
+       { 
+
+           return ResolveAll(typeof(T)) as IEnumerable&lt;T&gt;; 
+
+       } 
+
+
+
+       public static object ResolveAll(this Type type) 
+
+       { 
+
+           var attrs = type.GetCustomAttributes(typeof(Utils.UnityInjectionAttribute), true) as Utils.UnityInjectionAttribute[]; 
+
+           if (attrs != null &amp;&amp; attrs.Length &gt; 0) 
+
+           { 
+
+               var attr = attrs[0]; 
+
+               var unitySection = attr.GetUnityConfigurationSection(); 
+
+               if (unitySection != null) 
+
+               { 
+
+                   var container = new Microsoft.Practices.Unity.UnityContainer().LoadConfiguration(unitySection, string.IsNullOrEmpty(attr.Container) ? unitySection.Containers.Default.Name : attr.Container); 
+
+                   return container.ResolveAll(type); 
+
+               } 
+
+           } 
+
+           return null; 
+
+       } 
+
+
+
+   }
+</code></pre>
+
+<p><font face="Courier New">这里我们就可以很简便的获取IOC翻转。注：这里还有根据具体实现是否具体ELPolicyinjectionAttribute来决定是否进行PIAB的AOP操作，当然我们也可以在Unity配置文件中引入节点扩展</font></p>
+
+<p>Microsoft.Practices.Unity.InterceptionExtension.Configuration.InterceptionConfigurationExtension,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Microsoft.Practices.Unity.Interception.Configuration</p>
+
+<p><font face="Courier New">（PIAB利用的是透明代理速度较慢所以一般很少使用，当然你也可以实现具体的PIAB AOP方式比如注入MSIL，但我们已经有了很多注入MSIL的AOP框架了，我不准备去造轮子），ELPolicyinjectionAttribute：</font></p>
+
+<pre class='green'><code> [AttributeUsage(AttributeTargets.Class)] 
+
+   public class ELPolicyinjectionAttribute : Attribute 
+
+   { 
+
+       public string Name 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+   }
+</code></pre>
+
+<p>这样：我们的客户端 就可以很简单的使用了：</p>
+
+<pre class='green'><code> class Program 
+
+   { 
+
+       static void Main(string[] args) 
+
+       { 
+
+
+
+           ELUnityUtility.Resolve&lt;IClass2&gt;().Show(); 
+
+           (typeof(IClass2).Resolve() as IClass2).Show(); 
+
+           Console.Read(); 
+
+       } 
+
+   } 
+
+
+
+   public interface IClass1 
+
+   { 
+
+       void Show(); 
+
+   } 
+
+
+
+   [Green.Utils.ELPolicyinjection] 
+
+   public class Class1 : IClass1 
+
+   { 
+
+
+
+       #region IClass1 成员 
+
+       [TestCallHandler] 
+
+       public void Show() 
+
+       { 
+
+           Console.WriteLine(this.GetType()); 
+
+       } 
+
+
+
+       #endregion 
+
+   } 
+
+
+
+   [Green.Utils.UnityInjection("First", Name = "class2", ConfigFile = "App1.config")] 
+
+   public interface IClass2 
+
+   { 
+
+       void Show(); 
+
+   } 
+
+
+
+    public class Class2 : ConsoleApplication1.IClass2 
+
+   { 
+
+       [Microsoft.Practices.Unity.Dependency("class1")] 
+
+       public IClass1 Class1 
+
+       { 
+
+           get; 
+
+           set; 
+
+       } 
+
+
+
+            public void Show() 
+
+       { 
+
+           Console.WriteLine(this.GetType()); 
+
+           Class1.Show(); 
+
+       } 
+
+   }
+</code></pre>
+
+<p>App1.Config配置：</p>
+
+<pre class='green'><code>&lt;?xml version="1.0" encoding="utf-8" ?&gt; 
+
+&lt;configuration&gt; 
+
+  &lt;configSections&gt; 
+
+    &lt;section name="unity" 
+
+             type="Microsoft.Practices.Unity.Configuration.UnityConfigurationSection, 
+
+             Microsoft.Practices.Unity.Configuration"/&gt; 
+
+  &lt;/configSections&gt; 
+
+  &lt;unity xmlns="http://schemas.microsoft.com/practices/2010/unity%22&gt; 
+
+    &lt;container name="First"&gt; 
+
+      &lt;register type="ConsoleApplication1.IClass1,ConsoleApplication1" mapTo="ConsoleApplication1.Class1,ConsoleApplication1" name="class1" /&gt; 
+
+      &lt;register type="ConsoleApplication1.IClass2,ConsoleApplication1" mapTo="ConsoleApplication1.Class2,ConsoleApplication1" name="class2"  /&gt; 
+
+    &lt;/container&gt; 
+
+  &lt;/unity&gt; 
+
+&lt;/configuration&gt;
+</code></pre>
+
+<p>下边是一个完整的带PIAB的例子：</p>
+
+<p> using System;</p>
+
+<p>using System.Collections.Generic;</p>
+
+<p>using System.Linq;</p>
+
+<p>using System.Text;</p>
+
+<p>using Green.Utils;</p>
+
+<p>using Microsoft.Practices.Unity.InterceptionExtension;</p>
+
+<p>using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;</p>
+
+<p>namespace ConsoleApplication1</p>
+
+<p>{</p>
+
+<pre class='green'><code>class Program 
+
+{ 
+
+    static void Main(string[] args) 
+
+    { 
+
+
+
+        ELUnityUtility.Resolve&lt;IClass2&gt;().Show(); 
+
+        (typeof(IClass2).Resolve() as IClass2).Show(); 
+
+        Console.Read(); 
+
+    } 
+
+} 
+
+
+
+public interface IClass1 
+
+{ 
+
+    void Show(); 
+
+} 
+
+
+
+[Green.Utils.ELPolicyinjection] 
+
+public class Class1 : IClass1 
+
+{ 
+
+
+
+    #region IClass1 成员 
+
+    [TestCallHandler] 
+
+    public void Show() 
+
+    { 
+
+        Console.WriteLine(this.GetType()); 
+
+    } 
+
+
+
+    #endregion 
+
+} 
+
+
+
+[Green.Utils.UnityInjection("First", Name = "class2", ConfigFile = "App1.config")] 
+
+public interface IClass2 
+
+{ 
+
+    void Show(); 
+
+} 
+
+
+
+[Green.Utils.ELPolicyinjection] 
+
+public class Class2 : ConsoleApplication1.IClass2 
+
+{ 
+
+    [Microsoft.Practices.Unity.Dependency("class1")] 
+
+    public IClass1 Class1 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    [TestCallHandler] 
+
+    public void Show() 
+
+    { 
+
+        Console.WriteLine(this.GetType()); 
+
+        Class1.Show(); 
+
+    } 
+
+} 
+
+
+
+[Microsoft.Practices.EnterpriseLibrary.Common.Configuration.ConfigurationElementType(typeof(CustomCallHandlerData))] 
+
+public class TestCallHandler : ICallHandler 
+
+{ 
+
+    #region ICallHandler 成员 
+
+
+
+    public IMethodReturn Invoke(IMethodInvocation input, GetNextHandlerDelegate getNext) 
+
+    { 
+
+        if (input == null) throw new ArgumentNullException("input"); 
+
+        if (getNext == null) throw new ArgumentNullException("getNext"); 
+
+        Console.WriteLine("begin...."); 
+
+        var result = getNext()(input, getNext); 
+
+        Console.WriteLine("end...."); 
+
+        return result; 
+
+    } 
+
+
+
+    public int Order 
+
+    { 
+
+        get; 
+
+        set; 
+
+    } 
+
+
+
+    #endregion 
+
+} 
+
+
+
+[AttributeUsage(AttributeTargets.Method)] 
+
+public class TestCallHandlerAttribute : HandlerAttribute 
+
+{ 
+
+    public override ICallHandler CreateHandler(Microsoft.Practices.Unity.IUnityContainer container) 
+
+    { 
+
+        return new TestCallHandler(); 
+
+    } 
+
+} 
+
+}
+</code></pre>
+
+<p>欢迎大家指正，批评，交流是的大家都功能进步。<a href="http://files.cnblogs.com/whitewolf/UnityInjectionAttribute.rar">代码下载</a></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/11/29/2268379.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/09/21/StringTemplate-yu-jian-jQuery-di-chong-tu/">StringTemplate遇见jQuery的冲突</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; &nbsp;最近在做一个流程引擎，现着手于自定义模板的处理。设计在模板中所有的数据都将与字段对应，采用xml结构序列化作为流程持久化机制。字段对于用户的输入则为字段，字段涉及到用户的输入，必定是控件。由于有以前项目word模板转化为在线展示输入经验（这里不仅仅是将word转化为html，还需要提取word书签作为关键字段，关键字段作为用户的输入，根据用户配置转化为文本框，下拉框，数字，货币框，时间等等可扩展控件）。我在本次的模板设计中不再考虑服务器控件，因为服务器控件将生成一大堆难以控制的html标记。所以彻底疯狂了一把，采用完全html+jQuery实现（验证用的也是jQuery validator）。关于流程的设计将会在后续慢慢总结。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天只是记录一下在控件用户设置界面字段修改界面需要还原用户的上次记录，因为我的全是html+jQuery，所以在框架设计中提供了两种方案：1：根据page对象注册页面初始化脚本，回填控件值。2：利用StringTemplate生成带有回填值的html输出。</p>
+
+<p>&nbsp;&nbsp;&nbsp; 就是第二种方案的使用，出现了StringTemplate对于jQuery$的错误解析：解决方案总结如下：</p>
+
+<ol>
+<li>从jQuery触发，可以利用jQuery()代替$()。</li>
+<li>StringTemplate这可以使jQuery的$转义：\$.</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp; 内容很少，废话很多，网见谅。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/09/21/2184488.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1109,98 +1753,6 @@ namespace SilverlightApplication2
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/27/PD-she-ji-zhong-biao-ming-guo-chang-zi-dong-sheng-cheng-di-zhu-wai-jian-ming-jie-qu-di-wen-ti/">PD设计中表名过长，自动生成的主外键名截取的问题</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-27T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在PowerDesinger中，若表名过长，自动生成的主键名会被自动截取。</p>
-
-<p>解决如下：DataBase/Edit Current DBMS/Scripts/Objects/PKey/ConstName中找到Value的值，
-默认是 <span style="color: red">PK<em>%.U27:TABLE%</span>，<span style="color: red">U27</span>表示截取27个字符。改成PK</em>%TABLE%主键名就不会被截取了。</p>
-
-<p>其他键同理：找到相应的ConstName Value去掉U.\d:</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/27/1996786.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/26/Excel-huo-bi-zhong-wen-da-xie-han-zi-zhuan-hua/">Excel 货币中文大写汉字转化</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Excel转化货币数字为中文大写：例如：</p>
-
-<p>效果图：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/ExcelP.jpg" alt="" /></p>
-
-<p>代码：</p>
-
-<pre class='green'><code> =IF(D8&lt;1,IF(D8&lt;0.1,TEXT(INT(D8*100),"[DBNum2]G/通用格式")&amp;"分",IF((INT(D8*100)-INT(D8*10)*10=0),TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角整",TEXT(INT(D8*10),"[DBNum2]G/通用格式")&amp;"角"&amp;TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分")),TEXT(INT(D8),"[DBNum2]G/通用格式"&amp;"元")&amp;IF((INT(D8*10)-INT(D8)*10)=0,IF((INT(D8*100)-INT(D8*10)*10)=0,"","零"),IF((INT(D8*0.1)-INT(D8)*0.1)=0,"零","")&amp;TEXT(INT(D8*10)-INT(D8)*10,"[DBNum2]G/通用格式")&amp;"角")&amp;IF((INT(D8*100)-INT(D8*10)*10)=0,"整",TEXT(INT(D8*100)-INT(D8*10)*10,"[DBNum2]G/通用格式")&amp;"分"))
-</code></pre>
-
-<p>&nbsp;这个奖可以结合ASPOSE.Cells处理我的报表导出Excel的汇总，计算问题：<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/21/Aspose_Cells_Template1.html"><font color="#6699cc">报表中的Excel操作之Aspose.Cells（Excel模板）</font></a> 唯一需要改变的就是D8这个单元汇总格是需要动态变更的，可以利用{r}。{-n}，{c}等来处理。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/26/1996192.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/14/">&larr; Older</a>
@@ -1231,6 +1783,14 @@ namespace SilverlightApplication2
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -1252,14 +1812,6 @@ namespace SilverlightApplication2
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>

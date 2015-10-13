@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="今天给angular新手介绍一个国内开源的ng学习网站http://www.ngnice.com/这是由一批ng爱好者在雪狼大叔的带领下共同开发完成，致力于帮助更多的ng新人，他们分别是: ckken，grahamle，NigelYao，asnowwolf，lightma，joeylin， &hellip;"> 
+    <meta name="description" content="SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。 首先我们需要创建数据库Schema： CREATE TABLE Chart &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,300 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-14T17:06:28+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。</p>
+
+<p>首先我们需要创建数据库Schema：</p>
+
+<pre class='green'><code>    CREATE TABLE Chart
+        (`createTime` DateTime, `kpi` varchar(30), `field` varchar(30), `value` double);
+
+    INSERT INTO Chart
+        (`createTime`,`kpi`, `field`, `value`)
+    VALUES
+        ("2015-02-01 12:00:00", 'disk', 'disk', 20),
+        ("2015-02-01 12:15:00", 'disk', 'disk', 30),
+        ("2015-02-01 12:20:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:30:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:35:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:40:00", 'disk', 'disk', 25),
+
+        ("2015-02-01 12:00:00", 'disk', 'disk-all', 20),
+        ("2015-02-01 12:20:00", 'disk', 'disk-all', 30),
+        ("2015-02-01 12:25:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:30:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:35:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:40:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:40:00", 'cpu', 'cpu-all', 25),
+        ("2015-02-01 12:40:00", 'cpu', 'cpu', 25)
+    ;
+</code></pre>
+
+<p>在这里字段分别代表：createTime = 数据采集时间，kpi = 数据采集指标，field = 作为指标的小类(一个kpi可以包含多个field)，value = 采集的数据</p>
+
+<p>当我们创建好了数据结构，下面因为我们希望获取出所有的 固定时间范围内的特定kpi的数据，注意因为可能一个kpi中的多个field，但是某些field漏采了部分时间的数据，所以这里我们需要补充异常点0. 并由于EChart这类图表库，希望我们输入的是横轴和纵轴为两个独立的数组对象表示。所以我们需要如下：</p>
+
+<pre class='green'><code>option = {
+    ....
+
+    xAxis : [
+        {
+            type : 'category',
+            boundaryGap : false,
+            data : ['周一','周二','周三','周四','周五','周六','周日']
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value',
+            axisLabel : {
+                formatter: '{value} °C'
+            }
+        }
+    ],
+    series : [
+        {
+            ....
+            data:[11, 11, 15, 13, 12, 13, 10]
+        },
+        {
+           ....
+            data:[11, 11, 15, 13, 12, 13, 10]
+        }
+    ]
+};
+</code></pre>
+
+<p>取出横轴比较容易，如下：</p>
+
+<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>但是纵轴如果我们以同样方式取出，可能存在需要我们自动程序补值，并且需要保证每项数据和横轴对应，所以我们的程序处理会比较复杂，如下：</p>
+
+<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>结果为：</p>
+
+<pre class='green'><code>createTime  kpi field   value
+February, 01 2015 12:00:00  disk    disk    20
+February, 01 2015 12:15:00  disk    disk    30
+February, 01 2015 12:20:00  disk    disk    25
+February, 01 2015 12:00:00  disk    disk-all    20
+February, 01 2015 12:20:00  disk    disk-all    30
+February, 01 2015 12:25:00  disk    disk-all    25
+</code></pre>
+
+<p>有没有其他方案更佳的呢？当然那就是本文要说的sql的倒置，如果我们能够把返回数据转换为如下：</p>
+
+<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
+disk         20                            30                     25                       0
+disk-all     20                             0                     30                       25
+</code></pre>
+
+<p>那么程序就很好处理了。在上面我们已经能够取出所有的横轴数据并排序，接下来我们将可以很简单的做到行列倒置：如下：</p>
+
+<pre class='green'><code>SELECT field,
+SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
+SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
+SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
+SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
+GROUP BY field
+</code></pre>
+
+<p>这样返回数据满足我们的需求了。</p>
+
+<hr />
+
+<p>下面我们来分析下这句SQL，</p>
+
+<ol>
+<li>首先我们利用‘IF(createTime = &lsquo;2015-02-01 12:00:00&rsquo;, value, 0)’来处理插值，并对每行数据转为以时间为列数据,并可以利用IF来补’0‘，将会如下：</li>
+</ol>
+
+
+<p>SQL：</p>
+
+<pre class='green'><code>SELECT field,
+IF(createTime = '2015-02-01 12:00:00', value, 0) as '2015-02-01 12:00:00',
+IF(createTime = '2015-02-01 12:15:00', value, 0) as '2015-02-01 12:15:00',
+IF(createTime = '2015-02-01 12:20:00', value, 0) as '2015-02-01 12:20:00',
+IF(createTime = '2015-02-01 12:25:00', value, 0) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>结果为：</p>
+
+<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
+disk               20                       0                       0                       0
+disk                0                       30                      0                       0
+disk                0                       0                       25                      0
+disk-all            20                      0                       0                       0
+disk-all            0                       0                       30                      0
+disk-all            0                       0                       0                       25
+</code></pre>
+
+<ol>
+<li>这下我们就可以利用sql的聚合函数sum和group by来聚合数据行：</li>
+</ol>
+
+
+<p>SQL:</p>
+
+<pre class='green'><code>SELECT field,
+SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
+SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
+SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
+SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
+GROUP BY field
+</code></pre>
+
+<p>效果如上。</p>
+
+<p>对于sql行列转置可以简述为分为两部分：</p>
+
+<ol>
+<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when(sql server 2005开始支持数据透视表pivot) ..)将 需要倒置的数据变为列。</li>
+<li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
+</ol>
+
+
+<p>我们也可以将上面两次请求合并为一次，这就需要mysql的动态拼接，如下：</p>
+
+<pre class='green'><code>SELECT 
+@time_sql := group_concat("SUM(IF(createTime = '", t.createTime, "', value, 0)) AS '" , t.createTime, "'")  
+FROM (
+ SELECT DISTINCT createTime FROM Chart ORDER BY createTime
+) AS t;
+
+ set @v_sql = CONCAT("SELECT field", IF(ISNULL(@time_sql) , " ", CONCAT(", ", @time_sql)) ," FROM Chart GROUP BY field");
+
+prepare stmt from @v_sql; 
+EXECUTE stmt;   
+deallocate prepare stmt; 
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/29/twxin-ban-ji-zhu-lei-da-zhong-wen-ban-fa-bu/">TW2015技术雷达中文版发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-29T09:55:53+08:00" pubdate data-updated="true">Jan 29<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/blog_img/tw-%E6%8A%80%E6%9C%AF%E9%9B%B7%E8%BE%BE.png" alt="tw技术雷达" /></p>
+
+<p>今天thoughtworks 2015新版技术雷达pdf发布了，你可以从这里下载<a href="http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP">http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP</a>，在这里你可以了解到我们都在用什么技术，那些技术是推荐的，那么技术是不再推荐的。</p>
+
+<h2>thoughtworks技术雷达</h2>
+
+<p>thoughtworks技术雷达是以独特的形式记录ThoughtWorks技术顾问委员会的讨论结果，为从首席信息官到开发人员在内的各路利益相关方提供价值。这些内容只是简要的总结，但建议您探究这些技术以了解更多细节。这个雷达是图形性质的，把各种技术项目归类为技术、工具、平台和语言及框架四个象限。</p>
+
+<p>技术雷达还进一步将这些技术分为四个环以反映ThoughtWorks目前对其的态度。这四个环是：</p>
+
+<ul>
+<li>采用：强烈主张业界采用这些技术。</li>
+<li>试验：值得追求。必须理解如何建立此功能。企业应该在风险可控的计划中尝试此技术。</li>
+<li>评估：为了查明它将如何影响企业，值得作一番探究。</li>
+<li>暂缓：谨慎研究。</li>
+</ul>
+
+
+<h2>本期最新动态</h2>
+
+<h4>DevOps领域的爆炸式增长</h4>
+
+<p>本版本的技术雷达中，我们花了大量篇幅来评估DevOps领域中浩如烟海的各项技术，并且这些技术仍在以爆炸式的速度增长和创新。容器化、云产品以及它们的各种排列组合，使得在这个领域中的创新简直改用疯狂二字来形容。微服务架构风格的普及和流行，进一步扩大了架构技术与DevOps之间的交集，所以，我们预计，在这个领域中的疯狂创新仍将持续下去。</p>
+
+<h4>下一代数据平台引入注目</h4>
+
+<p>大数据并不是新名词(事实上，这段时间我们强烈反对炒作此概念)，但是，我们也开始关注相关技术并研究如何在企业中使用它们。像数据湖和Lambda架构这类技术是放眼“企业数据平台”的新方式，不管你是否真有“大”数据需要处理，它们都可以派上用场。</p>
+
+<h4>开发人员关注于于安全相关的工具</h4>
+
+<p>每周都有“数据泄露和滥用”的新“故事”发生，而社会公众对于“安全的、尊重隐私的系统”的需求一直在增长。本版的技术雷达中精选了很多工具，比如Blackbox、TOTP双重因数验证以及OpenID连接等，它们能帮助开发人员建立安全的系统以及基础设施</p>
+
+<h2>更多内容</h2>
+
+<p>更多内容您可以参见<a href="http://www.thoughtworks.com/cn/radar/techniques">技术雷达</a>和其<a href="http://engage.thoughtworks.com/HQ0000Q0QOf5pE70nbD00GP">中文版pdf</a>.</p>
+
+<p>另外本期thoughtworks技术雷达也基于大家的反馈加强了互动性:</p>
+
+<ul>
+<li><p><a href="http://engage.thoughtworks.com/f00pP0n05H00bD0QQQEgO07">雷达A到Z</a>:你现在可以在雷达上浏览任何曾经出现在雷达历史里的条目，你也可以直接搜索一项你感兴趣的技术。</p></li>
+<li><p><a href="http://engage.thoughtworks.com/lpDQh000nb5O0E0P70Q0I0Q">消退的条目</a>:那些曾经出现在早期技术雷达但现在已经消失的条目，现在会被清晰地标注为消退状态。</p></li>
+</ul>
+
+
+<p>希望技术雷达能够激励各位看官思考自己或者项目的技术选择，同时在可能的情况下提升您或者你项目团队的技术能力。 更希望您去&#8221;<a href="http://engage.thoughtworks.com/I0b0JQ50n7OiQP0Q0p0DE00">建立个人或者项目技术雷达</a>&ldquo;.</p>
+
+<p>博主也会经常为自己更新自己的技术雷达，根据雷达与圆心的距离标注优先级来指导自己的技术学习。以及为了团队成员快速掌握项目技术栈，以及团队成员的技术成长，也有在项目初期建立项目的技术雷达指导团队成员的学习和分享，保证项目交付的技术支持。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1388,627 +1682,6 @@ public static Injector createInjector(Stage stage, Iterable&lt;? extends Module&
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/17/typescript-classes/">TypeScript - Classes</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-17T19:10:32+08:00" pubdate data-updated="true">Nov 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>简介</h2>
-
-<p>JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式，TypeScript将编译为目前大多数浏览器能允许的普通Javascript代码，所以我们不用在等待ECMAScript 6的到来了。</p>
-
-<h2>类</h2>
-
-<p>我们先看一个关于class-base的实例：</p>
-
-<pre class='green'><code>class Greeter {
-    greeting: string;
-    constructor(message: string) {
-        this.greeting = message;
-    }
-    greet() {
-        return "Hello, " + this.greeting;
-    }
-}
-
-var greeter = new Greeter("world");
-</code></pre>
-
-<p>这种语法和我们先前在c#，java语言看见的很相似。在这里我们声明了一个Greeter的类，其中包含一个greeting的属性，构造函数，以及greet的方法。</p>
-
-<p>你也许已经注意到了例子中的‘this’关键字，’this‘和java/C#一样代表对象实例的成员访问。</p>
-
-<p>在最后一行我们利用‘new’关键字创建了一个Greeter的对象实例。这将会新建一个对象实例，并调用我们先前定义的构造函数初始化此对象。</p>
-
-<h2>继承</h2>
-
-<p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
-
-<pre class='green'><code>class Animal {
-    name:string;
-    constructor(theName: string) { this.name = theName; }
-    move(meters: number) {
-        alert(this.name + " moved " + meters + "m.");
-    }
-}
-
-class Snake extends Animal {
-    constructor(name: string) { super(name); }
-    move() {
-        alert("Slithering...");
-        super.move(5);
-    }
-}
-
-class Horse extends Animal {
-    constructor(name: string) { super(name); }
-    move() {
-        alert("Galloping...");
-        super.move(45);
-    }
-}
-
-var sam = new Snake("Sammy the Python");
-var tom: Animal = new Horse("Tommy the Palomino");
-
-sam.move();
-tom.move(34);
-</code></pre>
-
-<p>在这个案例中展示了TypeScript的OO继承方式，它和其他语言很相似。在TypeScript中我们采用‘extends’关键字来表示类的继承关系。在这里你可以看见 &lsquo;Horse&#8217;和&#8217;Snake&#8217;都是继承至&#8217;Animal&#8217;的子类实现。</p>
-
-<p>在案例中也展示如何去重写父类的方法，在这里&#8217;Snake&#8217;和&#8217;Horse都各自创建了一个‘move’方法来重写父类&#8217;Animal&#8217;的‘move’方法，并和‘super’关键字来调用父类的方法。</p>
-
-<h2>Private/Public访问限制</h2>
-
-<h4>Public为默认行为</h4>
-
-<p>你可能注意到了在上例中我们并没有用‘public’关键字去描述类的成员的访问级别让其可见。在C#这类语言中，我们必须显示的标注public关键字才能使得类的成员可见。但是在TypeScript中public为默认访问级别，而不是想c#一样private默认。</p>
-
-<p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
-
-<pre class='green'><code>class Animal {
-    private name:string;
-    constructor(theName: string) { this.name = theName; }
-    move(meters: number) {
-        alert(this.name + " moved " + meters + "m.");
-    }
-}
-</code></pre>
-
-<h4>理解private(私有)</h4>
-
-<p>TypeScript有一个结构化的类型(或者鸭子类型)系统。在我们比较两个不同类型，我们不关心它们来自哪里，只关心对类型的每个成员的兼容性。一旦所有的成员都是兼容的，那么我们就认为这两个类型也是兼容的。</p>
-
-<p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
-
-<pre class='green'><code>class Animal {
-    private name:stringParameter properties;
-    constructor(theName: string) { this.name = theName; }
-}
-
-class Rhino extends Animal {
-    constructor() { super("Rhino"); }
-}
-
-class Employee {
-    private name:string;
-    constructor(theName: string) { this.name = theName; }   
-}
-
-var animal = new Animal("Goat");
-var rhino = new Rhino();
-var employee = new Employee("Bob");
-
-animal = rhino;
-animal = employee; //error: Animal and Employee are not compatible
-</code></pre>
-
-<p>在上例中我们有&#8217;Animal&#8217;和‘Rhino’两个类型，&#8217;Rhino&#8217;是‘Animal’的一个子类。同时我们也定义了一个 &lsquo;Employee&#8217;的类，它和‘Animal’类完全相同。我们分别创建了第三个类的对象，并相互赋值，结果&#8217;Animal&#8217;和&#8217;Rhino&#8217;继承关系，所以对于私有字段name在‘Animal’中具有相同的声明  &#8216;private name: string&#8217;，他们是兼容的。但对于&#8217;Employee&#8217;则各自声明了一个私有name字段，对于私有字段是不相同的，所以我们不能将employee赋值给animal对象，他们是不兼容的类型。</p>
-
-<h4>参数属性(Parameter properties)</h4>
-
-<p>访问限制关键字public&#8217;和&#8217;private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
-
-<pre class='green'><code>class Animal {
-    constructor(private name: string) { }
-    move(meters: number) {
-        alert(this.name + " moved " + meters + "m.");
-    }
-}
-</code></pre>
-
-<p>这里我们利用‘private’关键字为类创建了一个私有成员并初始化其值。对于public也类似。</p>
-
-<h2>访问器(Accessors)</h2>
-
-<p>TypeScript支持利用getters/setters来控制对成员的访问。让我们可以控制类的成员之间的访问方式。</p>
-
-<p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
-
-<pre class='green'><code>class Employee {
-    fullName: string;
-}
-
-var employee = new Employee();
-employee.fullName = "Bob Smith";
-if (employee.fullName) {
-    alert(employee.fullName);
-}
-</code></pre>
-
-<p>在这里我们允许任意的访问内部fullName成员。有时这可能不是我们所期望的。</p>
-
-<p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
-
-<pre class='green'><code>var passcode = "secret passcode";
-
-class Employee {
-    private _fullName: string;
-
-    get fullName(): string {
-        return this._fullName;
-    }
-
-    set fullName(newName: string) {
-        if (passcode &amp;&amp; passcode == "secret passcode") {
-            this._fullName = newName;
-        }
-        else {
-            alert("Error: Unauthorized update of employee!");
-        }
-    }
-}
-
-var employee = new Employee();
-employee.fullName = "Bob Smith";
-if (employee.fullName) {
-    alert(employee.fullName);
-}
-</code></pre>
-
-<p>这里我们在修改fullName属性的时候验证了passcode值，是否有权限修改。你可以尝试修改passcode的值，使其不匹配，观察下会发生什么问题？</p>
-
-<p><strong>注意:</strong>访问器使用我们需要设置编译输出为ECMAScript 5。</p>
-
-<h2>静态属性</h2>
-
-<p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用&#8217;static&#8217; 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的&#8217;this.&lsquo;.</p>
-
-<pre class='green'><code>class Grid {
-    static origin = {x: 0, y: 0};
-    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
-        var xDist = (point.x - Grid.origin.x);
-        var yDist = (point.y - Grid.origin.y);
-        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
-    }
-    constructor (public scale: number) { }
-}
-
-var grid1 = new Grid(1.0);  // 1x scale
-var grid2 = new Grid(5.0);  // 5x scale
-
-alert(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
-alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
-</code></pre>
-
-<h2>高级特性</h2>
-
-<h4>构造函数</h4>
-
-<p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
-
-<pre class='green'><code>class Greeter {
-    greeting: string;
-    constructor(message: string) {
-        this.greeting = message;
-    }
-    greet() {
-        return "Hello, " + this.greeting;
-    }
-}
-
-var greeter: Greeter;
-greeter = new Greeter("world");
-alert(greeter.greet());
-</code></pre>
-
-<p>这里“var greeter: Greeter”首先声明一个Greeter类的实例变量。这在很多OO语言中是很自然的方式。</p>
-
-<p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
-
-<pre class='green'><code>var Greeter = (function () {
-    function Greeter(message) {
-        this.greeting = message;
-    }
-    Greeter.prototype.greet = function () {
-        return "Hello, " + this.greeting;
-    };
-    return Greeter;
-})();
-
-var greeter;
-greeter = new Greeter("world");
-alert(greeter.greet());
-</code></pre>
-
-<p>这里&#8217;var Greeter&#8217;被赋值构造函数，并利用‘new’调用了这个方法得到类的实例。同样我们的类也可以包含静态变量。我们可以这么认为所有的类都可以拥有实例和静态两种类型的成员。</p>
-
-<p>让我们对上例稍微做一些修改：</p>
-
-<pre class='green'><code>class Greeter {
-    static standardGreeting = "Hello, there";
-    greeting: string;
-    greet() {
-        if (this.greeting) {
-            return "Hello, " + this.greeting;
-        }
-        else {
-            return Greeter.standardGreeting;
-        }
-    }
-}
-
-var greeter1: Greeter;
-greeter1 = new Greeter();
-alert(greeter1.greet());
-
-var greeterMaker: typeof Greeter = Greeter;
-greeterMaker.standardGreeting = "Hey there!";
-var greeter2:Greeter = new greeterMaker();
-alert(greeter2.greet());
-</code></pre>
-
-<p>这里‘greeter1’和上例工作很相似。我们初始化了‘Greeter’类，并调用此对象。其结果在上例已经看见。</p>
-
-<p>接着，我们直接使用了类访问。首先我们定义了一个新的‘greeterMaker’的变量，这变量保持了Greeter类的类型信息，这里我们使用的是‘typeof Greeter’，这会返回Greeter自身的类类型信息。这个类型信息中会包含所以的静态成员信息和实例化对象的构造函数信息。然后通过‘new’ greeterMaker来创建一个Greeter的实例对象，在调用其方法greet。</p>
-
-<h2>利用interface来使用class</h2>
-
-<p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
-
-<pre class='green'><code>class Point {
-    x: number;
-    y: number;
-}
-
-interface Point3d extends Point {
-    z: number;
-}
-
-var point3d: Point3d = {x: 1, y: 2, z: 3};
-</code></pre>
-
-<p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-13T21:49:25+08:00" pubdate data-updated="true">Nov 13<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>简介</h4>
-
-<p>关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这种模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。</p>
-
-<h2>初见Interface</h2>
-
-<p>理解interface的最好办法，就是写个hello world程序：</p>
-
-<pre class='green'><code>function printLabel(labelledObj: {label: string}) {
-  console.log(labelledObj.label);
-}
-
-var myObj = {size: 10, label: "Size 10 Object"};
-printLabel(myObj);
-</code></pre>
-
-<p>在这里类型检查系统会检查printLabel这个函数，printLabel函数要求传入一个包含一个label的字符串属性。上例可以了解我们传入的对象可以有多个属性，但是类型检查系统只会检查printLabel所要求的label属性是否满足其要求。</p>
-
-<p>接下来我们可以进一步简化，声明一个interface来描述一个具有label字符串属性的对象：</p>
-
-<pre class='green'><code>interface LabelledValue {
-  label: string;
-}
-
-function printLabel(labelledObj: LabelledValue) {
-  console.log(labelledObj.label);
-}
-
-var myObj = {size: 10, label: "Size 10 Object"};
-printLabel(myObj);
-</code></pre>
-
-<p>接口LabelledValue描述了上例中printLabel的所要求的类型对象。它依然代表包含一个label的字符串属性。可以看见我们利用‘shape’(行)描述了printLabel的传入参数要求。</p>
-
-<h2>可选的Properties</h2>
-
-<p>有时不是所有定义在interface中的属性都是必须的。例如流行的&#8221;option bags&#8221;模式(option配置)，使用者可以之传入部分定制化属性。如下面“option bags”模式：</p>
-
-<p>interface SquareConfig {
-  color?: string;
-  width?: number;
-}</p>
-
-<pre class='green'><code>function createSquare(config: SquareConfig): {color: string; area: number} {
-  var newSquare = {color: "white", area: 100};
-  if (config.color) {
-    newSquare.color = config.color;
-  }
-  if (config.width) {
-    newSquare.area = config.width * config.width;
-  }
-  return newSquare;
-}
-
-var mySquare = createSquare({color: "black"});
-</code></pre>
-
-<p>带有可选属性的interface定义和c#语言很相似，以&#8217;?&lsquo;紧跟类型后边表示。</p>
-
-<p>interface的可选属性可以限制那些属性是可用的，这部分能得到类型检查，以及智能感知。例如下例：</p>
-
-<pre class='green'><code>interface SquareConfig {
-  color?: string;
-  width?: number;
-}
-
-function createSquare(config: SquareConfig): {color: string; area: number} {
-  var newSquare = {color: "white", area: 100};
-  if (config.color) {
-    newSquare.color = config.collor;  // 类型检查系统能识别不正确的属性collor.
-  }
-  if (config.width) {
-    newSquare.area = config.width * config.width;
-  }
-  return newSquare;
-}
-
-var mySquare = createSquare({color: "black"});  
-</code></pre>
-
-<h2>函数类型</h2>
-
-<p>Interfaces为了描述对象能接收的数据形(shapes)的返回。对于interface不仅难呢过描述对象的属性，也能描述函数类型。</p>
-
-<p>下面是定义的interface signature是一个接收两个string的输入参数，并返回boolean的函数类型：</p>
-
-<pre class='green'><code>interface SearchFunc {
-  (source: string, subString: string): boolean;
-}
-</code></pre>
-
-<p>我也可以使用函数类型的interface去描述我们的数据。下面演示如何将一个相同类型的函数赋值给interface：</p>
-
-<pre class='green'><code>var mySearch: SearchFunc;
-mySearch = function(source: string, subString: string) {
-  var result = source.search(subString);
-  if (result == -1) {
-    return false;
-  }
-  else {
-    return true;
-  }
-}
-</code></pre>
-
-<p>对于函数类型的interface，并不需要参数名的对应相同，如下例：</p>
-
-<pre class='green'><code>var mySearch: SearchFunc;
-mySearch = function(src: string, sub: string) {
-  var result = src.search(sub);
-  if (result == -1) {
-    return false;
-  }
-  else {
-    return true;
-  }
-}
-</code></pre>
-
-<p>对于函数参数的检查，会按照参数的顺序检查对应的类型是否匹配。同时也会检查函数的返回类型是否匹配，在这个函数我们期望返回boolean类型true/false， 如果返回的是numbers或者string，则类型检查系统会提示返回值类型不匹配。</p>
-
-<h2>数组类型</h2>
-
-<p>类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个&#8217;index&#8217;类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：</p>
-
-<pre class='green'><code>interface StringArray {
-  [index: number]: string;
-}
-
-var myArray: StringArray;
-myArray = ["Bob", "Fred"]
-</code></pre>
-
-<p>index的支持两种类型，分别是字符串和数值类型. 我们可以限制index的类型，同时也可以检查index项的返回值类型。</p>
-
-<p>index的类型签名可以描述常用的数组或者是‘dictionary’（字典序）模式，这点会强制所有的属性都需要和其返回值匹配。下例中length属性不匹配这点，所以类型检查会给出一个错误：</p>
-
-<pre class='green'><code>interface Dictionary {
-  [index: string]: string;
-  length: number;    // error, the type of 'length' is not a subtype of the indexer
-} 
-</code></pre>
-
-<h2>Class类型</h2>
-
-<h4>实现interface</h4>
-
-<p>在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：</p>
-
-<pre class='green'><code>interface ClockInterface {
-    currentTime: Date;
-}
-
-class Clock implements ClockInterface  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
-</code></pre>
-
-<p>同样也可以在interface中实现函数类型的契约，并要求clas实现此函数。如下例的‘setTime’函数：</p>
-
-<pre class='green'><code>interface ClockInterface {
-    currentTime: Date;
-    setTime(d: Date);
-}
-
-class Clock implements ClockInterface  {
-    currentTime: Date;
-    setTime(d: Date) {
-        this.currentTime = d;
-    }
-    constructor(h: number, m: number) { }
-}
-</code></pre>
-
-<p>interface描述的的是class的公开(public)部分，而不是私有部分.</p>
-
-<h4>类static/instance区别</h4>
-
-<p>当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。</p>
-
-<pre class='green'><code>interface ClockInterface {
-    new (hour: number, minute: number);
-}
-
-class Clock implements ClockInterface  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
-</code></pre>
-
-<p>这是因为一个类去实现接口的时候，只有instance(实例)的部分才会被检查。而构造函数属于静态部分，所以不会被类型检查。</p>
-
-<p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
-
-<pre class='green'><code>interface ClockStatic {
-    new (hour: number, minute: number);
-}
-
-class Clock  {
-    currentTime: Date;
-    constructor(h: number, m: number) { }
-}
-
-var cs: ClockStatic = Clock;
-var newClock = new cs(7, 30);
-</code></pre>
-
-<h4>interface的继承</h4>
-
-<p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
-
-<pre class='green'><code>interface Shape {
-    color: string;
-}
-
-interface Square extends Shape {
-    sideLength: number;
-}
-
-var square = &lt;Square&gt;{};
-square.color = "blue";
-square.sideLength = 10;
-</code></pre>
-
-<p>一个interface可以同时集成多个interface，实现多个接口成员的合并。</p>
-
-<pre class='green'><code>interface Shape {
-    color: string;
-}
-
-interface PenStroke {
-    penWidth: number;
-}
-
-interface Square extends Shape, PenStroke {
-    sideLength: number;
-}
-
-var square = &lt;Square&gt;{};
-square.color = "blue";
-square.sideLength = 10;
-square.penWidth = 5.0;
-</code></pre>
-
-<h2>混合式类型</h2>
-
-<p>如前边提到的一样，在interface几乎可以描述JavaScript世界的一切对象。因为JavaScript是一个动态，灵活的脚本语言，所以偶尔也希望一个对象能够描述一些多个类型.</p>
-
-<p>下面是一个混合式描述函数，对象以及额外属性的实例：</p>
-
-<pre class='green'><code>interface Counter {
-    (start: number): string;
-    interval: number;
-    reset(): void;
-}
-
-var c: Counter;
-c(10);
-c.reset();
-c.interval = 5.0;
-</code></pre>
-
-<p>和第三方JavaScript库交互的时候，也许我们也会上面的模式来描述一个完整的类型。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -2039,6 +1712,14 @@ c.interval = 5.0;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
@@ -2060,14 +1741,6 @@ c.interval = 5.0;
     
       <li class="post">
         <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a>
       </li>
     
   </ul>
