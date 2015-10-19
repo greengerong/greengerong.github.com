@@ -44,15 +44,7 @@ categories: [angular, javascript]
 			            controllerAs: 'stepPanel',
 			            placement: 'left',
 			            position: '#blogControl'
-			        }, {
-			            title: 'Step 2:',
-			            templateUrl: 'trainning-content.html',
-			            controller: 'StepPanelController',
-			            controllerAs: 'stepPanel',
-			            placement: 'right',
-			            backdrop: false,
-			            position: '#submitBlog'
-			        }, {
+			        },{
 			            title: 'Step 3:',
 			            templateUrl: 'trainning-content.html',
 			            controller: 'StepPanelController',
@@ -62,14 +54,9 @@ categories: [angular, javascript]
 			                top: 200,
 			                left: 100
 			            }
-			        }, {
-			            title: 'Step 4:',
-			            templateUrl: 'trainning-content.html',
-			            controller: 'StepPanelController',
-			            controllerAs: 'stepPanel',
-			            placement: 'bottom',
-			            position: '#startAgain'
-			        }, {
+			        },
+			        	...
+			        {
 			            stepClass: 'last-step',
 			            backdropClass: 'last-backdrop',
 			            templateUrl: 'trainning-content-done.html',
