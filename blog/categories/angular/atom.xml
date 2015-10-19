@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-19T19:07:43+08:00</updated>
+  <updated>2015-10-19T21:17:33+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -20,7 +20,7 @@
     <id>http://greengerong.github.io/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian</id>
     <content type="html"><![CDATA[<p>最近由于项目进行了较大的改版，为了让用户能够适应这次新的改版，因此在系统中引入了“用户引导”功能，对于初次进入系统的用户一些简单的使用培训training。对于大多数网站来说，这是一个很常见的功能。所以在开发这个任务之前，博主尝试将其抽象化，独立于现有系统的业务逻辑，将其封装为一个通用的插件，使得代码更容易扩展和维护。</p>
 
-<p>无图无真相，最直接的办法就是先上图：</p>
+<p>无图无真相，先上图：</p>
 
 <p><img src="/images/blog_img/training-demo.png" alt="training demo" /></p>
 
@@ -35,7 +35,7 @@
 <li>locals：本地变量，和resolve相似，可以传递到controller中。区别之处在于它不支持function调用，对于常量书写会比resolve更方便；</li>
 <li>placement: step容器上三角箭头的显示方位，</li>
 <li>position: step容器的具体显示位置，这是一个绝对坐标；可以传递<code>{left: 100, top: 100}</code>的绝对坐标，也可以是<code>#stepPanelHost</code>配置相对于此元素的placement位置。同时它也支持自定义function和注入Angular的其他组件语法。默认会引入所有step配置trainnings变量,当前步骤step，当前step的配置信息currentTrainning，以及step容器节点stepPanel；</li>
-<li>backdrop：是否需要显示遮罩层，默认显示，除非显示申请为false配置，则不会显示遮罩层；</li>
+<li>backdrop：是否需要显示遮罩层，默认显示，除非显示声明为false配置，则不会显示遮罩层；</li>
 <li>stepClass：每一个step容器的样式信息；</li>
 <li>backdropClass： 每一个遮罩层的样式信息。</li>
 </ul>
@@ -110,7 +110,18 @@
 <script async src="http://greengerong.github.io//assets.codepen.io/assets/embed/ei.js"></script>
 
 
+<p>在trainning插件的源码设计中，包含如下几个要点：</p>
 
+<ul>
+<li>提供service api。因为关于trainning这个插件，它是一个全局的插件，正好在Angular中所有的service也是单例的，所以将用户引导逻辑封装到Angular的service中是一个不错的设计。但对于trainning的每一步展示内容信息则是DOM操作，在Angular的处理中它不该存在于service中，最佳的方式是应该把他封装到Directive中。所以这里采用Directive的定义，并在service中compile，然后append到body中。</li>
+<li>对于每一个这类独立的插件应该封装一个独立的scope，这样便于在后续的销毁，以及不会与现有的scope变量的冲突。</li>
+<li>$q对延时触发的结果包装。对于像该trainning插件或者modal这类操作结果采用promise的封装，是一个不错的选择。它取代了回调参数的复杂性，并以流畅API的方式展现，更利于代码的可读性。同时也能与其他Angular service统一返回API。</li>
+<li>对于controller、controllerAs、resolve、template、templateUrl这类类似路由的处理代码，完全可以移到到你的同类插件中去。它们可以增加插件的更多定制化扩展。关于这部分代码的解释，博主将会在后续文章中为大家推送。</li>
+<li>利用$injector.invoke动态注入和调用Angular service，这样既能获取Angular其他service注入的扩展性，也能获取到函数的动态性。如上例中的屏幕居中的自定义扩展方式。</li>
+</ul>
+
+
+<p>这类设计要点，同样可以运用到想modal、alert、overload这类全局插件中。有兴趣的读者，你情可以在博主的codepen笔记中阅读这段代码<a href="http://codepen.io/greengerong/pen/pjwXQW#0">http://codepen.io/greengerong/pen/pjwXQW#0</a>。</p>
 ]]></content>
   </entry>
   
