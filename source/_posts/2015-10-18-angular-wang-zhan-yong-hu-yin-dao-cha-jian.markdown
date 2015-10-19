@@ -16,12 +16,12 @@ categories: [angular, javascript]
 
 * title：step的标题信息；
 * template/templateUrl: step的内容模板信息。这类可以配置html元素，或者是模板的url地址，同时templateUrl也支持Angular route一样的function语法；
-* controller: step的控制器配置；在controller中可注入如下参数：当前step信息 - currentStep、所有step的配置 - trainnings、当前step的配置信息 - currentTrainning、以及下一步的操作回调 - trainningInstance（其中nextStep：为下一步的回调，cancel为取消用户引导回调）；
+* controller: step的控制器配置；在controller中可注入如下参数：当前step - currentStep、所有step的配置 - trainnings、当前step的配置 - currentTrainning、以及下一步的操作回调 - trainningInstance（其中nextStep：为下一步的回调，cancel为取消用户引导回调）；
 * controllerAs: controller的别名；
 * resolve：在controller初始化前的数据配置，同Angular路由中的resolve；
 * locals：本地变量，和resolve相似，可以传递到controller中。区别之处在于它不支持function调用，对于常量书写会比resolve更方便；
-* placement: step容器上三角箭头的显示方位，
-* position: step容器的具体显示位置，这是一个绝对坐标；可以传递`{left: 100, top: 100}`的绝对坐标，也可以是`#stepPanelHost`配置相对于此元素的placement位置。同时它也支持自定义function和注入Angular的其他组件语法。默认会引入所有step配置trainnings变量,当前步骤step，当前step的配置信息currentTrainning，以及step容器节点stepPanel；
+* placement: step容器上三角箭头的显示方位；
+* position: step容器的具体显示位置，这是一个绝对坐标；可以传递`{left: 100, top: 100}`的绝对坐标，也可以是`#stepPanelHost`配置相对于此元素的placement位置。同时它也支持自定义function和注入Angular的其他组件语法。并且默认可注入：所有step配置 - trainnings,当前步骤 - step，当前step的配置 - currentTrainning，以及step容器节点 - stepPanel；
 * backdrop：是否需要显示遮罩层，默认显示，除非显示声明为false配置，则不会显示遮罩层；
 * stepClass：每一个step容器的样式信息；
 * backdropClass： 每一个遮罩层的样式信息。
