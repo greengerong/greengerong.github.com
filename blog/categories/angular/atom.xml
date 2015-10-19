@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-19T21:19:20+08:00</updated>
+  <updated>2015-10-19T21:22:52+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -59,15 +59,7 @@
                     controllerAs: 'stepPanel',
                     placement: 'left',
                     position: '#blogControl'
-                }, {
-                    title: 'Step 2:',
-                    templateUrl: 'trainning-content.html',
-                    controller: 'StepPanelController',
-                    controllerAs: 'stepPanel',
-                    placement: 'right',
-                    backdrop: false,
-                    position: '#submitBlog'
-                }, {
+                },{
                     title: 'Step 3:',
                     templateUrl: 'trainning-content.html',
                     controller: 'StepPanelController',
@@ -77,14 +69,9 @@
                         top: 200,
                         left: 100
                     }
-                }, {
-                    title: 'Step 4:',
-                    templateUrl: 'trainning-content.html',
-                    controller: 'StepPanelController',
-                    controllerAs: 'stepPanel',
-                    placement: 'bottom',
-                    position: '#startAgain'
-                }, {
+                },
+                    ...
+                {
                     stepClass: 'last-step',
                     backdropClass: 'last-backdrop',
                     templateUrl: 'trainning-content-done.html',
