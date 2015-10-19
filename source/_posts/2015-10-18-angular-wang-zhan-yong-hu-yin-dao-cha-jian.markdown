@@ -15,8 +15,8 @@ categories: [angular, javascript]
 关于这款trainning插件的使用很简单，它采用了类似Angular路由一样的配置，只需要简单的配置其每一步training信息。
 
 * title：step的标题信息；
-* template/templateUrl: step的内容模板信息。这类可以配置html元素，或者是模板的url地址，同时templateUrl也支持Angular route一样的function语法。
-* controller: step的控制器配置；可注入当前step信息currentStep，所有step的配置trainnings，当前step的配置信息currentTrainning，以及下一步的操作回调trainningInstance：nextStep'：进入下一个step，cancel'：为取消显示用用引导；
+* template/templateUrl: step的内容模板信息。这类可以配置html元素，或者是模板的url地址，同时templateUrl也支持Angular route一样的function语法；
+* controller: step的控制器配置；在controller中可注入如下参数：当前step信息currentStep、所有step的配置trainnings、当前step的配置信息currentTrainning、以及下一步的操作回调trainningInstance（其中nextStep：为下一步的回调，cancel为取消用户引导回调）；
 * controllerAs: controller的别名；
 * resolve：在controller初始化前的数据配置，同Angular路由中的resolve；
 * locals：本地变量，和resolve相似，可以传递到controller中。区别之处在于它不支持function调用，对于常量书写会比resolve更方便；
