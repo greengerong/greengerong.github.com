@@ -88,5 +88,5 @@ categories: [angular, javascript]
 * 对于controller、controllerAs、resolve、template、templateUrl这类类似路由的处理代码，完全可以移到到你的同类插件中去。它们可以增加插件的更多定制化扩展。关于这部分代码的解释，博主将会在后续文章中为大家推送。
 * 利用$injector.invoke动态注入和调用Angular service，这样既能获取Angular其他service注入的扩展性，也能获取到函数的动态性。如上例中的屏幕居中的自定义扩展方式。
 
-这类设计要点，同样可以运用到想modal、alert、overload这类全局插件中。有兴趣的读者，你情可以在博主的codepen笔记中阅读这段代码[http://codepen.io/greengerong/pen/pjwXQW#0](http://codepen.io/greengerong/pen/pjwXQW#0)。
+这类设计要点，同样可以运用到想modal、alert、overload这类全局插件中。有兴趣的读者，你可以在博主的codepen笔记中阅读这段代码[http://codepen.io/greengerong/pen/pjwXQW#0](http://codepen.io/greengerong/pen/pjwXQW#0)。
 
