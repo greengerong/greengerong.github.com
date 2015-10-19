@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Angular | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angular/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-19T21:22:52+08:00</updated>
+  <updated>2015-10-19T21:41:02+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -108,7 +108,7 @@
 </ul>
 
 
-<p>这类设计要点，同样可以运用到想modal、alert、overload这类全局插件中。有兴趣的读者，你情可以在博主的codepen笔记中阅读这段代码<a href="http://codepen.io/greengerong/pen/pjwXQW#0">http://codepen.io/greengerong/pen/pjwXQW#0</a>。</p>
+<p>这类设计要点，同样可以运用到想modal、alert、overload这类全局插件中。有兴趣的读者，你可以在博主的codepen笔记中阅读这段代码<a href="http://codepen.io/greengerong/pen/pjwXQW#0">http://codepen.io/greengerong/pen/pjwXQW#0</a>。</p>
 ]]></content>
   </entry>
   
