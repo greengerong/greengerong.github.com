@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="今天将为大家介绍一款近期github上很不错的开源库 &ndash; smartcrop.js。它是一款图片处理的智能裁剪库。在很多项目开发中，经常会遇见上传图片的场景，它可能是用户照片信息，也可能是商品图片等。然而在网页布局中，为了更好的用户体验，它们往往都需要一些宽度和高度的限制。 &hellip;"> 
+    <meta name="description" content="最近由于项目进行了较大的改版，为了让用户能够适应这次新的改版，因此在系统中引入了“用户引导”功能，对于初次进入系统的用户一些简单的使用培训training。对于大多数网站来说，这是一个很常见的功能。所以在开发这个任务之前，博主尝试将其抽象化，独立于现有系统的业务逻辑，将其封装为一个通用的插件， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,134 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-18T19:47:51+08:00" pubdate data-updated="true">Oct 18<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近由于项目进行了较大的改版，为了让用户能够适应这次新的改版，因此在系统中引入了“用户引导”功能，对于初次进入系统的用户一些简单的使用培训training。对于大多数网站来说，这是一个很常见的功能。所以在开发这个任务之前，博主尝试将其抽象化，独立于现有系统的业务逻辑，将其封装为一个通用的插件，使得代码更容易扩展和维护。</p>
+
+<p>无图无真相，最直接的办法就是先上图：</p>
+
+<p><img src="/images/blog_img/training-demo.png" alt="training demo" /></p>
+
+<p>关于这款trainning插件的使用很简单，它采用了类似Angular路由一样的配置，只需要简单的配置其每一步training信息。</p>
+
+<ul>
+<li>title：step的标题信息；</li>
+<li>template/templateUrl: step的内容模板信息。这类可以配置html元素，或者是模板的url地址，同时templateUrl也支持Angular route一样的function语法。</li>
+<li>controller: step的控制器配置；可注入当前step信息currentStep，所有step的配置trainnings，当前step的配置信息currentTrainning，以及下一步的操作回调trainningInstance：nextStep&#8217;：进入下一个step，cancel&#8217;：为取消显示用用引导；</li>
+<li>controllerAs: controller的别名；</li>
+<li>resolve：在controller初始化前的数据配置，同Angular路由中的resolve；</li>
+<li>locals：本地变量，和resolve相似，可以传递到controller中。区别之处在于它不支持function调用，对于常量书写会比resolve更方便；</li>
+<li>placement: step容器上三角箭头的显示方位，</li>
+<li>position: step容器的具体显示位置，这是一个绝对坐标；可以传递<code>{left: 100, top: 100}</code>的绝对坐标，也可以是<code>#stepPanelHost</code>配置相对于此元素的placement位置。同时它也支持自定义function和注入Angular的其他组件语法。默认会引入所有step配置trainnings变量,当前步骤step，当前step的配置信息currentTrainning，以及step容器节点stepPanel；</li>
+<li>backdrop：是否需要显示遮罩层，默认显示，除非显示申请为false配置，则不会显示遮罩层；</li>
+<li>stepClass：每一个step容器的样式信息；</li>
+<li>backdropClass： 每一个遮罩层的样式信息。</li>
+</ul>
+
+
+<p>了解了这些配置后，并根据特定需求定制化整个用户引导的配置信息后，我们就可以使用trainningService的trainning方法来在特定实际启动用户引导，传入参数为每一步step的配置信息。并可以注册其done或者cancel事件：</p>
+
+<pre class='green'><code>trainningService.trainning(trainningCourses.courses)
+    .done(function() {
+        vm.isDone = true;
+    });
+</code></pre>
+
+<p>下面是一个演示的配置信息：</p>
+
+<pre class='green'><code>    .constant('trainningCourses', {
+                courses: [{
+                    title: 'Step 1:',
+                    templateUrl: 'trainning-content.html',
+                    controller: 'StepPanelController',
+                    controllerAs: 'stepPanel',
+                    placement: 'left',
+                    position: '#blogControl'
+                }, {
+                    title: 'Step 2:',
+                    templateUrl: 'trainning-content.html',
+                    controller: 'StepPanelController',
+                    controllerAs: 'stepPanel',
+                    placement: 'right',
+                    backdrop: false,
+                    position: '#submitBlog'
+                }, {
+                    title: 'Step 3:',
+                    templateUrl: 'trainning-content.html',
+                    controller: 'StepPanelController',
+                    controllerAs: 'stepPanel',
+                    placement: 'top',
+                    position: {
+                        top: 200,
+                        left: 100
+                    }
+                }, {
+                    title: 'Step 4:',
+                    templateUrl: 'trainning-content.html',
+                    controller: 'StepPanelController',
+                    controllerAs: 'stepPanel',
+                    placement: 'bottom',
+                    position: '#startAgain'
+                }, {
+                    stepClass: 'last-step',
+                    backdropClass: 'last-backdrop',
+                    templateUrl: 'trainning-content-done.html',
+                    controller: 'StepPanelController',
+                    controllerAs: 'stepPanel',
+                    position: ['$window', 'stepPanel', function($window, stepPanel) {
+                        // 自定义函数，使其屏幕居中
+                        var win = angular.element($window);
+                        return {
+                            top: (win.height() - stepPanel.height()) / 2,
+                            left: (win.width() - stepPanel.width()) / 2
+                        }
+                    }]
+                }]
+            })
+</code></pre>
+
+<p>本文插件源码和演示效果唯一codepen上，效果如下：</p>
+
+<p data-height="385" data-theme-id="0" data-slug-hash="pjwXQW" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/pjwXQW/'>ng-trainning</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -839,153 +967,6 @@ def myfunc(a, b):
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-12T22:09:23+08:00" pubdate data-updated="true">Sep 12<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/images/blog_img/Angular-meetting-CoffeeScript.jpg" alt="angualr meet coffeescript" /></p>
-
-<p>CoffeeScript是基于JavaScript的一门扩展小巧语言，它需要编译成JavaScript，然后再运行与浏览器或者Nodejs平台。JavaScript由于商业原因10天时间就匆忙诞生，所以存在很多弊病。但如《JavaScript精粹》一书中所说：JavaScript也存在着一颗华丽的心脏，如果我们能避开JavaScript中的“坑”，使用其精华的部分，这将是一门令人爱不释手的语言. 而CoffeeScript则是尝试使用这部分简洁的方式展示JavaScript的这部分优秀的精华，避免那些困扰JavaScript开发者的“坑”.CoffeeScript借鉴于Python和Ruby这两门语言，函数式风格、鸭子类型、OO风格一体的一门简洁语言。</p>
-
-<p>Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module、双向绑定、依赖注入、Directive、MVVM等机制。更多资料参见博主其他博文。当Angular遇见CoffeeScript这门语言，将会发生什么呢？</p>
-
-<p>想让我们来看一眼笔者利用CoffeeScript对Angular1.x代码的封装后效果。</p>
-
-<pre class='green'><code>## controller
-class DemoController extends NgComponent
-   @inject 'demoService'
-   @controller 'ng.green.demo'   
-
-   __init__: =&gt;
-      @demoService.getLang().then (data) =&gt;
-        @lang = data 
-
-## service  
-class DemoService extends NgComponent
-   @inject '$q'
-   @service 'ng.green.demo' 
-
-   getLang: =&gt;
-      data = data : ['JavaScript', 'CoffeeScript', 'TypeScript', 'ES6']
-      @$q.when(data)
-
-## directive controller   
-class JsonDumpController extends NgComponent
-   @inject '$log'
-   @controller 'ng.green.demo'   
-
-   __init__: =&gt;
-      @$log.info('This is form directive controller')
-
-## directive       
-class JsonDumpDirective extends NgComponent
-  @inject '$timeout', '$http', '$cacheFactory', '$log'
-  @directive 'ng.green.demo' 
-  restrict: 'EA'
-  templateUrl: '/jsonDump.html'
-  scope: 
-    json: "="
-  controller: 'JsonDumpController'
-  link: (scope, elm, iAttrs) =&gt;
-    @$timeout (() =&gt; @$log.info '$timeout &amp; $log injector worked on link function!' ), 100
-</code></pre>
-
-<p>有了上面的对controller、service、directive的定义，则我们可以如下方式使用：</p>
-
-<pre class='green'><code>&lt;div ng-app="ng.green.demo" ng-controller="DemoController as demo" class="container"&gt;
-  &lt;json-dump json="demo.lang"&gt;&lt;/json-dump&gt;
-  &lt;script type="text/ng-template" id="/jsonDump.html"&gt; 
-  &lt;hr /&gt;
-  &lt;pre&gt;&lt;/pre&gt;
-&lt;/script&gt; 
-&lt;/div&gt;
-</code></pre>
-
-<p>不知各位看官对如上代码感觉如何？是不是更简化、语义化、有点ng的感觉。其中笔者还有意模仿Python，如<strong>init</strong>作为初始化方式。在这里每个class会自声明组件类型，以及声明式注入，module自注册。</p>
-
-<p>不管如何看，下面我来看看NgComponent到底做了什么？</p>
-
-<pre class='green'><code>class NgComponent
-    @controller: (moduleName, moduleResolver) -&gt;
-      componentName = @$$componentName(true)
-      angular.module(moduleName, moduleResolver).controller componentName, @      
-
-    @service: (moduleName, moduleResolver) -&gt;
-      componentName = @$$componentName()
-      angular.module(moduleName, moduleResolver).service componentName, @
-
-    @directive: (moduleName, moduleResolver) -&gt;
-      componentName = @$$componentName().replace('Directive','')
-      directiveClass = @
-      directiveFactory = (args...) -&gt;
-          new directiveClass(args...)          
-      directiveFactory.$inject = @$inject
-      angular.module(moduleName, moduleResolver).directive componentName, directiveFactory    
-
-    @$$componentName: (upperCaseFirstLetter = false) -&gt;
-      # regex for ie
-      componentName = @name || @toString().match(/function\s*(.*?)\(/)?[1]
-      if upperCaseFirstLetter
-       firstLetter =  componentName.substr(0,1).toUpperCase()
-      else
-        firstLetter = componentName.substr(0,1).toLowerCase()
-      (componentName = "#{firstLetter}#{componentName.substr(1)}") unless upperCaseFirstLetter
-      componentName
-
-    @inject: (args...) -&gt;
-      @$inject = args
-
-    constructor: (args...) -&gt;
-      for key, index in @constructor.$inject
-        @[key] = args[index]
-
-      @__init__?()
-</code></pre>
-
-<p>在NgComponent中定义了controller、service、directive注册接口，这里可以是声明创建module，也可以是在已声明的module上注册这些组件类型。对于组件命名也才采用了约定胜于配置，它们都以class类型为基础，controller为首字母大写的驼峰命名，service则首字母小写驼峰命名，directive则会去掉Directive标记并首字母小写注册。</p>
-
-<p>同时这里也声明了@inject方法，使得我们可以在定义在类型之上定义$inejct属性，Angular的注入声明。对于Angular的注入服务，在构造函数中会将他们一一添加到当前类实例对象之上。在依赖添加完毕后，也会调用对象初始化方法，这里是模拟Python的<strong>init</strong>。</p>
-
-<p>Demo效果可以在codepen查看 <a href="http://codepen.io/greengerong/pen/EVVQZg?editors=101">http://codepen.io/greengerong/pen/EVVQZg?editors=101</a>：</p>
-
-<p data-height="268" data-theme-id="0" data-slug-hash="EVVQZg" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/EVVQZg/'>Angular meet CoffeeScript</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
-
-
-<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
-
-
-<p>本文笔者的突发奇想，希望能给读者一些启发，也许你还有更好的DSL封装，欢迎多多交流。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1007,12 +988,16 @@ class JsonDumpDirective extends NgComponent
     <h1>博客友情链接</h1>
     <ul>
         <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
-        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号"></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
     </ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪库</a>
@@ -1040,10 +1025,6 @@ class JsonDumpDirective extends NgComponent
     
       <li class="post">
         <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
       </li>
     
   </ul>

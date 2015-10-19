@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在Angularjs开发一些经验总结随笔中提到我们需要按照业务却分angular controller，避免过大无所不能的上帝controller，我们把controller分离开了， &hellip;"> 
+    <meta name="description" content="&#160;&#160;&#160;&#160;&#160;&#160; 忙碌了一年了项目又到了交互了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,50 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/27/xian-tan-jian-dan-she-ji-KISS-yi-huo/">闲谈简单设计(KISS)疑惑</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#160;&#160;&#160;&#160;&#160;&#160; 忙碌了一年了项目又到了交互了，虽然项目能成功上线（因为还有维护支持的团队）。但是个人从技术上看，这是一个不那么成功的项目，因为后期艰难的修复bug,添加feature。这与简单设计有什么关系呢？在某模块开发起初，由于架构的经验预见性的告诉我这模块开发中会出现什么问题，所以选择了提出某些比较好的解决方案，但是由于团队成员一致的所谓简单设计，通过TDD,重构达到”合适”的”完美”的设计，可是最后的结果如我所料一切的发生。这里插一句，现在在一家敏捷公司，敏捷强调是合作，所以没有一个人同意规划决策，不同之前的公司作为架构师决策一切架构设计。敏捷合作交流我不否认你正确性，因为我也相信软件是人和时间的问题，方法论都是解决我和时间的问题。但是对于一个在成长中团队，成员的设计或者某些预见性或者重构能力，力度相对不足的情形下，这样是不是合理？</p>
+
+<p>&#160;&#160;&#160; 回到主题，简单设计英语 Keep It Simple, Stupid。我们常说的KISS原则，保持产品或设计的简单性，同时功能的足够性。我想说的是翻译成为简单这是一个错误的决定，因为这不是绝对的简单，在我看来最简单的系统就是没代码的系统，代码越少，甚至没有就没有bug没有维护。所以我更愿意以产品设计如家庭装修一样翻译为”简约”，简约而不简单。在<a href="http://book.douban.com/subject/5394309/">《简约至上-软件交互式设计四策略》</a>这本书以遥控器为例提供了删除，隐藏，转移，组织产品设计四策略，但是其简化改善后仍然五脏俱在，核心价值仍在。但是对于软件而言，我们最大对手是需求变化，所以我们常说“拥抱变化”，敏捷就是为了拥抱变化适应变化给用户提供更好优质可用的卓越软件。但真的所谓简单设计，我们起初就不设计？靠我们的测试驱动，行为驱动，重构等方法论就能解决软件设计？这些就是万能的灵药，软件的银弹？我还没见过这样的人，我不否认在这样牛人的存在， <a href="http://book.douban.com/search/Martin%20Fowler">Martin Fowler</a> 在<a href="http://book.douban.com/subject/1229923/">《重构改善既有代码设计》</a>一书提到XP发起一帮人能够比较好的完美利用这些方法论将代码改造为一个比较好的设计。但这毕竟是少数人的世界，我辈望山莫及，再加上项目开发周期中的由于时间，环境等等压力导致重构力度大幅度缩减，或者根本就没有把重构日常化，只是拿着重构这个感觉好nb的术语招摇撞骗（本人见过很多人或者博客将如果重构，但在鄙人鄙见下这更大程度的是重写，重新设计，只是招摇撞骗的幌子），那所谓的简单设计真的还能启用？</p>
+
+<p>&#160;&#160;&#160;&#160;&#160; 在回到简单设计，在软件变化的需求下，我认为简单设计的目的是保持代码的整洁，以及不要花费太多时间在无谓的设计猜测需求中，其目的是减少时间人力资源的浪费，其相对于过度设计而言。但绝对不是不做设计，不留任何一点扩展，起终点在于时间资源的投入。所以我认为基于资源的投入，如果不是那么大浪费或者必须的设计，我们让然需要去做，因为程序员都是追求完美，适应以后潜在的变化。相反如果是将一个相对好的设计，或者扩展，花时间去做到所谓的简单设计，丧失扩展等，这不是减少资源投入，这是在捣蛋，花时间精力去搞破坏，即使是你认为不变，何况谁能预测未来世界。</p>
+
+<p>&#160;&#160;&#160;&#160; 如果我们不是牛人，你却也追求卓越软件，我觉得我们还是需要考虑下设计，不要一味的“简单设计”，平衡各种方法论，权衡各种利弊，找到适合自己的方式方法论，如果只是”简单设计“却没有足够的重构力度，抑或完全的优先设计，不不断的持续改进，逐步细化，做到“简约而不简单”记住所有的技术债早晚会需要你偿还的。对于我来说没有万能的方法论，我也不是牛人，我选择设计，重构等方法论的权衡。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/04/27/3048250.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1136,220 +1180,6 @@ console.log(result);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/23/li-yong-Node-js-ben-di-gou-jian/">利用Node.js本地构建</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-23T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; Node.js是一个基于Google Chrome浏览器v8 javascript执行引擎的异步I/O事件驱动的运行平台。直从2009年诞生开始，已经在业界得到了很多的关注，在这里也必要多说，如果你还不清楚的，请移步到<a href="http://nodejs.org/">Node官网</a>。</p>
-
-<p>在这里我们要讲的是用Node.js来构建本地Build。构建本地Build，我们已经有很多选择，如Ant，Maven，Gradle等。为什么我们还需要Node.js？对于我们的开发中会有一些小的基本自动化构建，如文件的监控(Less编译)，javascript的压缩，不稳定集成服务代理，快速的集成反馈，文件的迁移&hellip;而对于项目来说我并不像引入太多的技术债, Node.js所使用的javascript是做web项目开发的一门必备技能，javascript作为一门比较容易入门语言，直从第一次接触Node.js，我爱不释手，由于我对Javascript基础，能够快速使用它，并不需要付出更多的学习成本，而且我感觉在服务端和客户端用同一种语言，在能一定代码重用妙不可言。而且Node.js提供了内置的web服务器，简单的文件监听，事件机制等也为做本地Build提供了很好的条件。</p>
-
-<p>1：文件监听</p>
-
-<div class="cnblogs_code" onclick="cnblogs_code_show('cbcdb5ce-a6b4-490b-b6ad-fb4a4bf03481')">
-<div id="cnblogs_code_open_cbcdb5ce-a6b4-490b-b6ad-fb4a4bf03481" class="cnblogs_code_hide">
-<pre class='green'><span style="color: #008080;">  1</span> <span style="color: #0000ff;">var</span> fs = require("fs"<span style="color: #000000;">);
-</span><span style="color: #008080;">  2</span> 
-<span style="color: #008080;">  3</span> <span style="color: #0000ff;">var</span> exec = require('child_process'<span style="color: #000000;">).exec
-</span><span style="color: #008080;">  4</span> 
-<span style="color: #008080;">  5</span> <span style="color: #0000ff;">var</span> underscore = require("underscore"<span style="color: #000000;">);
-</span><span style="color: #008080;">  6</span> 
-<span style="color: #008080;">  7</span> <span style="color: #0000ff;">var</span> configs =<span style="color: #000000;"> [
-</span><span style="color: #008080;">  8</span> 
-<span style="color: #008080;">  9</span>     {file:/.*\.less/g, command:" dotless.Compiler.exe style.less style.css"<span style="color: #000000;">}
-</span><span style="color: #008080;"> 10</span> 
-<span style="color: #008080;"> 11</span> <span style="color: #000000;">];
-</span><span style="color: #008080;"> 12</span> 
-<span style="color: #008080;"> 13</span> <span style="color: #0000ff;">var</span> source = "E:\\Project\\xxx\\style"<span style="color: #000000;">;
-</span><span style="color: #008080;"> 14</span> 
-<span style="color: #008080;"> 15</span>  
-<span style="color: #008080;"> 16</span> 
-<span style="color: #008080;"> 17</span> String.format = <span style="color: #0000ff;">function</span><span style="color: #000000;"> () {
-</span><span style="color: #008080;"> 18</span> 
-<span style="color: #008080;"> 19</span>     <span style="color: #0000ff;">var</span> s = arguments[0<span style="color: #000000;">];
-</span><span style="color: #008080;"> 20</span> 
-<span style="color: #008080;"> 21</span>     <span style="color: #0000ff;">for</span> (<span style="color: #0000ff;">var</span> i = 0; i &lt; arguments.length - 1; i++<span style="color: #000000;">) {
-</span><span style="color: #008080;"> 22</span> 
-<span style="color: #008080;"> 23</span>         <span style="color: #0000ff;">var</span> reg = <span style="color: #0000ff;">new</span> RegExp("\\{" + i + "\\}", "gm"<span style="color: #000000;">);
-</span><span style="color: #008080;"> 24</span> 
-<span style="color: #008080;"> 25</span>         s = s.replace(reg, arguments[i + 1<span style="color: #000000;">]);
-</span><span style="color: #008080;"> 26</span> 
-<span style="color: #008080;"> 27</span> <span style="color: #000000;">    }
-</span><span style="color: #008080;"> 28</span> 
-<span style="color: #008080;"> 29</span>  
-<span style="color: #008080;"> 30</span> 
-<span style="color: #008080;"> 31</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> s;
-</span><span style="color: #008080;"> 32</span> 
-<span style="color: #008080;"> 33</span> <span style="color: #000000;">};
-</span><span style="color: #008080;"> 34</span> 
-<span style="color: #008080;"> 35</span>  
-<span style="color: #008080;"> 36</span> 
-<span style="color: #008080;"> 37</span> (<span style="color: #0000ff;">function</span><span style="color: #000000;"> (fs, exec, underscore) {
-</span><span style="color: #008080;"> 38</span> 
-<span style="color: #008080;"> 39</span>     <span style="color: #0000ff;">var</span> readFiles = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (dir, done) {
-</span><span style="color: #008080;"> 40</span> 
-<span style="color: #008080;"> 41</span>         <span style="color: #0000ff;">var</span> results =<span style="color: #000000;"> [];
-</span><span style="color: #008080;"> 42</span> 
-<span style="color: #008080;"> 43</span>         fs.readdir(dir, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, list) {
-</span><span style="color: #008080;"> 44</span> 
-<span style="color: #008080;"> 45</span>             <span style="color: #0000ff;">if</span> (err) <span style="color: #0000ff;">return</span><span style="color: #000000;"> done(err);
-</span><span style="color: #008080;"> 46</span> 
-<span style="color: #008080;"> 47</span>             <span style="color: #0000ff;">var</span> pending =<span style="color: #000000;"> list.length;
-</span><span style="color: #008080;"> 48</span> 
-<span style="color: #008080;"> 49</span>             <span style="color: #0000ff;">if</span> (!pending) <span style="color: #0000ff;">return</span> done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
-</span><span style="color: #008080;"> 50</span> 
-<span style="color: #008080;"> 51</span>             list.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (file) {
-</span><span style="color: #008080;"> 52</span> 
-<span style="color: #008080;"> 53</span>                 file = dir + '/' +<span style="color: #000000;"> file;
-</span><span style="color: #008080;"> 54</span> 
-<span style="color: #008080;"> 55</span>                 fs.stat(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, stat) {
-</span><span style="color: #008080;"> 56</span> 
-<span style="color: #008080;"> 57</span>                     <span style="color: #0000ff;">if</span> (stat &amp;&amp;<span style="color: #000000;"> stat.isDirectory()) {
-</span><span style="color: #008080;"> 58</span> 
-<span style="color: #008080;"> 59</span>                         readFiles(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, res) {
-</span><span style="color: #008080;"> 60</span> 
-<span style="color: #008080;"> 61</span>                             results =<span style="color: #000000;"> results.concat(res);
-</span><span style="color: #008080;"> 62</span> 
-<span style="color: #008080;"> 63</span>                             <span style="color: #0000ff;">if</span> (!--pending) done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
-</span><span style="color: #008080;"> 64</span> 
-<span style="color: #008080;"> 65</span> <span style="color: #000000;">                        });
-</span><span style="color: #008080;"> 66</span> 
-<span style="color: #008080;"> 67</span>                     } <span style="color: #0000ff;">else</span><span style="color: #000000;"> {
-</span><span style="color: #008080;"> 68</span> 
-<span style="color: #008080;"> 69</span> <span style="color: #000000;">                        results.push(file);
-</span><span style="color: #008080;"> 70</span> 
-<span style="color: #008080;"> 71</span>                         <span style="color: #0000ff;">if</span> (!--pending) done(<span style="color: #0000ff;">null</span><span style="color: #000000;">, results);
-</span><span style="color: #008080;"> 72</span> 
-<span style="color: #008080;"> 73</span> <span style="color: #000000;">                    }
-</span><span style="color: #008080;"> 74</span> 
-<span style="color: #008080;"> 75</span> <span style="color: #000000;">                });
-</span><span style="color: #008080;"> 76</span> 
-<span style="color: #008080;"> 77</span> <span style="color: #000000;">            });
-</span><span style="color: #008080;"> 78</span> 
-<span style="color: #008080;"> 79</span> <span style="color: #000000;">        });
-</span><span style="color: #008080;"> 80</span> 
-<span style="color: #008080;"> 81</span> <span style="color: #000000;">    };
-</span><span style="color: #008080;"> 82</span> 
-<span style="color: #008080;"> 83</span>     <span style="color: #0000ff;">var</span> start = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (source, configs) {
-</span><span style="color: #008080;"> 84</span> 
-<span style="color: #008080;"> 85</span>         <span style="color: #0000ff;">var</span> watch = <span style="color: #0000ff;">function</span><span style="color: #000000;"> (error, list) {
-</span><span style="color: #008080;"> 86</span> 
-<span style="color: #008080;"> 87</span>             configs.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (cmd) {
-</span><span style="color: #008080;"> 88</span> 
-<span style="color: #008080;"> 89</span>                 <span style="color: #0000ff;">var</span> files = underscore.filter(list, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (n) {
-</span><span style="color: #008080;"> 90</span> 
-<span style="color: #008080;"> 91</span>                     <span style="color: #0000ff;">return</span><span style="color: #000000;"> n.match(cmd.file);
-</span><span style="color: #008080;"> 92</span> 
-<span style="color: #008080;"> 93</span> <span style="color: #000000;">                });
-</span><span style="color: #008080;"> 94</span> 
-<span style="color: #008080;"> 95</span>                 files.forEach(<span style="color: #0000ff;">function</span><span style="color: #000000;"> (file) {
-</span><span style="color: #008080;"> 96</span> 
-<span style="color: #008080;"> 97</span>                     fs.watch(file, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (oper, f) {
-</span><span style="color: #008080;"> 98</span> 
-<span style="color: #008080;"> 99</span>                         <span style="color: #0000ff;">var</span> changeCommand =<span style="color: #000000;"> String.format(cmd.command, f);
-</span><span style="color: #008080;">100</span> 
-<span style="color: #008080;">101</span>                         console.log(String.format("{0} changed,command '{1}' execute..."<span style="color: #000000;">, f, changeCommand));
-</span><span style="color: #008080;">102</span> 
-<span style="color: #008080;">103</span>                         exec(changeCommand, <span style="color: #0000ff;">function</span><span style="color: #000000;"> (err, stdout, stderr) {
-</span><span style="color: #008080;">104</span> 
-<span style="color: #008080;">105</span>                             console.log(err ?<span style="color: #000000;"> stderr : stdout);
-</span><span style="color: #008080;">106</span> 
-<span style="color: #008080;">107</span> <span style="color: #000000;">                        });
-</span><span style="color: #008080;">108</span> 
-<span style="color: #008080;">109</span> <span style="color: #000000;">                    });
-</span><span style="color: #008080;">110</span> 
-<span style="color: #008080;">111</span> <span style="color: #000000;">                });
-</span><span style="color: #008080;">112</span> 
-<span style="color: #008080;">113</span>  
-<span style="color: #008080;">114</span> 
-<span style="color: #008080;">115</span> <span style="color: #000000;">            });
-</span><span style="color: #008080;">116</span> 
-<span style="color: #008080;">117</span> <span style="color: #000000;">        };
-</span><span style="color: #008080;">118</span> 
-<span style="color: #008080;">119</span> <span style="color: #000000;">        readFiles(source, watch);
-</span><span style="color: #008080;">120</span> 
-<span style="color: #008080;">121</span> <span style="color: #000000;">    };
-</span><span style="color: #008080;">122</span> 
-<span style="color: #008080;">123</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> {start:start};
-</span><span style="color: #008080;">124</span> 
-<span style="color: #008080;">125</span> })(fs, exec, underscore).start(source, configs);</pre>
-</div>
-</div>
-
-
-<p>在这里提供的示例是Less的编译，虽然Less本也提供了Node的编译工具和<a href="https://github.com/mynyml/watchr">watchr</a>监听工具,但是在项目中我会监听Less文件，却只有编译几个固定的Less引导文件。同样我们可以根据不同的文件执行不同的命令实现一些自动化。如：.js文件的同步到测试目录。</p>
-
-<p>2：文件的合并</p>
-
-<p>如果你用jasmine运行你的Javascript测试，你需要吧js文件的测试文件引入到runner head中，我一直很懒，喜欢一键搞定的感觉。利用node.js的模板引擎。</p>
-
-<p>&nbsp;&nbsp; 3：javascript 产品包压缩</p>
-
-<div class="cnblogs_code" onclick="cnblogs_code_show('ce19c67c-3081-44fa-8bb8-7296297268c8')">
-<div id="cnblogs_code_open_ce19c67c-3081-44fa-8bb8-7296297268c8" class="cnblogs_code_hide">
-<pre class='green'><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> FILE_ENCODING = <span style="color: #800000;">'</span><span style="color: #800000;">utf-8</span><span style="color: #800000;">'</span><span style="color: #000000;">;
-</span><span style="color: #008080;"> 2</span> 
-<span style="color: #008080;"> 3</span> <span style="color: #000000;">function uglify(srcPath, jsMinPath) {
-</span><span style="color: #008080;"> 4</span> 
-<span style="color: #008080;"> 5</span>     <span style="color: #0000ff;">var</span> uglyfyJS = require(<span style="color: #800000;">'</span><span style="color: #800000;">uglify-js</span><span style="color: #800000;">'</span><span style="color: #000000;">),
-</span><span style="color: #008080;"> 6</span> 
-<span style="color: #008080;"> 7</span>        jsp =<span style="color: #000000;"> uglyfyJS.parser,
-</span><span style="color: #008080;"> 8</span> 
-<span style="color: #008080;"> 9</span>        pro =<span style="color: #000000;"> uglyfyJS.uglify,
-</span><span style="color: #008080;">10</span> 
-<span style="color: #008080;">11</span>        ast =<span style="color: #000000;"> jsp.parse( _fs.readFileSync(srcPath, FILE_ENCODING) );
-</span><span style="color: #008080;">12</span> 
-<span style="color: #008080;">13</span>  
-<span style="color: #008080;">14</span> 
-<span style="color: #008080;">15</span>       ast =<span style="color: #000000;"> pro.ast_mangle(ast);
-</span><span style="color: #008080;">16</span> 
-<span style="color: #008080;">17</span>       ast =<span style="color: #000000;"> pro.ast_a squeeze(ast);
-</span><span style="color: #008080;">18</span> 
-<span style="color: #008080;">19</span> <span style="color: #000000;">      _fs.writeFileSync(jsMinPath, pro.gen_code(ast), FILE_ENCODING);
-</span><span style="color: #008080;">20</span> 
-<span style="color: #008080;">21</span>     console.log(<span style="color: #800000;">'</span> <span style="color: #800000;">'</span>+ jsMinPath +<span style="color: #800000;">'</span><span style="color: #800000;">完成.</span><span style="color: #800000;">'</span><span style="color: #000000;">);
-</span><span style="color: #008080;">22</span> 
-<span style="color: #008080;">23</span> <span style="color: #000000;">}
-</span><span style="color: #008080;">24</span> 
-<span style="color: #008080;">25</span> uglify(js/test.js<span style="color: #800000;">'</span><span style="color: #800000;">, js/test.min.js</span><span style="color: #800000;">'</span>);</pre>
-</div>
-</div>
-
-
-<p>我们可以尽力发挥自己的想象，如本地Build自动运行，快速集成快速反馈；代理服务器，处理不稳定服务的集成，带来稳定的开发，比如testacluar就是根据node.js能够很容易的构建web服务器，从jstd转过来的javascript test和coverage插件。。。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/02/23/2923862.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/10/">&larr; Older</a>
@@ -1373,12 +1203,16 @@ console.log(result);
     <h1>博客友情链接</h1>
     <ul>
         <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
-        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号"></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
     </ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪库</a>
@@ -1406,10 +1240,6 @@ console.log(result);
     
       <li class="post">
         <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a>
       </li>
     
   </ul>
