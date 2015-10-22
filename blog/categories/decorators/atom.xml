@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Decorators | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/decorators/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-19T21:55:06+08:00</updated>
+  <updated>2015-10-22T17:48:41+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -247,7 +247,7 @@ function enumerable(value) {
 <p data-height="350" data-theme-id="0" data-slug-hash="epzbMV" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/epzbMV/'>ES7 Decorators</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 
 
-<script async src="http://greengerong.github.io//assets.codepen.io/assets/embed/ei.js"></script>
+<script async="true" src="http://greengerong.github.io//assets.codepen.io/assets/embed/ei.js"></script>
 
 
 

@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="今天将介绍一款自动化测试套件名叫nightmare，他是一个基于phantomjs的测试框架，一个基于phantomjs之上为测试应用封装的一套high level API。其API以goto, refresh, click, type&hellip;等简单的常用e2e测试动作封装，使得其语义清晰 &hellip;"> 
+    <meta name="description" content="Guava为Java并行编程Future提供了很多有用扩展，其主要接口为ListenableFuture，并借助于Futures静态扩展。 继承至Future的ListenableFuture，允许我们添加回调函数在线程运算完成时返回值或者方法执行完成立即返回。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,193 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava - 并行编程Futures</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-21T20:41:30+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Guava为Java并行编程Future提供了很多有用扩展，其主要接口为ListenableFuture，并借助于Futures静态扩展。</p>
+
+<p>继承至Future的ListenableFuture，允许我们添加回调函数在线程运算完成时返回值或者方法执行完成立即返回。</p>
+
+<p>对ListenableFuture添加回调函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">ListenableFuture</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;,</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;,</span> <span class="n">Executor</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中 FutureCallback<V>是一个包含onSuccess(V),onFailure(Throwable)的接口。</p>
+
+<p>使用如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">ListenableFuture</span><span class="o">,</span> <span class="k">new</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onSuccess with: %s%n&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">thrown</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onFailure %s%n&quot;</span><span class="o">,</span> <span class="n">thrown</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同时Guava中Futures对于Future扩展还有：</p>
+
+<ul>
+<li><p>transform：对于ListenableFuture的返回值进行转换。</p></li>
+<li><p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p></li>
+<li><p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p></li>
+<li><p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p></li>
+<li><p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p></li>
+<li><p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p></li>
+</ul>
+
+
+<p>下边是一个对于Future的测试demo：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_test_furture</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">ListeningExecutorService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">MoreExecutors</span><span class="o">.</span><span class="na">listeningDecorator</span><span class="o">(</span><span class="n">Executors</span><span class="o">.</span><span class="na">newFixedThreadPool</span><span class="o">(</span><span class="mi">10</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ListenableFuture</span> <span class="n">future1</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;call future 1.&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ListenableFuture</span> <span class="n">future2</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;call future 2.&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="c1">//       throw new RuntimeException(&quot;----call future 2.&quot;);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ListenableFuture</span> <span class="n">allFutures</span> <span class="o">=</span> <span class="n">Futures</span><span class="o">.</span><span class="na">allAsList</span><span class="o">(</span><span class="n">future1</span><span class="o">,</span> <span class="n">future2</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ListenableFuture</span> <span class="n">transform</span> <span class="o">=</span> <span class="n">Futures</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">allFutures</span><span class="o">,</span> <span class="k">new</span> <span class="n">AsyncFunction</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;,</span> <span class="n">Boolean</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">ListenableFuture</span> <span class="nf">apply</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">Futures</span><span class="o">.</span><span class="na">immediateFuture</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;success future:%d&quot;</span><span class="o">,</span> <span class="n">results</span><span class="o">.</span><span class="na">size</span><span class="o">()));</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Futures</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">transform</span><span class="o">,</span> <span class="k">new</span> <span class="n">FutureCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;success with: %s%n&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">thrown</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&quot;onFailure%s%n&quot;</span><span class="o">,</span> <span class="n">thrown</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">transform</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
+
+<p>更多Guava博文：</p>
+
+<ol>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1446,67 +1633,6 @@ list[1] = 100;
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-29T10:22:25+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。</p>
-
-<p>今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。但有时我们需要存储多个数据，所以这个时候我们就需要使用带key的重载。</p>
-
-<p>文档是描述：“ The specified key should be an id declared in the resources of the application to ensure it is unique (see the ID resource type). Keys identified as belonging to the Android framework or not associated with any package will cause an IllegalArgumentExceptionto be thrown.”</p>
-
-<p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
-
-<pre class='green'><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
-</code></pre>
-
-<p>正确的解决方案是：</p>
-
-<p>在res/values/strings.xml中定义这个key常量，如下：</p>
-
-<pre class='green'><code>    &lt;resources&gt;
-        &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
-        &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
-    &lt;/resources&gt;
-</code></pre>
-
-<p>使用如下：</p>
-
-<pre class='green'><code>    imageView.setTag(R.id.tag_first, "Hello");
-    imageView.setTag(R.id.tag_second, "Success");
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -1538,6 +1664,10 @@ list[1] = 100;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
       </li>
     
@@ -1563,10 +1693,6 @@ list[1] = 100;
     
       <li class="post">
         <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
       </li>
     
   </ul>

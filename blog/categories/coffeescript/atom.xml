@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coffeescript | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/coffeescript/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-19T21:55:06+08:00</updated>
+  <updated>2015-10-22T17:48:41+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -62,7 +62,7 @@ def myfunc(a, b):
 <p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 
 
-<script async src="http://greengerong.github.io//assets.codepen.io/assets/embed/ei.js"></script>
+<script async="true" src="http://greengerong.github.io//assets.codepen.io/assets/embed/ei.js"></script>
 
 
 <p>这里利用了高阶函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。</p>

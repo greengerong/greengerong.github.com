@@ -104,7 +104,7 @@
 <li>controllerAs: controller的别名；</li>
 <li>resolve：在controller初始化前的数据配置，同Angular路由中的resolve；</li>
 <li>locals：本地变量，和resolve相似，可以传递到controller中。区别之处在于它不支持function调用，对于常量书写会比resolve更方便；</li>
-<li>placement: step容器上三角箭头的显示方位，</li>
+<li>placement: step容器上三角箭头的显示方位；</li>
 <li>position: step容器的具体显示位置，这是一个绝对坐标；可以传递<code>{left: 100, top: 100}</code>的绝对坐标，也可以是<code>#stepPanelHost</code>配置相对于此元素的placement位置。同时它也支持自定义function和注入Angular的其他组件语法。并且默认可注入：所有step配置 &ndash; trainnings,当前步骤 &ndash; step，当前step的配置 &ndash; currentTrainning，以及step容器节点 &ndash; stepPanel；</li>
 <li>backdrop：是否需要显示遮罩层，默认显示，除非显示声明为false配置，则不会显示遮罩层；</li>
 <li>stepClass：每一个step容器的样式信息；</li>
@@ -165,7 +165,7 @@
 <p data-height="385" data-theme-id="0" data-slug-hash="pjwXQW" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/pjwXQW/'>ng-trainning</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 
 
-<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+<script async src="//assets.codepen.io/assets/embed/ei.js" async="true"></script>
 
 
 <p>在trainning插件的源码设计中，包含如下几个要点：</p>
@@ -238,6 +238,7 @@ var jiathis_config = {
             <p class="meta">
                 
                 <a class="basic-alignment left" href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/" title="Previous Post: smartcrop.js智能图片裁剪库">&laquo; smartcrop.js智能图片裁剪库</a>  
+                <a class="basic-alignment right" href="/blog/2015/10/22/promisede-miao-yong/" title="Next Post: Promise的前世今生和妙用技巧">Promise的前世今生和妙用技巧 &raquo;</a> 
             </p>
         </footer>
     </article>
@@ -271,6 +272,10 @@ var jiathis_config = {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
       </li>
     
@@ -296,10 +301,6 @@ var jiathis_config = {
     
       <li class="post">
         <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
       </li>
     
   </ul>

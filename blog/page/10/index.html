@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; Node.js是一个基于Google Chrome浏览器v8 javascript执行引擎的异步I/O事件驱动的运行平台。直从2009年诞生开始，已经在业界得到了很多的关注，在这里也必要多说，如果你还不清楚的，请移步到Node官网。 &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;首先描述产生这篇随笔的场景：我需要获取项目在jenkins构建的最新Javascript Coverage显示在供管理层次查看的项目情况Report上，但是由于jenkins没有直接的API取得数据所需数据， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,115 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/27/nodejs-shang-HTML-fen-xi-li-qi-node-jquery/">nodejs上HTML分析利器node-jquery</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-27T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;首先描述产生这篇随笔的场景：我需要获取项目在jenkins构建的最新Javascript Coverage显示在供管理层次查看的项目情况Report上，但是由于jenkins没有直接的API取得数据所需数据，所以我们只能从自建的容器发布Javascript Coverage数据API，供Report项目使用。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 由于采用简单的数据分析，只是Host一个简单的web Server,所以本人不喜欢Tomcat，IIS这类大型工具，显得有点杀鸡用牛刀，班门弄斧。我更喜欢node.js这类简易的web容器。所以项目采用node.js，并node.js天然的javascript与html操作的天然一体，借助DOM结构使得解析Html更容易，简洁。</p>
+
+<p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Node.js解析HTML DOM的当然是htmlpaser，jsdom。然而个人更喜欢jQuery的风格，与web jQuery的统一API,所以选择了node-jquery.其代码部署在Github的<a href="https://github.com/coolaj86/node-jquery">https://github.com/coolaj86/node-jquery</a>.</p>
+
+<p>&nbsp; &nbsp;&nbsp;&nbsp;下面是本人写个一个简单demo：&nbsp; 抓取Github Popular project打印在控制台输出。</p>
+
+<div class="cnblogs_code">
+<pre class='green'><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">var</span> $ = require('jquery'<span style="color: #000000;">);
+</span><span style="color: #008080;"> 2</span> 
+<span style="color: #008080;"> 3</span>  
+<span style="color: #008080;"> 4</span> 
+<span style="color: #008080;"> 5</span> String.format = <span style="color: #0000ff;">function</span><span style="color: #000000;">() {
+</span><span style="color: #008080;"> 6</span> 
+<span style="color: #008080;"> 7</span>     <span style="color: #0000ff;">var</span> s = arguments[0<span style="color: #000000;">];
+</span><span style="color: #008080;"> 8</span> 
+<span style="color: #008080;"> 9</span>     <span style="color: #0000ff;">for</span> (<span style="color: #0000ff;">var</span> i = 0; i &lt; arguments.length - 1; i++<span style="color: #000000;">) {
+</span><span style="color: #008080;">10</span> 
+<span style="color: #008080;">11</span>         <span style="color: #0000ff;">var</span> reg = <span style="color: #0000ff;">new</span> RegExp("\\{" + i + "\\}", "gm"<span style="color: #000000;">);
+</span><span style="color: #008080;">12</span> 
+<span style="color: #008080;">13</span>         s = s.replace(reg, arguments[i + 1<span style="color: #000000;">]);
+</span><span style="color: #008080;">14</span> 
+<span style="color: #008080;">15</span> <span style="color: #000000;">    }
+</span><span style="color: #008080;">16</span> 
+<span style="color: #008080;">17</span>  
+<span style="color: #008080;">18</span> 
+<span style="color: #008080;">19</span>     <span style="color: #0000ff;">return</span><span style="color: #000000;"> s;
+</span><span style="color: #008080;">20</span> 
+<span style="color: #008080;">21</span> <span style="color: #000000;">};
+</span><span style="color: #008080;">22</span> 
+<span style="color: #008080;">23</span>  
+<span style="color: #008080;">24</span> 
+<span style="color: #008080;">25</span>  $.get("https://github.com/popular/forked",<span style="color: #0000ff;">function</span><span style="color: #000000;">(html){
+</span><span style="color: #008080;">26</span> 
+<span style="color: #008080;">27</span>  
+<span style="color: #008080;">28</span> 
+<span style="color: #008080;">29</span>         <span style="color: #0000ff;">var</span> $doc =<span style="color: #000000;"> $(html);
+</span><span style="color: #008080;">30</span> 
+<span style="color: #008080;">31</span>     console.log("No.  name  language  star   forks  "<span style="color: #000000;">)
+</span><span style="color: #008080;">32</span> 
+<span style="color: #008080;">33</span>         $doc.find("ul.repolist li.source").each(<span style="color: #0000ff;">function</span><span style="color: #000000;">(i,project){
+</span><span style="color: #008080;">34</span> 
+<span style="color: #008080;">35</span>  
+<span style="color: #008080;">36</span> 
+<span style="color: #008080;">37</span>         <span style="color: #0000ff;">var</span> $project =<span style="color: #000000;"> $(project);
+</span><span style="color: #008080;">38</span> 
+<span style="color: #008080;">39</span>                <span style="color: #0000ff;">var</span> name = $project.find("h3"<span style="color: #000000;">).text().trim();
+</span><span style="color: #008080;">40</span> 
+<span style="color: #008080;">41</span>                <span style="color: #0000ff;">var</span> language = $project.find("li:eq(0)"<span style="color: #000000;">).text().trim();
+</span><span style="color: #008080;">42</span> 
+<span style="color: #008080;">43</span>                <span style="color: #0000ff;">var</span> star = $project.find("li.stargazers"<span style="color: #000000;">).text().trim();
+</span><span style="color: #008080;">44</span> 
+<span style="color: #008080;">45</span>                <span style="color: #0000ff;">var</span> forks = $project.find("li.forks"<span style="color: #000000;">).text().trim();
+</span><span style="color: #008080;">46</span> 
+<span style="color: #008080;">47</span>                <span style="color: #0000ff;">var</span> row =String.format("{4} {0}  {1}  {2}  {3}"<span style="color: #000000;">,name,
+</span><span style="color: #008080;">48</span> 
+<span style="color: #008080;">49</span>                        language,star,forks,i + 1<span style="color: #000000;"> );
+</span><span style="color: #008080;">50</span> 
+<span style="color: #008080;">51</span>               
+<span style="color: #008080;">52</span> 
+<span style="color: #008080;">53</span> <span style="color: #000000;">               console.log(row);
+</span><span style="color: #008080;">54</span> 
+<span style="color: #008080;">55</span> <span style="color: #000000;">        });
+</span><span style="color: #008080;">56</span> 
+<span style="color: #008080;">57</span>  });</pre>
+</div>
+
+
+<p>此项目寄宿在我Github <a href="https://github.com/greengerong/node-jquery-demo">https://github.com/greengerong/node-jquery-demo</a>。仅供了解node-jquery学习demo，欢迎指教。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/02/27/2935618.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1173,70 +1282,6 @@ filter("fullname", function() {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/24/cun-chu-guo-cheng-chuan-yan/">存储过程传言</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-24T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这篇随笔由于出差拖了很久，一时也没整理好该写些什么。在google搜了下&#8220;存储过程 优劣&#8221;关键字，资料并不多，出现了一篇关于来至51cto的关于存储过程的优缺点的文章，具体这里也不指出了。看见文章中对存储过程的几个辩解，个人不敢苟同，个人已经很仔细的看了文章的时间是2011年，如果在更前写年成的话，个人觉得完全能够理解。所以有了这篇，存储过程的一些传言。</p>
-
-<p>&nbsp;&nbsp;&nbsp; 1：存储过程只在创造时进行编译，以后每次执行存储过程都不需再重新编译，而一般SQL 语句每执行一次就编译一次,所以使用存储过程可提高数据库执行速度。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在sql server 2000版本，这个观点没错，却是如此。但是在sql server2005文档中很清晰的写到 sql server2005的执行任何sql，关系引擎会首先查看缓存，判断是有有其执行计划。如果有，则将会重用该执行计划，以减少重新编译sql语句生成执行计划的影响。包括Oracle也是这么做的，所以在我们常见的数据库中不存在这所谓的问题。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 2：当对数据库进行复杂操作时(如对多个表进行Update,Insert,Query,Delete 时），可将此复杂操作用存储过程封装起来与数据库提供的事务处理结合一起使用。这些操作，如果用程序来完成，就变成了一条条的SQL语句，可能要多次连接数据库。而换成存储，只需要连接一次数据库就可以了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 这个问题在前面的<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a>中说过，DBA总是告诉我们减少数据库连接次数，这是完全无争议的，我表述很赞同。但是一定是存储过程的优势？或者说除了存储过程就没其他方式？在<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html">架构设计-数据访问层简述</a>中介绍了来自Martin Fowler《P of EAA》的UOW（工作单元）模式，定义为工作单元记录在业务事务过程中对数据库有影响的所有变化。操作结束后，作为一种结果，工作单元了解所有需要对数据库做的改变。其主旨是在内存中建立一个和数据仓库，维护变化的对象，业务对象变化跟踪，在业务操作完成一次性提交到数据存储介质，提供业务事务。这模式已经在我们常见的ORM（EntityFramework，Nhibernate等）中很好的支持了，或许这么说这也是ORM框架的一个重要特征。在比如微软的DataSet也支持，批量更新。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 3:存储过程可以重复使用，可减少数据库开发人员的工作量。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在项目中我们糜烂的重复代码仅仅在于数据层？更多或许在于业务逻辑的处理，复杂的条件判断，数据操作的组合。存储过程是由开发人员开发，还是数据库开发人员？每个公司的数据库开发人员就仅仅那几个吧，我见过的公司。存储过程是否包含业务规则？如果有的话，业务的不停变化，会不会不停的修改关系模型，修改存储过程，sql的编写和调试虽然现在工具有一定的支持，但是我觉得没有开发语言这么智能方便吧，至少我还没看见。如果没有至少简单的查询语句，那和普通的sql有什么差别？减少开发量为什么不选择ORM之类的动态sql，采用完全的对象模型开发，只在少部分ORM失效的业务返璞归真。</p>
-
-<p>&nbsp;&nbsp; 4：如果把所有的数据逻辑都放在存储过程中，那么asp.net只需要负责界面的显示功能，出错的可能性最大就是在存储过程。一般情况下就是这样。升级、维护方便。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这句话更离谱。逻辑放在存储过程，便于维护，我也进入过这样的公司参与过这样的项目，由于刚开始新员工，不能全盘否定，我看见的是恼人的存储过程，恼人是sql，没看过那个开发人员喜欢sql，特别在每次项目需求变更的时候。后来慢慢接受ddd模式，把业务从sql中挣脱出来。asp.net只需要负责界面的显示功能，逻辑层次未免太简单了，我猜测这应是 事务性脚本开发模式，其优劣点在<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层简述</a>中说过，只能实用于简单小型的项目。在加上可移植性差，如果你的客户需要数据库的升级，sql server到Oracle会怎么样。</p>
-
-<p>&nbsp; 5：安全性高，可设定只有某此用户才具有对指定存储过程的使用权。</p>
-
-<p>&nbsp; 安全对于项目来说不仅仅在于数据库，而应是分布于我们系统各处。安全关注点应该从表现层到数据库各层之间都应该有处理。一般比较灵活有效基于角色（域）安全和数据库安全，物理服务器安全共同使用，这和不适用存储过程，使用sql并没什么冲突。虽然你可能说存储过程可以作为数据库内部资源实施安全策越。</p>
-
-<p>6：还有些：存储过程可以防止sql注入</p>
-
-<p>&nbsp; 这个是当然的，毫无争议。因为用的是参数化方式，你不能随意拼接字符串，参数化方式能够帮助我们防止大多数的sql注入。在ado.net中为我们提供了很好的参数化支持，使用sql我们同样可以做到，再加上一切开源的安全组件的过滤。</p>
-
-<p>&nbsp; 最后存储过程并不是万恶的，他有他的应用场景，对于复杂逻辑如报表的场景，我会毫不犹豫的放弃ORM，选择它，因为orm不能满足这种复杂查询，但是准确的说我选择的是大量的T-SQL或者是P-SQL，存储过程就是一堆sql子程序的固定格式。我觉得可以完全采用ibatis.net方式的xml配置，更爽些。选择存储过程是由于复杂查询业务，我相信大家也不会为了一些复杂的统计把全表数据加载到内存吧。存储过程开发技术流行与2005前数据为中心的开发模式，在现在的模式，工具，技术下显得有些苍老，但并不是一无是处。你也可以完全采用基于存储过程的开发模式开发出很好的系统。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/24/2560584.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -1268,6 +1313,10 @@ filter("fullname", function() {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
       </li>
     
@@ -1293,10 +1342,6 @@ filter("fullname", function() {
     
       <li class="post">
         <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>
       </li>
     
   </ul>
