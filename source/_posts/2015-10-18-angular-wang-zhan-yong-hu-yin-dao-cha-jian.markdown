@@ -77,7 +77,7 @@ categories: [angular, javascript]
 本文插件源码和演示效果唯一codepen上，效果如下：
 
 <p data-height="385" data-theme-id="0" data-slug-hash="pjwXQW" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/pjwXQW/'>ng-trainning</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
-<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+<script async src="//assets.codepen.io/assets/embed/ei.js" async="true"></script>
 
 
 在trainning插件的源码设计中，包含如下几个要点：

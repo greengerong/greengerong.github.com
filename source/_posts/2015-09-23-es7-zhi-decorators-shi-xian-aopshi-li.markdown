@@ -55,5 +55,5 @@ categories: [javascript,es7,decorators]
 整个demo示例，你也可以在codepen上细细把玩：
 
 <p data-height="350" data-theme-id="0" data-slug-hash="epzbMV" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/epzbMV/'>ES7 Decorators</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
-<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+<script async="true" src="//assets.codepen.io/assets/embed/ei.js"></script>
 

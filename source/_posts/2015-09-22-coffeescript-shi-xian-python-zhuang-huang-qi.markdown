@@ -43,7 +43,7 @@ Python中的装潢器如下：
 不知作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：
 
 <p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
-<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+<script async="true" src="//assets.codepen.io/assets/embed/ei.js"></script>
 
 这里利用了高阶函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。
 
