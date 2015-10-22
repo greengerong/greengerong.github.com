@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-22T19:15:40+08:00</updated>
+  <updated>2015-10-22T19:35:13+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -167,7 +167,7 @@
 
 <h4>对于延迟任务的Promise DSL语义化封装</h4>
 
-<p>在前面已经提到Promise是延迟到未来执行某些特定任务，在调用时候则给消费者返回一个”承诺“，消费者线程并不会被阻塞。在消费者接受到”承诺“之后，消费者就不用再关心这些任务是如何完成的，以及督促生产者的任务执行状态等。直到任务完成后，消费者手中的这个”承诺“就被兑现了，</p>
+<p>在前面已经提到Promise是延迟到未来执行某些特定任务，在调用时候则给消费者返回一个”承诺“，消费者线程并不会被阻塞。在消费者接受到”承诺“之后，消费者就不用再关心这些任务是如何完成的，以及督促生产者的任务执行状态等。直到任务完成后，消费者手中的这个”承诺“就被兑现了。</p>
 
 <p>对于这类延迟机制，在前端的UI交互中也是极其常见的。比如模态窗口的显示，对于用户在模态窗口中的交互结果并不可提前预知的，用户是点击”ok“按钮，或者是”cancel“按钮，这是一个未来将会发生的延迟事件。对于这类场景的处理，也是Promise所擅长的领域。在Angular-UI的Bootstrap的modal的实现也是基于Promise的封装。</p>
 
