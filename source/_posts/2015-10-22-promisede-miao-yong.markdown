@@ -371,7 +371,7 @@ Angular的success、error回调的实现代码：
 
 ##总结
 
-写到这里，本文也进入了尾声。希望大家能够对Promise有一定的理解，并能够”信手拈来“的运用在实际的项目之中，增强代码的可读性和可维护性。在本文中所用到的例子，你都可以在博主的jsbin[http://jsbin.com/bayeva/edit?html,js,output](http://jsbin.com/bayeva/edit?html,js,output)中找到它们。
+写到这里，本文也进入了尾声。希望大家能够对Promise有一定的理解，并能够”信手拈来“的运用于实际的项目之中，增强代码的可读性和可维护性。在本文中所用到的例子，你都可以在博主的jsbin[http://jsbin.com/bayeva/edit?html,js,output](http://jsbin.com/bayeva/edit?html,js,output)中找到它们。
 
 另外，同时也欢迎关注博主的微信公众号[破狼]，这里将会为大家地时间推送博主的最新博文，谢谢大家的支持和鼓励。
 
