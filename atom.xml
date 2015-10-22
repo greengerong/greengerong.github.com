@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-22T18:20:13+08:00</updated>
+  <updated>2015-10-22T18:22:02+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -377,13 +377,13 @@ function $http(requestConfig) {
 };
 </code></pre>
 
-<p>在上面紧接着在$get注入方法之后，Angular会将interceptors和responseInterceptors反转合并到一个reversedInterceptors的拦截器内部变量中保存。最后在$http函数中以[serverRequest, undefined]（serverRequest是Ajax请求的promise操作）为中心，将reversedInterceptors中的所有拦截器函数依次加入到chain链式数组中。如果是request或requestError，那么就放在链式数组起始位置；相反如果是response或responseError，那么就放在链式数组最后。</p>
+<p>在上面紧接着在<code>$get</code>注入方法之后，Angular会将<code>interceptors</code>和<code>responseInterceptors</code>反转合并到一个<code>reversedInterceptors</code>的拦截器内部变量中保存。最后在$http函数中以<code>[serverRequest, undefined]</code>（<code>serverRequest</code>是Ajax请求的Promise操作）为中心，将<code>reversedInterceptors</code>中的所有拦截器函数依次加入到chain链式数组中。如果是request或requestError，那么就放在链式数组起始位置；相反如果是response或responseError，那么就放在链式数组最后。</p>
 
-<p>注意添加在chain的request和requestError或者response和responseError都一定是成对的，换句话说可能注册一个非空的request与一个为undefined的requestError，或者是一个为undefined的request与非空的requestError。就像chain数组的声明一样（var chain = [serverRequest, undefined];），成对的放入serverRequest和undefined对象到数组中。因为后面的代码将利用Promise的机制注册这些拦截器函数，实现管道式AOP拦截机制。</p>
+<p>注意添加在chain的request和requestError或者response和responseError都一定是成对的，换句话说可能注册一个非空的request与一个为undefined的requestError，或者是一个为undefined的request与非空的requestError。就像chain数组的声明一样<code>（var chain = [serverRequest, undefined];）</code>，成对的放入serverRequest和undefined对象到数组中。因为后面的代码将利用Promise的机制注册这些拦截器函数，实现管道式AOP拦截机制。</p>
 
-<p>在Promise中需要两个函数来注册回调，分别为成功回调和失败回调。在这里request和response会被注册成Promise的成功回调，而requestError和responseError则会注册成Promise的失败回调。所以在chain中添加的request和requestError，response或responseError都是成对出现的，这是为了能在接下来的循环中简洁地注册Promise回调函数。 这些被注册的拦截器链，会通过$q.when(config) Promise启动，它会首先传入$http的config对象，并执行所有的request拦截器，依次再到serverRequest这个Ajax请求，此时将挂起后边所有的response拦截器，直到Ajax请求响应完成，再依次执行剩下的response拦截器回调； 如果在request过程中有异常失败则会执行后边的requestError拦截器，对于Ajax请求的失败或者处理Ajax的response拦截器的异常也会被后面注册的responseError拦截器捕获。</p>
+<p>在Promise中需要两个函数来注册回调，分别为成功回调和失败回调。在这里request和response会被注册成Promise的成功回调，而requestError和responseError则会注册成Promise的失败回调。所以在chain中添加的request和requestError，response或responseError都是成对出现的，这是为了能在接下来的循环中简洁地注册Promise回调函数。 这些被注册的拦截器链，会通过<code>$q.when(config)</code> Promise启动，它会首先传入<code>$http</code>的config对象，并执行所有的request拦截器，依次再到<code>serverRequest</code>这个Ajax请求，此时将挂起后边所有的response拦截器，直到Ajax请求响应完成，再依次执行剩下的response拦截器回调； 如果在request过程中有异常失败则会执行后边的requestError拦截器，对于Ajax请求的失败或者处理Ajax的response拦截器的异常也会被后面注册的responseError拦截器捕获。</p>
 
-<p>从最后两段代码也能了解到关于$http服务中的success方法和error方法，是Angular为大家提供了一种Promise的便捷写法。success方法是注册一个传入的成功回调和为undefined的错误回调，而error则是注册一个为null的成功回调和一个传入的失败回调。</p>
+<p>从最后两段代码也能了解到关于<code>$http</code>服务中的success方法和error方法，是Angular为大家提供了一种Promise的便捷写法。success方法是注册一个传入的成功回调和为undefined的错误回调，而error则是注册一个为null的成功回调和一个传入的失败回调。</p>
 
 <h2>总结</h2>
 
