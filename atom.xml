@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-22T17:48:41+08:00</updated>
+  <updated>2015-10-22T18:03:48+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -42,6 +42,8 @@
 </code></pre>
 
 <h2>Promise的横空出世</h2>
+
+<p><img src="http://greengerong.github.io/images/blog_img/%E6%8B%89%E9%92%A9-%E6%89%BF%E8%AF%BA-promise.jpg" alt="Promise承诺" /></p>
 
 <p>因此很多JavaScript牛人开始寻找解决这回调地狱的模式设计，随后Promise（jQuery的<code>deferred</code>也属于Promise范畴）便被引入到了JavaScript的世界。Promise在英语中语义为：”承诺“，它表示如A调用一个长时间任务B的时候，B将返回一个”承诺“给A，A不用关心整个实施的过程，继续做自己的任务；当B实施完成的时候，会通过A，并将执行A之间的预先约定的回调。而deferred在英语中语义为：”延迟“，这也说明promise解决的问题是一种带有延迟的事件，这个事件会被延迟到未来某个合适点再执行。</p>
 
