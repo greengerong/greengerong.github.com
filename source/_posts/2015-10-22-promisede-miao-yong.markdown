@@ -147,8 +147,8 @@ Angular路由机制的伪代码如下：
 
 对于setTimeout、setInterval在Angular中都已经为我们内置了$timeout和$interval服务，它们就是一种Promise的封装。对于localStorage呢？可以采用$q.when方法来直接包装localStorage的返回值的为Promise接口，如下所示：
 
-  var data = $window.localStorage.getItem('data-api-key');
-  return $q.when(data);
+		var data = $window.localStorage.getItem('data-api-key');
+		return $q.when(data);
 
 整个项目的Service层的返回值都可以被封装为统一的风格使用了，项目变得更加的一致和统一。在需要多个Service同时并行或者串行处理的时候，也变得简单了，一致的使用方式。
 
