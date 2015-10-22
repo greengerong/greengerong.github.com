@@ -131,6 +131,10 @@
 </ul>
 
 
+<p>如下面所示：</p>
+
+<p><img src="/images/blog_img/promises-%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="promises 流程图" /></p>
+
 <p>根据<a href="http://promises-aplus.github.io/promises-spec/">Promise/A+规范</a>，我们在文章开始的Promise伪代码就可以转换为如下代码：</p>
 
 <pre class='green'><code>asyncTask1(data)
@@ -147,7 +151,7 @@
 
 <p>Promise在JavaScript的世界中逐渐的被大家所接受，所以在ES6的标准版中已经引入了Promise的规范了。现在通过Babel，可以完全放心的引入产品环境之中了。</p>
 
-<p>另外，对于解决这类异步任务的方式，在ES7中将会引入<code>async、await</code>两个关键字，以同步的方式来书写异步的任务，它被誉为”JavaScript异步处理的终极方案“。这两个关键字是ES6标准中生成器（<code>generator</code>）和Promise的组合新语法，内置<code>generator</code>的执行器的一种方式。当然<code>async、await</code>的讲解并不会在本文中展开，有兴趣的读者可以参见MDN资料。</p>
+<p>另外，对于解决这类异步任务的方式，在ES7中将会引入<code>async、await</code>两个关键字，以同步的方式来书写异步的任务，它被誉为”JavaScript异步处理的终极方案“。这两个关键字是ES6标准中生成器（<code>generator</code>）和Promise的组合新语法，内置<code>generator</code>的执行器的一种方式。当然<code>async、await</code>的讲解并不会在本文中展开，有兴趣的读者可以参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">MDN资料</a>。</p>
 
 <h2>Promise的妙用</h2>
 
@@ -188,7 +192,7 @@
 });
 </code></pre>
 
-<p>这样就可以等到一堆异步的任务完成后，在执行特定的业务回调了。在Angular中的路由机制<code>ngRoute</code>、<code>uiRoute</code>的resolve机制也是采用同样的原理：在路由执行的时候，会将获取模板的Promise、获取所有resolve数据的Promise都拼接在一起，同时并行的获取它们，然后等待它们都结束的时候，才开始初始化<code>ng-view</code>、<code>ui-view</code>指令的scope对象，以及compile模板节点，并插入页面DOM中，完成一次路由的跳转，切换view，将静态的HTML模板变为动态的网页展示出来。</p>
+<p>这样就可以等到一堆异步的任务完成后，在执行特定的业务回调了。在Angular中的路由机制<code>ngRoute</code>、<code>uiRoute</code>的resolve机制也是采用同样的原理：在路由执行的时候，会将获取模板的Promise、获取所有resolve数据的Promise都拼接在一起，同时并行的获取它们，然后等待它们都结束的时候，才开始初始化<code>ng-view</code>、<code>ui-view</code>指令的scope对象，以及compile模板节点，并插入页面DOM中，完成一次路由的跳转并且切换了View，将静态的HTML模板变为动态的网页展示出来。</p>
 
 <p>Angular路由机制的伪代码如下：</p>
 
