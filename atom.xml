@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-22T18:22:02+08:00</updated>
+  <updated>2015-10-22T19:15:40+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -167,7 +167,7 @@
 
 <h4>对于延迟任务的Promise DSL语义化封装</h4>
 
-<p>在前面已经提到Promise是延迟到未来执行某以特定任务，而在当前给消费者返回一个”承诺“，它并不会阻塞消费者的线程，在接受到”承诺“之后，消费者就不用再关心这些任务是如何完成的，以及不需要不断地督促身生产者是否完成了等。</p>
+<p>在前面已经提到Promise是延迟到未来执行某些特定任务，在调用时候则给消费者返回一个”承诺“，消费者线程并不会被阻塞。在消费者接受到”承诺“之后，消费者就不用再关心这些任务是如何完成的，以及督促生产者的任务执行状态等。直到任务完成后，消费者手中的这个”承诺“就被兑现了，</p>
 
 <p>对于这类延迟机制，在前端的UI交互中也是极其常见的。比如模态窗口的显示，对于用户在模态窗口中的交互结果并不可提前预知的，用户是点击”ok“按钮，或者是”cancel“按钮，这是一个未来将会发生的延迟事件。对于这类场景的处理，也是Promise所擅长的领域。在Angular-UI的Bootstrap的modal的实现也是基于Promise的封装。</p>
 
@@ -303,7 +303,7 @@ $httpProvider.interceptors.push(['$q', function($q) {
 }]);
 </code></pre>
 
-<p>这样就可以实现对Angular中的<code>$http</code>或者是<code>$resource</code>的Ajax请求拦截了。但在Angular内部是是如何实现这种拦截方式的呢？Angular使用的就是Promise机制，形成异步管道流，将真实的Ajax请求防止在request、requestError和response、responseError的管道中间，因此就产生了对Ajax请求的拦截。</p>
+<p>这样就可以实现对Angular中的<code>$http</code>或者是<code>$resource</code>的Ajax请求拦截了。但在Angular内部是是如何实现这种拦截方式的呢？Angular使用的就是Promise机制，形成异步管道流，将真实的Ajax请求放置在request、requestError和response、responseError的管道中间，因此就产生了对Ajax请求的拦截。</p>
 
 <p>其源码实现如下：</p>
 
@@ -389,7 +389,7 @@ function $http(requestConfig) {
 
 <p>写到这里，本文也进入了尾声。希望大家能够对Promise有一定的理解，并能够”信手拈来“的运用于实际的项目之中，增强代码的可读性和可维护性。在本文中所用到的例子，你都可以在博主的jsbin<a href="http://jsbin.com/bayeva/edit?html,js,output">http://jsbin.com/bayeva/edit?html,js,output</a>中找到它们。</p>
 
-<p>另外，同时也欢迎关注博主的微信公众号[破狼]，这里将会为大家地时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
+<p>另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家地时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
 ]]></content>
   </entry>
   
