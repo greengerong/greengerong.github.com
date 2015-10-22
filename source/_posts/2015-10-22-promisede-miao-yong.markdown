@@ -43,6 +43,11 @@ JavaScript作为单线程运行于浏览器之中，这是每本JavaScript教科
 * Promise对象必须实现then方法，then是promise规范的核心，而且then方法也必须返回一个Promise对象，同一个Promise对象可以注册多个then方法，并且回调的执行顺序跟它们的注册顺序一致；
 * then方法接受两个回调函数，它们分别为：成功时的回调和失败时的回调；并且它们分别在：Promise由“Pending”状态转换到“Fulfilled”状态时被调用和在Promise由“Pending”状态转换到“Rejected”状态时被调用。
 
+如下面所示：
+
+![promises 流程图](/images/blog_img/promises-流程图.png)
+
+
 根据[Promise/A+规范](http://promises-aplus.github.io/promises-spec/)，我们在文章开始的Promise伪代码就可以转换为如下代码：
 
 	asyncTask1(data)
@@ -58,7 +63,7 @@ Promise将原来回调地狱中的回调函数，从横向式增加巧妙的变�
 
 Promise在JavaScript的世界中逐渐的被大家所接受，所以在ES6的标准版中已经引入了Promise的规范了。现在通过Babel，可以完全放心的引入产品环境之中了。
 
-另外，对于解决这类异步任务的方式，在ES7中将会引入`async、await`两个关键字，以同步的方式来书写异步的任务，它被誉为”JavaScript异步处理的终极方案“。这两个关键字是ES6标准中生成器（`generator`）和Promise的组合新语法，内置`generator`的执行器的一种方式。当然`async、await`的讲解并不会在本文中展开，有兴趣的读者可以参见MDN资料。
+另外，对于解决这类异步任务的方式，在ES7中将会引入`async、await`两个关键字，以同步的方式来书写异步的任务，它被誉为”JavaScript异步处理的终极方案“。这两个关键字是ES6标准中生成器（`generator`）和Promise的组合新语法，内置`generator`的执行器的一种方式。当然`async、await`的讲解并不会在本文中展开，有兴趣的读者可以参见[MDN资料](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)。
 
 
 ##Promise的妙用
@@ -99,7 +104,7 @@ Promise在JavaScript的世界中逐渐的被大家所接受，所以在ES6的标
 		console.log('result 3', results[2]);
 	});
 
-这样就可以等到一堆异步的任务完成后，在执行特定的业务回调了。在Angular中的路由机制`ngRoute`、`uiRoute`的resolve机制也是采用同样的原理：在路由执行的时候，会将获取模板的Promise、获取所有resolve数据的Promise都拼接在一起，同时并行的获取它们，然后等待它们都结束的时候，才开始初始化`ng-view`、`ui-view`指令的scope对象，以及compile模板节点，并插入页面DOM中，完成一次路由的跳转，切换view，将静态的HTML模板变为动态的网页展示出来。
+这样就可以等到一堆异步的任务完成后，在执行特定的业务回调了。在Angular中的路由机制`ngRoute`、`uiRoute`的resolve机制也是采用同样的原理：在路由执行的时候，会将获取模板的Promise、获取所有resolve数据的Promise都拼接在一起，同时并行的获取它们，然后等待它们都结束的时候，才开始初始化`ng-view`、`ui-view`指令的scope对象，以及compile模板节点，并插入页面DOM中，完成一次路由的跳转并且切换了View，将静态的HTML模板变为动态的网页展示出来。
 
 Angular路由机制的伪代码如下：
 
