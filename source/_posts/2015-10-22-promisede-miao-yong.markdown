@@ -6,6 +6,7 @@ comments: true
 categories: [javascript, promise]
 ---
 
+
 ##浏览器事件模型和回调机制
 
 JavaScript作为单线程运行于浏览器之中，这是每本JavaScript教科书中都会被提到的。同时出于对UI线程操作的安全性考虑，JavaScript和UI线程也处于同一个线程中。因此对于长时间的耗时操作，将会阻塞UI的响应。为了更好的UI体验，应该尽量的避免JavaScript中执行较长耗时的操作（如大量for循环的对象diff等）或者是长时间I/O阻塞的任务。所以在浏览器中的大多数任务都是异步（无阻塞）执行的，例如：鼠标点击事件、窗口大小拖拉事件、定时器触发事件、Ajax完成回调事件等。当每一个异步事件完成时，它都将被放入一个叫做”浏览器事件队列“中的事件池中去。而这些被放在事件池中的任务，将会被javascript引擎单线程处理的一个一个的处理，当在此次处理中再次遇见的异步任务，它们也会被放到事件池中去，等待下一次的tick被处理。另外在HTML5中引入了新的组件-Web Worker，它可以在JavaScript线程以外执行这些任务，而不阻塞当前UI线程。
@@ -30,6 +31,8 @@ JavaScript作为单线程运行于浏览器之中，这是每本JavaScript教科
 
 
 ##Promise的横空出世
+
+![Promise承诺](/images/blog_img/拉钩-承诺-promise.jpg)
 
 因此很多JavaScript牛人开始寻找解决这回调地狱的模式设计，随后Promise（jQuery的`deferred`也属于Promise范畴）便被引入到了JavaScript的世界。Promise在英语中语义为：”承诺“，它表示如A调用一个长时间任务B的时候，B将返回一个”承诺“给A，A不用关心整个实施的过程，继续做自己的任务；当B实施完成的时候，会通过A，并将执行A之间的预先约定的回调。而deferred在英语中语义为：”延迟“，这也说明promise解决的问题是一种带有延迟的事件，这个事件会被延迟到未来某个合适点再执行。
 
