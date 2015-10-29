@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-22T19:38:34+08:00</updated>
+  <updated>2015-10-29T21:59:10+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,49 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript之Event Loop]]></title>
+    <link href="http://greengerong.github.io/blog/2015/10/27/javascript-zhi-event-loop/"/>
+    <updated>2015-10-27T22:13:55+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/10/27/javascript-zhi-event-loop</id>
+    <content type="html"><![CDATA[<h2>JavaScript单线程</h2>
+
+<p>在上篇博客<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>的开篇中，我们曾简述了JavaScript的单线程机制和浏览器的事件模型。应很多网友的回复，在这篇文章中将继续展开这一个话题。当然这里是博主的一些理解，如果还存在什么纰漏的话，请不吝指教。</p>
+
+<p>JavaScript这门语言运行在浏览器中，是以单线程的方式运行的。说到单线程，就得从操作系统进程开始说起。进程和线程都是操作系统的概念。进程是应用程序的执行实例，每一个进程都是由私有的虚拟地址空间、代码、数据和其它系统资源所组成；进程在运行过程中能够申请创建和使用系统资源（如独立的内存区域等），这些资源也会随着进程的终止而被销毁。而线程则是进程内的一个独立执行单元，在不同的线程之间是可以共享进程资源的，所以在多线程的情况下，需要特别注意对临界资源的访问控制。在系统创建进程之后就开始启动执行进程的主线程，而进程的生命周期和这个主线程的生命周期一致，主线程的推出也就意味着进程的终止和销毁。主线程是由系统进程所创建的，同时用户也可以自主创建其它线程，这一系列的线程都会并发地运行于同一个进程中。</p>
+
+<p>在多线程操作的情况下可以实现应用的并行处理，而提高整个应用程序的性能和吞吐量，更大粒度的榨取本机的CPU利用率，特别是现代很多语言都支持了多核并行处理技术。然后JavaScript居然还是单线程执行，为什么呢？</p>
+
+<p>这是因为JavaScript这门脚本语言诞生的使命所致：JavaScript为处理页面中用户的交互，以及操作DOM树、CSS样式树来给用户呈现一份动态而丰富的交互体验和服务器逻辑的交互处理。如果JavaScript是多线程的方式来操作这些UI DOM，则可能出现UI操作的冲突；在多线程的交互下，处于UI中的DOM节点就可能成为一个临界资源，假设存在两个线程同时操作一个DOM，而线程1要求浏览器删除DOM节点，线程2却希望修改这个节点的某些样式风格。这个时候浏览器就无法裁决采用哪一种策略了。当然我们可以为浏览器引入“排它锁”或者是“乐观锁”来解决这些冲突，但为了避免引入了更大的复杂性，所以JavaScript从诞生开始就选择了单线程执行。</p>
+
+<p>因为单线程执行，所以对于JavaScript的任务而言，在同一时间内只能执行一个特定的任务，并且它会阻塞其他的任务执行。那么JavaScript的执行不会很慢吗？特别是对于长时间任务执行的时候，那么其他的任务就得不到执行。然而在软件开发中，特别是应用软件开发中，对于I/O设备的访问都是一些及其耗时的操作。在这些耗时任务执行的时候，其实并没必要等待它的完成，在I/O任务完成之前JavaScript完全可以继续执行其他的任务，直到I/O任务完成后再继续执行该任务的处理就行。JavaScript在设计之初，就意识这一点。所以在JavaScript中将这些耗时的I/O等操作封装为了异步的方法，等到这些任务完成后就将后续的处理操作封装为JavaScript任务放入执行任务队列中，等待JavaScript线程空闲的时候被执行。因此这里形成了另一个话题“浏览器的事件循环”机制，将在后续中详细阐述。</p>
+
+<p>因为在JavaScript语言中，和其他大多数语言不一样之处：JavaScript中耗时的I/O操作都被处理为异步操作，以及回调注册机制。异步和回调仿佛和JavaScript就是“与生俱来”的一样。如Nodejs创始人Ryan Dahl所言，JavaScript语言的非阻塞的异步I/O事件驱动模型，以及JavaScript在Chrome推进下的多次性能优化、具有函数式等高级语言特性，因此最终Nodejs选择JavaScript。由于Nodejs最终选择了JavaScript，从此也大大的推动了JavaScript在非浏览器领域的急速扩展。</p>
+
+<p>下面的文字是来自Nodejs官网：</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/nodejs-javascript-%E7%AE%80%E4%BB%8B.png" alt="nodejs-javascript-简介" /></p>
+
+<p>当然对于非I/O的操作耗时操作如上篇博文<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>所说，在HTML5中也提高了新的解决方案，它就是Web Worker。Web Worker就是在当前JavaScript的执行主线程中利用Worker类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onmessage事件。但在HTML5 Web Worker中是不能操作DOM的，任何需要操作DOM的任务都需要委托给JavaScript主线程来执行，所以虽然引入HTML5 WebWorker但仍然没有改线JavaScript单线程的本质。对于HTML5的Web Worker和在C# WinForm设计中的BackgroundWorker很类似，对于这类GUI（图形化界面）操作的应用程序中，对于UI界面的操作都需要委托给UI主线程来执行，避免多线程情况下UI操作的安全性和避免不必要的多线程访问控制的复杂度。</p>
+
+<h2>浏览器事件循环</h2>
+
+<p>在上面已经提到JavaScript中为了不阻塞UI的渲染，很多JavaScript任务都是异步的，它们包括键盘、鼠标I/O输入输出事件、窗口大小的resize事件、定时器（setTimeout、setInterval）事件、Ajax请求网络I/O回调等。当这些异步任务发生的时候，它们将会被放入浏览器的事件任务队列中去。在浏览器内部中存在一个消息循环池，也叫Event Loop（事件循环），JavaScript引擎在运行时后单线程的处理这些事件任务。例如用户在网页中点击了一个button事件，则它们会被放入在这个事件循环池中，需要等到JavaScript运行时执行线程空闲时候才会按照队列先进先出的原则被一一执行。对于setTimeout这类定时任务也是一样的，只有当定时时刻达到的时候，它们才会被放入浏览器的事件队列中等待被执行；由于此时的JavaScript主线程也许并不空闲，所以它将并不会被立即执行，因为在JavaScript语言设计中setTimeout这类定时任务的执行时间并不是精确的。在前端开发中经常会发现setTimeout(func, 0)很有用，因为这并不是理解执行，而是将当前执行回调放入浏览器的事件队列中，等待当前其他任务的完成，然后在执行它；所以setTimeout(func, 0)具有改变当前代码执行顺序的作用，让浏览器有机会完成UI界面渲染等任务后在执行这段回调函数。当然对于老式浏览器这里具有16ms的差距，HTML5规定为4ms，以及关于动画操作中的requestAnimationFrame，请读者参见MDN资料<a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame">https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame</a>。</p>
+
+<p>浏览器事件循环如下图所示：</p>
+
+<p><img src="http://greengerong.github.io/images/blog_img/browser-event-base.png" alt="浏览器事件模型" /></p>
+
+<p>虽然JavaScript是单线程执行的，但是浏览器并不是单线程执行的，它们有JavaScript的执行线程、UI节点的渲染线程，图片等资源的加载线程，以及Ajax请求线程等。在Chrome设计中，为了防止因一个Tab window的奔溃而影响珍格格浏览器，它的每一个Tab被设计为一个进程；在Chrome设计中存在很多的进程，并利用进程间通讯来完成它们之间的同步，因此这也是Chrome快速的法宝之一。对于Ajax的请求也需要特殊线程来执行，当需要发送一个Ajax请求的时候，浏览器会开辟一个新的线程来执行HTTP的请求，它并不会阻塞JavaScript线程的执行，HTTP请求状态变更事件会被作为回调放入到浏览器的事件队列中等待被执行。</p>
+
+<h2>总结</h2>
+
+<p>写到这里，本文也进入了尾声。希望这篇文章能给阅读本文的读者一些启发，同时如果本文中存在不足的地方，也希望你能不吝指教。另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家地时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
+
+<p><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="微信订阅号" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Promise的前世今生和妙用技巧]]></title>
@@ -2154,60 +2197,6 @@ npm start
 <p>首先，我们先假设我们已经有了一份契约，可能是基于JSON格式的，有可能是基于XML格式的，这都不重要。然后，前端会根据这份契约建立一个Mock server，所有的测试都发往这个Mock server。有两方面的原因：一是这个时候可能后台的API还没有开发完成；二是有可能因为网络等其他方面的原因导致直接调用真实的后台API会很不稳定或者很耗时。到这里，可能有人就要说了，如果后台的API实现和之前约定的并不一样，怎么能保证到了集成的时候双方还能很顺利的集成呢？其实这个问题并不难，只需要让前端的测试定期连接真实的API执行一遍就能尽早的发现差异性。比方说，在我们平常的build pipeline上添加一个job，让这些测试每天在午夜里连着真实的API执行。如果，第二天发现这些测试有的失败了，那么就需要和开发后台API的人员进行一次沟通了，很有可能由于真实的业务逻辑发生了变化，API在实现的时候，已经和之前的契约不一致了，如果是这样，那么相应的测试和契约定义就需要更新以满足最新的业务需求。</p>
 
 <p>总之，进行契约测试的目的就是尽早的发现差异性，并作出调整，将最后集成的风险降到最低。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[tsd-提升IDE对JavaScript智能感知的能力]]></title>
-    <link href="http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/"/>
-    <updated>2015-07-26T00:55:31+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li</id>
-    <content type="html"><![CDATA[<p>在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。</p>
-
-<p>追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索，然后展示出已经使用过的对象成员。这种方式的缺点是，其智能感知的的能力并不精准，经常会显示出很多无关的代码提示。</p>
-
-<p>在很多现代化开发方式中，IDE的强大支持和模块化组织这种“工程化”的思想是我们应对大规模开发的方式之一，这也已经被业界所认同。所以在最近两年，JavaScript的世界也提出了大规模开发的方案，其中有Google的Dart和微软的TypeScript。随着Angular2.0放弃了自家的Dart，而选择了TypeScript，也标志着TypeScript的逐渐成熟。TypeScript是微软总架构师Anders Hejlsberg设计的新语言，他是软件界的传奇人物，是Delphi和.NET的设计者。TypeScript是一种可以编译成传统JavaScript的语言，它并不是完全的创造了一门新语言，而TypeScript是JavaScript语言的超集，它最大的特点就是引入了类型系统。并在编译为JavaScript文件后，可以输出“.ts”的类型元数据信息，为我们IDE的智能感知和重构提供了重要的依据。</p>
-
-<p>关于TypeScript的更多知识，在这里笔者就不在叙述过多。有兴趣的读者可以到<a href="http://www.typescriptlang.org/">http://www.typescriptlang.org/</a>学习，本节要讲的，是它的另一个特性：它编译输出的元数据信息文件（<code>*.d.ts</code>），它可以在不需要修改原有JavaScript文件的情况下，而给JavaScript添加元数据类型信息，而这些类型信息则可以辅助IDE，给出有智能的提示信息，以及重构的依据。</p>
-
-<p>在TypeScript的开源社区，已经为很多的第三方库实现了这类模板文件，我们可以很快的应用在我们的项目之中。当然这里所说的额第三方包含我们常用的：Angular、jQuery、underscore、lodash、jasmine等。</p>
-
-<p>在官方同时也为我们提供了一个方便的工具叫TSD（全称为：TypeScript Definition manager for DefinitelyTyped），它是借鉴NPM包管理工具的思想，实现了一个类似的包管理工具，我们不需要任何的学习成本，只管像使用NPM一样使用它。</p>
-
-<p>这里是TSD主页:<a href="http://definitelytyped.org/tsd/">http://definitelytyped.org/tsd/</a>，你可以在这里深入了解它，或者是查询你所需要的模板库是否存在于TSD仓库。</p>
-
-<p>TSD也是一个Nodejs的工具，所以我们安装它非常容易，只需要在命令行中输入（对于有些Linux用户需要sudo）：</p>
-
-<pre class='green'><code>npm install tsd -g
-</code></pre>
-
-<p>安装我们需要的模板库，也很简单，如jQuery和Angular的安装：</p>
-
-<pre class='green'><code>tsd install jquery angular --save
-</code></pre>
-
-<p>这样TSD就会帮助我们下载jQuery和Angular的d.ts文件，并存放在当前目录的typings独立子目录下，并且它会将我们需要的依赖信息保存在一个叫tsd.json的文件，如NPM的package.json一样，方便于我们的版本管理，以及团队之间的共享。我们只需要共享这个tsd.json文件给其他同事，然后</p>
-
-<pre class='green'><code>tsd install
-</code></pre>
-
-<p>一切都可以满意就绪了。</p>
-
-<p>tsd.json文件的格式如下：</p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/tsd-install.png" alt="tsd文件目录" /></p>
-
-<p>同时候TSD工具还会为我们在typing目录下生产一个tsd.d.ts文件，它会为我们引入这些模板文件，使得IDE能够识别出这样模板文件：</p>
-
-<pre class='green'><code>/// &lt;reference path="angularjs/angular.d.ts" /&gt;
-/// &lt;reference path="jquery/jquery.d.ts" /&gt;
-</code></pre>
-
-<p>下面是我们在Intellij中得到的智能感知图：</p>
-
-<p><img src="http://greengerong.github.io/images/blog_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
-
-<p>目前能够很好支持TypeScript这一特性的工具有：Intellij家族、微软自家的VS工具、Sublime。有了TSD这一工具，也许我们虽然还不能尝试TypeScript的特性，但我们仍然可以利用它来帮助我们的普通JavaScript开发。</p>
 ]]></content>
   </entry>
   

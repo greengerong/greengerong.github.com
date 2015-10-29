@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在过去的web标准经历了一个飞速的发展，随着时间的推移，用户对web的体验也越来越重视，从最初的简单静态页面到以ajax标志的web2.0，在这个时代我们所面临的问题是用户的体验和可恶的浏览器的兼容(IE成为了我们所唾弃的产物，IE6的葬礼之类的形式足以表明这点)，所以有了Prototype， &hellip;"> 
+    <meta name="description" content="在angular开发中我们经常会遇见输入框中的string的值，却想在scope上的model表现为整型、浮点、货币，或者在radio的value是一个true,false的Boolean类型，一组check box的vlue组成一个Array的数组类型，因为我们的后台程序的model设计接口如此 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/15/angular-model--format/">Angular Ng-model类型格式转化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在angular开发中我们经常会遇见输入框中的string的值，却想在scope上的model表现为整型、浮点、货币，或者在radio的value是一个true,false的Boolean类型，一组check box的vlue组成一个Array的数组类型，因为我们的后台程序的model设计接口如此。你是否还在后台应用程序或者ajax提交前做mapper，还在重复着着伪angular的做法？</p>
+
+<p>在本人github创建了一个开源项目<a href="https://github.com/greengerong/ngmodel-format">https://github.com/greengerong/ngmodel-format</a>,为了让我们能够轻易的对付这些琐事，你可以在demo下得html或者middle way的测试中看见其使用方法，同时如果不满足你的需求，你仍然可以很简单的扩展你需要的功能：你需要的只是在你的module的run阶段注入modelFormatConfig的constant service 加入所需的key值，加上自己的formatter，parser，isEmpty方法，如果你仍然想继续深入的对用户的输入进行一些控制的话，也可以加入keyDown时间去stopPropagation，preventDefault一些key值。</p>
+
+<p>下面我们看看其相应的使用方式：</p>
+
+<p>请移步到<a href="http://jsbin.com/uJUrANa/1/watch?html,js,output">http://jsbin.com/uJUrANa/1/watch?html,js,output</a>，由于嵌入iframe对样式存在影响，所以暂不嵌入</p>
+
+<p>注意由于在jsbin拒绝引入github text/plain的文件 所以这里是直接把源码贴进去了的，如果使用的话最好是使用github上的，这里的代码是不会更新的。</p>
+
+<p>在jsbin demo上你能够很清楚的看见使用方式。那么我就不用在废话多说了，哈哈。有问题可以提交github issue。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -840,258 +886,6 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/16/CSV-he-ji-he-dui-xiang-ji-yu-Annotation-cao-zuo-feng-zhuang/">CSV和集合对象基于Annotation操作封装</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-16T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 随着项目上线，暂时处于闲置状态，所以趁闲带着团队对在这一年项目中做的比较好的组件，工具和实践总结和抽取出来，在我后续的随笔中将会陆续发布出来。今天主要是一个简单的maven小组件，对opencsv基于Annotation简单的封装，使得我们可以轻易的将CSV文件转化为List对像和把List对像导出为CSV文件。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 项目托管地址于github <a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于代码就不用多说了，简单看看如何使用。</p>
-
-<pre class='green'><code>package opencsv.utils;
-
-
-
-public class Person {
-
-
-
-private int id;
-
-
-
-@Csv("person name")
-
-private String name;
-
-
-
-@Ignore
-
-private int age;
-
-
-
-public Person(int id, String name, int age) {
-
-    this.id = id;
-
-    this.name = name;
-
-    this.age = age;
-
-}
-
-
-
-public Person() {
-
-
-
-}
-
-
-
-public int getId() {
-
-    return id;
-
-}
-
-
-
-public void setId(int id) {
-
-    this.id = id;
-
-}
-
-
-
-public String getName() {
-
-    return name;
-
-}
-
-
-
-public void setName(String name) {
-
-    this.name = name;
-
-}
-
-
-
-public int getAge() {
-
-    return age;
-
-}
-
-
-
-public void setAge(int age) {
-
-    this.age = age;
-
-}
-
-}
-</code></pre>
-
-<p>&nbsp;</p>
-
-<p>Mapping会自动将没有ignore的字段作为CSV的映射属性名作为CSV列头，如果针对特殊列则可以标记@CSV解决。</p>
-
-<p>1： 读取CSV:</p>
-
-<p>(1) 基于Annotation映射方式</p>
-
-<pre class='green'><code> @Test
-
-public void shouldGetPersonFromCSV() throws Exception {
-
-    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
-
-    List&lt;Person&gt; personList = personCsvMapper
-
-            .withMapping("id", "id")
-
-            .withMapping("person name", "name")
-
-            .fromCsv(reader);
-
-
-
-    assertThat(personList.size(), is(2));
-
-
-
-    final Person first = personList.get(0);
-
-    assertThat(first.getId(), is(1));
-
-    assertThat(first.getName(), is("name1"));
-
-
-
-    final Person second = personList.get(1);
-
-    assertThat(second.getId(), is(2));
-
-    assertThat(second.getName(), is("name2"));
-
-
-
-}
-</code></pre>
-
-<p>(2) 自定义映射方式&nbsp;</p>
-
-<pre class='green'><code>@Test
-
-public void shouldToCsv() throws Exception {
-
-    personCsvMapper.withMapping(new CsvColumnMapping(Person.class));
-
-    final ArrayList&lt;Person&gt; list = new ArrayList&lt;Person&gt;();
-
-    list.add(new Person(1, "name1", 20));
-
-    list.add(new Person(2, "name2", 30));
-
-    final StringWriter writer = new StringWriter();
-
-
-
-    personCsvMapper.toCsv(writer, list);
-
-
-
-    final String text = writer.toString();
-
-    assertThat(text, is("id,person name\n1,name1\n2,name2\n"));
-
-}
-</code></pre>
-
-<p>2: CSV输出</p>
-
-<pre class='green'><code>@Test
-
-public void shouldGetPersonFromCsv() throws Exception {
-
-    StringReader reader = new StringReader("id,person name\n1,name1\n2,name2\n");
-
-    List&lt;Person&gt; personList = new CsvMapper&lt;Person&gt;(Person.class)
-
-            .withMapping(new CsvColumnMapping(Person.class))
-
-            .fromCsv(reader);
-
-
-
-    assertThat(personList.size(), is(2));
-
-
-
-    final Person first = personList.get(0);
-
-    assertThat(first.getId(), is(1));
-
-    assertThat(first.getName(), is("name1"));
-
-
-
-    final Person second = personList.get(1);
-
-    assertThat(second.getId(), is(2));
-
-    assertThat(second.getName(), is("name2"));
-
-
-
-}
-</code></pre>
-
-<p>最后在累赘下托管地址:<a href="https://github.com/greengerong/opencsv-utils">https://github.com/greengerong/opencsv-utils</a>。其他的相比不用再说了。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/16/3082700.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -1123,6 +917,10 @@ public void shouldGetPersonFromCsv() throws Exception {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/27/javascript-zhi-event-loop/">JavaScript之Event Loop</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
       </li>
     
@@ -1148,10 +946,6 @@ public void shouldGetPersonFromCsv() throws Exception {
     
       <li class="post">
         <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
       </li>
     
   </ul>

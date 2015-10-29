@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以前本站向大家介绍过一些软件开发的原则，比如优质代码的十诫和Unix传奇(下篇)中所以说的UNIX的设计原则。相信大家从中能够从中学了解到一些设计原理方面的知识，正如我在《再谈&#8220;我是怎么招聘程序&#8221;》中所说的， &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp; 在ddd设计中我们经常会提到服务层，服务层是什么？职责是什么？有什么好处？。 &nbsp;&nbsp; 先看简单的层次图（注：这里并没有考虑其他多余的领域逻辑数据层存储，或者UOW这些细节） &nbsp;&nbsp; &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/21/jia-gou-she-ji-zhong-fu-wu-ceng-di-jian-dan-li-jie/">架构设计中服务层的简单理解</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 在ddd设计中我们经常会提到服务层，服务层是什么？职责是什么？有什么好处？。</p>
+
+<p>&nbsp;&nbsp; 先看简单的层次图（注：这里并没有考虑其他多余的领域逻辑数据层存储，或者UOW这些细节）</p>
+
+<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205212307194805.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201205/201205212307202688.png" title="image" alt="image" /></a></p>
+
+<p>&nbsp;&nbsp; 我的理解是服务层是处于我的应用程序业务层和表现层之间的应用程序边界,边界可能是很薄的一层类设计或者是分布式服务网络跃点。它是一个与技术无关的名词。由表现层直接调用，契约，执行命令（修改状态（CUD））或者是查询返回dto（数据迁移对象）（cms，命令-查询分离）。他对业务逻辑层接口很清楚，组织业务逻辑 微服务形成宏服务，适配表现层。</p>
+
+<p>&nbsp;&nbsp; 这里谈到宏服务和微服务，宏服务有一些列粗粒度的服务组成。用户的一次操作usecase，比如电子商务下单，CreateOrder就是一个宏服务，而不是下单中的细粒度的商品库存检查，订单合法性等。而与之对应的微服务（有时也叫应用程序服务），则表现为问题领域逻辑细节，就如上面的库存检查和合法性检查这些细粒度的服务。宏服务是由一个或者多个微服务组成，有时我们的usecase逻辑很简单服务层仅由单一微服务组成，变现为很简单的几句微服务调用。</p>
+
+<p>&nbsp; 服务层的职责：</p>
+
+<p>&nbsp; 1：在面软件开发不管是结构化编程（sp）还是面向对象编程（oop）我们一直都强调高内聚低耦合，分离关注点（soc）。服务层处于应用程序和业务层之间，应用边界，使得两次直接解耦，利用第三个对象破坏两对象直接的依赖，并转化适配领域对象（do）和试图对象（vo）的差异。</p>
+
+<p>&nbsp; 2：服务层隐藏了业务逻辑层的细节，其内部需要组织业务微服务，提供更宏观，面向表现层的服务逻辑，利用契约接口暴露，包装。系统所有的交互都是从表现层进入。</p>
+
+<p>&nbsp; 目前流行SOA架构，提供了一种分布式服务架构，以服务为关注点，提高服务和业务逻辑的重用，但是这里说的服务并不是特定的技术wcf或者webservice，服务同时候可能是一次规定契约的一些列粗粒度组织的类组成。但是利用SOA或者MTS建立服务会让我们的服务得到跟多的附加优势，例如安全，事物，日志，扩展性的提升。</p>
+
+<p>&nbsp; 服务层带来的优势：如上所述服务层为表现层提供的同一的接口契约和入口。让我们的业务层可以关注与实现问题领域逻辑，问题领域实际需求。组织微服务避免太多的细粒度服务的调用充斥在我们的项目表现层和问题领域中，过多的交互。如果采用soa等服务领域可以让我们的应用程序轻易的跨过应用程序边界和网络跃点。但是需要付出一点的性能代价。</p>
+
+<p>&nbsp;&nbsp; 数据迁移对象（dto）就是携带数据穿过应用程序边界的对象，减少数据的交互次数，常常我们将其作为值对象，只是一组简单的get，set属性组成，不存在行为操作，仅仅为数据的载体。在领域设计中dto是一个很重要的模式，不是我们所有的领域对象都能轻松的到达表现层，仅仅表现层和领域层部署在同一物理位置。如果需要穿过网络跃点或者进程边界，因为领域对象使我们的业务的核心存在很多的自然世界的关系，依赖，甚至可能存在循环依赖比如电商用户和订单，用户用户一组订单的集合，而每个订单都指向一个特定的用户，我们就必须破换掉这种循环依赖，才可能使其可序列化，穿过跃点。其次我们的领域对象往往都是一堆领域富对象，存在大量数据，很多时候我们的场景并不需要全部的数据信息。有了dto的存在就能很好的解决这些问题，是的我们的项目变得simple（keep it simple，Stupid。 KISS原则）。</p>
+
+<p>&nbsp;&nbsp; 但是与此同时dto存在会为我们带来一些额外的复杂度，我们必须有一层do到dto的映射适配层。</p>
+
+<p>&nbsp;&nbsp; 理论上完美的设计我们需要为每一个应用定义一个dto，但是在一个复杂的系统中我们可能存在很多的领域对象，加入500个do，每个do一般都会存在多个dto，这将一个增加一个庞大的集合和mapping逻辑，对于维护也存在不小的挑战。在软件领域存在一句话就是bug的数量随着代码量增加，代码量增加需要测试点也随着增加。除非我们必须跨越应用程序网络跃点边界，我觉得否则我们也可以存在一些简单do的直接使用。根据世界项目，情形由我们的架构师决定。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2502,161 +2564,6 @@ public class Student
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/10/AOP-zhi-PostSharp4-shi-xian-lei-INotifyPropertyChanged-zhi-ru/">AOP之PostSharp4-实现类INotifyPropertyChanged植入</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-10T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面几篇PostSharp的随笔，今天来一个简单的demo。PostSharp的其他内容将会在后面继续更新。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果我们了解wpf或者silverlight开发中的MVVM模式，就知道框架要求我们的ViewModel必须实现INotifyPropertyChanged，来得到属性改变的事件通知，更新UI。</p>
-
-<p>实现INotifyPropertyChanged接口很简单，而且一沉不变，属于重复劳动。在这里我们将看看如何运用PostSharp来解决我们的重复劳动。当然这里只是一个demo演示，具体在项目开发中你直接实现INotifyPropertyChanged，或者AOP植入，这取决我个人和团队文化。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 在下面我们将会用到Postsharp的：</p>
-
-<ol>
-<li>IntroduceMember：向目标对象植入成员。</li>
-<li>IntroduceInterface：使得目标实现接口，参数接口类型。</li>
-<li>OnLocationSetValueAdvice：PostSharp的一种Advice Aspect。</li>
-</ol>
-
-
-<p>&nbsp;&nbsp; 下面我就看看我们的代码是如何简洁来实现：</p>
-
-<pre class='green'><code> using System;
-  using System.ComponentModel;
-  using PostSharp.Aspects;
-  using PostSharp.Aspects.Advices;
-  using PostSharp.Extensibility;
-
-  namespace PostSharpDemo
-  {
-      [Serializable]
-      [IntroduceInterface(typeof(INotifyPropertyChanged), OverrideAction = InterfaceOverrideAction.Ignore)]
-      public class INotifyPropertyChangedAttribute : InstanceLevelAspect, INotifyPropertyChanged
-      {
-
-          [OnLocationSetValueAdvice, MulticastPointcut(Targets = MulticastTargets.Property)]
-          public void OnValueChanged(LocationInterceptionArgs args)
-          {
-              var current=args.GetCurrentValue();
-              if ((args.Value != null &amp;&amp; (!args.Value.Equals(current)))
-                  || (current != null &amp;&amp; (!current.Equals(args.Value))))
-              {
-                  args.ProceedSetValue();
-                  this.OnRaisePropertyChange(args.Location.Name);
-              }
-          }
-
-          #region INotifyPropertyChanged 成员
-
-          [IntroduceMember(IsVirtual = true, OverrideAction = MemberOverrideAction.Ignore)]
-          public event PropertyChangedEventHandler PropertyChanged;
-
-
-
-
-          protected void OnRaisePropertyChange(string property)
-          {
-              if (PropertyChanged != null)
-              {
-                  PropertyChanged.Invoke(this.Instance, new PropertyChangedEventArgs(property));
-              }
-          }
-          #endregion
-      }
-  }
-</code></pre>
-
-<p>测试代码：</p>
-
-<p>static void Main(string[] args)</p>
-
-<pre class='green'><code>    { 
-
-         Student stu = new Student(); 
-        (stu as INotifyPropertyChanged).PropertyChanged += new PropertyChangedEventHandler(Program_PropertyChanged); 
-        stu.ID = 10; 
-        stu.Name = "wolf"; 
-        stu.Sex = "Man"; 
-        stu.ID = 2; 
-        Console.Read(); 
-    } 
-
-    static void Program_PropertyChanged(object sender, PropertyChangedEventArgs e) 
-    { 
-        Console.WriteLine(string.Format("property {0} has changed", e.PropertyName)); 
-    }
-</code></pre>
-
-<p>实体类：</p>
-
-<pre class='green'><code>  [INotifyPropertyChanged] 
-   public class Student 
-   { 
-       public string Name 
-       { get; set; } 
-
-       public string Sex 
-       { get; set; } 
-
-       public int ID 
-       { get; set; } 
-   }
-</code></pre>
-
-<div class="cnblogs_code">运行效果如下：</div>
-
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006066024.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112102006218755.png" title="image" alt="image" /></a></p>
-
-<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">demo</a></p>
-
-<p>本博客中相关文章有：</p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
-<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/13/">&larr; Older</a>
@@ -2688,6 +2595,10 @@ public class Student
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/10/27/javascript-zhi-event-loop/">JavaScript之Event Loop</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
       </li>
     
@@ -2713,10 +2624,6 @@ public class Student
     
       <li class="post">
         <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>
       </li>
     
   </ul>
