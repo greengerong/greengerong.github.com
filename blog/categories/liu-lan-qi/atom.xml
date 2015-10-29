@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 浏览器 | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/liu-lan-qi/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-29T21:59:10+08:00</updated>
+  <updated>2015-10-29T22:06:27+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,10 +14,10 @@
 
   
   <entry>
-    <title type="html"><![CDATA[JavaScript之Event Loop]]></title>
-    <link href="http://greengerong.github.io/blog/2015/10/27/javascript-zhi-event-loop/"/>
+    <title type="html"><![CDATA[JavaScript单线程和浏览器事件循环简述]]></title>
+    <link href="http://greengerong.github.io/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/"/>
     <updated>2015-10-27T22:13:55+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/10/27/javascript-zhi-event-loop</id>
+    <id>http://greengerong.github.io/blog/2015/10/27/javascript-single-thread-and-browser-event-loop</id>
     <content type="html"><![CDATA[<h2>JavaScript单线程</h2>
 
 <p>在上篇博客<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>的开篇中，我们曾简述了JavaScript的单线程机制和浏览器的事件模型。应很多网友的回复，在这篇文章中将继续展开这一个话题。当然这里是博主的一些理解，如果还存在什么纰漏的话，请不吝指教。</p>
