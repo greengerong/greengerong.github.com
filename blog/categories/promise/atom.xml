@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Promise | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/promise/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-29T22:06:27+08:00</updated>
+  <updated>2015-10-29T22:40:28+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -390,7 +390,7 @@ function $http(requestConfig) {
 
 <p>写到这里，本文也进入了尾声。希望大家能够对Promise有一定的理解，并能够”信手拈来“的运用于实际的项目之中，增强代码的可读性和可维护性。在本文中所用到的例子，你都可以在博主的jsbin<a href="http://jsbin.com/bayeva/edit?html,js,output">http://jsbin.com/bayeva/edit?html,js,output</a>中找到它们。</p>
 
-<p>另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家地时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
+<p>另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家第一时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
 ]]></content>
   </entry>
   

@@ -107,21 +107,21 @@
 
 <p><img src="/images/blog_img/nodejs-javascript-%E7%AE%80%E4%BB%8B.png" alt="nodejs-javascript-简介" /></p>
 
-<p>当然对于非I/O的操作耗时操作如上篇博文<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>所说，在HTML5中也提高了新的解决方案，它就是Web Worker。Web Worker就是在当前JavaScript的执行主线程中利用Worker类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onmessage事件。但在HTML5 Web Worker中是不能操作DOM的，任何需要操作DOM的任务都需要委托给JavaScript主线程来执行，所以虽然引入HTML5 WebWorker但仍然没有改线JavaScript单线程的本质。对于HTML5的Web Worker和在C# WinForm设计中的BackgroundWorker很类似，对于这类GUI（图形化界面）操作的应用程序中，对于UI界面的操作都需要委托给UI主线程来执行，避免多线程情况下UI操作的安全性和避免不必要的多线程访问控制的复杂度。</p>
+<p>当然对于非I/O的操作耗时操作如上篇博文<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>所说，在HTML5中也提高了新的解决方案，它就是Web Worker。Web Worker就是在当前JavaScript的执行主线程中利用Worker类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。但在HTML5 Web Worker中是不能操作DOM的，任何需要操作DOM的任务都需要委托给JavaScript主线程来执行，所以虽然引入HTML5 WebWorker但仍然没有改线JavaScript单线程的本质。对于HTML5的Web Worker和在C# WinForm设计中的BackgroundWorker很类似，对于这类GUI（图形化界面）操作的应用程序中，对于UI界面的操作都需要委托给UI主线程来执行，避免多线程情况下UI操作的安全性和避免不必要的多线程访问控制的复杂度。</p>
 
 <h2>浏览器事件循环</h2>
 
-<p>在上面已经提到JavaScript中为了不阻塞UI的渲染，很多JavaScript任务都是异步的，它们包括键盘、鼠标I/O输入输出事件、窗口大小的resize事件、定时器（setTimeout、setInterval）事件、Ajax请求网络I/O回调等。当这些异步任务发生的时候，它们将会被放入浏览器的事件任务队列中去。在浏览器内部中存在一个消息循环池，也叫Event Loop（事件循环），JavaScript引擎在运行时后单线程的处理这些事件任务。例如用户在网页中点击了一个button事件，则它们会被放入在这个事件循环池中，需要等到JavaScript运行时执行线程空闲时候才会按照队列先进先出的原则被一一执行。对于setTimeout这类定时任务也是一样的，只有当定时时刻达到的时候，它们才会被放入浏览器的事件队列中等待被执行；由于此时的JavaScript主线程也许并不空闲，所以它将并不会被立即执行，因为在JavaScript语言设计中setTimeout这类定时任务的执行时间并不是精确的。在前端开发中经常会发现setTimeout(func, 0)很有用，因为这并不是理解执行，而是将当前执行回调放入浏览器的事件队列中，等待当前其他任务的完成，然后在执行它；所以setTimeout(func, 0)具有改变当前代码执行顺序的作用，让浏览器有机会完成UI界面渲染等任务后在执行这段回调函数。当然对于老式浏览器这里具有16ms的差距，HTML5规定为4ms，以及关于动画操作中的requestAnimationFrame，请读者参见MDN资料<a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame">https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame</a>。</p>
+<p>在上面已经提到JavaScript中为了不阻塞UI的渲染，很多JavaScript任务都是异步的，它们包括键盘、鼠标I/O输入输出事件、窗口大小的resize事件、定时器（setTimeout、setInterval）事件、Ajax请求网络I/O回调等。当这些异步任务发生的时候，它们将会被放入浏览器的事件任务队列中去。在浏览器内部中存在一个消息循环池，也叫Event Loop（事件循环），JavaScript引擎在运行时后单线程的处理这些事件任务。例如用户在网页中点击了button事件，则它们会被放入在这个事件循环池中，需要等到JavaScript运行时执行线程空闲时候才会按照队列先进先出的原则被一一执行。对于setTimeout这类定时任务也是一样的，只有当定时时刻达到的时候，它们才会被放入浏览器的事件队列中等待被执行；由于此时的JavaScript主线程也许并不空闲，所以它将并不会被立即执行，因为在JavaScript语言设计中setTimeout这类定时任务的执行时间并不是精确的。在前端开发中经常会发现setTimeout(func, 0)很有用，因为这并不是理解执行，而是将当前执行回调函数放入浏览器的事件队列中，等待当前其他任务的完成，然后在执行它；所以setTimeout(func, 0)具有改变当前代码执行顺序的作用，让浏览器有机会完成UI界面渲染等任务后在执行这段回调函数。当然对于老式浏览器这里具有16ms的差距，HTML5规定为4ms，以及关于动画操作中的requestAnimationFrame，请读者参见MDN资料<a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame">https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame</a>。</p>
 
 <p>浏览器事件循环如下图所示：</p>
 
 <p><img src="/images/blog_img/browser-event-base.png" alt="浏览器事件模型" /></p>
 
-<p>虽然JavaScript是单线程执行的，但是浏览器并不是单线程执行的，它们有JavaScript的执行线程、UI节点的渲染线程，图片等资源的加载线程，以及Ajax请求线程等。在Chrome设计中，为了防止因一个Tab window的奔溃而影响珍格格浏览器，它的每一个Tab被设计为一个进程；在Chrome设计中存在很多的进程，并利用进程间通讯来完成它们之间的同步，因此这也是Chrome快速的法宝之一。对于Ajax的请求也需要特殊线程来执行，当需要发送一个Ajax请求的时候，浏览器会开辟一个新的线程来执行HTTP的请求，它并不会阻塞JavaScript线程的执行，HTTP请求状态变更事件会被作为回调放入到浏览器的事件队列中等待被执行。</p>
+<p>虽然JavaScript是单线程执行的，但是浏览器并不是单线程执行的，它们有JavaScript的执行线程、UI节点的渲染线程，图片等资源的加载线程，以及Ajax请求线程等。在Chrome设计中，为了防止因一个Tab window的奔溃而影响整个浏览器，它的每一个Tab被设计为一个进程；在Chrome设计中存在很多的进程，并利用进程间通讯来完成它们之间的同步，因此这也是Chrome快速的法宝之一。对于Ajax的请求也需要特殊线程来执行，当需要发送一个Ajax请求的时候，浏览器会开辟一个新的线程来执行HTTP的请求，它并不会阻塞JavaScript线程的执行，HTTP请求状态变更事件会被作为回调放入到浏览器的事件队列中等待被执行。</p>
 
 <h2>总结</h2>
 
-<p>写到这里，本文也进入了尾声。希望这篇文章能给阅读本文的读者一些启发，同时如果本文中存在不足的地方，也希望你能不吝指教。另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家地时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
+<p>写到这里，本文也进入了尾声。希望这篇文章能给阅读本文的读者一些启发，同时如果本文中存在不足的地方，也希望你能不吝指教。另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家第一时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
 
 <p><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="微信订阅号" /></p>
 </div>
