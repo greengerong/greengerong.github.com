@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JavaScript之Event loop"
+title: "JavaScript单线程和浏览器事件循环简述"
 date: 2015-10-27 22:13:55 +0800
 comments: true
 categories: [JavaScript, 浏览器]
