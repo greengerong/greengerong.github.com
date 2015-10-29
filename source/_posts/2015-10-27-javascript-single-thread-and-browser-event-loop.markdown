@@ -6,6 +6,9 @@ comments: true
 categories: [JavaScript, 浏览器]
 ---
 
+
+![JavaScript 单线程 火车轨道](/images/blog_img/JavaScript单线程-火车轨道.jpg)
+
 ##JavaScript单线程
 
 在上篇博客[《Promise的前世今生和妙用技巧》](http://greengerong.com/blog/2015/10/22/promisede-miao-yong/)的开篇中，我们曾简述了JavaScript的单线程机制和浏览器的事件模型。应很多网友的回复，在这篇文章中将继续展开这一个话题。当然这里是博主的一些理解，如果还存在什么纰漏的话，请不吝指教。
