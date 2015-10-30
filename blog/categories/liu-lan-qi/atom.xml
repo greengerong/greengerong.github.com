@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 浏览器 | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/liu-lan-qi/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-10-29T23:51:35+08:00</updated>
+  <updated>2015-10-30T08:15:14+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -38,7 +38,7 @@
 
 <p><img src="/images/blog_img/nodejs-javascript-%E7%AE%80%E4%BB%8B.png" alt="nodejs-javascript-简介" /></p>
 
-<p>当然对于非I/O的操作耗时操作如上篇博文<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>所说，在HTML5中也提高了新的解决方案，它就是Web Worker。Web Worker就是在当前JavaScript的执行主线程中利用Worker类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。但在HTML5 Web Worker中是不能操作DOM的，任何需要操作DOM的任务都需要委托给JavaScript主线程来执行，所以虽然引入HTML5 WebWorker但仍然没有改线JavaScript单线程的本质。对于HTML5的Web Worker和在C# WinForm设计中的BackgroundWorker很类似，对于这类GUI（图形化界面）操作的应用程序中，对于UI界面的操作都需要委托给UI主线程来执行，避免多线程情况下UI操作的安全性和避免不必要的多线程访问控制的复杂度。</p>
+<p>当然对于非I/O的操作耗时操作如上篇博文<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">《Promise的前世今生和妙用技巧》</a>所说，在HTML5中也提出了新的解决方案，它就是Web Worker。Web Worker就是在当前JavaScript的执行主线程中利用Worker类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。但在HTML5 Web Worker中是不能操作DOM的，任何需要操作DOM的任务都需要委托给JavaScript主线程来执行，所以虽然引入HTML5 WebWorker但仍然没有改线JavaScript单线程的本质。对于HTML5的Web Worker和在C# WinForm设计中的BackgroundWorker很类似，对于这类GUI（图形化界面）操作的应用程序中，对于UI界面的操作都需要委托给UI主线程来执行，避免多线程情况下UI操作的安全性和避免不必要的多线程访问控制的复杂度。</p>
 
 <h2>浏览器事件循环</h2>
 
