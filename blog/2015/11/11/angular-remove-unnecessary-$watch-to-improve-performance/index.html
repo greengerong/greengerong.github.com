@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>Angular移除不必要的$watch之性能优化 - 破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。 双向绑定带来了很大的好处，但是它需要在后台保持一只“ &hellip;"> 
+    <meta name="description" content="双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。 双向绑定带来了很大的好处，但是它需要在后台保持一只 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -89,7 +89,9 @@
   </header>
 
 
-<div class="entry-content"><p>双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。</p>
+<div class="entry-content"><p><img src="/images/blog_img/Angular-apply-and-%E6%B5%8F%E8%A7%88%E5%99%A8-event-loop.png" alt="Angular-apply-and-浏览器-event-loop" /></p>
+
+<p>双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。</p>
 
 <p>双向绑定带来了很大的好处，但是它需要在后台保持一只“眼睛”，随时观察所有绑定值的改变，这就是Angular 1.x中“性能杀手”的“脏检查机制”($digest)。可以推论：如果有太多“眼睛”，就会产生性能问题。在讨论优化Angular的性能之前，笔者希望先讲解下Angular的双向绑定和watchers函数。</p>
 
