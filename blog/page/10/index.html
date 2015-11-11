@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这是本人开博以来第一篇水文，我不想讨论一些所谓的的空谈，反对一切空谈，只有行动事实才能证明一切。思索许久才有了这篇水文，纪念一些失去的。本文所指其实也不局限于敏捷项目，或软件项目。 &nbsp;&nbsp;&nbsp;& &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;在JavaScript中replace函数作为字符串替换函数，这是一个威力强大的字符串操作函数，对于常见字符串操作的推荐用法。这篇随笔就来更加深入的理解它。 &nbsp;&nbsp;&nbsp;& &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,159 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/14/JavaScript-han-shu-replace-jie-mi/">JavaScript 函数replace揭秘</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-14T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;在JavaScript中replace函数作为字符串替换函数，这是一个威力强大的字符串操作函数，对于常见字符串操作的推荐用法。这篇随笔就来更加深入的理解它。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; replace函数接受两个参数,第一个参数为字符串或正则表达式，第一个参数同样可以接受一个字符串，还可能是一个函数。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先对于第一个参数为字符串的我们不再需要多说&#8221;I am a boy&#8221;.replace(&ldquo;boy&rdquo;,&ldquo;girl&rdquo;),输出：&#8221;I am a girl&#8221;。在这里想说的是第一个参数为正则的情形。对于正则表达式来说首先会根据是否全局的（全局//g）决定替换行为，如果是全部的则替换全部替换，非全局的只有替换首个匹配的字符串。例如：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;gutter:false;">"Ha Ha".replace(/\b\w+\b/g, "He")  // He He
+
+"Ha Ha".replace(/\b\w+\b/, "He")  //He Ha
+</pre>
+</div>
+
+
+<p>1:第二个参数为字符串：</p>
+
+<p>&nbsp;&nbsp;&nbsp; 对于正则replace约定了一个特殊标记符$：</p>
+
+<ol>
+<li>$i (i:1-99) : 表示从左到右正则子表达式所匹配的文本。</li>
+<li>$&amp;:表示与正则表达式匹配的全文本。</li>
+<li>$<code>(</code>:切换技能键)：表示匹配字符串的左边文本。</li>
+<li>$&rsquo;(&lsquo;:单引号)：表示匹配字符串的右边文本。</li>
+<li>$$：表示$转移。</li>
+</ol>
+
+
+<p>下面来几个demo:</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;gutter:false;">"boy &amp; girl".replace(/(\w+)\s*&amp;\s*(\w+)/g,"$2 &amp; $1") //girl &amp; boy
+
+"boy".replace(/\w+/g,"$&amp;-$&amp;") // boy-boy
+
+"javascript".replace(/script/,"$&amp; != $`") //javascript != java
+
+"javascript".replace(/java/,"$&amp;$' is ") // javascript is script
+</pre>
+</div>
+
+
+<p>2：第二个参数为函数：</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;在ECMAScript3推荐使用函数方式，实现于JavaScript1.2.当replace方法执行的时候每次都会调用该函数，返回值作为替换的新值。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 函数参数的规定：</p>
+
+<ol>
+<li>第一个参数为每次匹配的全文本（$&amp;）。</li>
+<li>中间参数为子表达式匹配字符串，个数不限.( $i (i:1-99))</li>
+<li>倒数第二个参数为匹配文本字符串的匹配下标位置。</li>
+<li>最后一个参数表示字符串本身。</li>
+</ol>
+
+
+<p>这就是本文所要说replace威力强大的地方，理论的东西都是干货，我们需要示例解决一切空洞的问题：</p>
+
+<p>1：字符串首字母大写：</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;gutter:false;">String.prototype.capitalize = function(){
+
+    return this.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase();
+
+    } );
+
+};
+</pre>
+</div>
+
+
+<p>console.log(&ldquo;i am a boy !&rdquo;.capitalize())</p>
+
+<p>输出：I Am A Boy !</p>
+
+<p>2:对字符串&ldquo;张三56分， 李四74分， 王五92分， 赵六84分&rdquo;的分数提取汇总，算出平均分并输出每个人的平均分差距。</p>
+
+<div class="cnblogs_Highlighter">
+<pre class="brush:javascript;gutter:false;">var s = "张三56分， 李四74分， 王五92分， 赵六84分";
+
+var a = s.match(/\d+/g);
+
+var sum = 0;
+
+for(var i = 0 ; i &lt; a.length; i++){
+
+            sum += parseFloat(a[i]);
+
+}
+
+var avg = sum / a.length;
+
+function f(){
+
+            var n = parseFloat(arguments[1]);
+
+            return n + "分" + "(" + ((n &gt; avg) ? ("超出平均分" + (n - avg)) :
+
+                        ("低于平均分" + (avg - n))) + "分)";
+
+}
+
+var result = s.replace(/(\d+)分/g, f);
+
+console.log(result);
+</pre>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>输出：</p>
+
+<p>张三56分(低于平均分20.5分)， 李四74分(低于平均分2.5分)， 王五92分(超出平均分15.5分)， 赵六84分(超出平均分7.5分)</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JavaScript的replace函数再加上正则的高级应用，JavaScript的replace将会发回更大的威力所在，在这里将不再深入正则高级应用断言之类的。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/03/14/2958720.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1195,77 +1348,6 @@ filter("fullname", function() {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/07/12/du-Clean-Code-shu-ju-jie-gou-he-dui-xiang/">读Clean Code - 数据结构和对象</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-12T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 最近在上下班挤公交的时间细阅Clean Code（代码整洁之道），再次佩服Bob大叔幽默的文笔，独到的观点和理解视角。最让我耳目一新的是Bob大叔对数据结构和对象的解释。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 总的说来数据结构指的就是数据的载体，暴露数据，而几乎没有有意义的行为，你应该在尖叫这不是贫血类？的确这和我们的贫血类很相似。最常见的应用在分布式服务，以wcf，webservice，reset之类的分布式服务中不可或缺的数据传输对象（DTO）模式，DTO（Request/Response）就是一个很典型的数据载体，只存在简单的get，set属性，并且更倾向于作为值对象存在。而对象则刚好相反作为面向对象的产物，必须封装隐藏数据，而暴露出行为接口，DDD中领域模型倾向于对象不仅在数据更多暴露行为操作自己或者关联状态。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 虽然数据结构和对象之间看是细微的差别却导致了不同的本质区别：使用数据结构的代码便于在不改动现在数据结构的前提下添加新的行为（函数），面向对象代码则便于不改动现 有函数的前提下添加新的类。换句话说就是数据结构难以添加新的的数据类型，因为需要改动所有函数，面向对象的代码则难以添加新的函数，因为需要修改所有的类。在任何一个复杂的系统都会同时存在数据结构和对象，我们需要判断的是我们需要的是需要添加的新的数据类型还是新的行为函数。</p>
-
-<p> 在则就是迪米特法则，或被译为最小知识原则，不和陌生人说话：模块不应该了解他所操作的对象的内部情形，关于对象的隐藏，更细致的理解为一个对象A的方法f，应该也只能调用对象为下列范围内：</p>
-
-<ol>
-<li>对象A的属性字段</li>
-<li>对象A持有的对象</li>
-<li>方法参数传入的对象</li>
-<li>在方法f中定义的临时对象</li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 方法不应和任何调用方法返回的对象操作，换句话之和朋友说话，不和陌生人说话。比如：ctxt.getOptions().getSearchDir().getAbsolutePath()，就是迪米特法则的反例模式。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 但当前迪米特法则的前提是对象，如果是数据结构，没有什么行为，则他们自然会暴露其内部数据结构，迪米特法则也失效了。</p>
-
-<p>&nbsp;&nbsp; &nbsp; 隐藏作为面向对象主要特性中的最重要特性，封装隐藏是面向对象中最重要的特性，一个好的面向对象代码肯定是对对象的内部细节做到很好的隐藏封装，封装过后才有是多态，委派之类的。一个好的面向对象的代码一定是具有很好的隐藏封装，易于测试，不稳定因素往往集中在一处很小或者固定的位置，不稳定因素的变更不会导致更大面积的修改扩散。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 最后推荐下一本书籍，值得在空闲时间看看，不能保证看完代码就一定写出整洁的代码，做到童子军军规&#8220;每次签入的代码比签出的更整洁&#8221;，更不会像优美的散文，这需要在项目实践中不断练习发现，但对代码质量意思有着引导作用。</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 总感觉自己的技术还差得很远，所以我总是约束自己抽出可用的时间看些书籍，从不同的视角，不同的领域或者一些思想的提升和沉淀。</p>
-
-<p>关于面向对象原则随笔还有：</p>
-
-<ol>
-<li>&nbsp;<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html">(转载)一些软件设计的原则</a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言理解</a></li>
-</ol>
-
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/07/12/2588896.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/11/">&larr; Older</a>
@@ -1297,6 +1379,10 @@ filter("fullname", function() {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
       </li>
     
@@ -1322,10 +1408,6 @@ filter("fullname", function() {
     
       <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
   </ul>

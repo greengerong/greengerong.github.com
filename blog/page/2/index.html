@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="subprotocol最近在Github上开源了verlet-js。地址为https://github.com/subprotocol/verlet-js。verlet-js是一个集成Verlet的物理引擎，利用JavaScript编写。verlet-js支持粒子系统、距离限制、角度限制等。 &hellip;"> 
+    <meta name="description" content="在上篇Angular遇上CoffeeScript &ndash; NgComponent封装中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,89 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-22T21:09:03+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上篇<a href="http://greengerong.com/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript &ndash; NgComponent封装</a>中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + Babel或者TypeScript这类鲜明特性的JavaScript语法。但是CoffeeScript也不失为一门不错的JavaScript扩展语言，特别在Ruby社区仍然是一个很好的选择。</p>
+
+<p>在本节中，我们将会利用CoffeeScript来模拟Python中的装潢器实现。Python的装潢器是属于一类来自于语言层次的AOP实现。AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可复用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a>。</p>
+
+<p>在Python中的装潢器也是一个普通的函数，我们只需要使用@符号将方法标注在另一个方法签名上就能实现对被标注方法的装潢。这也是Python这门函数式语言中高阶函数的运用。被装潢的方法将会被传入装潢函数中，被装潢包裹以实现方法的拦截。</p>
+
+<p>Python中的装潢器如下：</p>
+
+<pre class='green'><code>def deco(func):
+    def _deco(*args, **kwargs):
+        print("before %s called." % func.__name__)
+        ret = func(*args, **kwargs)
+        print("  after %s called. result: %s" % (func.__name__, ret))
+        return ret
+    return _deco
+
+@deco
+def myfunc(a, b):
+    print(" myfunc(%s,%s) called." % (a, b))
+    return a+b
+</code></pre>
+
+<p>这里的装潢器deco，将会包裹myfunc方法，实现调用前后的日志信息拦截。</p>
+
+<p>在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高阶函数，可以如下包裹：</p>
+
+<pre class='green'><code>log(myfunc)
+</code></pre>
+
+<p>在CoffeeScript中，我们也可以简化去掉方法（）符号：</p>
+
+<pre class='green'><code>log myfunc
+</code></pre>
+
+<p>如果我们再像Python一样强制加上@符号，并将log函数放在方法声明右边，则似乎就有点接近Python的装潢器：</p>
+
+<pre class='green'><code>f = @log (a, b) -&gt; a + b
+</code></pre>
+
+<p>不知作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：</p>
+
+<p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async="true" src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+<p>这里利用了高阶函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1426,84 +1509,6 @@ olderUser(users); // Object {user: "fred", age: 40}
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-07-29T10:39:02+08:00" pubdate data-updated="true">Jul 29<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>前后端分离</h3>
-
-<p>按照现在的趋势，前后端分离几乎已经是业界对开发和部署方式所达成的一种共识。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人只做前端（HTML/CSS/JavaScript等等），另一部分人只做后端（或者叫服务端），因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法将前后端开发和部署做到真正的分离。</p>
-
-<p>通常，前后端分别有着自己的开发流程，构建工具，测试等。做前端的谁也不会想要用Maven或者Gradle作为构建工具，同样的道理，做后端的谁也不会想要用Grunt或者Gulp作为构建工具。前后端仅仅通过接口来协作，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。但是这种想法依然还是很理想化，前后端集成往往还是一个很头痛的问题。比如在最后需要集成的时候，我们才发现最开始商量好的数据结构发生了变化，而且这种变化往往是在所难免的，这样就会增加大量的集成时间。</p>
-
-<p>归根结底，还是前端或者后端感知到变化的时间周期太长，不能“及时协商，尽早解决”，最终导致集中爆发。怎么解决这个问题呢？我们需要提前协商好一些契约，并将这些契约作为可以被测试的中间产品，然后前后端都通过自动化测试来检验这些契约，一旦契约发生变化，测试就会失败。这样，每个失败的测试都会驱动双方再次协商，有效的缩短了反馈周期，并且降低集成风险。具体的实践方式，请参加我同事的一篇博文，“前后端分离了，然后呢？”<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/</a>。</p>
-
-<p>不过，仅仅靠纪律是不够的，还需要通过工具的辅助来提高效率。下面，我们就来看一下，一个API设计工具——Swagger，将如何帮助我们更好的实现“前后端分离”。</p>
-
-<h3>Swagger</h3>
-
-<p>Swagger包括库、编辑器、代码生成器等很多部分，这里我们主要讲一下Swagger Editor。这是一个完全开源的项目，并且它也是一个基于Angular的成功案例，我们可以下载源码并自己部署它，也可以修改它或集成到我们自己的软件中。</p>
-
-<p>在Swagger Editor中，我们可以基于YAML语法定义我们的RESTful API，然后它会自动生成一篇排版优美的API文档，并且提供实时预览。相信大多数朋友都遇到过这样一个场景：明明调用的是之前约定好的API，拿到的结果却不是想要的。可能因为是有人修改了API的接口，却忘了更新文档；或者是文档更新的不及时；又或者是文档写的有歧义，大家的理解各不相同。总之，让API文档总是与API定义同步更新，是一件非常有价值的事。下面我们通过一个例子来感受一下Swagger给我们带来的好处。</p>
-
-<p>首先我们需要安装一个Swagger Editor，或者也可以直接使用在线版本<a href="http://editor.swagger.io/">http://editor.swagger.io/</a>。如果需要在本地启动编辑器，执行以下三行命令即可（前提是已经安装好了Node.js）：</p>
-
-<pre class='green'><code>git clone https://github.com/swagger-api/swagger-editor.git
-cd swagger-editor
-npm start
-</code></pre>
-
-<p>当我们修改了API的定义之后，在编辑器右侧就可以看到相应的API文档了，而且永远是最新的。</p>
-
-<p><img src="/images/blog_img/SwaggerEditor.png" alt="Swagger editor" /></p>
-
-<p>不仅如此，它还能够自动生成Mock server所需要的代码，这样一来前端开发就再也不用等着后端API
-的实现了。除此之外，它还有一个更强大的功能，甚至能够帮助我们自动生成不同语言的客户端的代码。Swagger是基于插件来实现各种不同的语言的，所以，如果已经提供的语言中没有你正在用的，你也可以自己实现相应的插件，甚至是从源代码级别进行定制化。</p>
-
-<p><img src="/images/blog_img/SwaggerGenerateClient.png" alt="Swagger generate client" /></p>
-
-<h3>契约测试</h3>
-
-<p>谈到了前后端分离，那么在所难免，会遇到一些集成的问题：一拨人在全心全意的进行前端开发，另一拨人在心无旁骛的做后端开发，那么谁应该为集成买单呢？在现在这个持续集成、持续交付的年代里，我们应该如何去保证双方不会分道扬镳、越走越远呢？</p>
-
-<p>所以，在一开始就定一个契约就成了迫在眉睫的事情，双方就API相关的内容，包括路径、参数、类型等达成一致，当然，这份契约并不是一旦创建就不能修改的，而且，如果一开始没有设计好，很有可能会频繁的修改。这个时候，要让双方都能够实时的跟踪最新的API就成了一个难题。还好，在总结了前人的经验和教训之后，我们早已有了应对之策，那就是<code>契约测试</code>。</p>
-
-<p>老马（Martin Fowler）早在2011年的时候就发表了一篇博客<a href="http://martinfowler.com/bliki/IntegrationContractTest.html">http://martinfowler.com/bliki/IntegrationContractTest.html</a>，专门讨论了如何做契约测试。</p>
-
-<p>首先，我们先假设我们已经有了一份契约，可能是基于JSON格式的，有可能是基于XML格式的，这都不重要。然后，前端会根据这份契约建立一个Mock server，所有的测试都发往这个Mock server。有两方面的原因：一是这个时候可能后台的API还没有开发完成；二是有可能因为网络等其他方面的原因导致直接调用真实的后台API会很不稳定或者很耗时。到这里，可能有人就要说了，如果后台的API实现和之前约定的并不一样，怎么能保证到了集成的时候双方还能很顺利的集成呢？其实这个问题并不难，只需要让前端的测试定期连接真实的API执行一遍就能尽早的发现差异性。比方说，在我们平常的build pipeline上添加一个job，让这些测试每天在午夜里连着真实的API执行。如果，第二天发现这些测试有的失败了，那么就需要和开发后台API的人员进行一次沟通了，很有可能由于真实的业务逻辑发生了变化，API在实现的时候，已经和之前的契约不一致了，如果是这样，那么相应的测试和契约定义就需要更新以满足最新的业务需求。</p>
-
-<p>总之，进行契约测试的目的就是尽早的发现差异性，并作出调整，将最后集成的风险降到最低。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1535,6 +1540,10 @@ npm start
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
       </li>
     
@@ -1560,10 +1569,6 @@ npm start
     
       <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
   </ul>

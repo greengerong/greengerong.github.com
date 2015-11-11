@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在angular开发中我们经常会遇见输入框中的string的值，却想在scope上的model表现为整型、浮点、货币，或者在radio的value是一个true,false的Boolean类型，一组check box的vlue组成一个Array的数组类型，因为我们的后台程序的model设计接口如此 &hellip;"> 
+    <meta name="description" content="今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。 当然在官方的angular-ui ui- &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,138 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/15/jqueryinputmarsk4angular/">Angularjs组件之input Mask</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。</p>
+
+<p>当然在官方的angular-ui ui-utils中有一个相应的组件叫做ui-mask，但是其mask功能是很初级脆弱的。所以我希望能得到一个更强大的mask组件。我所知的<a href="https://github.com/RobinHerbots/jquery.inputmask">jquery.inputmask</a>就是这样一个我所期望的强大的mask组件，所以我不必再去重造轮子，好的软件就是为了不停被重复利用。所以写了一个adapter，<a href="https://github.com/greengerong/green.inputmask4angular">https://github.com/greengerong/green.inputmask4angular</a>.</p>
+
+<p>其使用如下，可以去下载项目查看其中的demo page。</p>
+
+<pre class='green'><code>&lt;div class="hero-unit"&gt;
+                &lt;h1&gt;'Allo, 'Allo!&lt;/h1&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;mask&lt;/h3&gt;
+                    &lt;p&gt;Mask: 99-9999999&lt;/p&gt;
+                    &lt;input type="text" ng-model="test" input-mask="'mask'" mask-option="testoption"/&gt;
+                    &lt;pre&gt;{{ test | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;y-m-d&lt;/h3&gt;
+                    &lt;p&gt;Date: yyyy-MM-dd&lt;/p&gt;
+                    &lt;input type="text" ng-model="test1" input-mask="'y-m-d'" format-option="dateFormatOption"/&gt;
+                    &lt;pre&gt;{{ test1 | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+
+                &lt;div&gt;
+                    &lt;h3&gt;Regex&lt;/h3&gt;
+                    &lt;p&gt;Email: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"&lt;/p&gt;
+                    &lt;input type="text" ng-model="test3" input-mask="'Regex'"
+                     mask-option="regexOption"/&gt;
+                    &lt;pre&gt;{{ test3 | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h3&gt;Function&lt;/h3&gt;
+                    &lt;p&gt;"[1-]AAA-999" or  "[1-]999-AAA"&lt;/p&gt;
+                    &lt;input type="text" ng-model="test4" input-mask="functionOption"/&gt;
+                    &lt;pre&gt;{{ test4 | json }}&lt;/pre&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+</code></pre>
+
+<p> controller code:</p>
+
+<pre class='green'><code>'use strict';
+
+    angular.module('green.inputmaskApp')
+        .controller('MainCtrl', ["$scope", function ($scope) {
+
+            $scope.testoption = {
+                "mask": "99-9999999",
+                "oncomplete": function () {
+                    console.log();
+                    console.log(arguments,"oncomplete!this log form controler");
+                },
+                "onKeyValidation": function () {
+                    console.log("onKeyValidation event happend! this log form controler");
+                }
+            }
+
+            //default value
+            $scope.test1 = new Date();
+
+            $scope.dateFormatOption = {
+                parser: function (viewValue) {
+                    return viewValue ? new Date(viewValue) : undefined;
+                },
+                formatter: function (modelValue) {
+                    if (!modelValue) {
+                        return "";
+                    }
+                    var date = new Date(modelValue);
+                    return (date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate()).replace(/\b(\d)\b/g, "0$1");
+                },
+                isEmpty: function (modelValue) {
+                    return !modelValue;
+                }
+            };
+
+
+            $scope.mask = { regex: ["999.999", "aa-aa-aa"]};
+
+
+            $scope.regexOption = {
+                regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"
+            };
+
+            $scope.functionOption = {
+             mask: function () { 
+                return ["[1-]AAA-999", "[1-]999-AAA"]; 
+            }};
+
+
+        }]);
+</code></pre>
+
+<p>这里值列列举了jquery.inputmask的简单实用方式，更复杂的方式请移步到jquery.inputmask查看。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -740,152 +872,6 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/26/ji-cheng-fu-wu-jian-kong-qi-green-monitor-fa-bu/">集成服务监控器-green.monitor发布</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-26T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp; &nbsp; &nbsp; 在大型企业应用开发中，一个项目经常需要依赖于多个项目集成，经常某个集成服务的升级或者不工作，会导致你所工作的服务也挂掉，甚至影响你的开发流程。你是否还在接到测试团队或者运维团队的某个Bug，而自己花费了大量时间终于查出来是某个集成服务升级或异常，在这里浪费了大量时间，在笔者为所在项目建立了一个第三方集成服务监控的Monitor，去实时监控项目所依赖的所有集成服务，数据库。现在开源在github <a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a>，在其sample目录下有个使用demo。</p>
-
-<h2><em>maven&nbsp;</em>dependency</h2>
-
-<div class="cnblogs_code">
-<pre class='green'><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span>
-  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>com.github.greengerong<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">groupId</span><span style="color: #0000ff;">&gt;</span>
-  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>green.monitor<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">artifactId</span><span style="color: #0000ff;">&gt;</span>
-  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>1.2<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">version</span><span style="color: #0000ff;">&gt;</span>
-<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">dependency</span><span style="color: #0000ff;">&gt;</span></pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<h2>demo效果如下：</h2>
-
-<p><img src="http://images.cnitblog.com/blog/63184/201305/26183719-93e330e6d3b04c219f0ea423b973a356.png" alt="" /></p>
-
-<h1>建立自己的monitor：</h1>
-
-<p>1：首先在你spring mvc web project 的 pom文件中引 入green-monitor的dependency。(spring 3.0以上)
-2：在spring mvc的 ioc context config中启用annotation dirver，如下xml：</p>
-
-<div class="cnblogs_code">
-<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
-  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">beans </span><span style="color: #ff0000;">xmlns</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans"</span><span style="color: #ff0000;">
-         xmlns:xsi</span><span style="color: #0000ff;">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #ff0000;">
-         xmlns:p</span><span style="color: #0000ff;">="http://www.springframework.org/schema/p"</span><span style="color: #ff0000;">
-         xmlns:mvc</span><span style="color: #0000ff;">="http://www.springframework.org/schema/mvc"</span><span style="color: #ff0000;">
-         xmlns:context</span><span style="color: #0000ff;">="http://www.springframework.org/schema/context"</span><span style="color: #ff0000;">
-         xmlns:util</span><span style="color: #0000ff;">="http://www.springframework.org/schema/util"</span><span style="color: #ff0000;">
-         xsi:schemaLocation</span><span style="color: #0000ff;">="http://www.springframework.org/schema/beans
-               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
-               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"</span><span style="color: #0000ff;">&gt;</span>
-
-      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">mvc:annotation-driven</span><span style="color: #0000ff;">/&gt;</span>
-
-      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">context:component-scan </span><span style="color: #ff0000;">base-package</span><span style="color: #0000ff;">="green.monitor"</span><span style="color: #0000ff;">/&gt;</span>
-
-      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"</span><span style="color: #0000ff;">/&gt;</span>
-
-      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">id</span><span style="color: #0000ff;">="viewResolver"</span><span style="color: #ff0000;"> class</span><span style="color: #0000ff;">="org.springframework.web.servlet.view.InternalResourceViewResolver"</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="prefix"</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>/WEB-INF/pages/<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="suffix"</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>.jsp<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">value</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span>
-      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">bean</span><span style="color: #0000ff;">&gt;</span>
-  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">beans</span><span style="color: #0000ff;">&gt;</span></pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>3:在项目resources(mian/resources)下建立monitor-config.xml。如果需要 在不同环境配置不同信息，可以在运行机器上加入key为appenv的环境变量，程序会根据不同agent加载monitor-config.[appenv].xml配置文件.或者利用mavn，gradle这类构建工具按环境输出配置信息。</p>
-
-<p>配置文件形如：</p>
-
-<div class="cnblogs_code">
-<pre class='green'><span style="color: #0000ff;">&lt;?</span><span style="color: #ff00ff;">xml version="1.0" encoding="UTF-8"</span><span style="color: #0000ff;">?&gt;</span>
-      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitoring </span><span style="color: #ff0000;">version</span><span style="color: #0000ff;">="1.0"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="monitor-sample"</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">monitor </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #0000ff;">&gt;</span>green.monitor.demo.MockMonitorRunner<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitor</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitors</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="hello service"</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/hello<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=success<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for hello service.should be success.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="http-connection"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="error service 2"</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="url"</span><span style="color: #0000ff;">&gt;</span>http://localhost:8080/demo/failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="method"</span><span style="color: #0000ff;">&gt;</span>GET<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="response-code"</span><span style="color: #0000ff;">&gt;</span>200<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                      <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">param </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">="param"</span><span style="color: #0000ff;">&gt;</span>name=must be failed<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">param</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">params</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This is a monitor for error service.should be failed.<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">item </span><span style="color: #ff0000;">monitor</span><span style="color: #0000ff;">="mock-monitor"</span><span style="color: #ff0000;"> name</span><span style="color: #0000ff;">="Random failed Service"</span><span style="color: #0000ff;">&gt;</span>
-                  <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>This monitor will be random failed!<span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">description</span><span style="color: #0000ff;">&gt;</span>
-              <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">item</span><span style="color: #0000ff;">&gt;</span>
-          <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">items</span><span style="color: #0000ff;">&gt;</span>
-      <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">monitoring</span><span style="color: #0000ff;">&gt;</span></pre>
-</div>
-
-
-<p>&nbsp;</p>
-
-<p>这样你就可以运行monitor了，url为host + &ldquo;/monitor&rdquo;</p>
-
-<h1>扩展</h1>
-
-<p>1：扩展runner 同时monitor为你提供了自我特定需求扩展的机会，在xml config中你应该主意到了有个monitor的配置节，这里就可以配置你自定义runner（其实现MonitorRunner接口),配置节name则作为后边item的引用name。</p>
-
-<p>系统默认加入了web-service,dababase,http-connection3个常用runner。具体使用请看demo。
-2：系统提供了service为基于spring restfull api,所以你可以在其他地方展示该monitor状况。(在下一个版本将提供jsonp的跨域处理)。</p>
-
-<p>&nbsp; &nbsp;monitor project repo:&nbsp;<a href="https://github.com/greengerong/green-monitor">https://github.com/greengerong/green-monitor</a></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/26/3100241.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -917,6 +903,10 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
       </li>
     
@@ -942,10 +932,6 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
     
       <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
   </ul>

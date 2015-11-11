@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp; 在ddd设计中我们经常会提到服务层，服务层是什么？职责是什么？有什么好处？。 &nbsp;&nbsp; 先看简单的层次图（注：这里并没有考虑其他多余的领域逻辑数据层存储，或者UOW这些细节） &nbsp;&nbsp; &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上篇中我们简单谈了下架构设计中服务层的简单理解，在这里我们将继续服务层的架构，在本节我们将重点在于分布式服务。在分布式系统中表现层和业务逻辑层 并不处于同一物理部署，所以我们必须存在分布式服务，以契约方式发布于网络中， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,66 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/">SOA面向服务架构简述</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-22T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上篇中我们简单谈了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>，在这里我们将继续服务层的架构，在本节我们将重点在于分布式服务。在分布式系统中表现层和业务逻辑层 并不处于同一物理部署，所以我们必须存在分布式服务，以契约方式发布于网络中，我们的关注点在于服务，面向服务编程，这种通过组合业务逻辑暴露可用服务的架构叫做面向服务架构（SOA）。</p>
+
+<p>&nbsp;&nbsp;&nbsp; SOA强调一个松耦合，基于宏服务的架构，通过契约暴露给服务消费者可用的服务交互。SOA是以服务为组成构建，原则有：</p>
+
+<ol>
+<li>边界清晰：
+&nbsp;&nbsp;&nbsp; 服务层是消费者交互到系统业务的唯一入口,所有我们的服务必须能够被消费者所理解,以及最好处理Request/Response基于消息交换RPC调用,职责明确单一.还有我们更希望我们的服务为作用明确的,CQS(命令-查询分离原则).</li>
+<li>服务的自治性
+&nbsp;&nbsp;&nbsp; 服务自治主要表现在每个服务都是独立的，其系统部署，管理监控都是独立的。自治体现了服务的松耦合，但并不是服务就是一个孤岛，其可以通过消息交换消费其他服务。</li>
+<li>使用契约（接口和数据载体），而非实现
+&nbsp;&nbsp;&nbsp;&nbsp; 这也是面向对象设计第一原则。在我们的服务设计中SOA一个重要目标就是互操作，基于SOAP等标准协议实现跨平台互操作，可能存在异构系统。所以我们该选择接口而不是语言具体的类以及基于消息交互。服务对于开发就是一些列行为的组合，数据契约就是数据迁移对象，数据载体。契约使得我们并不关心服务的内部实现，而只关心提供了那些服务，服务的签名如何，怎么调用之类的。</li>
+<li>兼容性基于策越
+对于消费者来说服务是否能满足他的需求，这需要服务语义兼容，语义兼容也应该通过可访问方式暴露。是的服务可发现。</li>
+</ol>
+
+
+<p>&nbsp;&nbsp;&nbsp; ＳＯＡ是一种设计原则规范，其目标在于为复杂系统提供互操作性和以服务为基础组件构造系统逻辑。把具体的业务逻辑和流程屏蔽，暴露出用户可用的行为集合。ＳＯＡ是一中原则而非集体技术。wcf，webservice是具体ＳＯＡ技术。同时ＳＯＡ也不是我们的目标，客户是不与关心我们采用ｓｏａ与否，这只是我们对系统的一种解决方案。</p>
+
+<p>SOA优势在于给我们提供更好的代码重用，版本控制，安全控制，扩展延伸性。同时降低和服务的耦合，交互必须依赖于服务契约和数据契约，并不关心服务的内部实现。在我们的版本升级，修改过程中可以完全可以重新实现替换原有服务，并不会影响消费程序的使用。</p>
+
+<p>最后我们必须的说下当下流行的restfull，通常我们认为这是一种风格，而非架构，是由Roy Thomas Fielding在其博士论文 《Architectural Styles and the Design of Network-based Software Architectures》中提出REST是英文Representational State Transfer的缩写，中文翻译为&#8220;表述性状态转移&#8221;。是一种基于ｗｅｂ的架构，它很好的利用http协议的ｍｅｔｈｏｄ。根据不同的ｍｅｔｈｏｄ表示对资源的不同语义操作。其核心在于将发布在网络的一切事物归属为资源，每个资源定位于一个资源定位符（ＵＲＩ）。以及无状态，缓存，分层架构。在微软最新的WCF resetfull，web api应用框架。以及wcf ria ，wcf data service，需要的注意的是微软同时候加入的自己的oData协议（开元数据协议）。</p>
+
+<p>最后说一点：我觉得不管是服务或者resetfull服务我们都必须定义契约，依赖于契约，虽然微软的而技术允许我们直接寄宿服务类，但是对于服务的扩展和延伸而言，说这句话的原因在于我最近看见一些直接寄宿服务类的resetfull架构。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2359,211 +2419,6 @@ TestAsyncAspect pro = new TestAsyncAspect();
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/11/AOP-zhi-PostSharp5-LocationInterceptionAspect/">AOP之PostSharp5-LocationInterceptionAspect</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-11T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 这节我们要讨论的是PostSharp的LocationInterceptionAspect，PostSharp官方把Property和Field成为Location。所以LocationInterceptionAspect就是为了实现Property和Field的拦截。在我们前面讨论了关于方法OnMethodBoundaryAspect的aspect，我们很容易想到，在c#中Property就是一个编译时分为Get和Set两个方法，对于property的aspect就类似于了我们的Method的aspect。而对于Field的aspect同样可以转换为对Property的aspect。</p>
-
-<p>下面我们用反编译工具来证实一下我的说法.</p>
-
-<p>代码：</p>
-
-<pre class='green'><code>    [LazyLoad("test", "test")] 
-     private string TestField;
-</code></pre>
-
-<p>编译后：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144511133.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445152198.png" title="image" alt="image" /></a></p>
-
-<p>我们在来看看LocationInterceptionAspect定义：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445172495.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445215649.png" title="image" alt="image" /></a></p>
-
-<p>其OnGetvalue和OnSetValue是我们主要拦截的方法，起参数LocationInterceptionArgs定义：</p>
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445276277.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445362807.png" title="image" alt="image" /></a></p>
-
-<p>同样给也拥有来自父类AdviceArgs的Instance对象，对于对象级Location为所在对象，静态则为null；</p>
-
-<p>LocationInterceptionAspect的使用方法和我们的OnMethodBoundaryAspect和类似，使用方式也一样，对于使用对不重要，鄙人觉得更重要的是我们的设计思想。</p>
-
-<p>我暂时能想到的很好的LocationInterceptionAspect使用场景则是LazyLoad，对于3.5表达式的出现，我们到处都可以简单这个词，在c#类库中也加入了这个类。</p>
-
-<p>这里我们只是做一个简单的演示demo，根据attribute上制定的类型的方法延时加载对象，废话不说了上code：</p>
-
-<p>  [Serializable]</p>
-
-<pre class='green'><code>   public class LazyLoadAttribute : LocationInterceptionAspect 
-   { 
-       public string MethodName 
-       { 
-           get; 
-           private set; 
-       } 
-
-       public string PrivoderFullName 
-       { 
-           get; 
-           private set; 
-       } 
-
-       public LazyLoadAttribute(string MethodName, string PrivoderFullName) 
-       { 
-           Green.Utility.Guard.ArgumentNotNullOrEmpty(MethodName, "MethodName"); 
-           Green.Utility.Guard.ArgumentNotNullOrEmpty(PrivoderFullName, "PrivoderFullName"); 
-           this.MethodName = MethodName; 
-           this.PrivoderFullName = PrivoderFullName; 
-       } 
-
-       public override void OnGetValue(LocationInterceptionArgs args) 
-       { 
-           if (args.GetCurrentValue() == null) 
-           { 
-               Console.WriteLine("Loading...."); 
-               var value = this.LoadProperty(args.Instance); 
-               if (value != null) 
-               {                    
-                   args.Value = value; 
-                   args.ProceedSetValue(); 
-               } 
-           } 
-           args.ProceedGetValue(); 
-       } 
-
-       private object LoadProperty(object p) 
-       { 
-           var type = Type.GetType(this.PrivoderFullName);//具体加载程序集需要自定义需求，这里仅为了测试简化。 
-           if (type != null) 
-           { 
-               var method = type.GetMethod(this.MethodName); 
-               if (method != null) 
-               { 
-                   object[] ps = null; 
-                   if (p != null) 
-                   { 
-                       ps = new object[] { p }; 
-                   } 
-                   object entity = null; 
-                   if (!method.IsStatic) 
-                   { 
-                       entity = System.Activator.CreateInstance(type); 
-                   } 
-                   return method.Invoke(entity, ps); 
-               } 
-           } 
-           return null; 
-       } 
-   }
-</code></pre>
-
-<p>测试code：</p>
-
-<pre class='green'><code>class Program 
-   {       
-       static void Main(string[] args) 
-       {            
-
-           /* 
-            * demo4*/ 
-
-           Student stu = new Student(); 
-           stu.ID = 10; 
-           Console.WriteLine(stu.Name); 
-           Console.WriteLine(stu.Name); 
-
-           Console.WriteLine(Student.TestStaticProperty); 
-           Console.WriteLine(Student.TestStaticProperty); 
-           Console.Read(); 
-       }
-
-public static string TextLazyLoadStaticMenthod(Student stu) 
-      { 
-          return "Student" + stu.ID; 
-      } 
-
-      public string TextLazyLoadInstacnceMenthod(Student stu) 
-      { 
-          return "Student" + stu.ID; 
-      } 
-
-      public string TextLazyLoadStaticPropertyMenthod() 
-      { 
-          return "测试"; 
-      } 
-  }
-
-public class Student 
-   { 
-      // [LazyLoad("TextLazyLoadStaticMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
-       [LazyLoad("TextLazyLoadInstacnceMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
-       public string Name 
-       { get; set; } 
-       public string Sex 
-       { get; set; } 
-
-       [LazyLoad("TextLazyLoadStaticPropertyMenthod", "PostSharpDemo.Program,PostSharpDemo")] 
-       public static string TestStaticProperty 
-       { get; set; } 
-
-       public int ID 
-       { get; set; } 
-   }
-</code></pre>
-
-<div class="cnblogs_code" onclick="cnblogs_code_show('c8e815c6-3301-42ff-93ea-f8f84b47d5b3')">效果图片如下：</div>
-
-
-<p><a href="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/20111211144540238.png"><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201112/201112111445444222.png" title="QQ截图未命名" alt="QQ截图未命名" /></a></p>
-
-<p>附件下载：<a href="http://files.cnblogs.com/whitewolf/PostSharpDemo.rar">dmeo</a></p>
-
-<ol>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp1.html"><font color="#3d81ee">AOP之PostSharp初见-OnExceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp2.html"><font color="#3d81ee">AOP之PostSharp2-OnMethodBoundaryAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/04/PostSharp3.html"><font color="#3d81ee">AOP之PostSharp3-MethodInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/10/PostSharp4.html"><font color="#6699cc">AOP之PostSharp4-实现类INotifyPropertyChanged植入</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html"><font color="#6699cc">AOP之PostSharp5-LocationInterceptionAspect</font></a></li>
-<li><a href="http://www.cnblogs.com/whitewolf/archive/2011/12/13/PostSharp6.html"><font color="#6699cc">AOP之PostSharp6-EventInterceptionAspect</font></a></li>
-<li> <a href="http://www.cnblogs.com/whitewolf/category/312638.html"><font color="#3d81ee">http://www.cnblogs.com/whitewolf/category/312638.html</font></a></li>
-</ol>
-
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/12/11/PostSharp5.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/13/">&larr; Older</a>
@@ -2595,6 +2450,10 @@ public class Student
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
       </li>
     
@@ -2620,10 +2479,6 @@ public class Student
     
       <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
   </ul>

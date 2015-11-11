@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; .NET是一门多语言平台，这是我们所众所周知的，其实现原理在于因为了MSIL（微软中间语言）的一种代码指令平台。所以.NET语言的编译就分为了两部分，从语言到MSIL的编译（我喜欢称为预编译），和运行时的从MSIL到本地指令，即时编译（ＪＩＴ）。 &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp; 紧接上两篇浅谈.NET编译时注入（C#&mdash;&gt;IL）和浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)，在第一篇中我们简单研究了c#语法糖和PostSharp的MSIl注入， &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,123 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/28/bian-yi-shi-MSIL-zhu-ru-shi-jian-Mono-Cecil-1/">编译时MSIL注入&#8211;实践Mono Cecil(1)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-28T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;&nbsp; 紧接上两篇<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/26/2117661.html">浅谈.NET编译时注入（C#&mdash;&gt;IL）</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>，在第一篇中我们简单研究了c#语法糖和PostSharp的MSIl注入，紧接第二篇中我们介绍了自定义MSBuild编译任务（记得有位老兄发链接用 MSBuild自动发布Silverlight xap ，我想说的我做的是自定义编译任务，不是什么发布，MSBuild本就是一个发布工具）。之所以在此前介绍编译Task是因为我讲介绍的就是利用MSBuild和MSILInject制作静态注入式AOP，想成熟的产品PostSharp，当然我也不会去重造轮子，但需要明白起原理和自动化注入时机。废话不多说，今天将请出我们的MSIL注入的好东西：Mono.Cecil.官方网站<a href="http://www.mono-project.com/Cecil" title="http://www.mono-project.com/Cecil">http://www.mono-project.com/Cecil</a>，他是一个强大的MSIL 注入工具，在我们的Reflector插件Reflexil（动态修改程序集插件，很好用，我已经尝试多次）就有他的身影出现。还有如大名鼎鼎的<a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a>，<a href="http://www.linqpad.net/">LINQPad</a>，<a href="http://www.janetdev.org/">Ja.NET</a>等等（可以参见<a href="https://github.com/jbevain/cecil/wiki/Users" title="https://github.com/jbevain/cecil/wiki/Users">https://github.com/jbevain/cecil/wiki/Users</a>）。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在本节我们需要看看这个Mono.Cecil，先来一个简单的认识。</p>
+
+<p>我来在我们的方法执行前后加入我们的输出信息：</p>
+
+<p>原来代码：</p>
+
+<pre class='green'><code> class Program 
+   { 
+       static void Main(string[] args) 
+       { 
+           Console.WriteLine("破浪Blog：http://www.cnblogs.com/whitewolf/"); 
+       } 
+   }
+</code></pre>
+
+<p>任务：</p>
+
+<p>1我将在方法执行前后添加一个Console.WriteLine(&ldquo;Method start&#8230;&rdquo;);</p>
+
+<p>2方法最后添加Console.WriteLine(&ldquo;Method finish&#8230;&#8220;）；</p>
+
+<p>具体Mono.Cecil Code：</p>
+
+<pre class='green'><code>using System; 
+  using System.Collections.Generic; 
+  using System.Linq; 
+  using System.Text; 
+  using Mono.Cecil; 
+  using Mono.Cecil.Cil; 
+
+  namespace BlogSample 
+  { 
+      class Program 
+      { 
+          static void Main(string[] args) 
+          { 
+              AssemblyDefinition assembiy = AssemblyFactory.GetAssembly(args[0]); 
+              foreach (Mono.Cecil.TypeDefinition item in assembiy.MainModule.Types) 
+              { 
+                  foreach (MethodDefinition method in item.Methods) 
+                  { 
+                      if (method.Name.Equals("Main")) 
+                      { 
+
+                          var ins = method.Body.Instructions[0]; 
+                          var worker = method.Body.CilWorker; 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method start…")); 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
+                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
+                          ins = method.Body.Instructions[method.Body.Instructions.Count - 1]; 
+
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, "Method finish…")); 
+                          worker.InsertBefore(ins, worker.Create(OpCodes.Call, 
+                              assembiy.MainModule.Import(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) })))); 
+                          break; 
+                      } 
+                  } 
+
+              } 
+
+              AssemblyFactory.SaveAssembly(assembiy, "IL_" + args[0]); 
+              Console.Read(); 
+          } 
+      } 
+  }
+</code></pre>
+
+<p>DOS运行结果：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128456040.jpg" title="无标题" alt="image" /></p>
+
+<p>我们在来看看反编译后的MSIL</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128509350.png" title="image" alt="image" />
+C#：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201107/201107282128529675.png" title="image" alt="image" />
+&nbsp;&nbsp;&nbsp; 在这最后我们可以想一下，如果我们利用Mono.Cecil可以干些什么事情，能做的当然很多，我首先想尝试的了与上一节<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/27/2119005.html">浅谈VS编译自定义编译任务&#8212;MSBuild Task(csproject)</a>结合PostSharp一样的静态注入AOP框架。还能做什么的就要靠大家发挥大家聪明的才智。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/07/28/2119969.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1029,193 +1146,6 @@ namespace ConsoleApplication1
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/02/html5-Canvas-hui-tu/">html5-Canvas绘图</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-02T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 在html5中我觉得最重要的就是引入了Canvas，使得我们可以在web中绘制各种图形。给人感觉单在这点上有点模糊我们web和桌面程序的感觉。在html5外web中也有基于xml的绘图如：VML、SVG。而Canvas为基于像素的绘图。Canvas是一个相当于画板的html节点，我们必须以js操作绘图。</p>
-
-<p>如下：</p>
-
-<p>&lt;canvas id=&ldquo;myCanvas&rdquo; width=&ldquo;600&rdquo; height=&ldquo;300&rdquo;&gt;你的浏览器还不支持哦&lt;/canvas&gt;定义。</p>
-
-<p>我们可以获取canvas对象为var c=document.getElementById(&ldquo;myCanvas&rdquo;);其应有js属性方法如下列举：</p>
-
-<p>1：绘制渲染对象，c.getContext(&ldquo;2d&rdquo;),获取2d绘图对象，无论我们调用多少次获取的对象都将是相同的对象。</p>
-
-<p>2：绘制方法：</p>
-
-<p>clecrRect(left,top,width,height)清除制定矩形区域，</p>
-
-<p>fillRect(left,top,width,height)绘制矩形，并以fillStyle填充。</p>
-
-<p>fillText（text,x,y）绘制文字；</p>
-
-<p>strokeRect(left,top,width,height)绘制矩形，以strokeStyle绘制边界。</p>
-
-<p>beginPath():开启路径的绘制,重置path为初始状态；</p>
-
-<p>closePath():绘制路径path结束，它会绘制一个闭合的区间，添加一条起始位置到当前坐标的闭合曲线；</p>
-
-<p>moveTo（x，y）：设置绘图其实坐标。</p>
-
-<p>lineTo(x，y);绘制从当前其实位置到x，y直线。</p>
-
-<p>fill（），stroke（），clip（）：在完成绘制的最后的填充和边界轮廓，剪辑区域。</p>
-
-<p>arc（）：绘制弧,圆心位置、起始弧度、终止弧度来指定圆弧的位置和大小；</p>
-
-<p>rect():矩形路径;</p>
-
-<p>drawImage（Imag img）：绘制图片；</p>
-
-<p>quadraticCurveTo():二次样条曲线路径,参数两个控制点；</p>
-
-<p>bezierCurveTo（）：贝塞尔曲线，参数三个控制点；</p>
-
-<p>createImageData,getImageData，putImageData:为Canvas中像素数据。ImageData为记录width、height、和数据 data，其中data为我们色素的记录为</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; argb，所以数组大小长度为width<em>height</em>4，顺序分别为rgba。getImageData为获取矩形区域像素，而putImageData则为设置矩形区域像素；</p>
-
-<p>&#8230; and so on！</p>
-
-<p>3：坐标变换：</p>
-
-<p>translate（x,y）：平移变换，原点移动到坐标（x，y）；</p>
-
-<p>rotate（a）：旋转变换，旋转a度角；</p>
-
-<p>scale（x，y）：伸缩变换；</p>
-
-<p>save（），restore（）：提供和一个堆栈，保存和恢复绘图状态，save将当前绘图状态压入堆栈，restore出栈，恢复绘图状态；</p>
-
-<p>&#8230; and so on！</p>
-
-<p>好了，也晚了。附我的测试代码，：</p>
-
-<pre class='green'><code>&lt;html&gt; 
-  &lt;head&gt; 
-  &lt;/head&gt; 
-  &lt;body&gt; 
-  &lt;canvas id="myCanvas" width="600" height="300"&gt;你的浏览器还不支持哦&lt;/canvas&gt; 
-  &lt;script type="text/javascript"&gt; 
-
-  var width,height,top,left; 
-  width=height=100; 
-  top=left=5; 
-  var x=10; 
-  var y=10; 
-
-  var c=document.getElementById("myCanvas"); 
-
-  var maxwidth=c.width-5; 
-  var maxheight=c.height-5; 
-  var cxt=c.getContext("2d"); 
-  cxt.strokeStyle="#00f"; 
-  cxt.strokeRect(0,0,c.width,c.height); 
-
-  var img=new Image(); 
-  img.src="1.gif"; 
-  var MyInterval=null; 
-  start(); 
-  function Refresh(){ 
-  cxt.clearRect(left,top,width,height); 
-  if((left+x)&gt;(maxwidth-width)||left+x&lt;0){ 
-  x=-x; 
-  } 
-
-  if((top+y)&gt;(maxheight-height)||top+y&lt;0){ 
-  y=-y; 
-  } 
-
-  left=left+x;    
-  top=top+y; 
-  cxt.drawImage(img,left,top,width,height); 
-  cxt.font="20pt 宋体"; 
-  cxt.fillText("破狼",left,top+25); 
-
-  } 
-
-  function start(){ 
-  if(MyInterval==null){ 
-  MyInterval=setInterval("Refresh()",100); 
-  } 
-  } 
-
-  function stop(){ 
-  if(MyInterval!=null){ 
-  clearInterval(MyInterval); 
-  MyInterval=null; 
-  } 
-  } 
-  function InRectangle(x,y,rectx,recty,rwidth,rheight){ 
-  return (x&gt;=rectx&amp;&amp;x&lt;=rectx+rwidth)&amp;&amp;(y&gt;=recty&amp;&amp;y&lt;=recty+rheight) 
-  } 
-  c.onmouseover=function(e){ 
-  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
-  stop(); 
-  } 
-
-  c.onmouseout=function(e){ 
-  start(); 
-  } 
-
-  c.onmousemove=function(e){ 
-  if(InRectangle(e.clientX,e.clientY,left,top,width,height)){ 
-  if(MyInterval!=null){ 
-  stop(); 
-  } 
-  }else{ 
-  start(); 
-  } 
-  } 
-
-  } 
-  &lt;/script&gt; 
-  &lt;/body&gt; 
-  &lt;/html&gt;
-</code></pre>
-
-<p>参考火狐html文档：<a href="https://developer.mozilla.org/en/HTML/HTML5" title="https://developer.mozilla.org/en/HTML/HTML5">https://developer.mozilla.org/en/HTML/HTML5</a></p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp; 我的html5系列：</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/02/1968512.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/15/">&larr; Older</a>
@@ -1247,6 +1177,10 @@ namespace ConsoleApplication1
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
       </li>
     
@@ -1272,10 +1206,6 @@ namespace ConsoleApplication1
     
       <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
   </ul>

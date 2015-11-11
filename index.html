@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="JavaScript单线程 在上篇博客《Promise的前世今生和妙用技巧》的开篇中，我们曾简述了JavaScript的单线程机制和浏览器的事件模型。应很多网友的回复，在这篇文章中将继续展开这一个话题。当然这里是博主的一些理解，如果还存在什么纰漏的话，请不吝指教。 &hellip;"> 
+    <meta name="description" content="双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。 双向绑定带来了很大的好处，但是它需要在后台保持一只“ &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,501 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-11T20:20:58+08:00" pubdate data-updated="true">Nov 11<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。</p>
+
+<p>双向绑定带来了很大的好处，但是它需要在后台保持一只“眼睛”，随时观察所有绑定值的改变，这就是Angular 1.x中“性能杀手”的“脏检查机制”($digest)。可以推论：如果有太多“眼睛”，就会产生性能问题。在讨论优化Angular的性能之前，笔者希望先讲解下Angular的双向绑定和watchers函数。</p>
+
+<h3>双向绑定和watchers函数</h3>
+
+<p>为了能够实现双向绑定，Angular使用了$watch API来监控$scope上的Model的改变。Angular应用在编译模板的时候，会收集模板上的声明式标签 —— 指令或绑定表达式，并链接（link）它们。这个过程中，指令或绑定表达式会注册自己的监控函数，这就是我们所说的watchers函数。</p>
+
+<p>下面以我们常见的Angular表达式（&#8220;）为例。</p>
+
+<p>HTML：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;body</span> <span class="na">ng-app=</span><span class="s">&quot;com.ngnice.app&quot;</span> <span class="na">ng-controller=</span><span class="s">&quot;DemoController as demo&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div&gt;</span>hello : <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;demo.increase ();&quot;</span><span class="nt">&gt;</span>increase ++<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JavaScript：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">).</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">vm</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">vm</span><span class="p">.</span><span class="nx">increase</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">vm</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（&#8220;）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。</p>
+
+<p>上例中在每次点击button的时候，count计数器将会加1，然后count的变化会通过Angular的$digest过程同步到View之上。在这里它是一个单向的更新，从Model到View的更新。如果处理一个带有ngModel指令的input交互控件，则在View上的每次输入都会被及时更新到Model之上，这里则是反向的更新，从View到Model的更新。</p>
+
+<p>Model数据能被更新到View是因为在背后默默工作的$digest循环（“脏检查机制”）被触发了。它会执行当前scope以及其所有子scope上注册的watchers函数，检测是否发生变化，如果变了就执行相应的处理函数，直到Model稳定了。如果这个过程中发生过变化，浏览器就会重新渲染受到影响的DOM来体现Model的变化。</p>
+
+<p>在Angular表达式（&#8220;）背后的源码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">collectDirectives</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">directives</span><span class="p">,</span> <span class="nx">attrs</span><span class="p">,</span> <span class="nx">maxPriority</span><span class="p">,</span> <span class="nx">ignoreDirective</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">nodeType</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeType</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">attrsMap</span> <span class="o">=</span> <span class="nx">attrs</span><span class="p">.</span><span class="nx">$attr</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">match</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">className</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">switch</span> <span class="p">(</span><span class="nx">nodeType</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+</span><span class='line'>      <span class="cm">/* Element */</span>
+</span><span class='line'>      <span class="p">...</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+</span><span class='line'>      <span class="cm">/* Text Node */</span>
+</span><span class='line'>      <span class="nx">addTextInterpolateDirective</span><span class="p">(</span><span class="nx">directives</span><span class="p">,</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeValue</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">case</span> <span class="mi">8</span><span class="o">:</span>
+</span><span class='line'>      <span class="cm">/* Comment */</span>
+</span><span class='line'>      <span class="p">...</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">directives</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">byPriority</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">directives</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">addTextInterpolateDirective</span><span class="p">(</span><span class="nx">directives</span><span class="p">,</span> <span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">interpolateFn</span> <span class="o">=</span> <span class="nx">$interpolate</span><span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">interpolateFn</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">directives</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">priority</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">compile</span><span class="o">:</span> <span class="kd">function</span> <span class="nx">textInterpolateCompileFn</span><span class="p">(</span><span class="nx">templateNode</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// when transcluding a template that has bindings in the root</span>
+</span><span class='line'>        <span class="c1">// then we don&#39;t have a parent and should do this in the linkFn</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="nx">templateNode</span><span class="p">.</span><span class="nx">parent</span><span class="p">(),</span>
+</span><span class='line'>          <span class="nx">hasCompileParent</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">hasCompileParent</span><span class="p">)</span> <span class="nx">safeAddClass</span><span class="p">(</span><span class="nx">templateNode</span><span class="p">.</span><span class="nx">parent</span><span class="p">(),</span> <span class="s1">&#39;ng-binding&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="kd">function</span> <span class="nx">textInterpolateLinkFn</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">parent</span><span class="p">(),</span>
+</span><span class='line'>            <span class="nx">bindings</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;$binding&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="p">[];</span>
+</span><span class='line'>          <span class="nx">bindings</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">interpolateFn</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">parent</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;$binding&#39;</span><span class="p">,</span> <span class="nx">bindings</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasCompileParent</span><span class="p">)</span> <span class="nx">safeAddClass</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="s1">&#39;ng-binding&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="nx">interpolateFn</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">interpolateFnWatchAction</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">nodeValue</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Angular会在compile阶段收集View模板上的所有Directive。Angular表达式会被解析成一种特殊的指令：<code>addTextInterpolateDirective</code>。到了link阶段，就会利用scope.$watch的API注册我们在上面提到的watchers函数：它的求值函数为$interpolate对绑定表达式进行编译的结果，监听函数则是用新的表达式计算值去修改DOM Node的nodeValue。可见，在View中的Angular表达式，也会成为Angular在$digest循环中watchers的一员。</p>
+
+<p>在上面代码中，还有一部分是为了给调试器用的。它会在Angular表达式所属的DOM节点加上名为‘ng-binding’的调试类。类似的调试类还有‘ng-scope’，‘ng-isolate-scope’等。在Angular 1.3中我们可以使用compileProvider服务来关闭这些调试信息。</p>
+
+<pre class='green'><code>app.config(function ($compileProvider) {
+  // disable debug info
+  $compileProvider.debugInfoEnabled(false);
+});
+</code></pre>
+
+<h3>其它指令中的watchers函数</h3>
+
+<p>不仅Angular的表达式会使用$scope.$watch API添加watchers，Angular内置的大部分指令也一样，下面再举几个常用的Angular指令。</p>
+
+<p>ngBind：它和Angular表达式很类似，都是绑定特定表达式的值到DOM的内容，并保持与scope的同步。不同之处在于它需要一个HTML节点并以attribute属性的方式标记。简单来说，我们可以认为Angular表达式就是ngBind的特定语法糖。当然，还是有一点区别的，详情参见“使用技巧”一章的“防止Angular表达式闪烁”。</p>
+
+<pre class='green'><code>var ngBindDirective = ngDirective({
+  compile: function(templateElement) {
+    templateElement.addClass('ng-binding');
+    return function (scope, element, attr) {
+      element.data('$binding', attr.ngBind);
+      scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
+        // We are purposefully using == here rather than === because we want to
+        // catch when value is "null or undefined"
+        // jshint -W041
+        element.text(value == undefined ? '' : value);
+      });
+    };
+  }
+});
+</code></pre>
+
+<p>这里也能清晰的看见$scope.$watch的注册代码：监控器函数为ngBind attribute的值，处理函数则是用表达式计算的结果去更新DOM的文本内容。</p>
+
+<p>ngShow/ngHide: 它们是根据表达式的计算结果来控制显示/隐藏DOM节点的指令。</p>
+
+<pre class='green'><code>var ngShowDirective = ['$animate', function($animate) {
+  return function(scope, element, attr) {
+    scope.$watch(attr.ngShow, function ngShowWatchAction(value){
+      $animate[toBoolean(value) ? 'removeClass' : 'addClass'](element, 'ng-hide');
+    });
+  };
+}];
+
+var ngHideDirective = ['$animate', function($animate) {
+  return function(scope, element, attr) {
+    scope.$watch(attr.ngHide, function ngHideWatchAction(value){
+      $animate[toBoolean(value) ? 'addClass' : 'removeClass'](element, 'ng-hide');
+    });
+  };
+}];
+</code></pre>
+
+<p>这里同样用到了$scope.$watch，到这里你应该明白$watch的工作原理了吧。</p>
+
+<p>再回到上面所提的性能问题。</p>
+
+<p>如果有太多watcher函数，那么在每次$digest循环时，肯定会慢下来，这就是Angular“脏检查机制”的性能瓶颈。在社区中有个经验值，如果超过2000个watcher，就可能感觉到明显的卡顿，特别在IE8这种老旧浏览器上。有什么好的方案可以解决这个问题呢？最明显的方案是：减少$watch,尽量移除不必要的$watch。</p>
+
+<h3>慎用$watch和及时销毁</h3>
+
+<p>要想提高Angular页面的性能，那么在开发的时候，就应该尽量减少显式使用$scope.$watch函数，Angular中的很多内置指令已经能够满足大部分的业务需求。特别是如果能复用ng内置的UI事件指令（ngChange、ngClick&hellip;），那么就不要添加额外的$watch。</p>
+
+<p>对于不再使用的$watch，最好尽早将其释放，$scope.$watch函数的返回值就是用于释放这个watcher的函数，如下面的单次绑定实现（one-time）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">).</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">vm</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">textWatch</span> <span class="o">=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="s1">&#39;demo.updated&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">newVal</span><span class="p">,</span> <span class="nx">oldVal</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">newVal</span> <span class="o">!==</span> <span class="nx">oldVal</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">textWatch</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">vm</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>one-time绑定</h3>
+
+<p>在开发中，经常会遇见很多有静态数据构成的页面，如静态的商品、订单等的显示，他们在绑定了数据之后，在当前页面中Model不再会被改变。试想我们需要显示一个培训会议Sessions的预约的展示页面，常规的Angular方案应该是用ng-repeat来产生这个列表：</p>
+
+<p>HTML：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li</span> <span class="na">ng-repeat=</span><span class="s">&quot;session in sessions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;info&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             -  -  - 
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;likes&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             likes!
+</span><span class='line'>            <span class="nt">&lt;button</span> <span class="na">ng-click=</span><span class="s">&quot;likeSession(session)&quot;</span><span class="nt">&gt;</span>Like it!<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JavaScript：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">).</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;MainController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">sessions</span> <span class="o">=</span> <span class="p">[...];</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">likeSession</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Like the session</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用Angular来实现这个需求，很简单。但假设这是一个大型的预约，一天会有300个Sessions。那么这里会产生多少个$watch？这里每个Session有5个绑定，额外的ng-repeat一个。这将会产生1501个$watch。这有什么问题？每次用户“like”一个Session，Angular将会去检查name、room等5个属性是不是被改变了。</p>
+
+<p>问题在于，除了例外的“like”外，所有数据都是静态数据，这是不是有点浪费资源？我们知道数据Model是没有被改变的，既然这样为什么让Angular要去检查是否改变呢？</p>
+
+<p>因此，这里的$watch是没必要的，它的存在反而会影响$digest的性能，但这个$watch在第一次却是必要的，它在初始化时用静态信息填充了我们的DOM结构。对于这类情况，如果能换为单次（one-time）绑定应该是最佳的方案。</p>
+
+<p>Angular中的单次（one-time）绑定是在1.3后引入的。在官方文档描述如下：</p>
+
+<pre class='green'><code>单次表达式在第一次$digest完成后，将不再计算（监测属性的变化）。
+</code></pre>
+
+<p>1.3中为Angular表达式（&#8220;）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li</span> <span class="na">ng-repeat=</span><span class="s">&quot;session in sessions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;info&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             -  -  - 
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;likes&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             likes!
+</span><span class='line'>            <span class="nt">&lt;button</span> <span class="na">ng-click=</span><span class="s">&quot;likeSession(session)&quot;</span><span class="nt">&gt;</span>Like it!<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在1.3之前的版本没有提供这个语法，我们应该如何实现one-time绑定呢？在开源社区中有个牛人在我们之前也问了自己这个问题，并创建了一系列指令来实现它：Bindonce <a href="https://github.com/Pasvaz/bindonce">https://github.com/Pasvaz/bindonce</a>。用Bindonce实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li</span> <span class="na">bindonce</span> <span class="na">ng-repeat=</span><span class="s">&quot;session in sessions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;info&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">&quot;session.name&quot;</span><span class="nt">&gt;&lt;/span&gt;</span> -
+</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">&quot;session.room&quot;</span><span class="nt">&gt;&lt;/span&gt;</span> -
+</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">&quot;session.hour&quot;</span><span class="nt">&gt;&lt;/span&gt;</span> -
+</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">&quot;session.speaker&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;likes&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             likes!
+</span><span class='line'>            <span class="nt">&lt;button</span> <span class="na">ng-click=</span><span class="s">&quot;likeSession(session)&quot;</span><span class="nt">&gt;</span>Like it!<span class="nt">&lt;/button&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为了让示例能够工作，需要引入bindonce库，并依赖pasvaz.bindonce module。</p>
+
+<pre class='green'><code>angular.module('com.ngnice.app', ['pasvaz.bindonce']);
+</code></pre>
+
+<p>并把Angular表达式改成bo-text指令。该指令将会绑定到Model，直到更新DOM，然后自动释放watcher。这样，显示功能仍然工作，但不再使用不必要的$watch。在这里每个Session只有一个$watch绑定，用301个绑定替代了1501个绑定。</p>
+
+<p>恰当的使用bingonce或者1.3的one-time绑定能为应用one程序减少大量不必要$watch绑定，从而提高应用性能。</p>
+
+<h3>滚屏加载</h3>
+
+<p>另外一种可行的性能解决方案就是滚屏加载，又称&#8221;Endless Scrolling,&ldquo; &#8220;unpagination&#8221;，这是用于大量数据集显示的时候，又不想表格分页，所以一般放在页面最底部，当滚动屏幕到达页面底部的时候，就会尝试加载一个序列的数据集，追加在页面底部。在Angular社区有开源组件ngInfiniteScroll <a href="http://binarymuse.github.io/ngInfiniteScroll/index.html">http://binarymuse.github.io/ngInfiniteScroll/index.html</a>实现滚屏加载。下面是官方Demo：</p>
+
+<p>HTML：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">ng-app=</span><span class="s">&#39;myApp&#39;</span> <span class="na">ng-controller=</span><span class="s">&#39;DemoController&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">infinite-scroll=</span><span class="s">&#39;reddit.nextPage()&#39;</span> <span class="na">infinite-scroll-disabled=</span><span class="s">&#39;reddit.busy&#39;</span> <span class="na">infinite-scroll-distance=</span><span class="s">&#39;1&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">ng-repeat=</span><span class="s">&#39;item in reddit.items&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;score&#39;</span><span class="nt">&gt;</span><span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;title&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">&#39;&#39;</span> <span class="na">target=</span><span class="s">&#39;_blank&#39;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;small&gt;</span>by  -
+</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">&#39;http://reddit.com&#39;</span> <span class="na">target=</span><span class="s">&#39;_blank&#39;</span><span class="nt">&gt;</span> comments<span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/small&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&#39;clear: both;&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">ng-show=</span><span class="s">&#39;reddit.busy&#39;</span><span class="nt">&gt;</span>Loading data...<span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>var myApp = angular.module('myApp', ['infinite-scroll']);
+
+myApp.controller('DemoController', function($scope, Reddit) {
+  $scope.reddit = new Reddit();
+});
+
+// Reddit constructor function to encapsulate HTTP and pagination logic
+myApp.factory('Reddit', function($http) {
+  var Reddit = function() {
+    this.items = [];
+    this.busy = false;
+    this.after = '';
+  };
+
+  Reddit.prototype.nextPage = function() {
+    if (this.busy) return;
+    this.busy = true;
+
+    var url = 'http://api.reddit.com/hot?after=' + this.after + '&amp;jsonp=JSON_CALLBACK';
+    $http.jsonp(url).success(function(data) {
+      var items = data.data.children;
+      for (var i = 0; i &lt; items.length; i++) {
+        this.items.push(items[i].data);
+      }
+      this.after = 't3_' + this.items[this.items.length - 1].id;
+      this.busy = false;
+    }.bind(this));
+  };
+
+  return Reddit;
+});
+</code></pre>
+
+<p>可以在这里<a href="http://binarymuse.github.io/ngInfiniteScroll/demo_async.html">http://binarymuse.github.io/ngInfiniteScroll/demo_async.html</a>访问这个例子。其使用很简单，有兴趣的读者可以查看其官方文档。</p>
+
+<h3>其它</h3>
+
+<p>当然对于性能解决方案还有很多，如客户端分页、服务端分页、将其它更高效的jQuery插件或者React插件合理的封装为ng组件等。当封装第三方非Angular组件时需要注意scope和model的同步，以及合理的触发$apply更新View。另外在开源社区中也有ngReact可以简化将React组件应用到Angular应用中，在这里可以了解到关于它的更多信息：<a href="https://github.com/davidchang/ngReact">https://github.com/davidchang/ngReact</a>。</p>
+
+<p>此刻，我猜你一定正是心中默默嘀咕着：Angular“脏检查机制”一定很慢，一个“肮脏”的家伙。但这是错误的。它其实很快，Angular团队为此专门做了很多优化。相反，在大多数场景下，Angular这种特殊的watcher机制，反而比很多基于JavaScript模板引擎（underscore、Handlebars等）更快。因为Angular并不需要通过大范围的DOM操作来更新View，它的每次更新区域更小，DOM操作更少。而DOM操作的代价远远高过JavaScript运算，在有些浏览器中，修改DOM的速度甚至会比纯粹的JavaScript运算慢一千倍！</p>
+
+<p>而且，在现实场景中，我们的大多数页面都不会超出2000个watcher，因为过多的信息对使用者是非常不友好的，好的设计师都懂得限制单页信息的展示量。但是如果超过了2000个watcher，那么你就得仔细思考如何去优化它了，应该优先选择从用户体验方面改进，实在不行就用上面提到的技巧来优化你的应用程序。</p>
+
+<p>最后，随着Angular 2.0框架对“脏检查机制”的改进，运行性能将会得到显著地提高，特别是针对Mobile开发的ionic这类框架，将直接受益。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1270,89 +1765,6 @@ function enumerable(value) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-22T21:09:03+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在上篇<a href="http://greengerong.com/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript &ndash; NgComponent封装</a>中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + Babel或者TypeScript这类鲜明特性的JavaScript语法。但是CoffeeScript也不失为一门不错的JavaScript扩展语言，特别在Ruby社区仍然是一个很好的选择。</p>
-
-<p>在本节中，我们将会利用CoffeeScript来模拟Python中的装潢器实现。Python的装潢器是属于一类来自于语言层次的AOP实现。AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可复用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a>。</p>
-
-<p>在Python中的装潢器也是一个普通的函数，我们只需要使用@符号将方法标注在另一个方法签名上就能实现对被标注方法的装潢。这也是Python这门函数式语言中高阶函数的运用。被装潢的方法将会被传入装潢函数中，被装潢包裹以实现方法的拦截。</p>
-
-<p>Python中的装潢器如下：</p>
-
-<pre class='green'><code>def deco(func):
-    def _deco(*args, **kwargs):
-        print("before %s called." % func.__name__)
-        ret = func(*args, **kwargs)
-        print("  after %s called. result: %s" % (func.__name__, ret))
-        return ret
-    return _deco
-
-@deco
-def myfunc(a, b):
-    print(" myfunc(%s,%s) called." % (a, b))
-    return a+b
-</code></pre>
-
-<p>这里的装潢器deco，将会包裹myfunc方法，实现调用前后的日志信息拦截。</p>
-
-<p>在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高阶函数，可以如下包裹：</p>
-
-<pre class='green'><code>log(myfunc)
-</code></pre>
-
-<p>在CoffeeScript中，我们也可以简化去掉方法（）符号：</p>
-
-<pre class='green'><code>log myfunc
-</code></pre>
-
-<p>如果我们再像Python一样强制加上@符号，并将log函数放在方法声明右边，则似乎就有点接近Python的装潢器：</p>
-
-<pre class='green'><code>f = @log (a, b) -&gt; a + b
-</code></pre>
-
-<p>不知作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：</p>
-
-<p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
-
-
-<script async="true" src="//assets.codepen.io/assets/embed/ei.js"></script>
-
-
-<p>这里利用了高阶函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1382,6 +1794,10 @@ def myfunc(a, b):
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
       </li>
     
@@ -1407,10 +1823,6 @@ def myfunc(a, b):
     
       <li class="post">
         <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a>
       </li>
     
   </ul>
