@@ -14,12 +14,12 @@ categories: [Angular, JavaScript, $watch]
 
 为了能够实现双向绑定，Angular使用了$watch API来监控$scope上的Model的改变。Angular应用在编译模板的时候，会收集模板上的声明式标签 —— 指令或绑定表达式，并链接（link）它们。这个过程中，指令或绑定表达式会注册自己的监控函数，这就是我们所说的watchers函数。
 
-下面以我们常见的Angular表达式（`{{}}`）为例。
+下面以我们常见的Angular表达式（`{% raw}{{}}{% endraw}`）为例。
 
 HTML：
 ```html
 <body ng-app="com.ngnice.app" ng-controller="DemoController as demo">
-    <div>hello : {{demo.count}}</div>
+    <div>hello : {% raw}{{demo.count}}{% endraw}</div>
     <button type="button" ng-click="demo.increase ();">increase ++</button>
 </body>
 ```
@@ -27,23 +27,24 @@ HTML：
 JavaScript：
 
 ```js
-angular.module('com.ngnice.app').controller('DemoController', function() {
+angular.module('com.ngnice.app')
+.controller('DemoController', [function() {
   var vm = this;
   vm.count = 0;
   vm.increase = function() {
     vm.count++;
   };
   return vm;
-});
+}]);
 ```
 
-这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（`{{}}`）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。
+这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（`{% raw}{{}}{% endraw}`）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。
 
 上例中在每次点击button的时候，count计数器将会加1，然后count的变化会通过Angular的$digest过程同步到View之上。在这里它是一个单向的更新，从Model到View的更新。如果处理一个带有ngModel指令的input交互控件，则在View上的每次输入都会被及时更新到Model之上，这里则是反向的更新，从View到Model的更新。
 
 Model数据能被更新到View是因为在背后默默工作的$digest循环（“脏检查机制”）被触发了。它会执行当前scope以及其所有子scope上注册的watchers函数，检测是否发生变化，如果变了就执行相应的处理函数，直到Model稳定了。如果这个过程中发生过变化，浏览器就会重新渲染受到影响的DOM来体现Model的变化。
 
-在Angular表达式（`{{}}`）背后的源码如下：
+在Angular表达式（`{% raw}{{}}{% endraw}`）背后的源码如下：
 
 ```js
 function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
@@ -103,11 +104,12 @@ Angular会在compile阶段收集View模板上的所有Directive。Angular表达�
 
 在上面代码中，还有一部分是为了给调试器用的。它会在Angular表达式所属的DOM节点加上名为‘ng-binding’的调试类。类似的调试类还有‘ng-scope’，‘ng-isolate-scope’等。在Angular 1.3中我们可以使用compileProvider服务来关闭这些调试信息。
 
-    app.config(function ($compileProvider) {
+```js
+    app.config(['compileProvider', function ($compileProvider) {
       // disable debug info
       $compileProvider.debugInfoEnabled(false);
-    });
-
+    }]);
+```
 
 ###其它指令中的watchers函数
 
@@ -115,6 +117,7 @@ Angular会在compile阶段收集View模板上的所有Directive。Angular表达�
 
 ngBind：它和Angular表达式很类似，都是绑定特定表达式的值到DOM的内容，并保持与scope的同步。不同之处在于它需要一个HTML节点并以attribute属性的方式标记。简单来说，我们可以认为Angular表达式就是ngBind的特定语法糖。当然，还是有一点区别的，详情参见“使用技巧”一章的“防止Angular表达式闪烁”。
 
+```js
     var ngBindDirective = ngDirective({
       compile: function(templateElement) {
         templateElement.addClass('ng-binding');
@@ -129,11 +132,13 @@ ngBind：它和Angular表达式很类似，都是绑定特定表达式的值到D
         };
       }
     });
+```
 
 这里也能清晰的看见$scope.$watch的注册代码：监控器函数为ngBind attribute的值，处理函数则是用表达式计算的结果去更新DOM的文本内容。
 
 ngShow/ngHide: 它们是根据表达式的计算结果来控制显示/隐藏DOM节点的指令。
 
+```js
     var ngShowDirective = ['$animate', function($animate) {
       return function(scope, element, attr) {
         scope.$watch(attr.ngShow, function ngShowWatchAction(value){
@@ -149,7 +154,7 @@ ngShow/ngHide: 它们是根据表达式的计算结果来控制显示/隐藏DOM�
         });
       };
     }];
-
+```
 
 这里同样用到了$scope.$watch，到这里你应该明白$watch的工作原理了吧。
 
@@ -164,7 +169,8 @@ ngShow/ngHide: 它们是根据表达式的计算结果来控制显示/隐藏DOM�
 对于不再使用的$watch，最好尽早将其释放，$scope.$watch函数的返回值就是用于释放这个watcher的函数，如下面的单次绑定实现（one-time）：
 
 ```js
-angular.module('com.ngnice.app').controller('DemoController', function($scope) {
+angular.module('com.ngnice.app')
+.controller('DemoController', ['$scope', function($scope) {
   var vm = this;
   vm.count = 0;
   var textWatch = $scope.$watch('demo.updated', function(newVal, oldVal) {
@@ -174,7 +180,7 @@ angular.module('com.ngnice.app').controller('DemoController', function($scope) {
     }
   });
   return vm;
-});
+}]);
 ```
 
 ###one-time绑定
@@ -186,10 +192,10 @@ HTML：
 <ul>
     <li ng-repeat="session in sessions">
         <div class="info">
-            {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}
+           {% raw} {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}{% endraw}
         </div>
         <div class="likes">
-            {{session.likes}} likes!
+          {% raw}  {{session.likes}} likes!{% endraw}
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -198,12 +204,13 @@ HTML：
 JavaScript：
 
 ```js
-angular.module('com.ngnice.app').controller('MainController', function($scope) {
+angular.module('com.ngnice.app')
+.controller('MainController', ['$scope', function($scope) {
   $scope.sessions = [...];
   $scope.likeSession = function(session) {
     // Like the session
   }
-});
+}]);
 ```
 
 用Angular来实现这个需求，很简单。但假设这是一个大型的预约，一天会有300个Sessions。那么这里会产生多少个$watch？这里每个Session有5个绑定，额外的ng-repeat一个。这将会产生1501个$watch。这有什么问题？每次用户“like”一个Session，Angular将会去检查name、room等5个属性是不是被改变了。
@@ -216,15 +223,15 @@ Angular中的单次（one-time）绑定是在1.3后引入的。在官方文档�
 
     单次表达式在第一次$digest完成后，将不再计算（监测属性的变化）。
 
-1.3中为Angular表达式（`{{}}`）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：
+1.3中为Angular表达式（`{% raw}{{}}`{% endraw}）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：
 ```html
 <ul>
     <li ng-repeat="session in sessions">
         <div class="info">
-            {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}
+           {% raw} {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}{% endraw}
         </div>
         <div class="likes">
-            {{session.likes}} likes!
+         {% raw}   {{session.likes}} likes!{% endraw}
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -242,7 +249,7 @@ Angular中的单次（one-time）绑定是在1.3后引入的。在官方文档�
             <span bo-text="session.speaker"></span>
         </div>
         <div class="likes">
-            {{session.likes}} likes!
+          {% raw}  {{session.likes}} likes!{% endraw}
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -267,12 +274,12 @@ HTML：
     <div ng-app='myApp' ng-controller='DemoController'>
       <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
         <div ng-repeat='item in reddit.items'>
-          <span class='score'>{{item.score}}</span>
+          <span class='score'>{% raw}{{item.score}}{% endraw}</span>
           <span class='title'>
-            <a ng-href='{{item.url}}' target='_blank'>{{item.title}}</a>
+            <a ng-href='{% raw}{{item.url}}{% endraw}' target='_blank'>{% raw}{{item.title}}{% endraw}</a>
           </span>
-          <small>by {{item.author}} -
-            <a ng-href='http://reddit.com{{item.permalink}}' target='_blank'>{{item.num_comments}} comments</a>
+          <small>by {% raw}{{item.author}} -{% endraw}
+            <a ng-href='http://reddit.com{% raw}{{item.permalink}}{% endraw}' target='_blank'>{% raw}{{item.num_comments}} {% endraw}comments</a>
           </small>
           <div style='clear: both;'></div>
         </div>
@@ -283,14 +290,15 @@ HTML：
 
 JavaScript：
 
+```js
     var myApp = angular.module('myApp', ['infinite-scroll']);
 
-    myApp.controller('DemoController', function($scope, Reddit) {
+    myApp.controller('DemoController', ['$scope', 'Reddit', function($scope, Reddit) {
       $scope.reddit = new Reddit();
-    });
+    }]);
 
     // Reddit constructor function to encapsulate HTTP and pagination logic
-    myApp.factory('Reddit', function($http) {
+    myApp.factory('Reddit', ['$http', function($http) {
       var Reddit = function() {
         this.items = [];
         this.busy = false;
@@ -313,7 +321,8 @@ JavaScript：
       };
 
       return Reddit;
-    });
+    }]);
+```
 
 可以在这里[http://binarymuse.github.io/ngInfiniteScroll/demo_async.html](http://binarymuse.github.io/ngInfiniteScroll/demo_async.html)访问这个例子。其使用很简单，有兴趣的读者可以查看其官方文档。
 
