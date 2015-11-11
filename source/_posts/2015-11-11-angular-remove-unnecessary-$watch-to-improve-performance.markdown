@@ -6,7 +6,7 @@ comments: true
 categories: [Angular, JavaScript, $watch]
 ---
 
-![Angular-apply-and-浏览器-event-loop](/images/blog_img/Angular-apply-and-浏览器-event-loop.png)
+![Angular-apply-and-浏览器-event-loop](/images/blog_img/机械表-性能优化.jpg)
 
 双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。
 
