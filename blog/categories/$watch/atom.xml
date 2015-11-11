@@ -4,7 +4,7 @@
   <title><![CDATA[Category: $watch | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/$watch/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-11T20:41:13+08:00</updated>
+  <updated>2015-11-11T20:48:20+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -26,13 +26,13 @@
 
 <p>为了能够实现双向绑定，Angular使用了$watch API来监控$scope上的Model的改变。Angular应用在编译模板的时候，会收集模板上的声明式标签 —— 指令或绑定表达式，并链接（link）它们。这个过程中，指令或绑定表达式会注册自己的监控函数，这就是我们所说的watchers函数。</p>
 
-<p>下面以我们常见的Angular表达式（<code>{% raw}{{}}{% endraw}</code>）为例。</p>
+<p>下面以我们常见的Angular表达式（<code>{{}}</code>）为例。</p>
 
 <p>HTML：
 ```html
 <body ng-app="com.ngnice.app" ng-controller="DemoController as demo"></p>
 
-<pre><code>&lt;div&gt;hello : {% raw}{{demo.count}}{% endraw}&lt;/div&gt;
+<pre><code>&lt;div&gt;hello : {{demo.count}}&lt;/div&gt;
 &lt;button type="button" ng-click="demo.increase ();"&gt;increase ++&lt;/button&gt;
 </code></pre>
 
@@ -56,13 +56,13 @@ angular.module(&lsquo;com.ngnice.app&rsquo;)
 }]);
 ```</p>
 
-<p>这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（<code>{% raw}{{}}{% endraw}</code>）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。</p>
+<p>这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（<code>{{}}</code>）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。</p>
 
 <p>上例中在每次点击button的时候，count计数器将会加1，然后count的变化会通过Angular的$digest过程同步到View之上。在这里它是一个单向的更新，从Model到View的更新。如果处理一个带有ngModel指令的input交互控件，则在View上的每次输入都会被及时更新到Model之上，这里则是反向的更新，从View到Model的更新。</p>
 
 <p>Model数据能被更新到View是因为在背后默默工作的$digest循环（“脏检查机制”）被触发了。它会执行当前scope以及其所有子scope上注册的watchers函数，检测是否发生变化，如果变了就执行相应的处理函数，直到Model稳定了。如果这个过程中发生过变化，浏览器就会重新渲染受到影响的DOM来体现Model的变化。</p>
 
-<p>在Angular表达式（<code>{% raw}{{}}{% endraw}</code>）背后的源码如下：</p>
+<p>在Angular表达式（<code>{{}}</code>）背后的源码如下：</p>
 
 <p>```js
 function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
@@ -132,7 +132,7 @@ case 8:
 
 <p>```js</p>
 
-<pre><code>app.config(['compileProvider', function ($compileProvider) {
+<pre><code>app.config(['$compileProvider', function ($compileProvider) {
   // disable debug info
   $compileProvider.debugInfoEnabled(false);
 }]);
@@ -231,10 +231,10 @@ angular.module(&lsquo;com.ngnice.app&rsquo;)
 <ul>
     <li ng-repeat="session in sessions">
         <div class="info">
-           {% raw} {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}{% endraw}
+            {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}
         </div>
         <div class="likes">
-          {% raw}  {{session.likes}} likes!{% endraw}
+            {{session.likes}} likes!
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -268,16 +268,16 @@ angular.module(&lsquo;com.ngnice.app&rsquo;)
 <pre><code>单次表达式在第一次$digest完成后，将不再计算（监测属性的变化）。
 </code></pre>
 
-<p>1.3中为Angular表达式（<code>{% raw}{{}}</code>{% endraw}）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：
+<p>1.3中为Angular表达式（<code>{{}}</code>）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：
 ```html</p>
 
 <ul>
     <li ng-repeat="session in sessions">
         <div class="info">
-           {% raw} {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}{% endraw}
+            {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}
         </div>
         <div class="likes">
-         {% raw}   {{session.likes}} likes!{% endraw}
+            {{session.likes}} likes!
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -298,7 +298,7 @@ angular.module(&lsquo;com.ngnice.app&rsquo;)
             <span bo-text="session.speaker"></span>
         </div>
         <div class="likes">
-          {% raw}  {{session.likes}} likes!{% endraw}
+            {{session.likes}} likes!
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -327,12 +327,12 @@ angular.module(&lsquo;com.ngnice.app&rsquo;)
 <pre><code>&lt;div ng-app='myApp' ng-controller='DemoController'&gt;
   &lt;div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'&gt;
     &lt;div ng-repeat='item in reddit.items'&gt;
-      &lt;span class='score'&gt;{% raw}{{item.score}}{% endraw}&lt;/span&gt;
+      &lt;span class='score'&gt;{{item.score}}&lt;/span&gt;
       &lt;span class='title'&gt;
-        &lt;a ng-href='{% raw}{{item.url}}{% endraw}' target='_blank'&gt;{% raw}{{item.title}}{% endraw}&lt;/a&gt;
+        &lt;a ng-href='{{item.url}}' target='_blank'&gt;{{item.title}}&lt;/a&gt;
       &lt;/span&gt;
-      &lt;small&gt;by {% raw}{{item.author}} -{% endraw}
-        &lt;a ng-href='http://reddit.com{% raw}{{item.permalink}}{% endraw}' target='_blank'&gt;{% raw}{{item.num_comments}} {% endraw}comments&lt;/a&gt;
+      &lt;small&gt;by {{item.author}} -
+        &lt;a ng-href='http://reddit.com{{item.permalink}}' target='_blank'&gt;{{item.num_comments}} comments&lt;/a&gt;
       &lt;/small&gt;
       &lt;div style='clear: both;'&gt;&lt;/div&gt;
     &lt;/div&gt;

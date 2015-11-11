@@ -97,7 +97,7 @@
 
 <p>为了能够实现双向绑定，Angular使用了$watch API来监控$scope上的Model的改变。Angular应用在编译模板的时候，会收集模板上的声明式标签 —— 指令或绑定表达式，并链接（link）它们。这个过程中，指令或绑定表达式会注册自己的监控函数，这就是我们所说的watchers函数。</p>
 
-<p>下面以我们常见的Angular表达式（&#8220;）为例。</p>
+<p>下面以我们常见的Angular表达式（<code>{{}}</code>）为例。</p>
 
 <p>HTML：</p>
 
@@ -106,7 +106,7 @@
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;body</span> <span class="na">ng-app=</span><span class="s">&quot;com.ngnice.app&quot;</span> <span class="na">ng-controller=</span><span class="s">&quot;DemoController as demo&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div&gt;</span>hello : <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div&gt;</span>hello : {{demo.count}}<span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">&quot;button&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;demo.increase ();&quot;</span><span class="nt">&gt;</span>increase ++<span class="nt">&lt;/button&gt;</span>
 </span><span class='line'><span class="nt">&lt;/body&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -122,24 +122,26 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">).</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 </span><span class='line'>  <span class="kd">var</span> <span class="nx">vm</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 </span><span class='line'>  <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span><span class='line'>  <span class="nx">vm</span><span class="p">.</span><span class="nx">increase</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 </span><span class='line'>    <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span><span class="o">++</span><span class="p">;</span>
 </span><span class='line'>  <span class="p">};</span>
 </span><span class='line'>  <span class="k">return</span> <span class="nx">vm</span><span class="p">;</span>
-</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="p">}]);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（&#8220;）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。</p>
+<p>这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（<code>{{}}</code>）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。</p>
 
 <p>上例中在每次点击button的时候，count计数器将会加1，然后count的变化会通过Angular的$digest过程同步到View之上。在这里它是一个单向的更新，从Model到View的更新。如果处理一个带有ngModel指令的input交互控件，则在View上的每次输入都会被及时更新到Model之上，这里则是反向的更新，从View到Model的更新。</p>
 
 <p>Model数据能被更新到View是因为在背后默默工作的$digest循环（“脏检查机制”）被触发了。它会执行当前scope以及其所有子scope上注册的watchers函数，检测是否发生变化，如果变了就执行相应的处理函数，直到Model稳定了。如果这个过程中发生过变化，浏览器就会重新渲染受到影响的DOM来体现Model的变化。</p>
 
-<p>在Angular表达式（&#8220;）背后的源码如下：</p>
+<p>在Angular表达式（<code>{{}}</code>）背后的源码如下：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -250,11 +252,16 @@
 
 <p>在上面代码中，还有一部分是为了给调试器用的。它会在Angular表达式所属的DOM节点加上名为‘ng-binding’的调试类。类似的调试类还有‘ng-scope’，‘ng-isolate-scope’等。在Angular 1.3中我们可以使用compileProvider服务来关闭这些调试信息。</p>
 
-<pre class='green'><code>app.config(function ($compileProvider) {
-  // disable debug info
-  $compileProvider.debugInfoEnabled(false);
-});
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">config</span><span class="p">([</span><span class="s1">&#39;$compileProvider&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$compileProvider</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// disable debug info</span>
+</span><span class='line'>  <span class="nx">$compileProvider</span><span class="p">.</span><span class="nx">debugInfoEnabled</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span><span class='line'><span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>其它指令中的watchers函数</h3>
 
@@ -262,42 +269,73 @@
 
 <p>ngBind：它和Angular表达式很类似，都是绑定特定表达式的值到DOM的内容，并保持与scope的同步。不同之处在于它需要一个HTML节点并以attribute属性的方式标记。简单来说，我们可以认为Angular表达式就是ngBind的特定语法糖。当然，还是有一点区别的，详情参见“使用技巧”一章的“防止Angular表达式闪烁”。</p>
 
-<pre class='green'><code>var ngBindDirective = ngDirective({
-  compile: function(templateElement) {
-    templateElement.addClass('ng-binding');
-    return function (scope, element, attr) {
-      element.data('$binding', attr.ngBind);
-      scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
-        // We are purposefully using == here rather than === because we want to
-        // catch when value is "null or undefined"
-        // jshint -W041
-        element.text(value == undefined ? '' : value);
-      });
-    };
-  }
-});
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">ngBindDirective</span> <span class="o">=</span> <span class="nx">ngDirective</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">compile</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">templateElement</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">templateElement</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;ng-binding&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">element</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;$binding&#39;</span><span class="p">,</span> <span class="nx">attr</span><span class="p">.</span><span class="nx">ngBind</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="nx">attr</span><span class="p">.</span><span class="nx">ngBind</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">ngBindWatchAction</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// We are purposefully using == here rather than === because we want to</span>
+</span><span class='line'>        <span class="c1">// catch when value is &quot;null or undefined&quot;</span>
+</span><span class='line'>        <span class="c1">// jshint -W041</span>
+</span><span class='line'>        <span class="nx">element</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">value</span> <span class="o">==</span> <span class="kc">undefined</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>这里也能清晰的看见$scope.$watch的注册代码：监控器函数为ngBind attribute的值，处理函数则是用表达式计算的结果去更新DOM的文本内容。</p>
 
 <p>ngShow/ngHide: 它们是根据表达式的计算结果来控制显示/隐藏DOM节点的指令。</p>
 
-<pre class='green'><code>var ngShowDirective = ['$animate', function($animate) {
-  return function(scope, element, attr) {
-    scope.$watch(attr.ngShow, function ngShowWatchAction(value){
-      $animate[toBoolean(value) ? 'removeClass' : 'addClass'](element, 'ng-hide');
-    });
-  };
-}];
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">ngShowDirective</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$animate&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$animate</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="nx">attr</span><span class="p">.</span><span class="nx">ngShow</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">ngShowWatchAction</span><span class="p">(</span><span class="nx">value</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">$animate</span><span class="p">[</span><span class="nx">toBoolean</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;removeClass&#39;</span> <span class="o">:</span> <span class="s1">&#39;addClass&#39;</span><span class="p">](</span><span class="nx">element</span><span class="p">,</span> <span class="s1">&#39;ng-hide&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">}];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ngHideDirective</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$animate&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$animate</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">element</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="nx">attr</span><span class="p">.</span><span class="nx">ngHide</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">ngHideWatchAction</span><span class="p">(</span><span class="nx">value</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">$animate</span><span class="p">[</span><span class="nx">toBoolean</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;addClass&#39;</span> <span class="o">:</span> <span class="s1">&#39;removeClass&#39;</span><span class="p">](</span><span class="nx">element</span><span class="p">,</span> <span class="s1">&#39;ng-hide&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
 
-var ngHideDirective = ['$animate', function($animate) {
-  return function(scope, element, attr) {
-    scope.$watch(attr.ngHide, function ngHideWatchAction(value){
-      $animate[toBoolean(value) ? 'addClass' : 'removeClass'](element, 'ng-hide');
-    });
-  };
-}];
-</code></pre>
 
 <p>这里同样用到了$scope.$watch，到这里你应该明白$watch的工作原理了吧。</p>
 
@@ -322,7 +360,9 @@ var ngHideDirective = ['$animate', function($animate) {
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">).</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  <span class="kd">var</span> <span class="nx">vm</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 </span><span class='line'>  <span class="nx">vm</span><span class="p">.</span><span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span><span class='line'>  <span class="kd">var</span> <span class="nx">textWatch</span> <span class="o">=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="s1">&#39;demo.updated&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">newVal</span><span class="p">,</span> <span class="nx">oldVal</span><span class="p">)</span> <span class="p">{</span>
@@ -332,7 +372,7 @@ var ngHideDirective = ['$animate', function($animate) {
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>  <span class="p">});</span>
 </span><span class='line'>  <span class="k">return</span> <span class="nx">vm</span><span class="p">;</span>
-</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="p">}]);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -356,10 +396,10 @@ var ngHideDirective = ['$animate', function($animate) {
 </pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;li</span> <span class="na">ng-repeat=</span><span class="s">&quot;session in sessions&quot;</span><span class="nt">&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;info&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>             -  -  - 
+</span><span class='line'>            {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}
 </span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;likes&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>             likes!
+</span><span class='line'>            {{session.likes}} likes!
 </span><span class='line'>            <span class="nt">&lt;button</span> <span class="na">ng-click=</span><span class="s">&quot;likeSession(session)&quot;</span><span class="nt">&gt;</span>Like it!<span class="nt">&lt;/button&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
@@ -375,12 +415,14 @@ var ngHideDirective = ['$animate', function($animate) {
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">).</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;MainController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;com.ngnice.app&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;MainController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">sessions</span> <span class="o">=</span> <span class="p">[...];</span>
 </span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">likeSession</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>    <span class="c1">// Like the session</span>
 </span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="p">}]);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -395,7 +437,7 @@ var ngHideDirective = ['$animate', function($animate) {
 <pre class='green'><code>单次表达式在第一次$digest完成后，将不再计算（监测属性的变化）。
 </code></pre>
 
-<p>1.3中为Angular表达式（&#8220;）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：</p>
+<p>1.3中为Angular表达式（<code>{{}}</code>）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -411,10 +453,10 @@ var ngHideDirective = ['$animate', function($animate) {
 </pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;li</span> <span class="na">ng-repeat=</span><span class="s">&quot;session in sessions&quot;</span><span class="nt">&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;info&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>             -  -  - 
+</span><span class='line'>            {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}
 </span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;likes&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>             likes!
+</span><span class='line'>            {{session.likes}} likes!
 </span><span class='line'>            <span class="nt">&lt;button</span> <span class="na">ng-click=</span><span class="s">&quot;likeSession(session)&quot;</span><span class="nt">&gt;</span>Like it!<span class="nt">&lt;/button&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
@@ -447,7 +489,7 @@ var ngHideDirective = ['$animate', function($animate) {
 </span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">&quot;session.speaker&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;likes&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>             likes!
+</span><span class='line'>            {{session.likes}} likes!
 </span><span class='line'>            <span class="nt">&lt;button</span> <span class="na">ng-click=</span><span class="s">&quot;likeSession(session)&quot;</span><span class="nt">&gt;</span>Like it!<span class="nt">&lt;/button&gt;</span>
 </span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
@@ -488,12 +530,12 @@ var ngHideDirective = ['$animate', function($animate) {
 </pre></td><td class='code'><pre class='green'><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">ng-app=</span><span class="s">&#39;myApp&#39;</span> <span class="na">ng-controller=</span><span class="s">&#39;DemoController&#39;</span><span class="nt">&gt;</span>
 </span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">infinite-scroll=</span><span class="s">&#39;reddit.nextPage()&#39;</span> <span class="na">infinite-scroll-disabled=</span><span class="s">&#39;reddit.busy&#39;</span> <span class="na">infinite-scroll-distance=</span><span class="s">&#39;1&#39;</span><span class="nt">&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">ng-repeat=</span><span class="s">&#39;item in reddit.items&#39;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;score&#39;</span><span class="nt">&gt;</span><span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;score&#39;</span><span class="nt">&gt;</span>{{item.score}}<span class="nt">&lt;/span&gt;</span>
 </span><span class='line'>      <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;title&#39;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">&#39;&#39;</span> <span class="na">target=</span><span class="s">&#39;_blank&#39;</span><span class="nt">&gt;</span><span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">&#39;{{item.url}}&#39;</span> <span class="na">target=</span><span class="s">&#39;_blank&#39;</span><span class="nt">&gt;</span>{{item.title}}<span class="nt">&lt;/a&gt;</span>
 </span><span class='line'>      <span class="nt">&lt;/span&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;small&gt;</span>by  -
-</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">&#39;http://reddit.com&#39;</span> <span class="na">target=</span><span class="s">&#39;_blank&#39;</span><span class="nt">&gt;</span> comments<span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;small&gt;</span>by {{item.author}} -
+</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">&#39;http://reddit.com{{item.permalink}}&#39;</span> <span class="na">target=</span><span class="s">&#39;_blank&#39;</span><span class="nt">&gt;</span>{{item.num_comments}} comments<span class="nt">&lt;/a&gt;</span>
 </span><span class='line'>      <span class="nt">&lt;/small&gt;</span>
 </span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&#39;clear: both;&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
@@ -505,38 +547,70 @@ var ngHideDirective = ['$animate', function($animate) {
 
 <p>JavaScript：</p>
 
-<pre class='green'><code>var myApp = angular.module('myApp', ['infinite-scroll']);
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre class='green'><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;infinite-scroll&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">myApp</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;DemoController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="s1">&#39;Reddit&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">Reddit</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">reddit</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Reddit</span><span class="p">();</span>
+</span><span class='line'><span class="p">}]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Reddit constructor function to encapsulate HTTP and pagination logic</span>
+</span><span class='line'><span class="nx">myApp</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;Reddit&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">Reddit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">items</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">busy</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">after</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">Reddit</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">nextPage</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">busy</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">busy</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;http://api.reddit.com/hot?after=&#39;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">after</span> <span class="o">+</span> <span class="s1">&#39;&amp;jsonp=JSON_CALLBACK&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$http</span><span class="p">.</span><span class="nx">jsonp</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">items</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">children</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">items</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">after</span> <span class="o">=</span> <span class="s1">&#39;t3_&#39;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">items</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">items</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">busy</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">Reddit</span><span class="p">;</span>
+</span><span class='line'><span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
 
-myApp.controller('DemoController', function($scope, Reddit) {
-  $scope.reddit = new Reddit();
-});
-
-// Reddit constructor function to encapsulate HTTP and pagination logic
-myApp.factory('Reddit', function($http) {
-  var Reddit = function() {
-    this.items = [];
-    this.busy = false;
-    this.after = '';
-  };
-
-  Reddit.prototype.nextPage = function() {
-    if (this.busy) return;
-    this.busy = true;
-
-    var url = 'http://api.reddit.com/hot?after=' + this.after + '&amp;jsonp=JSON_CALLBACK';
-    $http.jsonp(url).success(function(data) {
-      var items = data.data.children;
-      for (var i = 0; i &lt; items.length; i++) {
-        this.items.push(items[i].data);
-      }
-      this.after = 't3_' + this.items[this.items.length - 1].id;
-      this.busy = false;
-    }.bind(this));
-  };
-
-  return Reddit;
-});
-</code></pre>
 
 <p>可以在这里<a href="http://binarymuse.github.io/ngInfiniteScroll/demo_async.html">http://binarymuse.github.io/ngInfiniteScroll/demo_async.html</a>访问这个例子。其使用很简单，有兴趣的读者可以查看其官方文档。</p>
 
