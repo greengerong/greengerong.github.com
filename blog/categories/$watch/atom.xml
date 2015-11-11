@@ -4,7 +4,7 @@
   <title><![CDATA[Category: $watch | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/$watch/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-11T20:48:20+08:00</updated>
+  <updated>2015-11-11T20:48:57+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -388,7 +388,7 @@ myApp.factory('Reddit', ['$http', function($http) {
 
 <p>当然对于性能解决方案还有很多，如客户端分页、服务端分页、将其它更高效的jQuery插件或者React插件合理的封装为ng组件等。当封装第三方非Angular组件时需要注意scope和model的同步，以及合理的触发$apply更新View。另外在开源社区中也有ngReact可以简化将React组件应用到Angular应用中，在这里可以了解到关于它的更多信息：<a href="https://github.com/davidchang/ngReact">https://github.com/davidchang/ngReact</a>。</p>
 
-<p>此刻，我猜你一定正是心中默默嘀咕着：Angular“脏检查机制”一定很慢，一个“肮脏”的家伙。但这是错误的。它其实很快，Angular团队为此专门做了很多优化。相反，在大多数场景下，Angular这种特殊的watcher机制，反而比很多基于JavaScript模板引擎（underscore、Handlebars等）更快。因为Angular并不需要通过大范围的DOM操作来更新View，它的每次更新区域更小，DOM操作更少。而DOM操作的代价远远高过JavaScript运算，在有些浏览器中，修改DOM的速度甚至会比纯粹的JavaScript运算慢一千倍！</p>
+<p>此刻，我猜你一定正是心中默默嘀咕着：Angular“脏检查机制”一定很慢，一个“肮脏”的家伙。但这是错误的。它其实很快，Angular团队为此专门做了很多优化。相反，在大多数场景下，Angular这种特殊的watcher机制，反而比很多基于JavaScript模板引擎（underscore、Handlebars等）更快。因为Angular并不需要通过大范围的DOM操作来更新View，它的每次更新区域更小，DOM操作更少。而DOM操作的代价远远高过JavaScript运算，在有些浏览器中，修改DOM的速度甚至会比纯粹的JavaScript运算慢很多倍！</p>
 
 <p>而且，在现实场景中，我们的大多数页面都不会超出2000个watcher，因为过多的信息对使用者是非常不友好的，好的设计师都懂得限制单页信息的展示量。但是如果超过了2000个watcher，那么你就得仔细思考如何去优化它了，应该优先选择从用户体验方面改进，实在不行就用上面提到的技巧来优化你的应用程序。</p>
 
