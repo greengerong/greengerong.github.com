@@ -14,12 +14,12 @@ categories: [Angular, JavaScript, $watch]
 
 为了能够实现双向绑定，Angular使用了$watch API来监控$scope上的Model的改变。Angular应用在编译模板的时候，会收集模板上的声明式标签 —— 指令或绑定表达式，并链接（link）它们。这个过程中，指令或绑定表达式会注册自己的监控函数，这就是我们所说的watchers函数。
 
-下面以我们常见的Angular表达式（`{% raw}{{}}{% endraw}`）为例。
+下面以我们常见的Angular表达式（`{% raw %}{{}}{% endraw %}`）为例。
 
 HTML：
 ```html
 <body ng-app="com.ngnice.app" ng-controller="DemoController as demo">
-    <div>hello : {% raw}{{demo.count}}{% endraw}</div>
+    <div>hello : {% raw %}{{demo.count}}{% endraw %}</div>
     <button type="button" ng-click="demo.increase ();">increase ++</button>
 </body>
 ```
@@ -38,13 +38,13 @@ angular.module('com.ngnice.app')
 }]);
 ```
 
-这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（`{% raw}{{}}{% endraw}`）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。
+这是一个自增长计数器的例子，在上面的代码我们用了Angular表达式（`{% raw %}{{}}{% endraw %}`）。表达式为了能在Model的值改变的时候你能及时更新View，它会在其所在的$scope（本例中为DemoController）中注册上面提到的watchers函数，监控count属性的变化，以便及时更新View。
 
 上例中在每次点击button的时候，count计数器将会加1，然后count的变化会通过Angular的$digest过程同步到View之上。在这里它是一个单向的更新，从Model到View的更新。如果处理一个带有ngModel指令的input交互控件，则在View上的每次输入都会被及时更新到Model之上，这里则是反向的更新，从View到Model的更新。
 
 Model数据能被更新到View是因为在背后默默工作的$digest循环（“脏检查机制”）被触发了。它会执行当前scope以及其所有子scope上注册的watchers函数，检测是否发生变化，如果变了就执行相应的处理函数，直到Model稳定了。如果这个过程中发生过变化，浏览器就会重新渲染受到影响的DOM来体现Model的变化。
 
-在Angular表达式（`{% raw}{{}}{% endraw}`）背后的源码如下：
+在Angular表达式（`{% raw %}{{}}{% endraw %}`）背后的源码如下：
 
 ```js
 function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
@@ -105,7 +105,7 @@ Angular会在compile阶段收集View模板上的所有Directive。Angular表达�
 在上面代码中，还有一部分是为了给调试器用的。它会在Angular表达式所属的DOM节点加上名为‘ng-binding’的调试类。类似的调试类还有‘ng-scope’，‘ng-isolate-scope’等。在Angular 1.3中我们可以使用compileProvider服务来关闭这些调试信息。
 
 ```js
-    app.config(['compileProvider', function ($compileProvider) {
+    app.config(['$compileProvider', function ($compileProvider) {
       // disable debug info
       $compileProvider.debugInfoEnabled(false);
     }]);
@@ -192,10 +192,10 @@ HTML：
 <ul>
     <li ng-repeat="session in sessions">
         <div class="info">
-           {% raw} {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}{% endraw}
+           {% raw %} {{session.name}} - {{session.room}} - {{session.hour}} - {{session.speaker}}{% endraw %}
         </div>
         <div class="likes">
-          {% raw}  {{session.likes}} likes!{% endraw}
+          {% raw %}  {{session.likes}} likes!{% endraw %}
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -223,15 +223,15 @@ Angular中的单次（one-time）绑定是在1.3后引入的。在官方文档�
 
     单次表达式在第一次$digest完成后，将不再计算（监测属性的变化）。
 
-1.3中为Angular表达式（`{% raw}{{}}`{% endraw}）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：
+1.3中为Angular表达式（`{% raw %}{{}}`{% endraw %}）引入了新语法，以“::”作为前缀的表达式为one-time绑定。对于上面的例子可以改为：
 ```html
 <ul>
     <li ng-repeat="session in sessions">
         <div class="info">
-           {% raw} {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}{% endraw}
+           {% raw %} {{::session.name}} - {{::session.room}} - {{::session.hour}} - {{::session.speaker}}{% endraw %}
         </div>
         <div class="likes">
-         {% raw}   {{session.likes}} likes!{% endraw}
+         {% raw %}   {{session.likes}} likes!{% endraw %}
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -249,7 +249,7 @@ Angular中的单次（one-time）绑定是在1.3后引入的。在官方文档�
             <span bo-text="session.speaker"></span>
         </div>
         <div class="likes">
-          {% raw}  {{session.likes}} likes!{% endraw}
+          {% raw %}  {{session.likes}} likes!{% endraw %}
             <button ng-click="likeSession(session)">Like it!</button>
         </div>
     </li>
@@ -274,12 +274,12 @@ HTML：
     <div ng-app='myApp' ng-controller='DemoController'>
       <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
         <div ng-repeat='item in reddit.items'>
-          <span class='score'>{% raw}{{item.score}}{% endraw}</span>
+          <span class='score'>{% raw %}{{item.score}}{% endraw %}</span>
           <span class='title'>
-            <a ng-href='{% raw}{{item.url}}{% endraw}' target='_blank'>{% raw}{{item.title}}{% endraw}</a>
+            <a ng-href='{% raw %}{{item.url}}{% endraw %}' target='_blank'>{% raw %}{{item.title}}{% endraw %}</a>
           </span>
-          <small>by {% raw}{{item.author}} -{% endraw}
-            <a ng-href='http://reddit.com{% raw}{{item.permalink}}{% endraw}' target='_blank'>{% raw}{{item.num_comments}} {% endraw}comments</a>
+          <small>by {% raw %}{{item.author}} -{% endraw %}
+            <a ng-href='http://reddit.com{% raw %}{{item.permalink}}{% endraw %}' target='_blank'>{% raw %}{{item.num_comments}} {% endraw %}comments</a>
           </small>
           <div style='clear: both;'></div>
         </div>
@@ -330,7 +330,7 @@ JavaScript：
 
 当然对于性能解决方案还有很多，如客户端分页、服务端分页、将其它更高效的jQuery插件或者React插件合理的封装为ng组件等。当封装第三方非Angular组件时需要注意scope和model的同步，以及合理的触发$apply更新View。另外在开源社区中也有ngReact可以简化将React组件应用到Angular应用中，在这里可以了解到关于它的更多信息：[https://github.com/davidchang/ngReact](https://github.com/davidchang/ngReact)。
 
-此刻，我猜你一定正是心中默默嘀咕着：Angular“脏检查机制”一定很慢，一个“肮脏”的家伙。但这是错误的。它其实很快，Angular团队为此专门做了很多优化。相反，在大多数场景下，Angular这种特殊的watcher机制，反而比很多基于JavaScript模板引擎（underscore、Handlebars等）更快。因为Angular并不需要通过大范围的DOM操作来更新View，它的每次更新区域更小，DOM操作更少。而DOM操作的代价远远高过JavaScript运算，在有些浏览器中，修改DOM的速度甚至会比纯粹的JavaScript运算慢一千倍！
+此刻，我猜你一定正是心中默默嘀咕着：Angular“脏检查机制”一定很慢，一个“肮脏”的家伙。但这是错误的。它其实很快，Angular团队为此专门做了很多优化。相反，在大多数场景下，Angular这种特殊的watcher机制，反而比很多基于JavaScript模板引擎（underscore、Handlebars等）更快。因为Angular并不需要通过大范围的DOM操作来更新View，它的每次更新区域更小，DOM操作更少。而DOM操作的代价远远高过JavaScript运算，在有些浏览器中，修改DOM的速度甚至会比纯粹的JavaScript运算慢很多倍！
 
 而且，在现实场景中，我们的大多数页面都不会超出2000个watcher，因为过多的信息对使用者是非常不友好的，好的设计师都懂得限制单页信息的展示量。但是如果超过了2000个watcher，那么你就得仔细思考如何去优化它了，应该优先选择从用户体验方面改进，实在不行就用上面提到的技巧来优化你的应用程序。
 
