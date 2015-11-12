@@ -4,7 +4,7 @@
   <title><![CDATA[Category: $watch | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/$watch/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-11T21:12:56+08:00</updated>
+  <updated>2015-11-12T08:20:11+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Angular移除不必要的$watch之性能优化]]></title>
-    <link href="http://greengerong.github.io/blog/2015/11/11/angular-remove-unnecessary-%24watch-to-improve-performance/"/>
+    <link href="http://greengerong.github.io/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/"/>
     <updated>2015-11-11T20:20:58+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/11/11/angular-remove-unnecessary-$watch-to-improve-performance</id>
+    <id>http://greengerong.github.io/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance</id>
     <content type="html"><![CDATA[<p><img src="/images/blog_img/%E6%9C%BA%E6%A2%B0%E8%A1%A8-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.jpg" alt="Angular-apply-and-浏览器-event-loop" /></p>
 
 <p>双向绑定是Angular的核心概念之一，它给我们带来了思维方式的转变：不再是DOM驱动，而是以Model为核心，在View中写上声明式标签。然后，Angular就会在后台默默的同步View的变化到Model，并将Model的变化更新到View。</p>
