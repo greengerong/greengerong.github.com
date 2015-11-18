@@ -6,6 +6,9 @@ comments: true
 categories: [html5, javascript]
 ---
 
+![桥和多线路电线](/images/blog_img/桥和多线路电线.jpg)
+
+
 在博主的前些文章[Promise的前世今生和妙用技巧](http://greengerong.com/blog/2015/10/22/promisede-miao-yong/)和[JavaScript单线程和浏览器事件循环简述](http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/)中都曾提到了HTML5 Web Worker这一个概念。在[JavaScript单线程和浏览器事件循环简述](http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/)中讲述了JavaScript出于界面元素访问安全的考虑，所以JavaScript运行时一直是被实现为单线程执行的；这也意味着我们应该尽量的避免在JavaScript中执行较长耗时的操作（如大量for循环的对象diff等）或者是长时间I/O阻塞的任务，特别是对于CPU计算密集型的操作。
 
 例如在JavaScript中尝试计算像`fibonacci`这类计算密集型的操作，就会导致整个页面体验被blocked。HTML5 Web Worker的出现让我们在不阻塞当前JavaScript线程的情况下，在当前的JavaScript执行线程中可利用Worker这个类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onmessage事件。它和C# WinForm中的BackgroundWorker很类似。
