@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-18T19:50:38+08:00</updated>
+  <updated>2015-11-18T19:55:03+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -21,6 +21,8 @@
     <content type="html"><![CDATA[<p>在博主的前些文章<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>和<a href="http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>中都曾提到了HTML5 Web Worker这一个概念。在<a href="http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>中讲述了JavaScript出于界面元素访问安全的考虑，所以JavaScript运行时一直是被实现为单线程执行的；这也意味着我们应该尽量的避免在JavaScript中执行较长耗时的操作（如大量for循环的对象diff等）或者是长时间I/O阻塞的任务，特别是对于CPU计算密集型的操作。</p>
 
 <p>例如在JavaScript中尝试计算像<code>fibonacci</code>这类计算密集型的操作，就会导致整个页面体验被blocked。HTML5 Web Worker的出现让我们在不阻塞当前JavaScript线程的情况下，在当前的JavaScript执行线程中可利用Worker这个类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。它和C# WinForm中的BackgroundWorker很类似。</p>
+
+<h3>Web Worker实现fibonacci计算</h3>
 
 <p>利用HTML5 Web Worker实现<code>fibonacci</code>可像如下所示（<a href="http://plnkr.co/edit/IoXkPw?p=preview">plnkr在线demo</a>）：</p>
 
@@ -86,6 +88,8 @@ fibonacci(50): 202140.027ms
 </code></pre>
 
 <p>从这里时间输出可以看出，在计算n为40的<code>fibonacci</code> 开始时间开始急速的加长，在UI中返回结果的时间也逐渐变长；但是在Web Worker后台计算的时候，它并不会阻塞我们的UI界面的其他交互。</p>
+
+<h3>Web Worker总结</h3>
 
 <p>Web Worker在这类耗时计算密集型操作中，显得特别实用。在Web Worker中我们可以实现：</p>
 
