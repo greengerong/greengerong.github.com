@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Html5 | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/html5/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-12T08:20:11+08:00</updated>
+  <updated>2015-11-18T19:50:38+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript多线程之HTML5 Web Worker]]></title>
+    <link href="http://greengerong.github.io/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/"/>
+    <updated>2015-11-18T12:39:29+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker</id>
+    <content type="html"><![CDATA[<p>在博主的前些文章<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>和<a href="http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>中都曾提到了HTML5 Web Worker这一个概念。在<a href="http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>中讲述了JavaScript出于界面元素访问安全的考虑，所以JavaScript运行时一直是被实现为单线程执行的；这也意味着我们应该尽量的避免在JavaScript中执行较长耗时的操作（如大量for循环的对象diff等）或者是长时间I/O阻塞的任务，特别是对于CPU计算密集型的操作。</p>
+
+<p>例如在JavaScript中尝试计算像<code>fibonacci</code>这类计算密集型的操作，就会导致整个页面体验被blocked。HTML5 Web Worker的出现让我们在不阻塞当前JavaScript线程的情况下，在当前的JavaScript执行线程中可利用Worker这个类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。它和C# WinForm中的BackgroundWorker很类似。</p>
+
+<p>利用HTML5 Web Worker实现<code>fibonacci</code>可像如下所示（<a href="http://plnkr.co/edit/IoXkPw?p=preview">plnkr在线demo</a>）：</p>
+
+<p>fibonacci.js Worker JavaScript文件：</p>
+
+<pre><code>(function() {
+  var fibonacci = function(n) {
+    return n &lt; 2 ? 1 : (fibonacci(n - 1) + fibonacci(n - 2));
+  };
+
+  onmessage = function(event) {
+    postMessage({
+      input: event.data,
+      result: fibonacci(event.data)
+    });
+  };
+
+})();
+</code></pre>
+
+<p>在fibonacci.js中利用onmessage方法来监听主线程发送的fibonacci计算请求，和利用postMessage返回计算的结果到请求线程。</p>
+
+<p>script.js 主线程JavaScript文件：</p>
+
+<pre><code>$(function() {
+  var $input = $('#input'),
+    $btn = $('#btn'),
+    $result = $('#result'),
+    worker = new Worker('fibonacci.js'),
+    timeKey = function(val) {
+      return 'fibonacci(' + val + ')';
+    };
+
+  worker.onmessage = function(event) {
+    console.timeEnd(timeKey(event.data.input));
+    $result.text(event.data.result);
+  };
+
+  $btn.on('click', function() {
+    var val = parseInt($input.val(), 10);
+    if (val) {
+      console.time(timeKey(val));
+      $result.text('?')
+      worker.postMessage(val);
+    }
+  });
+});
+</code></pre>
+
+<p>在这个JavaScript文件中，利用<code>new Worker('fibonacci.js')</code>方式来创建Web Worker对象，并利用Worker对象上的postMessage方法发送请求计算请求，以及利用Worker对象的哦你message的方法接受Worker线程的返回结果，并显示在UI界面上。同时我们也利用了console最新的time API来统计计算所花费的时间。</p>
+
+<p>其显示效果如下：</p>
+
+<p><img src="/images/blog_img/html5-web-worker-demo.png" alt="html5 web worker demo" /></p>
+
+<p>在console中打印的时间信息为：</p>
+
+<pre><code>fibonacci(10): 1.022ms
+fibonacci(20): 1.384ms
+fibonacci(30): 22.065ms
+fibonacci(40): 1744.352ms
+fibonacci(50): 202140.027ms
+</code></pre>
+
+<p>从这里时间输出可以看出，在计算n为40的<code>fibonacci</code> 开始时间开始急速的加长，在UI中返回结果的时间也逐渐变长；但是在Web Worker后台计算的时候，它并不会阻塞我们的UI界面的其他交互。</p>
+
+<p>Web Worker在这类耗时计算密集型操作中，显得特别实用。在Web Worker中我们可以实现：</p>
+
+<ol>
+<li>可以加载一个JS进行大量的复杂计算而不挂起主进程，并通过postMessage，onmessage进行通信；</li>
+<li>可以在worker中通过importScripts(url)加载另外的脚本文件；</li>
+<li>可以使用 setTimeout()，clearTimeout()，setInterval()，clearInterval()；</li>
+<li>可以使用XMLHttpRequest来发送请求，以及访问navigator的部分属性。</li>
+</ol>
+
+
+<p>但是它也存在一些来自浏览器<code>安全沙盒</code>的限制：</p>
+
+<ol>
+<li>不能加载跨域的JavaScript文件；</li>
+<li>如文件开始所说，考虑到JavaScript操作DOM的安全性问题，在Web Worker中不能访问界面中的DOM信息，对于DOM的访问操作都必须委托给JavaScript主线程来操作；因此HTML5 Web Worker的出现的出现，并没有改变JavaScript单线程执行的这个事实；</li>
+<li>还有就是Web Worker的浏览器兼容性问题。它的浏览器兼容性图如下：</li>
+</ol>
+
+
+<p><img src="/images/blog_img/html5-web-worker-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7.png" alt="html5 web worker浏览器兼容性" /></p>
+
+<p>更多关于Web Worker的资料，请参考<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[HTML5特性速记图]]></title>

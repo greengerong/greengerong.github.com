@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="今天将奉献一个在在几个angularjs项目中抽离的angular组件 input mask。在我们开发中经常会对用户的输入进行控制，比如日期，货币格式，或者纯数字格式之类的限制，这就是input mask的使用场景，在项目中也是会经常被提及需的需求之一。 当然在官方的angular-ui ui- &hellip;"> 
+    <meta name="description" content="今天要和大家分享的是angular从1.2版本开始带来了新语法Controller as。再次之前我们对于angular在view上的绑定都必须使用直接的scope对象，对于controller来说我们也得必须注入$scope这个service。如下： angular.module("app &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,130 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-24T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天要和大家分享的是angular从1.2版本开始带来了新语法Controller as。再次之前我们对于angular在view上的绑定都必须使用直接的scope对象，对于controller来说我们也得必须注入$scope这个service。如下：</p>
+
+<pre class='green'><code>angular.module("app",[])
+.controller("demoController",["$scope",function($scope){
+    $scope.title = "angualr";
+ }])
+
+&lt;div ng-app="app" ng-controller="demoController"&gt;
+    hello : {{title}} !
+&lt;/div&gt;
+</code></pre>
+
+<p>有些人觉得即使这样我们的controller还是不够POJO，以及对于coffescript爱好者不足够友好，所以在angular在1.2给我带来了一个新的语法糖这就是本文将要说的controller as的语法糖，修改上面的demo将会变成：</p>
+
+<pre class='green'><code>angular.module("app",[])
+.controller("demoController",[function(){
+    this.title = "angualr";
+}])
+
+&lt;div ng-app="app" ng-controller="demoController as demo"&gt;
+     hello : {{demo.title}} !
+&lt;/div&gt;
+</code></pre>
+
+<p>这里我们可以看见现在controller不再有$scope的注入了，感觉controller就是一个很简单的平面的JavaScript对象了，不存在任何的差别了。再则就是view上多增加了个demoController as demo，给controller起了一个别名，在此后的view模板中靠这个别名来访问数据对象。</p>
+
+<p>或许看到这里你会问为什么需要如此啊，不就是个语法糖而已，先别着急，我们会在后边分析$scope和他的差别。在此之前我们先来看看angular源码的实现这样才会有助于我们的分析：</p>
+
+<p>下面是一段来自angular的code：在1499行开始(行数只能保证在写作的时候有效)</p>
+
+<pre class='green'><code>  if (directive.controllerAs) {
+          locals.$scope[directive.controllerAs] = controllerInstance;
+   }
+</code></pre>
+
+<p>如果你希望看更完全的code请猛击这里<a href="https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js">https://github.com/angular/angular.js/blob/c7a1d1ab0b663edffc1ac7b54deea847e372468d/src/ng/compile.js</a>.</p>
+
+<p>从上面的代码我们能看见的是：angular只是把controller这个对象实例以其as的别名在scope上创建了一个新的对象属性。靠，就这么一行代码搞定！</p>
+
+<p>先别急，既然是语法糖，那么它肯定有他出现的原因，让我们来和直接用$scope对比下：</p>
+
+<p>在此文之前我在angularjs的群中和大家讨论了下我的看法，得到大家不错的反馈，所以有了本文，记录和分享下来。</p>
+
+<p>我规定对于controller as的写法如下：</p>
+
+<pre class='green'><code>angular.module("app",[])
+ .controller("demoController",[function(){
+        var vm = this;
+
+        vm.title = "angualr";
+
+        return vm;
+ }])
+</code></pre>
+
+<p>其优势为：</p>
+
+<ol>
+<li>定义vm这样会让我们更好的避免JavaScript的this的坑。</li>
+<li>如果某个版本的angular不再支持controller as,可以轻易的注入$scope,修改为 var vm = $scope;</li>
+<li>因为不再注入$scope了，controller更加的POJO，就是一个很普通的JavaScript对象。</li>
+<li>也因为没有了$scope，而controller实例将会成为scope上的一个属性，所以在controller中我们再也不能使用$watch,$emit,$on之类的特殊方法，因为这些东西往往不该出现在controller中的，给大家一个警告，更好的控制。但是一旦如果没办法必须用的话，可以在征得项目组一致同意，将此controller退回$scope.</li>
+<li>因为controller实例将会只是$scope的一个属性，所以view模板上的所有字段都会在一个引用的属性上，这可以避开JavaScript原型链继承对于值类型的坑。参加<a href="https://github.com/angular/angular.js/wiki/Understanding-Scopes">https://github.com/angular/angular.js/wiki/Understanding-Scopes</a>.</li>
+<li>controller as 对于 coffescript,liveScript更友好。
+7.模板上定义的每个字段方法都会在scope寄存在controller as别名上的引用上，所以在controller继承中，不会在出现命名冲突的问题。</li>
+</ol>
+
+
+<p>注释:对于route，也有个controllerAs的属性可以设置，下面代码来之angular doc文档：</p>
+
+<pre class='green'><code>    angular.module('ngViewExample', ['ngRoute', 'ngAnimate'],
+     function($routeProvider, $locationProvider) {
+    $routeProvider.when('/Book/:bookId', {
+      templateUrl: 'book.html',
+      controller: BookCntl,
+      controllerAs: 'book'
+    });
+    $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+      templateUrl: 'chapter.html',
+      controller: ChapterCntl,
+      controllerAs: 'chapter'
+    });
+
+    // configure html5 to get links working on jsfiddle
+         $locationProvider.html5Mode(true);
+     });
+</code></pre>
+
+<p>今天就到这里，谢谢。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -814,64 +938,6 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/29/yin-cang-zai-mock-zhi-hou-di-kuai-gan/">隐藏在mock之后的‘快感’</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>&nbsp;&nbsp; &nbsp; &nbsp;最近某同事抱怨他们的测试难写，经常花费在测试的时间比产品代码更多，而且每次重构后都必须修改一大堆的测试。和同事闲谈后得知，在其项目中大量的使用了mock，或者说对mock的使用过度极端对所谓的单元测试&ldquo;快速&rdquo;，&ldquo;独立&ldquo;的过度。 在前边转载过《软件开发中没有所谓正确的方法》，当你把某一种方法论作为银弹使用的时候，早晚魔鬼会伴随在你身边。</p>
-
-<p>&nbsp; &nbsp; &nbsp;Mock给我带来了感知，剥离了类与类之间的依赖，有助于我们更好的工作在当前的关注点 .但同时由于太多的对场景的假设，导致这块代码成为了信息的孤岛，甚至很多时候不得不用mock的第二特性verify，order，以至于你的测试关心的不再是代码存在的business逻辑，而倾向代码层面的设计实现，这就把你单元测试推向了&ldquo;白盒测试&ldquo;的位置，导致测试变为脆弱的测试。每当简单的重构导致内部的变化，你的测试也必须随着改变。</p>
-
-<p>&nbsp; &nbsp; &nbsp;鄙人认为作为一个好的测试而言，在一次合法的简单重构之下，是不需要修改测试的，因为你修改的只是内部实现，而不是business的改变，如果你边改测试边重构或者重构后挂到一大堆测试，这意味这你的测试不是一个稳定的测试或者你不是一次合法的重构（也许redesign，override）。</p>
-
-<p>&nbsp; &nbsp; &nbsp;在同事的项目中对mock的极端到了对简单的View Object 也采用builder模式，可是内部却全是mock given。在我看来而言View Object只是一个简单的数据载体，不存在行为逻辑，我们毫无必要去做mock，mock该是针对假设，而应该尽量避免对状态mock。在同事的项目中导致需要写一个测试之前，作为测试的准备given ，必须理解存在代码的实现，因为你需要一堆given，比如对于person对象，如果你在实现中需要得到account则：</p>
-
-<p>given(person.getAccount()).willReturn(some account);</p>
-
-<p>&nbsp; &nbsp; &nbsp;导致我需要了解实现需要什么property，如果我需要新的的property也许只是简单的把某个&ldquo;依恋情结&rdquo;放入了object，测试也需要被修改，导致重构者对自己的重构并不那么自信，这将影响重构成为日常行为，随着堆积的&rdquo;坏味道&ldquo;这将一点一点的侵蚀你的代码，项目慢慢的也许会不能的不可控。</p>
-
-<p>&nbsp; &nbsp; &nbsp;Mock并不是一个坏的东西，结果的好坏在于使用的人，团队 的意识，如果是mock anywhere或者杜绝mock走向两个任意的极端都将是一个错误的抉择。</p>
-
-<p>&nbsp; &nbsp; &nbsp;Mock更多的使用场景为对外界资源解依赖增强感知能力，以及对无响应的重要business的验证，后者长体现于一个没有返回子void的method，但是method比如增加用户积分，记录用户信息等的。然而对于有响应的business，我需要的不是mock而应该是assert，对于测试来说对于business来说应试是我的输入应该得到我预期的响应，而非我verify某个行为发生了，那么其结果一定就正确，当然对于实现来说这是成立的，但是从测试的价值来说这厮无意义的，这将是一个脆弱的测试，我认为一个好的测试将是&ldquo;黑盒测试&ldquo;，是一个business的描述，对一份约定，契约的阐述。</p>
-
-<p>&nbsp; &nbsp; &nbsp; 附言，如果你因为测试的速度，独立性来为自己的mock证明，那将是无意义的，不是每一个测试都必须在黄金法则内（0.1s），如果你对外部依赖，耗时依赖的分离，这我相信将不再是问题所在，测试的优化将是另一个有趣的话题，将不是本文内容之列。</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/05/29/3107019.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -903,6 +969,10 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
       </li>
     
@@ -928,10 +998,6 @@ func (</span><span style="color: #0000ff;">this</span> *S)Log(msg <span style="c
     
       <li class="post">
         <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a>
       </li>
     
   </ul>

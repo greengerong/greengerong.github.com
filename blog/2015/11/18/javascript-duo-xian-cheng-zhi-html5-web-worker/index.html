@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>JavaScript多线程之HTML5 Web Worker - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在博主的前些文章Promise的前世今生和妙用技巧和JavaScript单线程和浏览器事件循环简述中都曾提到了HTML5 Web Worker这一个概念。在JavaScript单线程和浏览器事件循环简述中讲述了JavaScript出于界面元素访问安全的考虑， &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">JavaScript多线程之HTML5 Web Worker</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-18T12:39:29+08:00" pubdate data-updated="true">Nov 18<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在博主的前些文章<a href="http://greengerong.com/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>和<a href="http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>中都曾提到了HTML5 Web Worker这一个概念。在<a href="http://greengerong.com/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>中讲述了JavaScript出于界面元素访问安全的考虑，所以JavaScript运行时一直是被实现为单线程执行的；这也意味着我们应该尽量的避免在JavaScript中执行较长耗时的操作（如大量for循环的对象diff等）或者是长时间I/O阻塞的任务，特别是对于CPU计算密集型的操作。</p>
+
+<p>例如在JavaScript中尝试计算像<code>fibonacci</code>这类计算密集型的操作，就会导致整个页面体验被blocked。HTML5 Web Worker的出现让我们在不阻塞当前JavaScript线程的情况下，在当前的JavaScript执行线程中可利用Worker这个类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。它和C# WinForm中的BackgroundWorker很类似。</p>
+
+<p>利用HTML5 Web Worker实现<code>fibonacci</code>可像如下所示（<a href="http://plnkr.co/edit/IoXkPw?p=preview">plnkr在线demo</a>）：</p>
+
+<p>fibonacci.js Worker JavaScript文件：</p>
+
+<pre class='green'><code>(function() {
+  var fibonacci = function(n) {
+    return n &lt; 2 ? 1 : (fibonacci(n - 1) + fibonacci(n - 2));
+  };
+
+  onmessage = function(event) {
+    postMessage({
+      input: event.data,
+      result: fibonacci(event.data)
+    });
+  };
+
+})();
+</code></pre>
+
+<p>在fibonacci.js中利用onmessage方法来监听主线程发送的fibonacci计算请求，和利用postMessage返回计算的结果到请求线程。</p>
+
+<p>script.js 主线程JavaScript文件：</p>
+
+<pre class='green'><code>$(function() {
+  var $input = $('#input'),
+    $btn = $('#btn'),
+    $result = $('#result'),
+    worker = new Worker('fibonacci.js'),
+    timeKey = function(val) {
+      return 'fibonacci(' + val + ')';
+    };
+
+  worker.onmessage = function(event) {
+    console.timeEnd(timeKey(event.data.input));
+    $result.text(event.data.result);
+  };
+
+  $btn.on('click', function() {
+    var val = parseInt($input.val(), 10);
+    if (val) {
+      console.time(timeKey(val));
+      $result.text('?')
+      worker.postMessage(val);
+    }
+  });
+});
+</code></pre>
+
+<p>在这个JavaScript文件中，利用<code>new Worker('fibonacci.js')</code>方式来创建Web Worker对象，并利用Worker对象上的postMessage方法发送请求计算请求，以及利用Worker对象的哦你message的方法接受Worker线程的返回结果，并显示在UI界面上。同时我们也利用了console最新的time API来统计计算所花费的时间。</p>
+
+<p>其显示效果如下：</p>
+
+<p><img src="/images/blog_img/html5-web-worker-demo.png" alt="html5 web worker demo" /></p>
+
+<p>在console中打印的时间信息为：</p>
+
+<pre class='green'><code>fibonacci(10): 1.022ms
+fibonacci(20): 1.384ms
+fibonacci(30): 22.065ms
+fibonacci(40): 1744.352ms
+fibonacci(50): 202140.027ms
+</code></pre>
+
+<p>从这里时间输出可以看出，在计算n为40的<code>fibonacci</code> 开始时间开始急速的加长，在UI中返回结果的时间也逐渐变长；但是在Web Worker后台计算的时候，它并不会阻塞我们的UI界面的其他交互。</p>
+
+<p>Web Worker在这类耗时计算密集型操作中，显得特别实用。在Web Worker中我们可以实现：</p>
+
+<ol>
+<li>可以加载一个JS进行大量的复杂计算而不挂起主进程，并通过postMessage，onmessage进行通信；</li>
+<li>可以在worker中通过importScripts(url)加载另外的脚本文件；</li>
+<li>可以使用 setTimeout()，clearTimeout()，setInterval()，clearInterval()；</li>
+<li>可以使用XMLHttpRequest来发送请求，以及访问navigator的部分属性。</li>
+</ol>
+
+
+<p>但是它也存在一些来自浏览器<code>安全沙盒</code>的限制：</p>
+
+<ol>
+<li>不能加载跨域的JavaScript文件；</li>
+<li>如文件开始所说，考虑到JavaScript操作DOM的安全性问题，在Web Worker中不能访问界面中的DOM信息，对于DOM的访问操作都必须委托给JavaScript主线程来操作；因此HTML5 Web Worker的出现的出现，并没有改变JavaScript单线程执行的这个事实；</li>
+<li>还有就是Web Worker的浏览器兼容性问题。它的浏览器兼容性图如下：</li>
+</ol>
+
+
+<p><img src="/images/blog_img/html5-web-worker-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7.png" alt="html5 web worker浏览器兼容性" /></p>
+
+<p>更多关于Web Worker的资料，请参考<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers</a>。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-18T12:39:29+08:00" pubdate data-updated="true">Nov 18<span>th</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/html5/'>html5</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/" title="Previous Post: Angular移除不必要的$watch之性能优化">&laquo; Angular移除不必要的$watch之性能优化</a>  
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>
