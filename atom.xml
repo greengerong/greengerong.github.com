@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-20T19:01:56+08:00</updated>
+  <updated>2015-11-20T19:03:40+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -245,9 +245,8 @@ $elem.otherStuff();
 
 <p>链式和jQuery缓存方法是最好的做法，导致更短、更快的代码。</p>
 
-<p>翻译：野兽</p>
-
-<p>英文原文地址：<a href="https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button">https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button</a>。</p>
+<p>翻译：野兽
+英文原文地址：<a href="https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button">https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button</a>。</p>
 ]]></content>
   </entry>
   
