@@ -207,4 +207,4 @@ toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用�
 
 翻译：野兽
 
-英文原文地址：[https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button](https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button)。
+英文原文地址：[https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know](https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know)。
