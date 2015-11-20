@@ -205,5 +205,4 @@ toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用�
 链式和jQuery缓存方法是最好的做法，导致更短、更快的代码。
 
 翻译：野兽
-
 英文原文地址：[https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button](https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button)。
