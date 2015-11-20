@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-20T19:18:36+08:00</updated>
+  <updated>2015-11-20T19:32:12+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -139,11 +139,13 @@ $('.btn').click(function () {
 $('.btn').click(function () {
   $('.element').slideToggle('slow');
 });
+</code></pre>
 
-简单的手风琴
-这是个简单快速的方法创建一个手风琴：
+<h3>简单的手风琴</h3>
 
-// Close all panels
+<p>这是个简单快速的方法创建一个手风琴：</p>
+
+<pre class='green'><code>// Close all panels
 $('#accordion').find('.content').hide();
 
 // Accordion
