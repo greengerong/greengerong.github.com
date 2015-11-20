@@ -50,7 +50,8 @@ categories: [javascript, jquery]
 
 	$.preloadImages('img/hover-on.png', 'img/hover-off.png');
 
-判断图片是否加载完有时候你可能需要检查图像是否已经加载完成，以便于可以继续执行相应的js代码：
+###判断图片是否加载完
+有时候你可能需要检查图像是否已经加载完成，以便于可以继续执行相应的js代码：
 
 	$('img').load(function () {
 	  console.log('image load successful');
@@ -58,7 +59,8 @@ categories: [javascript, jquery]
 
 你还可以检查一个特定的图片是否加载完并且被带有Id或者class的`<img>`标签代替。
 
-自动修补破损图像如果你碰巧发现在你的网站上发现破损的图像链接，一个个去替代他们是痛苦的。这个简单的代码可以节省很多的麻烦：
+###自动修补破损图像
+如果你碰巧发现在你的网站上发现破损的图像链接，一个个去替代他们是痛苦的。这个简单的代码可以节省很多的麻烦：
 
 	$('img').on('error', function () {
 	  if(!$(this).hasClass('broken-image')) {
@@ -94,13 +96,15 @@ categories: [javascript, jquery]
 
 	$('input[type="submit"]').prop('disabled', false);
 
-停止正在加载的链接有时你不想链接到特定的网页或者重新载入页面；你可能想让他们做一些其他事情，如触发一些其他的脚本。这是防止违约行动的技巧：
+###停止正在加载的链接
+有时你不想链接到特定的网页或者重新载入页面；你可能想让他们做一些其他事情，如触发一些其他的脚本。这是防止违约行动的技巧：
 
 	$('a.no-link').click(function (e) {
 	  e.preventDefault();
 	});
 
-toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用的动画。你可能仅仅想在用户做某些点击事件的时候显示一个元素，这时候需要淡入/淡出或者滑动方法。但是如果你需要那个元素在你第一次点击的时候出现，在第二次点击的时候消失，代码如下：
+###toggle fade/slide
+滑动和淡入/淡出 是我们在jQuery中经常大量使用的动画。你可能仅仅想在用户做某些点击事件的时候显示一个元素，这时候需要淡入/淡出或者滑动方法。但是如果你需要那个元素在你第一次点击的时候出现，在第二次点击的时候消失，代码如下：
 
 	// Fade
 	$('.btn').click(function () {
@@ -128,7 +132,8 @@ toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用�
 
 通过添加这个脚本，你需要做的则是必要的HTML操作在你的页面上。
 
-使两个DIV同等高度有时你会想要两个DIV有相同的高度，无论他们都有什么内容：
+###使两个DIV同等高度
+有时你会想要两个DIV有相同的高度，无论他们都有什么内容：
 
 	$('.div').css('min-height', $('.main-div').height());
 
@@ -165,7 +170,8 @@ toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用�
 	var search = $('#search').val();
 	$('div:not(:contains("' + search + '"))').hide();
 
-可见变化的触发当用户不再聚焦或者重新聚焦一个标签时触发javascript脚本：
+###可见变化的触发
+当用户不再聚焦或者重新聚焦一个标签时触发javascript脚本：
 
 	$(document).on('visibilitychange', function (e) {
 	  if (e.target.visibilityState === "visible") {
