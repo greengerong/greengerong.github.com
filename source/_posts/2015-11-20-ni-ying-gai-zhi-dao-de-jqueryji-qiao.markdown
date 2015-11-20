@@ -92,7 +92,7 @@ categories: [javascript, jquery]
 
 	$('input[type="submit"]').prop('disabled', true);
 
-你需要做的只是需要在输入框上再次运行pop方法，但设置的被禁用值是false：
+你需要做的只是需要在输入框上再次运行prop方法，但设置的被禁用值是false：
 
 	$('input[type="submit"]').prop('disabled', false);
 
