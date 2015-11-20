@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-20T19:44:40+08:00</updated>
+  <updated>2015-11-20T19:48:53+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -120,7 +120,7 @@ $.preloadImages('img/hover-on.png', 'img/hover-off.png');
 <pre class='green'><code>$('input[type="submit"]').prop('disabled', true);
 </code></pre>
 
-<p>你需要做的只是需要在输入框上再次运行pop方法，但设置的被禁用值是false：</p>
+<p>你需要做的只是需要在输入框上再次运行prop方法，但设置的被禁用值是false：</p>
 
 <pre class='green'><code>$('input[type="submit"]').prop('disabled', false);
 </code></pre>
