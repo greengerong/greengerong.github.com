@@ -148,7 +148,7 @@ categories: [javascript, jquery]
 	});
 	$columns.height(height);
 
-	如果你想要所有的列有相同的高度：
+如果你想要所有的列有相同的高度：
 
 	var $rows = $('.same-height-columns');
 	$rows.each(function () {
