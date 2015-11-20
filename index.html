@@ -10,7 +10,18 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在博主的前些文章Promise的前世今生和妙用技巧和JavaScript单线程和浏览器事件循环简述中都曾提到了HTML5 Web Worker这一个概念。在JavaScript单线程和浏览器事件循环简述中讲述了JavaScript出于界面元素访问安全的考虑， &hellip;"> 
+    <meta name="description" content="帮助提高你jQuery应用的简单小技巧。 回到顶部按钮
+图片预加载
+判断图片是否加载完
+自动修补破损图像
+Hover切换class类
+禁用输入
+停止正在加载的链接
+toggle fade/slide
+简单的手风琴
+使两个DIV同等高度
+在浏览器标签/新窗口打开外部链接
+根据文本获取元素 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +74,271 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-20T18:54:40+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>帮助提高你jQuery应用的简单小技巧。</p>
+
+<ol>
+<li>回到顶部按钮</li>
+<li>图片预加载</li>
+<li>判断图片是否加载完</li>
+<li>自动修补破损图像</li>
+<li>Hover切换class类</li>
+<li>禁用输入</li>
+<li>停止正在加载的链接</li>
+<li>toggle fade/slide</li>
+<li>简单的手风琴</li>
+<li>使两个DIV同等高度</li>
+<li>在浏览器标签/新窗口打开外部链接</li>
+<li>根据文本获取元素</li>
+<li>可见变化的触发</li>
+<li>Ajax调用错误处理</li>
+<li>链式操作</li>
+</ol>
+
+
+<h3>回到顶部按钮</h3>
+
+<p>利用jQuery里的animate和scrollTop方法，你便不需要使用插件创建简单的滚动到顶部动画。</p>
+
+<pre class='green'><code>// Back to top
+$('.top').click(function (e) {
+  e.preventDefault();
+  $('html, body').animate({scrollTop: 0}, 800);
+});
+&lt;!-- Create an anchor tag --&gt;
+&lt;a class="top" href="#"&gt;Back to top&lt;/a&gt;
+</code></pre>
+
+<p>通过scrollTop的值来改变你想要滚动到的位置。其实你就是做了：在接下来的800毫秒中让页面滚动，直到它滚动到文档的顶部。</p>
+
+<p><strong>备注</strong>：来看一些scrollTop的调皮行为 。</p>
+
+<h3>图片预加载</h3>
+
+<p>如果你的网页使用了很多隐藏图片文件（例如：鼠标悬停展示的图片），那么图片的预加载是有意义的：</p>
+
+<pre class='green'><code>$.preloadImages = function () {
+  for (var i = 0; i &lt; arguments.length; i++) {
+    $('&lt;img&gt;').attr('src', arguments[i]);
+  }
+};
+
+$.preloadImages('img/hover-on.png', 'img/hover-off.png');
+</code></pre>
+
+<p>判断图片是否加载完有时候你可能需要检查图像是否已经加载完成，以便于可以继续执行相应的js代码：</p>
+
+<pre class='green'><code>$('img').load(function () {
+  console.log('image load successful');
+});
+</code></pre>
+
+<p>你还可以检查一个特定的图片是否加载完并且被带有Id或者class的<code>&lt;img&gt;</code>标签代替。</p>
+
+<p>自动修补破损图像如果你碰巧发现在你的网站上发现破损的图像链接，一个个去替代他们是痛苦的。这个简单的代码可以节省很多的麻烦：</p>
+
+<pre class='green'><code>$('img').on('error', function () {
+  if(!$(this).hasClass('broken-image')) {
+    $(this).prop('src', 'img/broken.png').addClass('broken-image');
+  }
+});
+</code></pre>
+
+<p>即使你没有任何断开的链接，加入这代码也不会有任何影响。</p>
+
+<h3>Hover切换class类</h3>
+
+<p>比方说，当用户将鼠标悬停在你页面上的元素时，你想改变其视觉效果。当用户鼠标悬停在元素上，你可以在该元素上添加一个class类，当鼠标停止悬停事件时移除此class类：</p>
+
+<pre class='green'><code>$('.btn').hover(function () {
+  $(this).addClass('hover');
+}, function () {
+  $(this).removeClass('hover');
+});
+</code></pre>
+
+<p>如果你想要一个更简单的方式使用toggleClass方法，则仅仅需要添加必要的CSS：</p>
+
+<pre class='green'><code>$('.btn').hover(function () {
+  $(this).toggleClass('hover');
+});
+</code></pre>
+
+<p><em>备注</em>：CSS可以在这种情况下是一个快速的解决方案，但要知道这依旧是值得了解的。</p>
+
+<h3>禁用输入</h3>
+
+<p>有时你可能需要用表单的提交按钮或者某个输入框直到用户执行了某个动作（比如：检查“我已阅读条款”复选框）。在你的输入框上设置disabled属性，然后当你需要的时候启用该属性：</p>
+
+<pre class='green'><code>$('input[type="submit"]').prop('disabled', true);
+</code></pre>
+
+<p>你需要做的只是需要在输入框上再次运行pop方法，但设置的被禁用值是false：</p>
+
+<pre class='green'><code>$('input[type="submit"]').prop('disabled', false);
+</code></pre>
+
+<p>停止正在加载的链接有时你不想链接到特定的网页或者重新载入页面；你可能想让他们做一些其他事情，如触发一些其他的脚本。这是防止违约行动的技巧：</p>
+
+<pre class='green'><code>$('a.no-link').click(function (e) {
+  e.preventDefault();
+});
+</code></pre>
+
+<p>toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用的动画。你可能仅仅想在用户做某些点击事件的时候显示一个元素，这时候需要淡入/淡出或者滑动方法。但是如果你需要那个元素在你第一次点击的时候出现，在第二次点击的时候消失，代码如下：</p>
+
+<pre class='green'><code>// Fade
+$('.btn').click(function () {
+  $('.element').fadeToggle('slow');
+});
+
+// Toggle
+$('.btn').click(function () {
+  $('.element').slideToggle('slow');
+});
+
+简单的手风琴
+这是个简单快速的方法创建一个手风琴：
+
+// Close all panels
+$('#accordion').find('.content').hide();
+
+// Accordion
+$('#accordion').find('.accordion-header').click(function () {
+  var next = $(this).next();
+  next.slideToggle('fast');
+  $('.content').not(next).slideUp('fast');
+  return false;
+});
+</code></pre>
+
+<p>通过添加这个脚本，你需要做的则是必要的HTML操作在你的页面上。</p>
+
+<p>使两个DIV同等高度有时你会想要两个DIV有相同的高度，无论他们都有什么内容：</p>
+
+<pre class='green'><code>$('.div').css('min-height', $('.main-div').height());
+</code></pre>
+
+<p>这个例子设置了DIV的最小高度，这意味着它的高度只可以比这个设置的高度大而不能小。然而，一个更灵活的方法是循环的一组元素，并设置将最高元素的高度作为高度：</p>
+
+<pre class='green'><code>var $columns = $('.column');
+var height = 0;
+$columns.each(function () {
+  if ($(this).height() &gt; height) {
+    height = $(this).height();
+  }
+});
+$columns.height(height);
+
+如果你想要所有的列有相同的高度：
+
+var $rows = $('.same-height-columns');
+$rows.each(function () {
+  $(this).find('.column').height($(this).height());
+});
+</code></pre>
+
+<h3>在浏览器标签/新窗口打开外部链接</h3>
+
+<p>在新的浏览器标签或窗口中打开外部链接，并确保在同一个标签或窗口中打开的是同一个源的链接：</p>
+
+<pre class='green'><code>$('a[href^="http"]').attr('target', '_blank');
+$('a[href^="//"]').attr('target', '_blank');
+$('a[href^="' + window.location.origin + '"]').attr('target', '_self');
+</code></pre>
+
+<p><em>备注</em>：window.location.origin 在IE10不工作。</p>
+
+<h3>根据文本获取元素</h3>
+
+<p>通过jQuery中的contains()选择器，你能找到一个元素内的文本内容。如果文本不存在，则这个元素将被隐藏：</p>
+
+<pre class='green'><code>var search = $('#search').val();
+$('div:not(:contains("' + search + '"))').hide();
+</code></pre>
+
+<p>可见变化的触发当用户不再聚焦或者重新聚焦一个标签时触发javascript脚本：</p>
+
+<pre class='green'><code>$(document).on('visibilitychange', function (e) {
+  if (e.target.visibilityState === "visible") {
+    console.log('Tab is now in view!');
+  } else if (e.target.visibilityState === "hidden") {
+    console.log('Tab is now hidden!');
+  }
+});
+</code></pre>
+
+<h3>Ajax调用错误处理</h3>
+
+<p>当一个Ajax调用返回一个404或500的错误时，将执行该错误处理。如果该处理未定义，则其他jQuery代码便可能不会执行了。定义一个全局Ajax错误处理程序：</p>
+
+<pre class='green'><code>$(document).ajaxError(function (e, xhr, settings, error) {
+  console.log(error);
+});
+</code></pre>
+
+<p>链式操作jQuery允许通过链式操作来减轻反复查询DOM和创建多个jQuery对象的过程。比如下面是你的方法调用：</p>
+
+<pre class='green'><code>$('#elem').show();
+$('#elem').html('bla');
+$('#elem').otherStuff();
+</code></pre>
+
+<p>这代码可以通过链式大大的提高：</p>
+
+<pre class='green'><code>$('#elem')
+  .show()
+  .html('bla')
+  .otherStuff();
+</code></pre>
+
+<p>另一个方法是在一个可变的元素缓存（$作为前置）：</p>
+
+<pre class='green'><code>var $elem = $('#elem');
+$elem.hide();
+$elem.html('bla');
+$elem.otherStuff();
+</code></pre>
+
+<p>链式和jQuery缓存方法是最好的做法，导致更短、更快的代码。</p>
+
+<p>翻译：野兽</p>
+
+<p>英文原文地址：<a href="https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button">https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button</a>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1678,208 +1954,6 @@ console.log("%cExample %s", css, 'all code runs happy');
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-24T15:00:40+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>开篇概述</h2>
-
-<p>在上篇的<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中，我们预先体验了ES7的Decorators，虽然它只是一个简单的日志AOP拦截Demo。但它也足以让我们体会到ES7 Decorators的强大魅力所在。所以为什么博主会为它而专门写作此文。在Angular2中的TypeScript Annotate就是标注装潢器的另一类实现。同样如果你也是一个React的爱好者，你应该已经发现了redux2中也开始利用ES7的Decorators进行了大量重构。</p>
-
-<p>尝试过Python的同学们，我相信你做难忘的应该是装潢器。由<a href="https://github.com/wycats">Yehuda Katz</a>提出的<a href="https://github.com/wycats/javascript-decorators">decorator模式</a>，就是借鉴于Python的这一特性。作为读者的你，可以从上一篇博文<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中看到它们之间的联系。</p>
-
-<h2>Decorators</h2>
-
-<h4>背后原理</h4>
-
-<p>ES7的Decorators让我们能够在设计时对类、属性等进行标注和修改成为了可能。Decorators利用了ES5的</p>
-
-<pre class='green'><code>Object.defineProperty(target, name, descriptor);
-</code></pre>
-
-<p>来实现这一特性。如果你还不了解Object.defineProperty，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">MDN文档</a>。首先我们来考虑一个普通的ES6类：</p>
-
-<pre class='green'><code>class Person {
-  name() { return `${this.first} ${this.last}` }
-}
-</code></pre>
-
-<p>执行这一段class，给Person.prototype注册一个name属性，粗略的和如下代码相似：</p>
-
-<pre class='green'><code>Object.defineProperty(Person.prototype, 'name', {
-  value: specifiedFunction,
-  enumerable: false,
-  configurable: true,
-  writable: true
-});
-</code></pre>
-
-<p>如果利用装潢器来标注一个属性呢？</p>
-
-<pre class='green'><code>class Person {
-  @readonly
-  name() { return `${this.first} ${this.last}` }
-}
-</code></pre>
-
-<p>在这种装潢下的属性，则会在利用Object.defineProperty为Person.prototype注册name属性之前，执行这段装潢器：</p>
-
-<pre class='green'><code>let descriptor = {
-  value: specifiedFunction,
-  enumerable: false,
-  configurable: true,enumerable、
-  writable: true
-};
-
-descriptor = readonly(Person.prototype, 'name', descriptor) || descriptor;
-Object.defineProperty(Person.prototype, 'name', descriptor);
-</code></pre>
-
-<p>从上面的伪代码中，我们能看出，装潢器只是在Object.defineProperty为Person.prototype注册属性之前，执行一个装饰函数，其属于一类对Object.defineProperty的拦截。所以它和Object.defineProperty具有一致的方法签名，它们的3个参数分别为：</p>
-
-<ol>
-<li>obj：作用的目标对象；</li>
-<li>prop：作用的属性名；</li>
-<li>descriptor: 针对该属性的描述符。</li>
-</ol>
-
-
-<p>这里最重要的是descriptor这个参数，它是一个数据或访问器的属性描述对象。在对数据和访问器属性描述时，它们都具有configurable、enumerable属性可用。而在数据描述时，value、writable属性则是数据所特有的。get、set属性则是访问器属性描述所特有的。属性描述器中的属性决定了对象prop属性的一些特性。比如 enumerable，它决定了目标对象是否可被枚举，能够在for…in循环中遍历到，或者出现在Object.keys法的返回值中；writable则决定了目标对象的属性是否可以被更改。完整的属性描述，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description">MDN文档</a>。</p>
-
-<p>对于descriptor中的属性，它们可以被我们在Decorators中使用，或者修改的，以达到我们标注或者拦截的目的。这也是装潢器拦截的主体信息。</p>
-
-<h4>作用于访问器</h4>
-
-<p>装潢器也可以作用与属性的getter/setter访问器之上，如下将属性标注为不可枚举的代码：</p>
-
-<pre class='green'><code>class Person {
-  @nonenumerable
-  get kidCount() { return this.children.length; }
-}
-
-function nonenumerable(target, name, descriptor) {
-  descriptor.enumerable = false;
-  return descriptor;
-}
-</code></pre>
-
-<p>下面是一个更复杂的对访问器的备用录模式运用：</p>
-
-<pre class='green'><code>class Person {
-  @memoize
-  get name() { return `${this.first} ${this.last}` }
-  set name(val) {
-    let [first, last] = val.split(' ');
-    this.first = first;
-    this.last = last;
-  }
-}
-
-let memoized = new WeakMap();
-function memoize(target, name, descriptor) {
-  let getter = descriptor.get, setter = descriptor.set;
-
-  descriptor.get = function() {
-    let table = memoizationFor(this);
-    if (name in table) { return table[name]; }
-    return table[name] = getter.call(this);
-  }
-
-  descriptor.set = function(val) {
-    let table = memoizationFor(this);
-    setter.call(this, val);
-    table[name] = val;
-  }
-}
-
-function memoizationFor(obj) {
-  let table = memoized.get(obj);
-  if (!table) { table = Object.create(null); memoized.set(obj, table); }
-  return table;
-}   
-</code></pre>
-
-<h4>作用域类上</h4>
-
-<p>同样Decorators也可以为class装潢，如下对类是否annotated的标注：</p>
-
-<pre class='green'><code>// A simple decorator
-@annotation
-class MyClass { }
-
-function annotation(target) {
-   // Add a property on target
-   target.annotated = true;
-}
-</code></pre>
-
-<h4>也可以是一个工厂方法</h4>
-
-<p>对于装潢器来说，它同样也可以是一个工厂方法，接受配置参数信息，并返回一个应用于目标函数的装潢函数。如下例子，对类可测试性的标记：</p>
-
-<pre class='green'><code>@isTestable(true)
-class MyClass { }
-
-function isTestable(value) {
-   return function decorator(target) {
-      target.isTestable = value;
-   }
-}
-</code></pre>
-
-<p>同样工厂方法，也可以被应用于属性之上，如下对可枚举属性的配置：</p>
-
-<pre class='green'><code>class C {
-  @enumerable(false)
-  method() { }
-}
-
-function enumerable(value) {
-  return function (target, key, descriptor) {
-     descriptor.enumerable = value;
-     return descriptor;
-  }
-}
-</code></pre>
-
-<p>同样在上篇<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中对于日志拦截的日志类型配置信息，也是利用工厂方法来实现的。它是一个更复杂的工厂方式的Decorators实现。</p>
-
-<h4>后续</h4>
-
-<p>如上一篇博问所说：虽然它是ES7的特性，但在Babel大势流行的今天，我们可以利用Babel来使用它。我们可以利用Babel命令行工具，或者grunt、gulp、webpack的babel插件来使用Decorators。</p>
-
-<p>关于ES7 Decorators的更有意思的玩法，你可以参见牛人实现的常用的Decorators：<a href="https://github.com/jayphelps/core-decorators.js">core-decorators</a>。以及<a href="http://raganwald.com/">raganwald</a>的<a href="http://raganwald.com/2015/06/26/decorators-in-es7.html">如何用Decorators来实现Mixin</a>。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1909,6 +1983,10 @@ function enumerable(value) {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
       </li>
     
@@ -1934,10 +2012,6 @@ function enumerable(value) {
     
       <li class="post">
         <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Jquery | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/jquery/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-11-18T20:23:01+08:00</updated>
+  <updated>2015-11-20T19:01:56+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,244 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[(译)你应该知道的jQuery技巧]]></title>
+    <link href="http://greengerong.github.io/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/"/>
+    <updated>2015-11-20T18:54:40+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao</id>
+    <content type="html"><![CDATA[<p>帮助提高你jQuery应用的简单小技巧。</p>
+
+<ol>
+<li>回到顶部按钮</li>
+<li>图片预加载</li>
+<li>判断图片是否加载完</li>
+<li>自动修补破损图像</li>
+<li>Hover切换class类</li>
+<li>禁用输入</li>
+<li>停止正在加载的链接</li>
+<li>toggle fade/slide</li>
+<li>简单的手风琴</li>
+<li>使两个DIV同等高度</li>
+<li>在浏览器标签/新窗口打开外部链接</li>
+<li>根据文本获取元素</li>
+<li>可见变化的触发</li>
+<li>Ajax调用错误处理</li>
+<li>链式操作</li>
+</ol>
+
+
+<h3>回到顶部按钮</h3>
+
+<p>利用jQuery里的animate和scrollTop方法，你便不需要使用插件创建简单的滚动到顶部动画。</p>
+
+<pre><code>// Back to top
+$('.top').click(function (e) {
+  e.preventDefault();
+  $('html, body').animate({scrollTop: 0}, 800);
+});
+&lt;!-- Create an anchor tag --&gt;
+&lt;a class="top" href="#"&gt;Back to top&lt;/a&gt;
+</code></pre>
+
+<p>通过scrollTop的值来改变你想要滚动到的位置。其实你就是做了：在接下来的800毫秒中让页面滚动，直到它滚动到文档的顶部。</p>
+
+<p><strong>备注</strong>：来看一些scrollTop的调皮行为 。</p>
+
+<h3>图片预加载</h3>
+
+<p>如果你的网页使用了很多隐藏图片文件（例如：鼠标悬停展示的图片），那么图片的预加载是有意义的：</p>
+
+<pre><code>$.preloadImages = function () {
+  for (var i = 0; i &lt; arguments.length; i++) {
+    $('&lt;img&gt;').attr('src', arguments[i]);
+  }
+};
+
+$.preloadImages('img/hover-on.png', 'img/hover-off.png');
+</code></pre>
+
+<p>判断图片是否加载完有时候你可能需要检查图像是否已经加载完成，以便于可以继续执行相应的js代码：</p>
+
+<pre><code>$('img').load(function () {
+  console.log('image load successful');
+});
+</code></pre>
+
+<p>你还可以检查一个特定的图片是否加载完并且被带有Id或者class的<code>&lt;img&gt;</code>标签代替。</p>
+
+<p>自动修补破损图像如果你碰巧发现在你的网站上发现破损的图像链接，一个个去替代他们是痛苦的。这个简单的代码可以节省很多的麻烦：</p>
+
+<pre><code>$('img').on('error', function () {
+  if(!$(this).hasClass('broken-image')) {
+    $(this).prop('src', 'img/broken.png').addClass('broken-image');
+  }
+});
+</code></pre>
+
+<p>即使你没有任何断开的链接，加入这代码也不会有任何影响。</p>
+
+<h3>Hover切换class类</h3>
+
+<p>比方说，当用户将鼠标悬停在你页面上的元素时，你想改变其视觉效果。当用户鼠标悬停在元素上，你可以在该元素上添加一个class类，当鼠标停止悬停事件时移除此class类：</p>
+
+<pre><code>$('.btn').hover(function () {
+  $(this).addClass('hover');
+}, function () {
+  $(this).removeClass('hover');
+});
+</code></pre>
+
+<p>如果你想要一个更简单的方式使用toggleClass方法，则仅仅需要添加必要的CSS：</p>
+
+<pre><code>$('.btn').hover(function () {
+  $(this).toggleClass('hover');
+});
+</code></pre>
+
+<p><em>备注</em>：CSS可以在这种情况下是一个快速的解决方案，但要知道这依旧是值得了解的。</p>
+
+<h3>禁用输入</h3>
+
+<p>有时你可能需要用表单的提交按钮或者某个输入框直到用户执行了某个动作（比如：检查“我已阅读条款”复选框）。在你的输入框上设置disabled属性，然后当你需要的时候启用该属性：</p>
+
+<pre><code>$('input[type="submit"]').prop('disabled', true);
+</code></pre>
+
+<p>你需要做的只是需要在输入框上再次运行pop方法，但设置的被禁用值是false：</p>
+
+<pre><code>$('input[type="submit"]').prop('disabled', false);
+</code></pre>
+
+<p>停止正在加载的链接有时你不想链接到特定的网页或者重新载入页面；你可能想让他们做一些其他事情，如触发一些其他的脚本。这是防止违约行动的技巧：</p>
+
+<pre><code>$('a.no-link').click(function (e) {
+  e.preventDefault();
+});
+</code></pre>
+
+<p>toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用的动画。你可能仅仅想在用户做某些点击事件的时候显示一个元素，这时候需要淡入/淡出或者滑动方法。但是如果你需要那个元素在你第一次点击的时候出现，在第二次点击的时候消失，代码如下：</p>
+
+<pre><code>// Fade
+$('.btn').click(function () {
+  $('.element').fadeToggle('slow');
+});
+
+// Toggle
+$('.btn').click(function () {
+  $('.element').slideToggle('slow');
+});
+
+简单的手风琴
+这是个简单快速的方法创建一个手风琴：
+
+// Close all panels
+$('#accordion').find('.content').hide();
+
+// Accordion
+$('#accordion').find('.accordion-header').click(function () {
+  var next = $(this).next();
+  next.slideToggle('fast');
+  $('.content').not(next).slideUp('fast');
+  return false;
+});
+</code></pre>
+
+<p>通过添加这个脚本，你需要做的则是必要的HTML操作在你的页面上。</p>
+
+<p>使两个DIV同等高度有时你会想要两个DIV有相同的高度，无论他们都有什么内容：</p>
+
+<pre><code>$('.div').css('min-height', $('.main-div').height());
+</code></pre>
+
+<p>这个例子设置了DIV的最小高度，这意味着它的高度只可以比这个设置的高度大而不能小。然而，一个更灵活的方法是循环的一组元素，并设置将最高元素的高度作为高度：</p>
+
+<pre><code>var $columns = $('.column');
+var height = 0;
+$columns.each(function () {
+  if ($(this).height() &gt; height) {
+    height = $(this).height();
+  }
+});
+$columns.height(height);
+
+如果你想要所有的列有相同的高度：
+
+var $rows = $('.same-height-columns');
+$rows.each(function () {
+  $(this).find('.column').height($(this).height());
+});
+</code></pre>
+
+<h3>在浏览器标签/新窗口打开外部链接</h3>
+
+<p>在新的浏览器标签或窗口中打开外部链接，并确保在同一个标签或窗口中打开的是同一个源的链接：</p>
+
+<pre><code>$('a[href^="http"]').attr('target', '_blank');
+$('a[href^="//"]').attr('target', '_blank');
+$('a[href^="' + window.location.origin + '"]').attr('target', '_self');
+</code></pre>
+
+<p><em>备注</em>：window.location.origin 在IE10不工作。</p>
+
+<h3>根据文本获取元素</h3>
+
+<p>通过jQuery中的contains()选择器，你能找到一个元素内的文本内容。如果文本不存在，则这个元素将被隐藏：</p>
+
+<pre><code>var search = $('#search').val();
+$('div:not(:contains("' + search + '"))').hide();
+</code></pre>
+
+<p>可见变化的触发当用户不再聚焦或者重新聚焦一个标签时触发javascript脚本：</p>
+
+<pre><code>$(document).on('visibilitychange', function (e) {
+  if (e.target.visibilityState === "visible") {
+    console.log('Tab is now in view!');
+  } else if (e.target.visibilityState === "hidden") {
+    console.log('Tab is now hidden!');
+  }
+});
+</code></pre>
+
+<h3>Ajax调用错误处理</h3>
+
+<p>当一个Ajax调用返回一个404或500的错误时，将执行该错误处理。如果该处理未定义，则其他jQuery代码便可能不会执行了。定义一个全局Ajax错误处理程序：</p>
+
+<pre><code>$(document).ajaxError(function (e, xhr, settings, error) {
+  console.log(error);
+});
+</code></pre>
+
+<p>链式操作jQuery允许通过链式操作来减轻反复查询DOM和创建多个jQuery对象的过程。比如下面是你的方法调用：</p>
+
+<pre><code>$('#elem').show();
+$('#elem').html('bla');
+$('#elem').otherStuff();
+</code></pre>
+
+<p>这代码可以通过链式大大的提高：</p>
+
+<pre><code>$('#elem')
+  .show()
+  .html('bla')
+  .otherStuff();
+</code></pre>
+
+<p>另一个方法是在一个可变的元素缓存（$作为前置）：</p>
+
+<pre><code>var $elem = $('#elem');
+$elem.hide();
+$elem.html('bla');
+$elem.otherStuff();
+</code></pre>
+
+<p>链式和jQuery缓存方法是最好的做法，导致更短、更快的代码。</p>
+
+<p>翻译：野兽</p>
+
+<p>英文原文地址：<a href="https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button">https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#back-to-top-button</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[扩展Bootstrap Tooltip插件使其可交互]]></title>

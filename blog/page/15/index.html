@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="&nbsp;&nbsp;&nbsp;&nbsp; 几天遇见一个问题需要检查某个wpf程序是否已经运行，如果没有运行则启动传递参数，如果已运行则需要直接传递消息。在没有运行 情况下传递参数很简单，我们只需要Process cmd窗口启动并传递参数，在程序中处理。但是如果程序已经启动有点麻烦， &hellip;"> 
+    <meta name="description" content="&nbsp;&nbsp; 在html5中为我们提供了一种本地缓存机制，它将取代我们的cookie，并且它是不会随浏览器发会我们的服务器端的。我们可以采用js在客户端自由的操作本地缓存。html5中缓存主要有localStorage，和sessionStorage。他们的用法一致。 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,75 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/04/html5-web-ben-di-cun-chu/">Html5-web本地存储</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-04T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>&nbsp;&nbsp; 在html5中为我们提供了一种本地缓存机制，它将取代我们的cookie，并且它是不会随浏览器发会我们的服务器端的。我们可以采用js在客户端自由的操作本地缓存。html5中缓存主要有localStorage，和sessionStorage。他们的用法一致。区别在于他们的时间限制不同。localStorage是不存在时间限制的。而sessionStorage这时基于session的数据存储，在关闭或者离开网站后，数据将会被删除。</p>
+
+<p>&nbsp; 下面我们来简单看看官方的示例操作：</p>
+
+<p><strong>javascript</strong></p>
+
+<p>localStorage.fresh = &#8220;vfresh.org&#8221;;&nbsp;&nbsp; //设置一个键值
+var a = localStorage.fresh;&nbsp;&nbsp; //获取键值</p>
+
+<p>或者使用它的API：
+<strong>javascript</strong></p>
+
+<p>//清空storage
+localStorage.clear();</p>
+
+<p>//设置一个键值
+localStorage.setItem(&#8220;fresh&#8221;,&#8220;vfresh.org&#8221;);</p>
+
+<p>//获取一个键值
+localStorage.getItem(&#8220;fresh&#8221;);&nbsp;</p>
+
+<p>//return &#8220;vfresh.org&#8221; //获取指定下标的键的名称（如同Array）
+localStorage.key(0);&nbsp;</p>
+
+<p>//return &#8220;fresh&#8221; //删除一个键值
+localStorage.removeItem(&#8220;fresh&#8221;);</p>
+
+<p>&nbsp;</p></blockquote>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sessionStorage相同就不用在废话了，他相当于我们的过期时间Expire=0的cookie；</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2011/03/04/1970457.html" title="原文首发">原文首发请看这里</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1524,120 +1593,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/11/12/VS-shu-chu-chuang-kou-output-view-di-xiao-ji-qiao-wen-jian-hang-hao-zi-fu-ding-wei/">VS输出窗口（output View）的小技巧&#8211;文件行号字符定位</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-11-12T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在我们的调试输出到VS输出窗口的信息，有时候我们想要鼠标点击就定位该该文件，改行，甚至该列。在强大的VS工具中已经给我们提供了这个功能，我们只需要把输出到输出窗</p>
-
-<p>口的字符串就是一定的格式化就可以了。c#在VS输出窗口格式为：
-文件名称（行号，列号）:消息信息。
-比如我 test.cs（100，78）:消息信息。就是对应我们的test.cs文件的100行78个字符。
-在这里我写了一个简单异常输出信息的扩展类。
-代码具体如下：&nbsp;&nbsp;&nbsp;</p>
-
-<pre class='green'><code>     代码 
-
-    Code highlighting produced by Actipro CodeHighlighter (freeware)http://www.CodeHighlighter.com/--&gt;public class OutPutExceptionEx
-        {
-            public static void WriteLine(string message, Exception ex)
-            {
-                System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(ex, true);
-                System.Diagnostics.StackFrame frm = st.GetFrame(0);
-                if (frm != null)
-                {
-                    System.Diagnostics.Debug.WriteLine(string.Format("{0}({1},{2}):{3})", frm.GetFileName(), frm.GetFileLineNumber(), frm.GetFileColumnNumber(), 
-
-    message));
-                }
-
-            }
-
-            public static void WriteLine(Exception ex)
-            {
-                WriteLine(ex.Message, ex);
-            }
-
-            public static void Write(string message, Exception ex)
-            {
-                System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(ex, true);
-                System.Diagnostics.StackFrame frm = st.GetFrame(0);
-                if (frm != null)
-                {
-                    System.Diagnostics.Debug.Write(string.Format("{0}({1},{2}):{3})", frm.GetFileName(), frm.GetFileLineNumber(), frm.GetFileColumnNumber(), 
-
-    message));
-                }
-
-            }
-
-            public static void Write(Exception ex)
-            {
-                Write(ex.Message,ex);
-            }
-        }
-
-    //测试
-        class Program
-        {
-            static void Main(string[] args)
-            {
-
-                try
-                {
-                    throw new Exception("这个发生了一个错误！");
-                }
-                catch (Exception ex)
-                {
-                    OutPutExceptionEx.Write(ex);
-                }
-
-                Console.WriteLine("ok");
-                Console.Read();           
-            }
-    }
-</code></pre>
-
-<p>图片效果：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/201011121051.jpg" alt="" /></p>
-
-<p>2：</p>
-
-<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/2010111210512.jpg" alt="" /></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2010/11/12/1875473.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/16/">&larr; Older</a>
@@ -1669,6 +1624,10 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
       </li>
     
@@ -1694,10 +1653,6 @@ FCKConfig.ShiftEnterMode = 'br' ; // p | div | br
     
       <li class="post">
         <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a>
       </li>
     
   </ul>
