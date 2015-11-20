@@ -112,8 +112,8 @@ toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用�
 	  $('.element').slideToggle('slow');
 	});
 
-	简单的手风琴
-	这是个简单快速的方法创建一个手风琴：
+###简单的手风琴
+这是个简单快速的方法创建一个手风琴：
 
 	// Close all panels
 	$('#accordion').find('.content').hide();
