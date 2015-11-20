@@ -182,7 +182,8 @@ toggle fade/slide滑动和淡入/淡出 是我们在jQuery中经常大量使用�
 	  console.log(error);
 	});
 
-链式操作jQuery允许通过链式操作来减轻反复查询DOM和创建多个jQuery对象的过程。比如下面是你的方法调用：
+###链式操作
+jQuery允许通过链式操作来减轻反复查询DOM和创建多个jQuery对象的过程。比如下面是你的方法调用：
 
 	$('#elem').show();
 	$('#elem').html('bla');
