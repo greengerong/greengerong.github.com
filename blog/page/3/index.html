@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承自Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。 &hellip;"> 
+    <meta name="description" content="在层次数据结构展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。 这里我们采用Angular的方式来实现这类常见的tree view结构。 首先我们定义数据结构，采用以children属性来挂接子节点方式来展现树层次结构，示例如下 &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,148 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-02T07:47:21+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在层次数据结构展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。</p>
+
+<p>这里我们采用Angular的方式来实现这类常见的tree view结构。</p>
+
+<p>首先我们定义数据结构，采用以children属性来挂接子节点方式来展现树层次结构，示例如下：</p>
+
+<pre class='green'><code>[
+   {
+      "id":"1",
+      "pid":"0",
+      "name":"家用电器",
+      "children":[
+         {
+            "id":"4",
+            "pid":"1",
+            "name":"大家电"
+         }
+      ]
+   },
+   {
+     ...
+   }
+   ...
+]
+</code></pre>
+
+<p>则我们对于ng way的tree view可以实现为：</p>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module('ng.demo', [])
+.directive('treeView',[function(){
+
+     return {
+          restrict: 'E',
+          templateUrl: '/treeView.html',
+          scope: {
+              treeData: '=',
+              canChecked: '=',
+              textField: '@',
+              itemClicked: '&amp;',
+              itemCheckedChanged: '&amp;',
+              itemTemplateUrl: '@'
+          },
+         controller:['$scope', function($scope){
+             $scope.itemExpended = function(item, $event){
+                 item.$$isExpend = ! item.$$isExpend;
+                 $event.stopPropagation();
+             };
+
+             $scope.getItemIcon = function(item){
+                 var isLeaf = $scope.isLeaf(item);
+
+                 if(isLeaf){
+                     return 'fa fa-leaf';
+                 }
+
+                 return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';   
+             };
+
+             $scope.isLeaf = function(item){
+                return !item.children || !item.children.length; 
+             };
+
+             $scope.warpCallback = function(callback, item, $event){
+                  ($scope[callback] || angular.noop)({
+                     $item:item,
+                     $event:$event
+                 });
+             };
+         }]
+     };
+ }]);
+</code></pre>
+
+<p>HTML:</p>
+
+<p>树内容主题HTML： /treeView.html</p>
+
+<pre class='green'><code>&lt;ul class="tree-view"&gt;
+       &lt;li ng-repeat="item in treeData" ng-include="'/treeItem.html'" &gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>每个item节点的HTML：/treeItem.html</p>
+
+<pre class='green'><code>&lt;i ng-click="itemExpended(item, $event);" class=""&gt;&lt;/i&gt;
+
+&lt;input type="checkbox" ng-model="item.$$isChecked" class="check-box" ng-if="canChecked" ng-change="warpCallback('itemCheckedChanged', item, $event)"&gt;
+
+&lt;span class='text-field' ng-click="warpCallback('itemClicked', item, $event);"&gt;&lt;/span&gt;
+&lt;ul ng-if="!isLeaf(item)" ng-show="item.$$isExpend"&gt;
+   &lt;li ng-repeat="item in item.children" ng-include="'/treeItem.html'"&gt;
+   &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>这里的技巧在于利用ng-include来加载子节点和数据，以及利用一个warpCallback方法来转接函数外部回调函数，利用angular.noop的空对象模式来避免未注册的回调场景。对于View交互的数据隔离采用了直接封装在元数据对象的方式，但它们都以$$开头，如$$isChecked、$$isExpend。在Angular程序中以$$开头的对象会被认为是内部的私有变量，在angular.toJson的时候，它们并不会被序列化，所以利用$http发回服务端更新的时候，它们并不会影响服务端传送的数据。同时，在客户端，我们也能利用对象的这些$$属性来控制View的状态，如item.$$isChecked来默认选中某一节点。</p>
+
+<p>我们就可以如下方式来使用这个tree-view：</p>
+
+<pre class='green'><code>&lt;tree-view tree-data="demo.tree" text-field="name" value-field='id' item-clicked="demo.itemClicked($item)" item-checked-changed="demo.itemCheckedChanged($item)" can-checked="true"&gt;&lt;/tree-view&gt;
+</code></pre>
+
+<p>效果如下，当然你也可以在<a href="http://jsbin.com/vefuqu/edit?html,js,output">jsbin中体验它</a>：</p>
+
+<p> <img src="/images/blog_img/ng-tree-view-sample.png" alt="ng-tree-view" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1403,200 +1545,6 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/11/jshan-shu-ke-li-hua/">JavaScript函数柯里化</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-11T19:37:18+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>函数式</h4>
-
-<p>JavaScript是以函数为一等公民的函数式语言。函数在JavaScript中也是一个对象（继承制Function），函数也可以作为参数传递成函数变量。最近几年函数式也因为其无副作用的特性、透明性、惰性计算等在高并发，大数据领域火起来了。</p>
-
-<p>JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使用方式：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre class='green'><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">users</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">user</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; , &quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">.</span><span class="nx">value</span><span class="p">();</span>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">names</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>关于lodash更多内容请参考<a href="http://www.cnblogs.com/whitewolf/p/4417873.html">JavaScript工具库之Lodash</a>.</p>
-
-<h4>柯里化</h4>
-
-<p>今天文章将以高阶函数中的柯里化方式来，看看JavaScript的函数式能力。</p>
-
-<p>在计算机科学中，柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数的技术。这个技术由 Christopher Strachey 以逻辑学家 Haskell Curry 命名的，尽管它是 Moses Schnfinkel 和 Gottlob Frege 发明的。</p>
-
-<p>在理论计算机科学中，柯里化提供了在简单的理论模型中比如只接受一个单一参数的lambda 演算中研究带有多个参数的函数的方式。</p>
-
-<h4>JavaScript的柯里化实现</h4>
-
-<p>下边的例子，我们将把柯里化方式泛化为接受任意个参数，直到声明的方法参数个数饱和才执行，所以根据参数个数可以有多种柯里化函数产生。</p>
-
-<p>代码如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-</pre></td><td class='code'><pre class='green'><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">global</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">FN_ARGS</span> <span class="o">=</span> <span class="sr">/^function\s*[^\(]*\(\s*([^\)]*)\)/m</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">FN_ARG_SPLIT</span> <span class="o">=</span> <span class="sr">/,/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">FN_ARG</span> <span class="o">=</span> <span class="sr">/^\s*(_?)(\S+?)\1\s*$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">STRIP_COMMENTS</span> <span class="o">=</span> <span class="sr">/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">getArgLength</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">func</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">fnText</span> <span class="o">=</span> <span class="nx">func</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">replace</span><span class="p">(</span><span class="nx">STRIP_COMMENTS</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">argDecl</span> <span class="o">=</span> <span class="nx">fnText</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">FN_ARGS</span><span class="p">);</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>        <span class="nx">argDecl</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="nx">FN_ARG_SPLIT</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">arg</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">FN_ARG</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">all</span><span class="p">,</span> <span class="nx">underscore</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">params</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">params</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">curryFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">func</span><span class="p">,</span> <span class="nx">len</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">len</span> <span class="o">=</span> <span class="nx">len</span> <span class="o">||</span> <span class="nx">getArgLength</span><span class="p">(</span><span class="nx">func</span><span class="p">);</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>            <span class="p">[].</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="p">[].</span><span class="nx">slice</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">arguments</span><span class="p">));</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="nx">len</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">global</span><span class="p">.</span><span class="nx">curryFunc</span> <span class="o">=</span> <span class="nx">curryFunc</span><span class="p">;</span>
-</span><span class='line'><span class="p">})(</span><span class="k">this</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">z</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 1:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)(</span><span class="mi">3</span><span class="p">));</span>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 2:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">));</span>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 3:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">3</span><span class="p">)(</span><span class="mi">2</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">y</span> <span class="o">*</span> <span class="nx">z</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 1:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)(</span><span class="mi">6</span><span class="p">));</span>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 2:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">2</span><span class="p">)(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">));</span>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 3:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">2</span><span class="p">)(</span><span class="mi">6</span><span class="p">)(</span><span class="mi">4</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">sayHello</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">curryFunc</span><span class="p">(</span><span class="nx">sayHello</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足之处，也希望大家指出来。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1628,6 +1576,10 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
       </li>
     
@@ -1653,10 +1605,6 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     
       <li class="post">
         <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪库</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
       </li>
     
   </ul>

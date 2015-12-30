@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-12-30T13:33:24+08:00</updated>
+  <updated>2015-12-30T17:32:19+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[《AngularJS深度剖析与最佳实践》简介]]></title>
+    <link href="http://greengerong.github.io/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/"/>
+    <updated>2015-12-30T15:29:27+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie</id>
+    <content type="html"><![CDATA[<p>最近由于年末将至，前阵子一直忙于工作的事务，不得已暂停了微信订阅号的更新。必究一个人的力量微薄，精力有限，希望大家能理解，仍然能一如既往的关注和支持本微信号，同时也欢迎大家的高质量文章的投稿。</p>
+
+<p>在2015年一年时间中，我、雪狼大叔、彭洪伟一起共同合作了《AngularJS深度剖析与最佳实践》这本前端Angular。js框架的进阶书籍。在写作期间也得到很多人的支持，特别是在Angularjs中文社区群中的各位群友的持续关注。中途由于写作、出版流程等因素，花费了大家很长的等待时间，就在昨天《AngularJS深度剖析与最佳实践》这本书籍终于上市了，大家现在可以在京东上预订书籍了，相信出版社也会在很快的时间内，为大家送货了。</p>
+
+<h3>双狼的写作感谢</h3>
+
+<p>我和雪狼的本次合作起于机械工业出版社编辑吴怡的邀请。作为ThoughtWorks的Tech Lead，双狼都有很多工作任务，原定6个月的写书计划，被拖到了8个月，感谢吴怡的耐心与推动。</p>
+
+<p>还有很多ThoughtWorker为本书做出了贡献：
+　　</p>
+
+<pre class='green'><code>张逸，资深ThoughtWorker，很多技术书籍的作者或译者。一直在鼓励我们，并给了我们很多帮助。
+</code></pre>
+
+<p>　　</p>
+
+<pre class='green'><code>彭洪伟，本书的第三作者。在交稿压力最大的时候，承担了“工具”篇的撰写工作，保障了本书的尽早交稿。
+</code></pre>
+
+<p>　　</p>
+
+<pre class='green'><code>陈嘉，幕后的贡献者，全栈式工程师。帮我们设计了“双狼说”微信公众号的Logo，从技术的角度帮我们审稿，并提了一些非常有用的建议。
+</code></pre>
+
+<p>还有很多ThoughtWorker和社区朋友帮助我们从技术层面和语言层面进行修改。他们有的是Angular专家，有的是新手，给了我们比较全面的反馈。能将枯燥、乏味的技术平易近人地展现在这本书中，一定要感谢他们所作出的奉献。他们是（排名不分先后）：</p>
+
+<pre class='green'><code>冯尔东、朱本威、李科伟、杨琛、彭琰、叶志敏、ng群as。
+</code></pre>
+
+<p>　　
+还要感谢Angular中文社区QQ群和关注“双狼说”微信号的网友们，是你们的鼓励给了我们写作的信心和动力！</p>
+
+<h3>书籍的阅读指南</h3>
+
+<p>Angular的学习曲线大概是这样的：入门非常容易，中级的时候会发现需要深入理解很多概念，高级的时候需要掌握Angular的工作原理，而想成为专家则很难，需要经过很多工程实践的磨练。</p>
+
+<p>本书的主体结构也是针对这样的学习曲线设计的：</p>
+
+<h4>首先，初级阶段，轻松入门</h4>
+
+<p>我们会带你在实战中逐步体验Angular的开发过程，并随着进度的推进，逐步引入所需的技术和概念。</p>
+
+<h4>然后，中级阶段，概念介绍</h4>
+
+<p>在实战中提到的一些概念不会就地展开，而是只做简介，到了这里，会对概念进行深入讲解：是什么，为什么，怎么用，什么时候用，什么时候不用等。</p>
+
+<h4>接下来，高级阶段，工作原理</h4>
+
+<p>学习了这些概念，我们还要把它们串起来，向你揭示Angular的工作原理，看看这些概念之间是如何协作的。</p>
+
+<h4>最后，专家阶段：最佳实践，技巧</h4>
+
+<p>前面主要是入门和理论，而这部分将主要以实战经验为主。</p>
+
+<p>只把Angular用熟了是不够的，我们还要把它整合进更宏观的开发过程中，不但要考虑开发，更要考虑维护。我们要如何开发容易维护的Angular程序？请看“最佳实践”一节。</p>
+
+<p>专家还需要掌握一些技巧去把复杂问题简单化，把一些不常用但很有用的API发掘出来，把看起来平淡无奇的框架特性运用得出神入化，“使用技巧”一节将集中展现这一点。</p>
+
+<h4>坑</h4>
+
+<p>在前面的章节中零零散散提到了一些需要注意的地方，但是这样不方便查阅，所以我们把它作为独立的一大章，把我们帮别人解决过的一些典型问题收集在一起。
+当然，我们也会在读者社区继续维护并更新这些“坑”，而不是等再版时才发布。
+我们希望能把这本书做成“活的”，让这本书更加物超所值，不辜负读者对我们的信任。</p>
+
+<h4>工具</h4>
+
+<p>工欲善其事，必先利其器。充分发挥工具的力量是开发人员的重要素质，日常用到的工具你真的用熟了吗？有没有更好地工具？我们会把实战中觉得对自己帮助最大的工具及其使用经验分享给你。</p>
+
+<h4>更多</h4>
+
+<p>在实战中，有很多需求是不显眼但很重要的，比如SEO、访问统计等，在实际的项目中，这些往往是不能忽视的。
+我们会专门开一章来讲解如何结合Angular和第三方软件来干净漂亮的解决这些问题。</p>
+
+<p>Hybrid应用和手机Web越来越普及，手机版开发的需求也越来越高，在Angular的基础上，开发手机版变得容易多了。而且，也已经有了比较成熟的工具和框架，我们会简要讲解一下手机版开发的方法和框架。</p>
+
+<h4>附录</h4>
+
+<p>软件开发需要很多综合技能，但本书容量有限，我们也不可能是每个领域的专家。因此，我们会“授人以渔”，给出一些在线资源和书单，供大家深入学习或作为备查资料。</p>
+
+<h4>关于随书代码</h4>
+
+<p>书中所摘录的只是全部代码的一小部分，大部分代码都放在了Github上。</p>
+
+<p>如果你查看Git历史，会发现总的提交数并不多。这是因为要方便教学，所以在提交前进行了合并。所保留的这些提交大都和书中的主要进度有关，略去了细节提交。所以，本书中代码的提交粒度不能代表实际项目中的提交粒度，在实际项目中，其提交粒度通常比本书中所示范的更小。阅读代码时请记住这一点，以免养成“大粒度提交”的坏习惯。</p>
+
+<p>另外，文中的js代码（包括摘引的angular源码）全都使用了两格缩进模式，这主要是考虑到图书排版问题，希望少一些不必要的换行。你们在现实项目中愿意用两格或四格均可，只要项目组内保持一致。</p>
+
+<h4>关于内容的重复</h4>
+
+<p>仔细阅读，可能会发现有些内容会在多个不同的章节中重复讲解，这当然不是凑字数（本书也不按字数算稿费），而是尽可能符合人的记忆规律 —— 把重要的内容在不同的场景下重复，对于深入掌握它是很有帮助的。</p>
+
+<h4>关于写作风格</h4>
+
+<p>这是一本多人协作的书，虽然我们进行了后期统稿，但在语言风格等方面仍难免会有不一致的地方，我们期待你们的反馈，以便将来改进。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[(译)你应该知道的jQuery技巧]]></title>
@@ -2458,121 +2560,6 @@ $toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
 </code></pre>
 
 <p>在这里利用了css text-transform特性，对于其它的方式，我们可以使用keydown、keyup、keypress等来实现。如<a href="https://github.com/greengerong/green.inputmask4angular">inputMask</a>和<a href="https://github.com/greengerong/ngmodel-format">ngmodel-format</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angular实现递归指令 - Tree View]]></title>
-    <link href="http://greengerong.github.io/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/"/>
-    <updated>2015-09-02T07:47:21+08:00</updated>
-    <id>http://greengerong.github.io/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view</id>
-    <content type="html"><![CDATA[<p>在层次数据结构展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。</p>
-
-<p>这里我们采用Angular的方式来实现这类常见的tree view结构。</p>
-
-<p>首先我们定义数据结构，采用以children属性来挂接子节点方式来展现树层次结构，示例如下：</p>
-
-<pre class='green'><code>[
-   {
-      "id":"1",
-      "pid":"0",
-      "name":"家用电器",
-      "children":[
-         {
-            "id":"4",
-            "pid":"1",
-            "name":"大家电"
-         }
-      ]
-   },
-   {
-     ...
-   }
-   ...
-]
-</code></pre>
-
-<p>则我们对于ng way的tree view可以实现为：</p>
-
-<p>JavaScript:</p>
-
-<pre class='green'><code>angular.module('ng.demo', [])
-.directive('treeView',[function(){
-
-     return {
-          restrict: 'E',
-          templateUrl: '/treeView.html',
-          scope: {
-              treeData: '=',
-              canChecked: '=',
-              textField: '@',
-              itemClicked: '&amp;',
-              itemCheckedChanged: '&amp;',
-              itemTemplateUrl: '@'
-          },
-         controller:['$scope', function($scope){
-             $scope.itemExpended = function(item, $event){
-                 item.$$isExpend = ! item.$$isExpend;
-                 $event.stopPropagation();
-             };
-
-             $scope.getItemIcon = function(item){
-                 var isLeaf = $scope.isLeaf(item);
-
-                 if(isLeaf){
-                     return 'fa fa-leaf';
-                 }
-
-                 return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';   
-             };
-
-             $scope.isLeaf = function(item){
-                return !item.children || !item.children.length; 
-             };
-
-             $scope.warpCallback = function(callback, item, $event){
-                  ($scope[callback] || angular.noop)({
-                     $item:item,
-                     $event:$event
-                 });
-             };
-         }]
-     };
- }]);
-</code></pre>
-
-<p>HTML:</p>
-
-<p>树内容主题HTML： /treeView.html</p>
-
-<pre class='green'><code>&lt;ul class="tree-view"&gt;
-       &lt;li ng-repeat="item in treeData" ng-include="'/treeItem.html'" &gt;&lt;/li&gt;
-&lt;/ul&gt;
-</code></pre>
-
-<p>每个item节点的HTML：/treeItem.html</p>
-
-<pre class='green'><code>&lt;i ng-click="itemExpended(item, $event);" class=""&gt;&lt;/i&gt;
-
-&lt;input type="checkbox" ng-model="item.$$isChecked" class="check-box" ng-if="canChecked" ng-change="warpCallback('itemCheckedChanged', item, $event)"&gt;
-
-&lt;span class='text-field' ng-click="warpCallback('itemClicked', item, $event);"&gt;&lt;/span&gt;
-&lt;ul ng-if="!isLeaf(item)" ng-show="item.$$isExpend"&gt;
-   &lt;li ng-repeat="item in item.children" ng-include="'/treeItem.html'"&gt;
-   &lt;/li&gt;
-&lt;/ul&gt;
-</code></pre>
-
-<p>这里的技巧在于利用ng-include来加载子节点和数据，以及利用一个warpCallback方法来转接函数外部回调函数，利用angular.noop的空对象模式来避免未注册的回调场景。对于View交互的数据隔离采用了直接封装在元数据对象的方式，但它们都以$$开头，如$$isChecked、$$isExpend。在Angular程序中以$$开头的对象会被认为是内部的私有变量，在angular.toJson的时候，它们并不会被序列化，所以利用$http发回服务端更新的时候，它们并不会影响服务端传送的数据。同时，在客户端，我们也能利用对象的这些$$属性来控制View的状态，如item.$$isChecked来默认选中某一节点。</p>
-
-<p>我们就可以如下方式来使用这个tree-view：</p>
-
-<pre class='green'><code>&lt;tree-view tree-data="demo.tree" text-field="name" value-field='id' item-clicked="demo.itemClicked($item)" item-checked-changed="demo.itemCheckedChanged($item)" can-checked="true"&gt;&lt;/tree-view&gt;
-</code></pre>
-
-<p>效果如下，当然你也可以在<a href="http://jsbin.com/vefuqu/edit?html,js,output">jsbin中体验它</a>：</p>
-
-<p> <img src="http://greengerong.github.io/images/blog_img/ng-tree-view-sample.png" alt="ng-tree-view" /></p>
 ]]></content>
   </entry>
   

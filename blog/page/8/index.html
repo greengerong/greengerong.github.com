@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <title>破狼 Blog</title>
     <meta name="author" content="破 狼"> 
-    <meta name="description" content="在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }} ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM &hellip;"> 
+    <meta name="description" content="这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。 在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$ &hellip;"> 
     <!-- http://t.co/dKP3o1e -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -63,6 +63,129 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-11T22:27:29+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
+
+<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
+
+<p>如ngClick在官方文档是这么描述的：</p>
+
+<pre class='green'><code>Expression to evaluate upon click. (Event object is available as $event)
+</code></pre>
+
+<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
+
+<pre class='green'><code>    var ngEventDirectives = {};
+    forEach(
+      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+      function(name) {
+        var directiveName = directiveNormalize('ng-' + name);
+        ngEventDirectives[directiveName] = ['$parse', function($parse) {
+          return {
+            compile: function($element, attr) {
+              var fn = $parse(attr[directiveName]);
+              return function(scope, element, attr) {
+                element.on(lowercase(name), function(event) {
+                  scope.$apply(function() {
+                    fn(scope, {$event:event});
+                  });
+                });
+              };
+            }
+          };
+        }];
+      }
+    );
+</code></pre>
+
+<p>在上边代码我们可以得到两个信息：</p>
+
+<ol>
+<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
+<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
+</ol>
+
+
+<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
+
+<p>html 代码</p>
+
+<pre class='green'><code>    &lt;!DOCTYPE html&gt;
+    &lt;html id="ng-app" ng-app="app"&gt;
+    &lt;head&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
+      &lt;meta charset="utf-8"&gt;
+      &lt;title&gt;JS Bin&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body ng-controller="demo as d"&gt;
+       &lt;div ng-click="d.click('parent',$event)"&gt;
+         given some text for click
+         &lt;hr&gt;
+         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
+         &lt;hr&gt;
+         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
+
+       &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;             
+</code></pre>
+
+<p>js 代码</p>
+
+<pre class='green'><code>angular.module("app",[])
+.controller("demo",[function(){
+  var vm = this;
+
+  vm.click = function(name,$event){
+    console.log(name +" -----called");
+    if(vm.stopPropagation){
+      $event.stopPropagation();
+    }
+  };
+
+  return vm;
+}]);
+</code></pre>
+
+<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
+
+<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
+
+<p>希望大家已经明白了，不要再问这类问题了。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -850,48 +973,6 @@ Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibil
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/01/sublime-2-for-mac-link-to-command/">Sublime 2 for Mac Link to Command</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-01T00:00:00+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><span>Sublime command for mac :</span></p>
-
-<p><span>execute those command:</span></p>
-
-<p><span>sudo ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime</span></p>
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2013/07/01/3165484.html" title="原文首发">原文首发请看这里</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -923,6 +1004,10 @@ Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibil
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
       </li>
     
@@ -948,10 +1033,6 @@ Caused by: org.apache.maven.plugin.PluginExecutionException: A type incompatibil
     
       <li class="post">
         <a href="/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/">smartcrop.js智能图片裁剪库</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a>
       </li>
     
   </ul>
