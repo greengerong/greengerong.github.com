@@ -4,7 +4,7 @@
   <title><![CDATA[破狼 Blog]]></title>
   <link href="http://greengerong.github.io/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
-  <updated>2015-12-30T17:32:19+08:00</updated>
+  <updated>2015-12-30T17:33:36+08:00</updated>
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -30,16 +30,8 @@
 　　</p>
 
 <pre class='green'><code>张逸，资深ThoughtWorker，很多技术书籍的作者或译者。一直在鼓励我们，并给了我们很多帮助。
-</code></pre>
-
-<p>　　</p>
-
-<pre class='green'><code>彭洪伟，本书的第三作者。在交稿压力最大的时候，承担了“工具”篇的撰写工作，保障了本书的尽早交稿。
-</code></pre>
-
-<p>　　</p>
-
-<pre class='green'><code>陈嘉，幕后的贡献者，全栈式工程师。帮我们设计了“双狼说”微信公众号的Logo，从技术的角度帮我们审稿，并提了一些非常有用的建议。
+彭洪伟，本书的第三作者。在交稿压力最大的时候，承担了“工具”篇的撰写工作，保障了本书的尽早交稿。
+陈嘉，幕后的贡献者，全栈式工程师。帮我们设计了“双狼说”微信公众号的Logo，从技术的角度帮我们审稿，并提了一些非常有用的建议。
 </code></pre>
 
 <p>还有很多ThoughtWorker和社区朋友帮助我们从技术层面和语言层面进行修改。他们有的是Angular专家，有的是新手，给了我们比较全面的反馈。能将枯燥、乏味的技术平易近人地展现在这本书中，一定要感谢他们所作出的奉献。他们是（排名不分先后）：</p>
