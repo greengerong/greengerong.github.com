@@ -3,7 +3,7 @@ layout: post
 title: "《AngularJS深度剖析与最佳实践》简介"
 date: 2015-12-30 15:29:27 +0800
 comments: true
-categories: [angular, javascript, 书籍]
+categories: [Angular, javascript, 书籍]
 ---
 
 最近由于年末将至，前阵子一直忙于工作的事务，不得已暂停了微信订阅号的更新。必究一个人的力量微薄，精力有限，希望大家能理解，仍然能一如既往的关注和支持本微信号，同时也欢迎大家的高质量文章的投稿。
