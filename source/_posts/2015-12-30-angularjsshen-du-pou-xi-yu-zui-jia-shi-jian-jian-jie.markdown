@@ -12,6 +12,9 @@ categories: [Angular, javascript, 书籍]
 在2015年一年时间中，我、雪狼大叔、彭洪伟一起共同编写了《AngularJS深度剖析与最佳实践》这本前端Angular.js框架的进阶书籍。在写作期间也得到很多人的支持，特别是在Angularjs中文社区群中的各位群友的持续关注。中途由于写作、出版流程等因素，花费了大家很长的等待时间，就在昨天《AngularJS深度剖析与最佳实践》这本书籍终于上市了，大家现在可以在京东上预订书籍了，相信出版社也会在很快的时间内送到大家手中。
 
 [![http://item.jd.com/11845736.html#none](http://img11.360buyimg.com/n1/jfs/t2164/170/1927361173/116828/d85d9ddf/5680e85dNdd2009df.jpg)](http://item.jd.com/11845736.html#none)
+
+链接地址：[http://item.jd.com/11845736.html#none](http://item.jd.com/11845736.html#none)
+
 ### 双狼的写作感谢
 
 我和雪狼的本次合作起于机械工业出版社编辑吴怡的邀请。作为ThoughtWorks的Tech Lead，双狼都有很多工作任务，原定6个月的写书计划，被拖到了8个月，感谢吴怡的耐心等待与支持。
