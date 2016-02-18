@@ -17,5 +17,9 @@
   sudo: yes
 
 - name: bundle install
-  # bundler: state=present gemfile=/vagrant/Gemfile 
   shell: chdir="/vagrant"  bundle install --deployment
+
+- name: bundle install
+  shell: chdir="/vagrant"  chmod +x go.sh
+  sudo: yes
+  

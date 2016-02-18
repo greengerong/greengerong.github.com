@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "zone.js - 暴力之美"
+title: "Zone.js - 暴力之美"
 date: 2016-01-30 21:27:00 +0800
 comments: true
 categories: [angular2, javascript]
