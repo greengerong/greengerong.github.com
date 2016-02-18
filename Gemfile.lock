@@ -25,7 +25,9 @@ GEM
     maruku (0.6.1)
       syntax (>= 1.0.0)
     metaweblog (0.1.0)
-    nokogiri (1.5.11)
+    mini_portile2 (2.0.0)
+    nokogiri (1.6.7.2)
+      mini_portile2 (~> 2.0.0.rc2)
     posix-spawn (0.3.6)
     pygments.rb (0.3.4)
       posix-spawn (~> 0.3.6)
@@ -60,7 +62,7 @@ DEPENDENCIES
   jekyll (~> 0.12)
   liquid (~> 2.3.0)
   metaweblog (~> 0.1.0)
-  nokogiri (~> 1.5.9)
+  nokogiri (~> 1.6.7.2)
   pygments.rb (~> 0.3.4)
   rake (~> 0.9)
   rb-fsevent (~> 0.9)
@@ -70,3 +72,6 @@ DEPENDENCIES
   sass-globbing (~> 1.0.0)
   sinatra (~> 1.4.2)
   stringex (~> 1.4.0)
+
+BUNDLED WITH
+   1.11.2

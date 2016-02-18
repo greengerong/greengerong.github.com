@@ -16,7 +16,7 @@ group :development do
   gem 'liquid', '~> 2.3.0'
   gem 'directory_watcher', '1.4.1'
   gem 'metaweblog', '~> 0.1.0'
-  gem 'nokogiri', '~> 1.5.9'
+  gem 'nokogiri', '~> 1.6.7.2'
 end
 
 gem 'sinatra', '~> 1.4.2'

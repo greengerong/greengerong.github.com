@@ -1,0 +1,6 @@
+---
+
+- hosts: blog-vm
+  sudo: yes
+  roles:
+    - ruby

@@ -1,0 +1,21 @@
+- name: apt-get update
+  shell: apt-get update
+  sudo: yes
+
+- name: Install Ruby
+  apt: name={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - ruby1.9.3
+    - ruby-dev
+    - zlib1g-dev
+    - liblzma-dev
+    - git
+
+- name: install bundler
+  shell: chdir="/vagrant"  gem install bundler
+  sudo: yes
+
+- name: bundle install
+  # bundler: state=present gemfile=/vagrant/Gemfile 
+  shell: chdir="/vagrant"  bundle install --deployment
