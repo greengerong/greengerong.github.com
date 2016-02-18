@@ -6,6 +6,8 @@ comments: true
 categories: [angular2, javascript]
 ---
 
+---------
+
 在ng2的开发过程中，Angular团队为我们带来了一个新的库 - zone.js。zone.js的设计灵感来源于Dart语言，它描述JavaScript执行过程的上下文，可以在异步任务之间进行持久性传递，它类似于Java中的TLS（[thread-local storage: 线程本地存储](http://en.wikipedia.org/wiki/Thread-local_storage)）技术，zone.js则是将TLS引入到JavaScript语言中的实现框架。
 
 那么zone.js能为我们解决什么问题呢？在回答这个问题之前，博主更希望回顾下在JavaScript开发中，我们究竟遇见了什么难题？
