@@ -4,7 +4,11 @@
   <title><![CDATA[Category: Phantomjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/phantomjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
+<<<<<<< HEAD
   <updated>2016-02-04T23:17:04+08:00</updated>
+=======
+  <updated>2014-02-28T01:16:54+08:00</updated>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,6 +18,7 @@
 
   
   <entry>
+<<<<<<< HEAD
     <title type="html"><![CDATA[Nightmare基于phantomjs的自动化测试套件]]></title>
     <link href="http://greengerong.github.io/blog/2014/11/20/nightmareji-yu-phantomjsde-zi-dong-hua-ce-shi-tao-jian/"/>
     <updated>2014-11-20T18:58:15+08:00</updated>
@@ -118,6 +123,8 @@ new Nightmare()
   </entry>
   
   <entry>
+=======
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     <title type="html"><![CDATA[生成PDF的新选择-Phantomjs]]></title>
     <link href="http://greengerong.github.io/blog/2013/12/10/use-phantomjs-to-get-pdf/"/>
     <updated>2013-12-10T00:00:00+08:00</updated>

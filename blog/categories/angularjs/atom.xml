@@ -4,7 +4,11 @@
   <title><![CDATA[Category: Angularjs | 破狼 Blog]]></title>
   <link href="http://greengerong.github.io/blog/categories/angularjs/atom.xml" rel="self"/>
   <link href="http://greengerong.github.io/"/>
+<<<<<<< HEAD
   <updated>2016-02-04T23:17:04+08:00</updated>
+=======
+  <updated>2014-02-28T01:16:54+08:00</updated>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
   <id>http://greengerong.github.io/</id>
   <author>
     <name><![CDATA[破 狼]]></name>
@@ -14,6 +18,7 @@
 
   
   <entry>
+<<<<<<< HEAD
     <title type="html"><![CDATA[angularjs之browserTrigger]]></title>
     <link href="http://greengerong.github.io/blog/2014/06/24/angularjs-browsertrigger/"/>
     <updated>2014-06-24T20:42:33+08:00</updated>
@@ -46,6 +51,8 @@
   </entry>
   
   <entry>
+=======
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     <title type="html"><![CDATA[nodejs获取客户端IP Address]]></title>
     <link href="http://greengerong.github.io/blog/2014/02/28/nodejs-get-client-ip/"/>
     <updated>2014-02-28T00:27:22+08:00</updated>
@@ -202,7 +209,11 @@
 
 <p>地址为：</p>
 
+<<<<<<< HEAD
 <pre><code>[http://www.ngnice.com/](http://www.ngnice.com/)
+=======
+<pre><code>[http://angular.duapp.com/guide](http://angular.duapp.com/guide)
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </code></pre>
 
 <p>在翻译过程中大家力求准确，但也并不是逐字翻译，也会加上一些"译者注"之类，让大家能够更好的学习，使用Angularjs。同时在Angular开发指南首页我们也收集了很多很好的Angularjs学习资料供大家学习。</p>
@@ -290,4 +301,103 @@
 ]]></content>
   </entry>
   
+<<<<<<< HEAD
+=======
+  <entry>
+    <title type="html"><![CDATA[Angular ngClick阻止冒泡,默认行为]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation/"/>
+    <updated>2014-02-11T22:27:29+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/11/angular-ngclick-stoppropagation</id>
+    <content type="html"><![CDATA[<p>这其实是一个很简单的问题，如果你认真查看过Angular官方的API文档，本来不想记录的。但是这个问题不止一次的被人问起，所以今天在记录在这里。</p>
+
+<p>在Angular中已经对一些ng事件如ngClick,ngBlur,ngCopy,ngCut,ngDblclick&hellip;中加入了一个变量叫做$event.</p>
+
+<p>如ngClick在官方文档是这么描述的：</p>
+
+<pre><code>Expression to evaluate upon click. (Event object is available as $event)
+</code></pre>
+
+<p>在查看Angular代码<a href="https://github.com/angular/angular.js/blob/a68624444afcb9e3796b1a751cf3817cafd20240/src/ng/directive/ngEventDirs.js">ngEventDirs.js</a>:</p>
+
+<pre><code>    var ngEventDirectives = {};
+    forEach(
+      'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+      function(name) {
+        var directiveName = directiveNormalize('ng-' + name);
+        ngEventDirectives[directiveName] = ['$parse', function($parse) {
+          return {
+            compile: function($element, attr) {
+              var fn = $parse(attr[directiveName]);
+              return function(scope, element, attr) {
+                element.on(lowercase(name), function(event) {
+                  scope.$apply(function() {
+                    fn(scope, {$event:event});
+                  });
+                });
+              };
+            }
+          };
+        }];
+      }
+    );
+</code></pre>
+
+<p>在上边代码我们可以得到两个信息：</p>
+
+<ol>
+<li>Angular支持的event： click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste</li>
+<li>Angular在执行事件函数时候传入了一个名叫$event的常量，该常量即代表当前event对象，如果你在Angular之前引入了jQuery那么这就是jQuery的event.</li>
+</ol>
+
+
+<p>所以我们可以利用event的stopPropagation来阻止事件的冒泡：如下代码：<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a></p>
+
+<p>html 代码</p>
+
+<pre><code>    &lt;!DOCTYPE html&gt;
+    &lt;html id="ng-app" ng-app="app"&gt;
+    &lt;head&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"&gt;&lt;/script&gt;
+      &lt;meta charset="utf-8"&gt;
+      &lt;title&gt;JS Bin&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body ng-controller="demo as d"&gt;
+       &lt;div ng-click="d.click('parent',$event)"&gt;
+         given some text for click
+         &lt;hr&gt;
+         &lt;input type="checkbox" ng-model="d.stopPropagation" /&gt;Stop Propagation ?
+         &lt;hr&gt;
+         &lt;button type="button" ng-click="d.click('button',$event)"&gt;button&lt;/button&gt;
+
+       &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;             
+</code></pre>
+
+<p>js 代码</p>
+
+<pre><code>angular.module("app",[])
+.controller("demo",[function(){
+  var vm = this;
+
+  vm.click = function(name,$event){
+    console.log(name +" -----called");
+    if(vm.stopPropagation){
+      $event.stopPropagation();
+    }
+  };
+
+  return vm;
+}]);
+</code></pre>
+
+<p>可以在<a href="http://jsbin.com/delow/3/watch?html,js,output">jsbin</a>查看效果。</p>
+
+<p>首先打开你的控制台，然在没选中Stop Propagation的情况下点击button你将会看见两条log记录，相反选中后则只会出现button的log信息。</p>
+
+<p>希望大家已经明白了，不要再问这类问题了。</p>
+]]></content>
+  </entry>
+  
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </feed>

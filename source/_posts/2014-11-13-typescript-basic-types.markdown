@@ -1,0 +1,87 @@
+---
+layout: post
+title: "TypeScript - 基本类型系统"
+date: 2014-11-13 19:53:50 +0800
+comments: true
+categories: [TypeScript]
+---
+对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。
+
+####Boolean
+
+在JavaScript和TypeScript中也具有最基本的逻辑断言值true/false，采用'boolean'类型。
+
+	var isDone: boolean = false;
+
+####Number
+
+如JavaScript，TypeScript所有的数值类型采用浮点型计数，其类型为‘number’。
+
+	var height: number = 6;
+
+####String
+
+在webpages的JavaScript或者服务端的应用程序最基本的功能就是处理文本数据。在其他语言中大多使用'string'去代表文本数据类型。TypeScript和JavaScript一样也是用双引号(")或者单引号包裹文本数据。
+
+	var name: string = "bob";
+		name = 'smith';
+
+####Array
+
+在TypeScript中如JavaScript一样允许我们操结合操作。数组类型可以使用下边两种方式之一。
+
+第一种方式，你可以在数据类型之后带上'[]':
+
+	var list:number[] = [1, 2, 3];
+
+第二种方式，也可以采用泛型的数组类型：
+
+	var list:Array<number> = [1, 2, 3];
+
+####Enum
+
+TypeScript为JavaScript新增了枚举这种标准的集合数据类型。和在c#中一样，枚举是为一组数值类型一组更友好的名称。
+
+	enum Color {Red, Green, Blue};
+	var c: Color = Color.Green;
+
+默认枚举类型其实数值从0开始，你可以可用手动设置某一个成员的数值。例如我们可以将上文的起始值定为1：
+
+	enum Color {Red = 1, Green, Blue};
+	var c: Color = Color.Green;
+
+或是手动设置全部的枚举成员：
+
+	enum Color {Red = 1, Green = 2, Blue = 4};
+	var c: Color = Color.Green;
+
+枚举类型可以和容易从一个数值类型获取对应枚举名称。例如我们有一个数值类型2，但不确认将匹配哪一个枚举成员，那么我们可以如下使用：
+
+	enum Color {Red = 1, Green, Blue};
+	var colorName: string = Color[2];
+
+	alert(colorName);
+
+####Any
+
+有时我们需要描述一些我们不知道的什么写进应用的动态数据类型，这可能来自第三方用户或者lib。在这里我们希望该数据不要加入TypeScript的类型检查,是的此值通过编译时检查。为此我们可以采用‘any’类型标注：
+
+	var notSure: any = 4;
+	notSure = "maybe a string instead";
+	notSure = false; // okay, definitely a boolean
+
+‘any’类型是一种强大的兼容存在的JavaScript库的类型系统。他允许跳过TypeScript的编译时类型的检查。
+
+'any'类型对于我们只知道部分数据类型，但是不是所有的数据类型的类型系统。如一个混合了多种类型的集合数组。
+
+	var list:any[] = [1, true, "free"];
+
+	list[1] = 100;
+
+####Void
+
+和‘any’相对的数据类型则是’Void‘，它代表没有任何数据类型。我们常用的一个方法没有任何返回值：
+
+	function warnUser(): void {
+	    alert("This is my warning message");
+	}

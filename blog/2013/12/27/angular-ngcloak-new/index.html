@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<<<<<<< HEAD
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
 <html class="no-js" lang="en">
 <!--<![endif]-->
@@ -29,6 +30,43 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
  
+=======
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ngCloak 实现 Angular 初始化闪烁最佳实践 - 破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="在做angular的SPA开发时，我们经常会遇见在如Chrome这类能够快速解析的浏览器上出现表达式( {{ express }} ),或者是模块(div)的闪烁。对于这个问题由于JavaScript去操作DOM，都会等待DOM加载完成（DOM ready）。对于angular会在DOM &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/2013/12/27/angular-ngcloak-new">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 
 </head>
 
@@ -62,8 +100,13 @@
   <div id="main">
     <div id="content">
       <div>
+<<<<<<< HEAD
     <article class="hentry" role="article">
         
+=======
+<article class="hentry" role="article">
+  
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
   <header>
     
       <h1 class="entry-title">ngCloak 实现 Angular 初始化闪烁最佳实践</h1>
@@ -84,6 +127,12 @@
 
 <time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
         
+<<<<<<< HEAD
+=======
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io">Comments</a>
+        
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
       </p>
     
   </header>
@@ -93,20 +142,32 @@
 
 <p>在angular中为我们提供了ng-cloak来实现纺织闪烁的方案，我们只需要在需要的地方加上ng-cloak。同时对于bing文字({{ express }} )我们也可以改为ng-bind来实现避免。</p>
 
+<<<<<<< HEAD
 <pre class='green'><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
+=======
+<pre><code> &lt;div id="template1" ng-cloak&gt;hello&lt;/div&gt;
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
  &lt;div id="template2" ng-cloak class="ng-cloak"&gt; {{ 'hello IE7' }}  &lt;/div&gt;
  &lt;div id="template2" ng-bing="'hello IE7'"&gt;&lt;/div&gt;
 </code></pre>
 
 <p>angular将ng-cloak实现为一个directive，并会在初始化的时候在DOM的heade增加一行css代码，如下：</p>
 
+<<<<<<< HEAD
 <pre class='green'><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
+=======
+<pre><code>&lt;style type="text/css"&gt;@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 &lt;/style&gt;
 </code></pre>
 
 <p>从上面我们可以看见angular将带有ng-clock的的元素设置为display:none，隐藏掉，在等到angular解析到带有ng-clock的节点时候，会把attribute和class同时remove掉，这样就可以实现防止节点的闪烁。</p>
 
+<<<<<<< HEAD
 <pre class='green'><code>var ngCloakDirective = ngDirective({
+=======
+<pre><code>var ngCloakDirective = ngDirective({
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
       compile: function(element, attr) {
         attr.$set('ngCloak', undefined);
         element.removeClass('ng-cloak');
@@ -114,9 +175,15 @@
 });
 </code></pre>
 
+<<<<<<< HEAD
 <p>在angular.js的最后一段代码中能看见前面所说的增加css的代码：</p>
 
 <pre class='green'><code>!angular.$$csp() &amp;&amp; angular.element(document).find('head').prepend('&lt;style type="text/css"&gt;@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}&lt;/style&gt;');
+=======
+<p>在angular-bootstrap.js中会看见这样的代码去增加前面所说的css：</p>
+
+<pre><code>  document.write('&lt;link rel="stylesheet" type="text/css" href="' + serverPath + '../css/angular.css"/&gt;');
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </code></pre>
 
 <p>好像闪烁的问题好像已经能够被我解决了，恩是否是这样的，理论也改如此，但是现实是残酷的，我们的感性认识经常会被现实一记重重的耳光，我们才能很更深入全面的思考，如果浏览器的速度比angular在head中加入css的速度还快呢？我在给公司的一个项目组解决这个闪烁的问题的时候就遇见了这个问题。怎么办呢？那我们只能使出我们必杀技，自己把css加入我们的css文件引入heade，启动加载，ok这样就可以完美解决了。(如果你也遇见了加了ng-cloak还不起作用的话，那么试试直接引入css文件吧)</p>
@@ -125,6 +192,7 @@
 </div>
 
 
+<<<<<<< HEAD
         <footer>
             <p class="meta">
                 
@@ -132,6 +200,16 @@
 
 <span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
  
+=======
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+
+      
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 
 
 
@@ -143,7 +221,12 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time> 
+=======
+<time datetime="2013-12-27T00:00:00+08:00" pubdate data-updated="true"></time>
+      
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 
 <span class="categories">
   
@@ -152,8 +235,14 @@
 </span>
 
 
+<<<<<<< HEAD
             </p>
              <!-- <div class="sharing">
+=======
+    </p>
+    
+      <!-- <div class="sharing">
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
   
   
   
@@ -161,6 +250,7 @@
  -->
 <!-- JiaThis Button BEGIN -->
 <div class="jiathis_style_32x32">
+<<<<<<< HEAD
     <a class="jiathis_button_qzone"></a>
     <a class="jiathis_button_tsina"></a>
     <a class="jiathis_button_tqq"></a>
@@ -196,11 +286,62 @@ var jiathis_config = {
 
 <aside class="sidebar">
      <section>
+=======
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/12/27/angular-ngcloak/" title="Previous Post: ngCloak 实现 angular 初始化闪烁最佳实践">&laquo; ngCloak 实现 angular 初始化闪烁最佳实践</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/02/11/angular-ngclick-stoppropagation/" title="Next Post: angular ngClick阻止冒泡,默认行为">angular ngClick阻止冒泡,默认行为 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><div id="disqus_thread"></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'greengerong'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
   <h1>破 狼</h1>
   <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
 </section>
 <section>
   <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+<<<<<<< HEAD
 </section>
 <section>
     <h1>博客友情链接</h1>
@@ -208,12 +349,29 @@ var jiathis_config = {
         <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
         <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
     </ul>
+=======
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO--破狼</a></li>
+  </ul>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
+<<<<<<< HEAD
         <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">zone.js - 暴力之美</a>
       </li>
     
@@ -243,6 +401,37 @@ var jiathis_config = {
     
       <li class="post">
         <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
+=======
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak-new/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
       </li>
     
   </ul>
@@ -280,22 +469,57 @@ var jiathis_config = {
 
 
 
+<<<<<<< HEAD
  
+=======
+
+  
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </aside>
 
 
     </div>
   </div>
   <footer role="contentinfo"><p>
+<<<<<<< HEAD
   Copyright &copy; 2016 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress
 </a></span>
+=======
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </p>
 
 </footer>
   
+<<<<<<< HEAD
  
  
+=======
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 
 
 </body>

@@ -1,0 +1,49 @@
+---
+layout: post
+title: "JavaScript单线程和浏览器事件循环简述"
+date: 2015-10-27 22:13:55 +0800
+comments: true
+categories: [JavaScript, 浏览器]
+---
+
+
+![JavaScript 单线程 火车轨道](/images/blog_img/JavaScript单线程-火车轨道.jpg)
+
+##JavaScript单线程
+
+在上篇博客[《Promise的前世今生和妙用技巧》](http://greengerong.com/blog/2015/10/22/promisede-miao-yong/)的开篇中，我们曾简述了JavaScript的单线程机制和浏览器的事件模型。应很多网友的回复，在这篇文章中将继续展开这一个话题。当然这里是博主的一些理解，如果还存在什么纰漏的话，请不吝指教。
+
+JavaScript这门语言运行在浏览器中，是以单线程的方式运行的。说到单线程，就得从操作系统进程开始说起。进程和线程都是操作系统的概念。进程是应用程序的执行实例，每一个进程都是由私有的虚拟地址空间、代码、数据和其它系统资源所组成；进程在运行过程中能够申请创建和使用系统资源（如独立的内存区域等），这些资源也会随着进程的终止而被销毁。而线程则是进程内的一个独立执行单元，在不同的线程之间是可以共享进程资源的，所以在多线程的情况下，需要特别注意对临界资源的访问控制。在系统创建进程之后就开始启动执行进程的主线程，而进程的生命周期和这个主线程的生命周期一致，主线程的退出也就意味着进程的终止和销毁。主线程是由系统进程所创建的，同时用户也可以自主创建其它线程，这一系列的线程都会并发地运行于同一个进程中。
+
+在多线程操作的情况下可以实现应用的并行处理，而提高整个应用程序的性能和吞吐量，更大粒度的榨取本机的CPU利用率，特别是现代很多语言都支持了多核并行处理技术。然后JavaScript居然还是单线程执行，为什么呢？
+
+这是因为JavaScript这门脚本语言诞生的使命所致：JavaScript为处理页面中用户的交互，以及操作DOM树、CSS样式树来给用户呈现一份动态而丰富的交互体验和服务器逻辑的交互处理。如果JavaScript是多线程的方式来操作这些UI DOM，则可能出现UI操作的冲突；在多线程的交互下，处于UI中的DOM节点就可能成为一个临界资源，假设存在两个线程同时操作一个DOM，而线程1要求浏览器删除DOM节点，线程2却希望修改这个节点的某些样式风格。这个时候浏览器就无法裁决采用哪一种策略了。当然我们可以为浏览器引入“排它锁”或者是“乐观锁”来解决这些冲突，但为了避免引入了更大的复杂性，所以JavaScript从诞生开始就选择了单线程执行。
+
+因为单线程执行，所以对于JavaScript的任务而言，在同一时间内只能执行一个特定的任务，并且它会阻塞其他的任务执行。那么JavaScript的执行不会很慢吗？特别是对于长时间任务执行的时候，那么其他的任务就得不到执行。然而在软件开发中，特别是应用软件开发中，对于I/O设备的访问都是一些及其耗时的操作。在这些耗时任务执行的时候，其实并没必要等待它的完成，在I/O任务完成之前JavaScript完全可以继续执行其他的任务，直到I/O任务完成后再继续执行该任务的处理就行。JavaScript在设计之初，就意识这一点。所以在JavaScript中将这些耗时的I/O等操作封装为了异步的方法，等到这些任务完成后就将后续的处理操作封装为JavaScript任务放入执行任务队列中，等待JavaScript线程空闲的时候被执行。因此这里形成了另一个话题“浏览器的事件循环”机制，将在后续中详细阐述。
+
+因为在JavaScript语言中，和其他大多数语言不一样之处：JavaScript中耗时的I/O操作都被处理为异步操作，以及回调注册机制。异步和回调仿佛和JavaScript就是“与生俱来”的一样。如Nodejs创始人Ryan Dahl所言，JavaScript语言的非阻塞的异步I/O事件驱动模型，以及JavaScript在Chrome推进下的多次性能优化、具有函数式等高级语言特性，因此最终Nodejs选择JavaScript。由于Nodejs最终选择了JavaScript，从此也大大的推动了JavaScript在非浏览器领域的急速扩展。
+
+下面的文字是来自Nodejs官网：
+
+![nodejs-javascript-简介](/images/blog_img/nodejs-javascript-简介.png)
+
+当然对于非I/O的操作耗时操作如上篇博文[《Promise的前世今生和妙用技巧》](http://greengerong.com/blog/2015/10/22/promisede-miao-yong/)所说，在HTML5中也提出了新的解决方案，它就是Web Worker。Web Worker就是在当前JavaScript的执行主线程中利用Worker类新开辟一个额外的线程来加载和运行特定的JavaScript文件，这个新的线程和JavaScript的主线程之间并不会互相影响和阻塞执行的；并且在Web Worker中提供这个新线程和JavaScript主线程之间数据交换的接口：postMessage和onMessage事件。但在HTML5 Web Worker中是不能操作DOM的，任何需要操作DOM的任务都需要委托给JavaScript主线程来执行，所以虽然引入HTML5 WebWorker但仍然没有改线JavaScript单线程的本质。对于HTML5的Web Worker和在C# WinForm设计中的BackgroundWorker很类似，对于这类GUI（图形化界面）操作的应用程序中，对于UI界面的操作都需要委托给UI主线程来执行，避免多线程情况下UI操作的安全性和避免不必要的多线程访问控制的复杂度。
+
+
+##浏览器事件循环
+
+在上面已经提到JavaScript中为了不阻塞UI的渲染，很多JavaScript任务都是异步的，它们包括键盘、鼠标I/O输入输出事件、窗口大小的resize事件、定时器（setTimeout、setInterval）事件、Ajax请求网络I/O回调等。当这些异步任务发生的时候，它们将会被放入浏览器的事件任务队列中去。在浏览器内部中存在一个消息循环池，也叫Event Loop（事件循环），JavaScript引擎在运行时后单线程的处理这些事件任务。例如用户在网页中点击了button事件，则它们会被放入在这个事件循环池中，需要等到JavaScript运行时执行线程空闲时候才会按照队列先进先出的原则被一一执行。对于setTimeout这类定时任务也是一样的，只有当定时时刻达到的时候，它们才会被放入浏览器的事件队列中等待被执行；由于此时的JavaScript主线程也许并不空闲，所以它将并不会被JavaScript引擎所立即执行，因为在JavaScript语言设计中setTimeout这类定时任务的执行时间并不是精确的。在前端开发中经常会发现setTimeout(func, 0)很有用，因为这并不是立即执行，而是将当前执行回调函数放入浏览器的事件队列中，等待当前其他任务的完成，然后在执行它；所以setTimeout(func, 0)具有改变当前代码执行顺序的作用，让浏览器有机会完成UI界面渲染等任务后在执行这段回调函数。当然对于老式浏览器这里具有16ms的差距，HTML5规定为4ms，以及关于动画操作中的requestAnimationFrame，请读者参见MDN资料[https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame)。
+
+浏览器事件循环如下图所示：
+
+![浏览器事件模型](/images/blog_img/browser-event-base.png)
+
+虽然JavaScript是单线程执行的，但是浏览器并不是单线程执行的，它们有JavaScript的执行线程、UI节点的渲染线程，图片等资源的加载线程，以及Ajax请求线程等。在Chrome设计中，为了防止因一个Tab window的奔溃而影响整个浏览器，它的每一个Tab被设计为一个进程；在Chrome设计中存在很多的进程，并利用进程间通讯来完成它们之间的同步，因此这也是Chrome快速的法宝之一。对于Ajax的请求也需要特殊线程来执行，当需要发送一个Ajax请求的时候，浏览器会开辟一个新的线程来执行HTTP的请求，它并不会阻塞JavaScript线程的执行，HTTP请求状态变更事件会被作为回调放入到浏览器的事件队列中等待被执行。
+
+
+##总结
+
+写到这里，本文也进入了尾声。希望这篇文章能给阅读本文的读者一些启发，同时如果本文中存在不足的地方，也希望你能不吝指教。另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家第一时间推送博主的最新博文，谢谢大家的支持和鼓励。
+
+![微信订阅号](http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg)
+

@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<<<<<<< HEAD
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
 <html class="no-js" lang="en">
 <!--<![endif]-->
@@ -29,6 +30,43 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
  
+=======
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>破狼 Blog</title>
+  <meta name="author" content="破 狼">
+
+  
+  <meta name="description" content="前言 在需要录入数据的字段比较多的表单应用程序中，为了给用户更好的体验，我们通常会将[Enter]键转为[TAB]将输入焦点移到下一个控件，或是将获得焦点的输入控件背景经一个醒目的背景颜色显示等等。以往的做法通常是从TextBox、ComboBox等标准输入控件派生一个新的控件， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://greengerong.github.io/blog/page/12">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 
 </head>
 
@@ -69,7 +107,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/06/05/jia-gou-she-ji-shu-ju-fang-wen-ceng-jian-shu/">架构设计-数据访问层简述</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/">IExtenderProvider - vs中的魔法师 [转]</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -85,13 +127,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-06-05T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-11-21T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/21/IExtenderProvider-VS-zhong-di-mo-fa-shi-zhuan/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 在前面简单描述了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">服务层</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html">SOA面向服务架构</a>，<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html">架构设计-业务逻辑层</a>，以及一些面<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/08/2489425.html">面向设计原则理解</a>和<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html">软件架构设计箴言</a>。这篇博客我们将继续进入我们的下一层：数据访问层。无论你用的是什么开发模式或者是业务模式，到最后最必须具有持久化机制，持久化到持久化介质，并能对数据进行读取和写入CRUD。这就是数据访问层。你可能是利用xml等文件格式磁盘存储，常用的关系数据库存储，或者NoSql(not only sql)的内存存储或文档存储等等存储介质。而这里我只关心关系数据库存储。</p>
 
 <p>&nbsp;&nbsp; 数据层需要提供的职责有：</p>
@@ -134,6 +184,173 @@
 
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/05/2535486.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><p><strong>前言</strong></p>
+
+<div class="postbody">
+
+在需要录入数据的字段比较多的表单应用程序中，为了给用户更好的体验，我们通常会将[Enter]键转为[TAB]将输入焦点移到下一个控件，或是将获得焦点的输入控件背景经一个醒目的背景颜色显示等等。以往的做法通常是从TextBox、ComboBox等标准输入控件派生一个新的控件，在新控件中改变击键和在获得/失去焦点时的动作，但此方法的不便之外就是到项目的最后，会增加了一系列的标准控件的小功能扩展控件，增大了后期的维护工作量。在DotNet中，对于类似的对标准控件的&#8220;小功能扩展&#8221;我们有了更好解决方案，那就是神奇的IExtenderProvider接口，它可以给任何控件&#8220;变&#8221;出一个属性来^_^
+
+#### **关于IExtenderProvider&nbsp;接口**
+
+IExtenderProvider位于System.ComponentModel命名空间，其声明如下：
+
+&nbsp;
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:4c9e8390-f491-48d8-8426-2ec247b1fbbf" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">interface</span><span style="color: #000000"> IExtenderProvider
+{
+</span><span style="color: #0000ff">bool</span><span style="color: #000000"> CanExtend(</span><span style="color: #0000ff">object</span><span style="color: #000000"> extendee);
+}
+</span></div>
+</pre></div>
+
+&nbsp;
+
+此接口只有一个方法`bool CanExtend(object)`，这个方法告诉VS.net设计器是否将扩展属性显示在给出控件的属性窗口中。实现了IExtenderProvider接口的组件称为&#8220;扩展程序提供程序&#8221;。DotNet 2.0中自带的ToolTips和ErrorProvider就是二个典型的扩展程序提供程序。如将ToolTips控件添加到窗体中后，TextBox1控件便多了个ToolTips on toolTips1的属性。
+
+&nbsp;![](http://images.cnblogs.com/cnblogs_com/wuchang/200701/01.png)
+
+我们在属性窗口中给此属性设置值时，VS.net设计器生成如下的代码：
+
+&nbsp;
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:0e1f80db-37d8-4ddd-ad48-19f0fe87b0c4" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">this</span><span style="color: #000000">.toolTip1.SetToolTip(</span><span style="color: #0000ff">this</span><span style="color: #000000">.textBox1, </span><span style="color: #000000">"</span><span style="color: #000000">some tooltips</span><span style="color: #000000">"</span><span style="color: #000000">);</span></div>
+</pre></div>
+可见，我们给ToolTips on toolTips1属性设置的文本是存储在toolTips1控件中，但是程序执行时是在textBox1上显示相应的提示信息而不是在toolTips1上。这样，我们无需对窗体上现有的控件做任何修改就可以让他们都有了toolTips提示功能! 
+
+&nbsp;
+
+接下来，我们来创建一个自己的扩展程序提供程序，给TextBox控件添加[ConverEnterToTAB]功能。
+
+**创建自己的IExtenderProvider&nbsp;组件**
+
+这时候我们注意到`IExtenderProvider接口`并没有提供任何有关扩展属性的消息，那vs.net设计器是如何知道扩展程序提供什么样的扩展属性给控件呢？是`ProvideProperty特性(Attribute)!设计器会在实现<code>IExtenderProvider`接口的组件中寻找所有的`ProvideProperty`特性，`ProvideProperty`特性标明了扩展程序给什么类型的控件提供什么扩展扩展属性的信息。`ProvideProperty特性的声明如下：
+`</code>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; width: 560px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:44eb2a50-3928-4807-80d0-29c1972446a0" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #000000">[AttributeUsageAttribute(AttributeTargets.Class, AllowMultiple</span><span style="color: #000000">=</span><span style="color: #0000ff">true</span><span style="color: #000000">)]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">sealed</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> ProvidePropertyAttribute : Attribute
+</span></div>
+</pre></div>
+此特性有二个构造方法：
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:9a867422-aad3-4771-be4d-e688aee09a71" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">public</span><span style="color: #000000"> ProvidePropertyAttribute (
+</span><span style="color: #0000ff">string</span><span style="color: #000000"> propertyName,   </span><span style="color: #008000">//</span><span style="color: #008000">扩展到指定类型对象的属性名称。</span><span style="color: #008000">
+</span><span style="color: #000000">    </span><span style="color: #0000ff">string</span><span style="color: #000000"> receiverTypeName   </span><span style="color: #008000">//</span><span style="color: #008000">此属性可以扩展的数据类型的名称。 </span><span style="color: #008000">
+</span><span style="color: #000000">)
+</span><span style="color: #000000">--------------------------------------------</span><span style="color: #000000">
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> ProvidePropertyAttribute (
+</span><span style="color: #0000ff">string</span><span style="color: #000000"> propertyName,   </span><span style="color: #008000">//</span><span style="color: #008000">扩展到指定类型对象的属性名称。 </span><span style="color: #008000">
+</span><span style="color: #000000">    Type receiverType   </span><span style="color: #008000">//</span><span style="color: #008000">可以接收此属性的对象的数据类型的 Type。</span><span style="color: #008000">
+</span><span style="color: #000000">)</span></div>
+</pre></div>
+`在ProvideProperty特性中指定提供的属性的名称和可接收属性的组件类型，如，下面代码给TextBox类型组件添加一个名为&lt;Name&gt;的属性：` 
+
+&nbsp;
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:cba84224-723a-4d26-a2e6-b0a81fb97525" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #000000">[ProvideProperty(</span><span style="color: #000000">"</span><span style="color: #000000">&lt;Name&gt;</span><span style="color: #000000">"</span><span style="color: #000000">, </span><span style="color: #0000ff">typeof</span><span style="color: #000000">(TextBox))]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> TextboxExtender : Component, IExtenderProvider
+{...</span></div>
+</pre></div>
+
+一旦在控件上声明了ProvideProperty特性，就需要在控件中提供名为Get&lt;Name&gt;和Set&lt;Name&gt;的二个Public方法。Get&lt;Name&gt;方法有一个参数，参数类型和ProvideProperty特性中定义的类型相同，返回此组件此属性的值。Set&lt;Name&gt;方法带两个参数，第一个参数是`ProvideProperty特性中指定的组件类型，第二个参数是要设置给扩展属性的数据，类型和Get&lt;Name&gt;方法返回的数据类型相同。`
+
+下列是给TextBox添加EnableConvertEnterToTab扩展属性的完整代码：
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="57F11A72-B0E5-49c7-9094-E3A15BD5B5E7:7e419b41-f1e2-49ce-9319-71be8d637011" class="wlWriterSmartContent" contenteditable="false"><pre style="background-color: white"><div><!-- Code highlighting produced by Actipro CodeHighlighter (freeware)
+http://www.CodeHighlighter.com/
+--><span style="color: #0000ff">namespace</span><span style="color: #000000"> wuChang.Controls
+{
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 将TextBox的回车键转换为TAB键
+</span><span style="color: #808080">///</span><span style="color: #008000"> wuChang@guet.edu.cn
+</span><span style="color: #808080">///</span><span style="color: #008000"> wuchang.cnblogs.com
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">    [ProvideProperty(</span><span style="color: #000000">"</span><span style="color: #000000">EnableConvertEnterToTab</span><span style="color: #000000">"</span><span style="color: #000000">, </span><span style="color: #0000ff">typeof</span><span style="color: #000000">(TextBox))]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">class</span><span style="color: #000000"> TextboxExtender : Component, IExtenderProvider
+{
+</span><span style="color: #0000ff">private</span><span style="color: #000000"> Hashtable htDate </span><span style="color: #000000">=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> Hashtable();
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 取得相应组件EnableConvertEnterToTab扩展属性的值
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="control"&gt;&lt;/param&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;returns&gt;&lt;/returns&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">        [DefaultValue(</span><span style="color: #0000ff">false</span><span style="color: #000000">)]
+[Description(</span><span style="color: #000000">"</span><span style="color: #000000">是否允许将回车键转换为TAB键</span><span style="color: #000000">"</span><span style="color: #000000">)]
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">bool</span><span style="color: #000000"> GetEnableConvertEnterToTab(TextBox control)
+{
+</span><span style="color: #0000ff">return</span><span style="color: #000000"> </span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Contains(control);
+}
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 将需要转换Enter的控件保存到Hashtable中，前添加KeyDown事件。
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="control"&gt;&lt;/param&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="value"&gt;&lt;/param&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">        </span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">void</span><span style="color: #000000"> SetEnableConvertEnterToTab(TextBox control, </span><span style="color: #0000ff">bool</span><span style="color: #000000"> value)
+{
+</span><span style="color: #0000ff">if</span><span style="color: #000000"> (value)
+{
+</span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Add(control, value);
+control.KeyDown </span><span style="color: #000000">+=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> KeyEventHandler(control_KeyDown);
+}
+</span><span style="color: #0000ff">else</span><span style="color: #000000">
+{
+control.KeyDown </span><span style="color: #000000">-=</span><span style="color: #000000"> </span><span style="color: #0000ff">new</span><span style="color: #000000"> KeyEventHandler(control_KeyDown);
+</span><span style="color: #0000ff">this</span><span style="color: #000000">.htDate.Remove(control);
+}
+}
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> 将目标控件的键盘事件{Enter}转为{TAB}
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="sender"&gt;&lt;/param&gt;</span><span style="color: #008000">
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="e"&gt;&lt;/param&gt;</span><span style="color: #808080">
+</span><span style="color: #000000">        </span><span style="color: #0000ff">void</span><span style="color: #000000"> control_KeyDown(</span><span style="color: #0000ff">object</span><span style="color: #000000"> sender, KeyEventArgs e)
+{
+</span><span style="color: #0000ff">if</span><span style="color: #000000"> (e.KeyCode </span><span style="color: #000000">==</span><span style="color: #000000"> Keys.Enter)
+{
+e.Handled </span><span style="color: #000000">=</span><span style="color: #000000"> </span><span style="color: #0000ff">true</span><span style="color: #000000">;
+SendKeys.Send(</span><span style="color: #000000">"</span><span style="color: #000000">{TAB}</span><span style="color: #000000">"</span><span style="color: #000000">);
+}
+}
+</span><span style="color: #0000ff">#region</span><span style="color: #000000"> IExtenderProvider Members</span><span style="color: #000000">
+</span><span style="color: #0000ff">public</span><span style="color: #000000"> </span><span style="color: #0000ff">bool</span><span style="color: #000000"> CanExtend(</span><span style="color: #0000ff">object</span><span style="color: #000000"> extendee)
+{
+</span><span style="color: #0000ff">return</span><span style="color: #000000"> extendee </span><span style="color: #0000ff">is</span><span style="color: #000000"> TextBox;
+}
+</span><span style="color: #0000ff">#endregion</span><span style="color: #000000">
+}
+}</span></div>
+</pre></div>
+
+注意这里给给GetEnableConvertEnterToTab方法添加[DefaultValue(false)]特性，这样如果给组件的GetEnableConvertEnterToTab扩展属性设计值为False时，设计器将不会生成设置代码。如设置扩展属性为true时会生成这样的代码：
+this.textboxExtender1.SetEnableConvertEnterToTab(this.textBox1, true);
+设置为Falsh时，设计器不会生成任何的代码。
+</div>
+
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/wuchang/200701/02.png" alt="img" /></p>
+
+<p>参考资料：</p>
+
+<ol>
+<li><a href="http://www.codeproject.com/dotnet/iextenderprovider.asp" title="http://www.codeproject.com/dotnet/iextenderprovider.asp">http://www.codeproject.com/dotnet/iextenderprovider.asp</a></li>
+<li><a href="http://www.cnblogs.com/whitewolf/admin/ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm" title="ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm">ms-help://MS.MSDNQTR.v80.chs/MS.MSDN.v80/MS.VisualStudio.v80.chs/dv_fxdeveloping/html/21e34929-ff78-4f3f-aee8-a16a4ef5ac9d.htm</a></li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/21/1607678.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -146,7 +363,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/06/02/ruan-jian-jia-gou-she-ji-zhen-yan-li-jie/">软件架构设计箴言理解</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">WinForm控件查找奇思</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -162,13 +383,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-06-02T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/WinForm-kong-jian-cha-zhao-qi-si/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp; 今天和师弟聊天聊到他们项目开发，有些同事总是提前考虑性能优化，需求变更又是一大堆的重写，让我想起了Donald Knuth 提到的：对软件的过早地优化是万恶的根源。这里就简单的说几条重要的软件名人哲学。</p>
 
 <p>1：软件中唯一不变的就是变化。</p>
@@ -226,6 +455,82 @@
 
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/06/02/2532244.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><p>最近做WinForm程序，尽搞些动态生成控件的，每次寻找某个空间时总要一大堆代码，简单但是写的多，烦啊。突然想起了Linq里的表达式方式，但是项目用的类库是2.0的。最后仿照Linq用范型写了一个遍历类:减少了一大堆不必要的代码。
+代码很简单，就不用解释了，直接贴↑。</p>
+
+<p>代码很简单，就不用解释了，直接贴&#8593;。</p>
+
+<pre><code>    public delegate bool SearchHandler(Control ctrFind);
+        public class WinSearch&lt;T&gt;
+        {
+    //ctr：查找起点控件。
+            public static T Search(Control ctr, SearchHandler handler)
+            {
+                if (handler == null)
+                    throw new Exception("Handler must be not null");
+                if (ctr == null)
+                    throw new Exception("Parent Control must be not null");
+                if (!(ctr is Control))
+                    throw new Exception("The fist parameter must be innert from Control");
+                return SearchProxy(ctr, handler);
+            }
+
+            protected static T SearchProxy(Control ctr,SearchHandler handler)
+            {
+                if (ctr.Controls.Count &lt; 1)
+                {
+                    return default(T);
+                }
+                else
+                {
+                    foreach (Control child in ctr.Controls)
+                    {
+                        if (child is T  &amp;&amp; handler(child))//注意返回范型类型应是如此才会返回。
+                        {
+                            return (T)(object)child;
+                        }
+                        else
+                        {
+                            foreach (Control ch in child.Controls)
+                            {
+                                object obj = SearchProxy(ch, handler);
+                                if (obj !=null)
+                                {
+                                    return (T)obj;
+                                }
+                            }
+                        }
+                    }
+                    return default(T);
+                }
+            }
+
+
+        }
+</code></pre>
+
+<p> 测试代码：</p>
+
+<pre><code>    private void button1_Click(object sender, EventArgs e)
+            {
+                Button btn = WinSearch&lt;Button&gt;
+                .Search(this, new SearchHandler(mehtod));
+                if (btn != null)
+                {
+                    MessageBox.Show(btn.Text);
+                }
+            }
+            public bool mehtod(Control ctr)
+            {
+                if (ctr.Text =="button2")
+                    return true;
+                return false;
+            }
+</code></pre>
+
+<p>本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606587.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -238,7 +543,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/05/29/jia-gou-she-ji-ye-wu-luo-ji-ceng-jian-shu/">架构设计-业务逻辑层简述</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/">System.Diagnostics命名空间里的Debug类和Trace类的用途</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -254,13 +563,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-05-29T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-11-20T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/20/System-Diagnostics-ming-ming-kong-jian-li-di-Debug-lei-he-Trace-lei-di-yong-tu/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; 业务逻辑层是专门处理软件业务需求的一层，处于数据库之上，服务层之下，完成一些列对Domain Object的CRUD，作为一组微服务提供给服务层来组织在暴露给表现层，如库存检查，用法合法性检查，订单创建。</p>
 
 <p>&nbsp;&nbsp; 业务逻辑层包含领域对象模型，领域实体，业务规则，验证规则，业务流程。1：领域对象模型为系统结构描述，包含实体功能描述，实体之间的关系。领域模型处于天生的复杂性:2：领域实体：业务层是一些操作业务对象（BO）的处理。业务对象包含数据和行为，是一个完整的业务对象。其不同于上节<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>提到的数据迁移对象（dto），对于dto存在数据的，不存在行为，dto是bo（ddd中又称do）的子集，负责与特定界面需求的扁平化实体，dto仅仅是一个数据载体，需要跨越应用程序边界，而业务对象则不会存在复制迁移，往往一个业务对象存在一个或者多个数据迁移对象。3:业务最大的逻辑就在处理一些列现实世界的规则，这也是软件中最容易变化的部分，这里通常会出现我们众多的if-else或者switch-case的地方。也这因为如果说以个人觉得在我们的项目最应该关系和分离需求的层次。4：验证规则：业务规则很大程度上也是对对象的数据验证，验证业务对象的当前数据状态。我觉得在每个业务对象上都应该存在一个对外部对象暴露的验证接口，可以考虑微软企业库的VAB 基于Attribute声明式验证或者上节<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/27/2520593.html">流畅的验证组件：FluentValidation</a>中的FluentValidation验证组件基于IOC的解耦。</p>
@@ -278,6 +595,92 @@
 <p>&nbsp; 模式的选择在与架构师的决定，这也是架构师具有挑战意义的职责，需要根据具体的项目需求，团队，个人等外界因素最终决定，不存在万能的模式，也不存在完美的设计。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/29/2524881.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><h1>&nbsp;</h1>
+
+<p>System.Diagnostics命名空间里的Debug类和Trace类的用途
+摘要
+在 .NET 类库中有一个 System.Diagnostics 命名空间，该命名空间提供了一些与系统进程、事件日志、和性能计数器进行交互的类库。当中包括了两个对开发人员而言十分有用的类——Debug类和Trace类。本文介绍了这两个类的一些基本用途，旨在提高广大开发人员的开发效率。
+目录
+使用Debug类来帮助调试
+Debug类和Trace类的区别
+使用Trace类来做程序日志
+小结
+参考资料
+使用Debug类来帮助调试
+调试程序对每个程序员来说是家常便饭。可是我们会经常遇到一些情况让我们头疼，例如：
+当我们在开发一个界面控件的时候，简单的设断点会增加Paint事件的响应次数，而造成的环境参数改变。
+断点设多了，程序常常停在正常运行的地方；这样一来，调试一个错误要花费大量时间去寻找错误。
+这时，我们就需要利用System.Diagnostics.Debug类来帮助我们调试。我们可以通过调用Debug.WriteLine(String message)函数，将我们所关心的信息打印在Visual Studio IDE的Output窗口中。也可以利用Debug.Assert(bool condition)来让程序停在错误的地方，并且显示Call stack。
+Debug类中所有函数的调用都不会在Release版本里有效。也就是说，我们通过这种方法所加的代码可以仅用于调试；在发布的时候无需删任何代码，就可以给用户一个没有调试指令的程序了。
+下面的这个例子演示了这两个函数来帮助调试的方法：
+1、 新建一个Visual Studio C# Project，采用默认的项目名。
+2、 往Form1上拖一个label，并采用其缺省ID。
+3、 在Form1.cs中的Form1类中添加下面的函数代码：</p>
+
+<pre><code>private int time=0;
+protected override void OnPaint(PaintEventArgs e)
+{
+    time++;
+    this.label1.Text="OnPain called "+time.ToString()+" Times.";
+}
+protected override void OnResize(EventArgs e)
+{
+    System.Diagnostics.Debug.Assert(this.Width&gt;200,"Width should be larger than 200.");
+    System.Diagnostics.Debug.WriteLine(Size.ToString());
+}
+</code></pre>
+
+<p>4、 编译并运行项目的Debug版本。
+5、 切换Visual Studio .NET IDE到Output窗口。
+6、 切换到刚才的程序，改变主窗口的大小，您可以在IDE中看到Form1窗口的实时大小，并在Form1上看到OnPaint被调用的次数。当窗口的宽度小于等于200个像素的时候，系统会弹出一个Assertion Fail的对话框。里面显示了当前程序的Call Stack。如果您在OnPaint中设置了断点，想要调试程序的话，那么您会进入一个死循环，直到您停止调试。</p>
+
+<p>Debug类和Trace类的区别
+您一定发现了在System.Diagnostics命名空间中还有一个名为Trace的类。它的函数功能和Debug非常相似。为什么要有这样两个功能类似的类呢？
+原因是这样的，Debug类里所提供的函数仅在编译时带#Debug宏参数才奏效，一旦到了Release版本中，这些函数都会被忽略。也就是说Debug类的功能仅在程序员开发的时候能用。而Trace则不同，它能在Release版本的程序中也被运行，这样程序员就可以在Release版本的程序中添加一些Debug类提供的功能了。
+使用Trace类来做程序日志
+接下来的问题就是：我们程序员能利用Trace类的功能做些什么呢？我们可以用它来做程序的日志。
+1、 打开刚刚的project。
+2、 用下面的代码覆盖刚才第2步的代码：</p>
+
+<pre><code>private void Calculate()
+    {
+    int a=1,b=1;
+    try
+    {
+    System.Random r = new Random();
+    while (true)
+    {
+    a=(int)(r.NextDouble()*10);
+    b=(int)(r.NextDouble()*10);
+    System.Diagnostics.Trace.WriteLine(System.DateTime.Now.ToString()+": "+
+    a.ToString()+"/"+b.ToString()+"="+(a/b).ToString());
+    }
+    }
+    catch (Exception ex)
+    {
+    System.Diagnostics.Trace.WriteLine(System.DateTime.Now.ToString()+": "+a.ToString()+
+    "/"+b.ToString()+"="+" ERROR: "+ex.Message);
+    MessageBox.Show(ex.Message);
+    }
+    }
+</code></pre>
+
+<p>3、 在构造函数Form1()的最后添加下面的代码，将Trace的输出重定向到app.log文件中：</p>
+
+<pre><code>System.Diagnostics.Trace.Listeners.Clear();
+System.Diagnostics.Trace.AutoFlush=true;
+System.Diagnostics.Trace.Listeners.Add(new  System.Diagnostics.TextWriterTraceListener("app.log"));
+</code></pre>
+
+<p>4、 拖一个按钮到该Form上，双击按钮，在button1_Click函数中添加如下代码：
+Calculate();
+Application.Exit();
+5、 运行该程序的Release版本，点击添加的按钮，程序便开始执行一位随机数除法。由于是随机数，可能会出现出数为0的情况，这样程序就会抛出Exception，这是程序会自动中止。
+6、 在该程序所在的目录里您可以发现出现了一个新的文件app.log，里面记录了各个时刻的运算纪录，并把Exception纪录在日志中</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/20/1606891.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -290,7 +693,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/05/23/Interface-ji-cheng-zhi-System-Object/">Interface继承至System.Object？</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/11/18/winform-hui-che-Tab-fang-fa/">Winform 回车&#8211;&gt;Tab方法</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -306,13 +713,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-05-23T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-11-18T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/18/winform-hui-che-Tab-fang-fa/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/18/winform-hui-che-Tab-fang-fa/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp; 这其实是个很基础的问题，在我们学习C#类型的时候第一句就是所有的对象都继承至System.Object。今天一个同事问我Interface继承之System.Object。所以才有了本文。</p>
 
 <p>&nbsp; 在这里我只从几个方面简单的说明：</p>
@@ -369,6 +784,75 @@
 <p>&nbsp;&nbsp; 在最后我们在来说说前面说的&#8220;所有的对象都继承至System.Object&#8221;，这是真的嘛？在c#的编译过程中为我们提供了一个选项NOAUTOINHERIT，是的我们可以为自定义类型去掉默认的System.Object的基类。这就打破了System.Object创世之祖的戒律。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/23/2514123.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><p>方法有：</p>
+
+<ol>
+<li><p>示例</p>
+
+<p> if(e.KeyChar = &lsquo;\r&rsquo;)
+ {
+  SendKeys.Send(&ldquo;{TAB}&rdquo;);
+ }</p></li>
+</ol>
+
+
+<p>但是 也许是我程序里处理了太多的键盘事件，用它总是反映很慢，有时候还死机。</p>
+
+<ol>
+<li><p>把Form的<span style="color: red">KeyPreView设为true</span>，然后在Form的KeyPress中增加下列代码即可：</p>
+
+<p> private void Form1_KeyPress(object sender,      KeyPressEventArgs e)
+       {          <br/>
+             this.SelectNextControl(this.ActiveControl,      true, true, true, true);
+     }</p></li>
+<li><p>用nextControl.Focus();//nextControl 为Control；</p></li>
+</ol>
+
+
+<p>4:Control.rocessTabKey（true）；也可以实现
+方法2对于对于我这个CODE很使用，因为我的控件时动态生成的(及处理它时他的下一个控件还没产生呢)；</p>
+
+<p>关于方法2 查了下MSDN,记录如下：</p>
+
+<pre><code>public bool SelectNextControl (
+    Control ctl,
+    bool forward,
+    bool tabStopOnly,
+    bool nested,
+    bool wrap
+)
+</code></pre>
+
+<p>参数
+ctl
+从其上开始搜索的 Control。</p>
+
+<p>forward
+如果为 true 则在 Tab 键顺序中前移；如果为 false 则在 Tab 键顺序中后移。</p>
+
+<p>tabStopOnly
+true 表示忽略 TabStop 属性设置为 false 的控件；false 表示不忽略。</p>
+
+<p>nested
+true 表示包括嵌套子控件（子控件的子级）；false 表示不包括。</p>
+
+<p>wrap
+true 表示在到达最后一个控件之后从 Tab 键顺序中第一个控件开始继续搜索；false 表示不继续搜索。</p>
+
+<p>返回值
+如果控件已激活，则为 true；否则为 false。
+备注
+如果在 ControlStyles 中将控件的 Selectable 样式位设置为 true，且该控件包含在另一个控件中，并且其所有父控件都可见并已启用，则</p>
+
+<p>SelectNextControl 方法将激活 Tab 键顺序中的下一个控件。</p>
+
+<p>下面列表中的 Windows 窗体控件是不可选择的。从该列表中的控件派生的控件也是不可选择的。</p>
+
+<p>Label Panel GroupBox PictureBox ProgressBar Splitter LinkLabel（当控件中没有链接时）</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/18/1605280.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -381,7 +865,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/05/22/SOA-mian-xiang-fu-wu-jia-gou-jian-shu/">SOA面向服务架构简述</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/11/16/VS2008-shi-yong-xiao-ji-qiao-ti-gao-bian-cheng-xiao-shuai/">VS2008 使用小技巧 提高编程效率</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -397,13 +885,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-05-22T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-11-16T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/16/VS2008-shi-yong-xiao-ji-qiao-ti-gao-bian-cheng-xiao-shuai/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/16/VS2008-shi-yong-xiao-ji-qiao-ti-gao-bian-cheng-xiao-shuai/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上篇中我们简单谈了下<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html">架构设计中服务层的简单理解</a>，在这里我们将继续服务层的架构，在本节我们将重点在于分布式服务。在分布式系统中表现层和业务逻辑层 并不处于同一物理部署，所以我们必须存在分布式服务，以契约方式发布于网络中，我们的关注点在于服务，面向服务编程，这种通过组合业务逻辑暴露可用服务的架构叫做面向服务架构（SOA）。</p>
 
 <p>&nbsp;&nbsp;&nbsp; SOA强调一个松耦合，基于宏服务的架构，通过契约暴露给服务消费者可用的服务交互。SOA是以服务为组成构建，原则有：</p>
@@ -429,6 +925,60 @@
 <p>最后说一点：我觉得不管是服务或者resetfull服务我们都必须定义契约，依赖于契约，虽然微软的而技术允许我们直接寄宿服务类，但是对于服务的扩展和延伸而言，说这句话的原因在于我最近看见一些直接寄宿服务类的resetfull架构。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/22/2513905.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><ol>
+<li><p>怎样调整代码排版的格式？
+选择：编辑—>高级—>设置文档的格式  或     编辑—>高级—>设置选中代码的格式。
+格式化cs代码：Ctrl+k+f    格式化aspx代码：Ctrl+k+d</p></li>
+<li><p>怎样跳转到指定的某一行？
+两种方法：Ⅰ. Ctrl+G                Ⅱ. 单击状态栏中的行号</p></li>
+<li><p>怎样创建矩形选区？
+两种方法：Ⅰ. 摁住alt键，然后拖动鼠标即可。
+           Ⅱ. 按住Shift+Alt点击矩形的左上和右下位置即可。</p></li>
+<li><p>怎样快速隐藏或显示当前代码段？
+Ctrl+M,M</p></li>
+<li><p>怎样快速切换不同的窗口？
+Ctrl+Tab</p></li>
+<li><p>怎样生成解决方案？
+Ctrl+Shift+B</p></li>
+<li><p>怎样快速添加代码段？
+输入prop然后按两次tab即可插入自动属性
+public int MyProperty { get; set; },</p></li>
+</ol>
+
+
+<p>(输入try,class,foreach等等，按两次tab也有类似效果。)</p>
+
+<ol>
+<li><p>怎样调用智能提示？
+两种方法：Ⅰ. Ctrl+J              Ⅱ. Alt+→</p></li>
+<li><p>怎样调用参数信息提示？
+光标放到参数名上面，然后输入Ctrl+Shif+空格。</p></li>
+<li><p>怎样查看代码的详细定义？
+打开：视图—>代码定义窗口
+然后你再在页面中把鼠标点到某个方法上。</p></li>
+<li><p>怎样创建区域以方便代码的阅读？</p>
+
+<pre><code>#region
+    代码区域
+#endregion
+</code></pre></li>
+<li><p>怎样同时修改多个控件的属性？
+选中多个控件，然后右键属性，这个时候这些控件共有的属性就会出现，修改之后所有的控件都会变化。</p></li>
+<li><p>怎样快速添加命名空间？
+对于引用了dll,但代码中没有引用其命名空间的类，输入类名后在类名上按Ctrl+.即可自动添加该类的引用命名空间语句。</p></li>
+<li><p>怎样实现快速拷贝或剪切一行？
+光标只要在某行上，不用选中该行，直接按Ctrl+c 或Ctrl+x 就可以拷贝或剪切该行。</p></li>
+<li><p>怎样使用任务管理器？
+假如我们开发的项目很大，在项目中有些代码没有完成，我们可以做一下标记，便于将来查找。</p></li>
+</ol>
+
+
+<p>创建方法：在要标志的地方输入：//TODO:&hellip;内容&hellip;
+使用方法：视图—>任务列表—>注释</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/16/1604035.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -441,7 +991,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/05/21/jia-gou-she-ji-zhong-fu-wu-ceng-di-jian-dan-li-jie/">架构设计中服务层的简单理解</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/11/15/sql-cha-xun-mo-kuai/">Sql 查询模块</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -457,13 +1011,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-05-21T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-11-15T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/11/15/sql-cha-xun-mo-kuai/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/11/15/sql-cha-xun-mo-kuai/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp; 在ddd设计中我们经常会提到服务层，服务层是什么？职责是什么？有什么好处？。</p>
 
 <p>&nbsp;&nbsp; 先看简单的层次图（注：这里并没有考虑其他多余的领域逻辑数据层存储，或者UOW这些细节）</p>
@@ -491,6 +1053,29 @@
 <p>&nbsp;&nbsp; 理论上完美的设计我们需要为每一个应用定义一个dto，但是在一个复杂的系统中我们可能存在很多的领域对象，加入500个do，每个do一般都会存在多个dto，这将一个增加一个庞大的集合和mapping逻辑，对于维护也存在不小的挑战。在软件领域存在一句话就是bug的数量随着代码量增加，代码量增加需要测试点也随着增加。除非我们必须跨越应用程序网络跃点边界，我觉得否则我们也可以存在一些简单do的直接使用。根据世界项目，情形由我们的架构师决定。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/21/2512354.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><p> 已经好久没弄博客了，觉得该写些了。但是没想到写些什么，很多东西院子已经很多了。就把我最近在项目中的一个模块：SQL查询语句生成
+ 本模块实现了SQL查询的join（inner，left，right），where 条件（加入where条件出函数外的功能。本来函数功能也些出来了，就是我的指导老师说我们的项目对这个需求不大，还有对聚合函数支持不好，所以去掉了这个功能），支持查询表操作，多项排序。由于项目的实际需Group by 语句只提供聚合函数等简单功能和CUBE、ROLLUP。</p>
+
+<p>不多说了，还是直接拿出来晒晒图。
+<img src="http://images.cnblogs.com/cnblogs_com/whitewolf/1.JPG" alt="" /></p>
+
+<p>Sql视图</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/2.jpg" alt="" /></p>
+
+<p>结果验证视图：</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/41.JPG" alt="" />&nbsp;</p>
+
+<p>Group by 设置界面</p>
+
+<p><img src="http://images.cnblogs.com/cnblogs_com/whitewolf/51.jpg" alt="" /></p>
+
+<p>图片就先放这样，还有些以后有机会在放。</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/11/15/1603288.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -503,7 +1088,11 @@
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/05/12/zhuan-zai-yi-xie-ruan-jian-she-ji-di-yuan-ze/">(转载)一些软件设计的原则</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/10/12/fang-listBox-xie-liao-yi-ge-Control-kong-jian-wei-item-di-lie-biao-ji-he/">仿listBox写了一个Control控件为item的列表集合</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -519,13 +1108,21 @@
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-05-12T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-10-12T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/10/12/fang-listBox-xie-liao-yi-ge-Control-kong-jian-wei-item-di-lie-biao-ji-he/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/10/12/fang-listBox-xie-liao-yi-ge-Control-kong-jian-wei-item-di-lie-biao-ji-he/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以前本站向大家介绍过一些软件开发的原则，比如<a href="http://coolshell.cn/articles/1007.html" title="优质代码的十诫">优质代码的十诫</a>和<a href="http://coolshell.cn/articles/2324.html" title="Unix传奇(下篇)">Unix传奇(下篇)</a>中所以说的UNIX的设计原则。相信大家从中能够从中学了解到一些设计原理方面的知识，正如我在《<a href="http://coolshell.cn/articles/4506.html" title="再谈&#8220;我是怎么招聘程序员的&#8221;（上）">再谈&#8220;我是怎么招聘程序&#8221;</a>》中所说的，一个好的程序员通常由其操作技能、知识水平，经验层力和能力四个方面组成。在这里想和大家说说设计中的一些原则，我认为这些东西属于长期经验总结出来的知识。这些原则，每一个程序员都应该了解。但是请不要教条主义，在使用的时候还是要多多考虑实际情况。其实，<strong>下面这些原则，不单单只是软件开发，可以推广到其它生产活动中，甚至我们的生活中</strong>。</p>
 
 <h4>Don&#8217;t Repeat Yourself (DRY)</h4>
@@ -834,6 +1431,375 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
 <p>原文：<a href="http://coolshell.cn/articles/4535.html">一些软件设计的原则</a></p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/05/12/2497419.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><p>&nbsp; 仿listBox写了一个Control控件为item的列表集合，由于最近做个项目要用，微软提供的控件实现起来不行，但自己写了一个，效果如下：
+<img src="http://images.cnblogs.com/cnblogs_com/whitewolf/MyItemControlList.jpg" alt="" /></p>
+
+<pre><code>      using System;
+      using System.Collections.Generic;
+      using System.ComponentModel;
+      using System.Data;
+      using System.Drawing;
+      using System.Text;
+      using System.Text.RegularExpressions;
+      using System.Windows.Forms;
+
+     namespace SQLAnalysis
+     {
+       public class MySelfControlList : Control
+       {
+           private System.Windows.Forms.ErrorProvider err;
+           public MySelfControlList()
+           {
+               InitializeComponent();
+               this.BackColor = Color.White;
+               itemList = new ListItemColloction();  
+               if (isNeedVaidate)
+               {
+                   err = new ErrorProvider();
+               }
+           }
+
+
+
+           [Browsable(false)]
+           public bool IsValidated
+           {
+               get
+               {
+                   return List_Validating(); 
+               }
+           }
+           [DefaultValue(typeof(Color), "White")]
+           public override Color BackColor
+           {
+               get
+               {
+                   return base.BackColor; 
+               }
+               set
+               {
+                   base.BackColor = value;
+               }
+           }
+           private ListItemColloction itemList;
+
+          /**//// &lt;summary&gt;
+          /// 不提供设计时绑定
+          /// &lt;/summary&gt;
+           [Bindable(false), Browsable(false)]
+           [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+           public ListItemColloction Items
+           {
+               get
+               {
+                   if (itemList == null)
+                       itemList = new ListItemColloction();
+                   return itemList;
+               }
+               set
+               {
+                   itemList = value;
+               }
+           }
+           public int Count
+           {
+               get
+               {
+                   return itemList.Count;
+               }
+           }
+           public void RemoveAll()
+           {
+               for( int i=this.itemList.Count -;i&gt;-;i--)
+               {
+                   Item item = itemList[i];
+                   item.ItemControl.Parent = null;
+                   itemList.Remove(item);
+               }
+
+           }
+           public int AddItem(Item item)
+           {
+               itemList.Add(item);
+               this.Refresh();
+               return itemList.IndexOf(item);
+           }
+           public void InsertItem(int index, Item item)
+           {
+               itemList.Insert(index, item);
+               this.Refresh();
+             }
+           public void RemoveItem(Item item)
+           {
+               item.ItemControl.Parent = null;
+               itemList.Remove(item);
+               this.Refresh();
+           }
+           public void RemoveItemAt(int index)
+           {
+               itemList[index].ItemControl.Parent = null;
+               itemList.RemoveAt(index);
+               this.Refresh();
+           }
+           private string emptyText;
+           public string EmptyText
+           {
+               get
+               {
+                return emptyText;
+               }
+               set
+               {
+                emptyText =value;
+               }
+           }
+           [Browsable(false)]
+           public override string Text
+           {
+               get
+               {
+                   return base.Text;
+               }
+               set
+               {
+                   base.Text = value;
+               }
+           }
+
+            public string ItemText(int index)
+           {
+               return itemList[index].ItemControl.Text;
+           }
+            private ToolTip toolTip;
+           private int itemHeight = ;
+           public int ItemHeight
+           {
+               get
+               {
+                   return itemHeight;
+               }
+                set
+               {
+                   itemHeight = value;
+               }
+           }
+           /**//// &lt;summary&gt;
+           /// 重写Paint方法
+           /// &lt;/summary&gt;
+           /// &lt;param name="e"&gt;&lt;/param&gt;
+           protected override void OnPaint(PaintEventArgs e)
+           {
+                this.Height = this.itemHeight * (itemList.Count + );
+               base.OnPaint(e);
+               if (itemList.Count == )
+               {
+                   e.Graphics.DrawString(this.emptyText, this.Font,Brushes.Black, e.ClipRectangle);
+                   return;
+               }
+
+
+               //e.Graphics.DrawRectangle(new Pen(Brushes.Black),this.Left,this.Top,this.Width,this.Height);
+               for (int i = ; i &lt; itemList.Count; i++)
+               {
+                   Point location = new Point(, i * this.itemHeight);
+                   Rectangle bound = new Rectangle(location, new Size(this.Size.Width, this.itemHeight));
+                   OnDrawItem(new DrawItemEventArgsMySelf(bound, i, e.Graphics));
+               }
+           }
+           /**//// &lt;summary&gt;
+           /// 画每一项
+           /// &lt;/summary&gt;
+           /// &lt;param name="e"&gt;&lt;/param&gt;
+           protected void OnDrawItem(DrawItemEventArgsMySelf e)
+           {
+               Graphics g = e.Graphics;
+               Pen pen = new Pen(Brushes.Wheat);
+               g.DrawRectangle(pen, e.Bound);
+                int index = e.Index;
+               if (index &gt; - &amp;&amp; index &lt; itemList.Count)
+               {
+                   Control ctr = itemList[index].ItemControl;
+                   if (ctr.Parent == null)
+                   {
+                       ctr.Parent = this;
+
+                       ctr.Height = e.Bound.Height;
+                      if( ctr.Width &gt;this.Width)
+                        ctr.Width = this.Width - ;
+                       toolTip.SetToolTip(ctr, itemList[index].ItemDescribe);
+                   }
+                   ctr.Location = e.Bound.Location;
+                }
+           }
+            public bool List_Validating()
+           {  bool isValidated = true;
+               foreach (Item item in itemList)
+               {
+                   isValidated = isValidated &amp;&amp; ListItemControls_Validating(item.ItemControl, new CancelEventArgs());
+               }
+               return isValidated;
+           }
+            public bool ListItemControls_Validating(object sender, CancelEventArgs e)
+           {
+               Control ctr = sender as Control;
+               Item item = itemList[ctr];
+
+               if (string.IsNullOrEmpty(item.Regex))
+                   return true;
+               Regex regex = new Regex(item.Regex);
+                string text = ctr.Text.Trim();
+               if (!regex.IsMatch(text))
+               {
+                   err.SetIconAlignment(ctr, ErrorIconAlignment.MiddleRight);
+                   err.SetIconPadding(ctr, );
+                   err.SetError(ctr, item.ErrorMessage);
+                   return false;
+               }
+               err.Clear();
+
+               return true;
+           }
+           private void InitializeComponent()
+           {
+                this.components = new System.ComponentModel.Container();
+               this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+               this.SuspendLayout();
+               this.ResumeLayout(false);
+            }
+            private IContainer components;
+       }
+        public class ListItemColloction : List&lt;Item&gt;
+       {
+           public Item this[Control itemControl]
+           {
+               get
+               {
+                   for (int i = ; i &lt; this.Count; i++)
+                   {
+                       if (this[i].ItemControl.Equals(itemControl))
+                           return this[i];
+                   }
+                   return null;
+               }
+                set
+               {
+                   for (int i = ; i &lt; this.Count; i++)
+                   {
+                       if (this[i].ItemControl.Equals(itemControl))
+                           this[i] = value;
+                   }
+               }
+           }
+       }
+        [Serializable]
+       public class Item
+       {
+           private Control itemControl = null;
+           private string itemDescible = string.Empty;
+           private string regex = string.Empty;
+           private string errorMessage = string.Empty;
+           public Item()
+           {
+           }
+            public Item(Control itemControl, string itemDescible,string regex,string errorMessage)
+           {
+               this.itemControl = itemControl;
+               this.itemDescible = itemDescible;
+               this.regex = regex;
+               this.errorMessage = errorMessage;
+           }
+           public Item(Control itemControl, string itemDescible)
+           {
+               this.itemControl = itemControl;
+               this.itemDescible = itemDescible;
+
+           }
+           public string Regex
+           {
+               get
+               {
+                   return regex;
+               }
+               set
+               {
+                   regex = value;
+               }
+           }
+           public Control ItemControl
+           {
+               get
+               {
+                   return itemControl;
+               }
+               set
+               {
+                   itemControl = value;
+               }
+           }
+            public string ItemDescribe
+           {
+               get
+               {
+                   return itemDescible;
+               }
+                set
+               {
+                   itemDescible = value;
+               }
+           }
+            public string ErrorMessage
+           {
+               get
+               {
+                   return errorMessage;
+               }
+               set
+               {
+                   errorMessage = value;
+               }
+           }
+        }
+       public class DrawItemEventArgsMySelf : EventArgs
+       {
+           private Rectangle bound = Rectangle.Empty;
+            private int index;
+           private Graphics graphics;
+           public Graphics Graphics
+           {
+               get
+               {
+                   return this.graphics;
+               }
+           }
+           public DrawItemEventArgsMySelf(Rectangle bound, int index, Graphics g)
+           {
+               this.bound = bound;
+                this.index = index;
+               this.graphics = g;
+           }
+           public Rectangle Bound
+           {
+               get
+               {
+                   return this.bound;
+               }
+           }
+
+           public int Index
+           {
+               get
+               {
+                   return index;
+               }
+           }
+
+       }
+    }
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/10/12/1581928.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -846,7 +1812,11 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
       
   <header>
     
+<<<<<<< HEAD
       <h1 class="entry-title"><a href="/blog/2012/05/09/jia-gou-she-ji-luo-ji-ceng-vs-wu-li-ceng/">架构设计&#8211;逻辑层 vs 物理层</a></h1>
+=======
+      <h1 class="entry-title"><a href="/blog/2009/09/30/zi-ding-yi-kong-jian-zhong-xie-Listbox-shi-xian-item-tu-biao-bian-huan-he-item-dian-ji-shi-jian/">自定义控件&#8212;重写Listbox实现item图标变换和item点击事件</a></h1>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     
     
       <p class="meta">
@@ -862,13 +1832,21 @@ Meyer氏提出的DBC概念的描述，对于类的一个方法，都有一个前
   
 
 
+<<<<<<< HEAD
 <time datetime="2012-05-09T00:00:00+08:00" pubdate data-updated="true"></time>
+=======
+<time datetime="2009-09-30T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+           | <a href="/blog/2009/09/30/zi-ding-yi-kong-jian-zhong-xie-Listbox-shi-xian-item-tu-biao-bian-huan-he-item-dian-ji-shi-jian/#disqus_thread"
+             data-disqus-identifier="http://greengerong.github.io/blog/2009/09/30/zi-ding-yi-kong-jian-zhong-xie-Listbox-shi-xian-item-tu-biao-bian-huan-he-item-dian-ji-shi-jian/">Comments</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
         
       </p>
     
   </header>
 
 
+<<<<<<< HEAD
   <div class="entry-content"><p>&nbsp;&nbsp;&nbsp; Layer 和Tier都是层，但是他们所表现的含义不同，Tier指的是软件系统中物理上的软件和硬件，具体指部署在某服务器上，而Layer（逻辑层）指软件系统中完成特定功能的逻辑模块，逻辑概念。</p>
 
 <p>&nbsp;&nbsp; Layer是逻辑上 组织代码的形式。比如逻辑分层中表现层，服务层，业务层，领域层，他们是软件功能来划分的。并不指代部署在那台具体的服务器上或者，物理位置。</p>
@@ -2065,6 +3043,277 @@ public class AddressDto
 <p>&nbsp;&nbsp;&nbsp; 本系列中的随笔还有继续，我会不断更新。忘大家不辞吝啬多多指教，共同进步。</p>
 
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2012/02/12/2348521.html" title="原文首发">原文首发请看这里</a></p>
+=======
+  <div class="entry-content"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;博客开通有一阵了，就是没有时间写，遗憾啊。！
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这几天做了个排序的自定义控件，在listbox item里放是button 并支持图标的交替变换
+效果如下： 博客开通有一阵了，就是没有时间写，遗憾啊。！</p>
+
+<pre><code>  这几天做了个排序的自定义控件，在listbox item里放是button 并支持图标的交替变换
+</code></pre>
+
+<p>效果如下：
+<img src="http://images.cnblogs.com/cnblogs_com/whitewolf/order.jpeg" alt="" /></p>
+
+<p>把代码贴上：</p>
+
+<pre><code>      1using System;
+      2using System.Collections.Generic;
+      3using System.Collections;
+      4using System.Text;
+      5using System.ComponentModel;
+      6using System.Windows.Forms;
+      7using System.Drawing;
+      8using System.Drawing.Text;
+      9using System.Data;
+     10
+     11namespace SQLAnalysis
+     12{
+     13    public class ListBoxEx : ListBox
+     14    {
+     15        public ListBoxEx()
+     16        {
+     17            this.DrawMode = DrawMode.OwnerDrawFixed;
+     18            btnList = new List&lt;Button&gt;();
+     19        }
+     20        public override DrawMode DrawMode
+     21        {
+     22            get
+     23            {
+     24                return DrawMode.OwnerDrawFixed;
+     25            }
+     26            set
+     27            {
+     28                base.DrawMode = DrawMode.OwnerDrawFixed;
+     29            }
+     30        }
+     31       
+     32        protected override void OnResize(EventArgs e)
+     33        {
+     34            base.OnResize(e);
+     35            this.Refresh();
+     36        }
+     37
+     38
+     39
+     40
+     41        public Button FindItemButton(int index)
+     42        {
+     43            
+     44        // return this.Controls.Find(this.Name + "$ItemComboBox" + index.ToString(), true)[0];
+     45            if (index &gt;= btnList.Count)
+     46                return null;
+     47            return btnList[index];
+     48           
+     49        }
+     50
+     51        /// &lt;summary&gt;
+     52        /// 提供删除item项
+     53        /// &lt;/summary&gt;
+     54        /// &lt;param name="index"&gt;&lt;/param&gt;
+     55        public void RemoveItem(int index)
+     56        {
+     57            this.Items.RemoveAt(index);
+     58            btnList[index].Parent = null;
+     59            btnList[index] = null;
+     60            //btnList[index].Dispose();
+     61            
+     62            btnList.RemoveAt(index);
+     63            this.Refresh();
+     64        }
+     65        /// &lt;summary&gt;
+     66        /// 提供移动item项
+     67        /// &lt;/summary&gt;
+     68        /// &lt;param name="offset"&gt;&lt;/param&gt;
+     69        public void MoveItem(int offset)
+     70        {
+     71            
+     72            int index = this.SelectedIndex + offset;
+     73            if (index &gt; -1 &amp;&amp; index &lt; this.Items.Count)
+     74            {
+     75                int oldSelectedIndex = this.SelectedIndex;
+     76                Object item = this.SelectedItem;
+     77                this.Items.RemoveAt(oldSelectedIndex);
+     78                this.Items.Insert(index, item);
+     79                Button btn = btnList[oldSelectedIndex];
+     80                btnList.RemoveAt(oldSelectedIndex);
+     81                btnList.Insert(index, btn);
+     82
+     83                this.Refresh();
+     84            }
+     85            else
+     86            {
+     87                MessageBox.Show("不是可用的移动矢量");
+     88
+     89            }
+     90
+     91        }
+     92
+     93        private ToggleItem GetNexttoggleItem(ToggleItem tog)
+     94        {
+     95            int index = -1;
+     96            for (int i = 0; i &lt; ToggleItemList.Count; i++)
+     97            {
+     98                ToggleItem item =(ToggleItem)ToggleItemList[i];
+     99                if (item.Tag == tog.Tag)
+    100                {
+    101                    index = i;
+    102                    break;
+    103                }
+    104            }
+    105            return ((ToggleItem)ToggleItemList[(index + 1) % ToggleItemList.Count]);
+    106        }
+    107        private List&lt;ToggleItem&gt; toggleItemList ;//List&lt;ToggleItem&gt; toggleItemList = new List&lt;ToggleItem&gt;();
+    108        [Bindable(false), Browsable(false)]
+    109        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]   
+    110        public List&lt;ToggleItem&gt; ToggleItemList
+    111        {
+    112            get
+    113            {
+    114                if (toggleItemList == null)
+    115                    toggleItemList = new List&lt;ToggleItem&gt;();
+    116                return toggleItemList;
+    117            }
+    118
+    119            set
+    120            {
+    121                if (toggleItemList == null)
+    122                    toggleItemList = new List&lt;ToggleItem&gt;();
+    123                toggleItemList = value;
+    124            }
+    125        }
+    126
+    127        //主要重写事件
+    128        protected override void OnDrawItem(DrawItemEventArgs e)
+    129        {
+    130            this.DrawMode = DrawMode.OwnerDrawFixed;
+    131            this.ItemHeight = 22;
+    132            e.DrawBackground();
+    133            e.DrawFocusRectangle();
+    134            Brush myBrush = Brushes.Black;
+    135            if (e.Index &gt; -1 &amp;&amp; e.Index &lt; this.Items.Count)
+    136            {
+    137                string drawString = (e.Index + 1)+ " " + this.Items[e.Index].ToString();
+    138                
+    139
+    140                e.Graphics.DrawString(drawString, e.Font, new SolidBrush(e.ForeColor), e.Bounds, 
+    141
+    142StringFormat.GenericDefault);
+    143                AddButtonToItem(e);
+    144            }
+    145            base.OnDrawItem(e);
+    146
+    147        }
+    148
+    149        private List&lt;Button&gt; btnList = null;
+    150        protected void AddButtonToItem(DrawItemEventArgs e)
+    151        {
+    152            if (btnList.Count &lt;= e.Index)
+    153            {
+    154                btnList.Add(new Button());
+    155                Button btn = btnList[e.Index];
+    156                btn.BackColor = System.Drawing.Color.LightSkyBlue ;
+    157                btn.Name = this.Name + "$ItemButton" + e.Index.ToString();
+    158                btn.Width = 20;
+    159                btn.Height = 20;
+    160                btn.ImageAlign = ContentAlignment.MiddleCenter;
+    161                btn.TextImageRelation = TextImageRelation.ImageAboveText;
+    162                if (toggleItemList.Count &gt; 0)
+    163                {
+    164                    
+    165                    btn.BackgroundImage = ((ToggleItem)toggleItemList[0]).BGImage;
+    166                    //btn.Width = toggleItemList[0].BGImage.Width;
+    167                    //btn.Height = toggleItemList[0].BGImage.Height;
+    168                    btn.Tag = ((ToggleItem)toggleItemList[0]).Tag;
+    169                }
+    170                btn.Parent = this;
+    171                btn.Click += new EventHandler(ItemButtonClickHandler);
+    172            }
+    173            Button bt = btnList[e.Index];
+    174            bt.Left = this.Width - bt.Width - 20;
+    175            bt.Top = e.Bounds.Top;
+    176           
+    177        }
+    178        /// &lt;summary&gt;
+    179        /// item button双击事件；
+    180        /// &lt;/summary&gt;
+    181        /// &lt;param name="sender"&gt;&lt;/param&gt;
+    182        /// &lt;param name="e"&gt;&lt;/param&gt;
+    183        protected void ItemButtonClickHandler(object sender, EventArgs e)
+    184        {
+    185            int index = -1;
+    186            if (sender is Button)
+    187                index = this.IndexFromPoint(((Button)sender).Location);
+    188
+    189            if (index == -1)
+    190                return;
+    191
+    192            Button btn = sender as Button;
+    193            ToggleItem togold = new ToggleItem((string)btn.Tag, btn.BackgroundImage);
+    194            ToggleItem tognew = this.GetNexttoggleItem(togold);
+    195            //btn.Width = tognew.BGImage.Width;
+    196            //btn.Height = tognew.BGImage.Height;
+    197            btn.BackgroundImage = tognew.BGImage;
+    198           
+    199            btn.Tag = tognew.Tag;
+    200
+    201            ItemEventHandler handler = (ItemEventHandler)Events[ItemLabelClickObj];
+    202            if (handler != null)
+    203            {   
+    204                
+    205                handler(sender, new ItemButtonClickEventArgs(index)); ;
+    206            }
+    207        }
+    208
+    209       
+    210
+    211        
+    243    }
+    244    [Serializable]
+    245    public class ToggleItem
+    246    {
+    247        private string tag;
+    248        private Image bgImage;
+    249        public ToggleItem()
+    250        {
+    251        }
+    252        public ToggleItem(string tag, Image bg)
+    253       {
+    254           this.tag = tag;
+    255           this.bgImage = bg;
+    256       }
+    257       public string Tag
+    258       {
+    259            get
+    260            {
+    261                return tag;
+    262           }
+    263           set
+    264           {
+    265                tag = value;
+    266            }
+    267        }
+    268
+    269      public Image BGImage
+    270        {
+    271           get
+    272           {
+    273               return bgImage;
+    274           }
+    275
+    276           set
+    277           {
+    278               bgImage = value;
+    279
+    280           }
+    281       }
+    282
+    283    }
+    284
+    285}    
+</code></pre>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文通过程序<a href="https://github.com/greengerong/cnblogs-blogs2markdown" title="cnblogs-blogs2markdown">cnblogs-blogs2markdown</a>转换的,如质量有问题<a href="http://www.cnblogs.com/whitewolf/archive/2009/09/30/1577101.html" title="原文首发">原文首发请看这里</a></p>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </div>
   
   
@@ -2074,8 +3323,11 @@ public class AddressDto
   
   <div class="pagination">
     
+<<<<<<< HEAD
       <a class="prev" href="/blog/page/13/">&larr; Older</a>
     
+=======
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
     <a href="/blog/archives">Blog Archives</a>
     
     <a class="next" href="/blog/page/11/">Newer &rarr;</a>
@@ -2090,6 +3342,7 @@ public class AddressDto
 </section>
 <section>
   <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+<<<<<<< HEAD
 </section>
 <section>
     <h1>博客友情链接</h1>
@@ -2097,12 +3350,29 @@ public class AddressDto
         <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
         <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
     </ul>
+=======
+  <div style="display: none;">
+    <script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa24b16b917fd5e88f6d6dd10dc673619' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </div>
+</section>
+<section>
+<h1>博客友情链接</h1>
+  <ul>
+    <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+    <li><a href="http://whitewolfblog.blog.51cto.com/">51CTO&#8211;破狼</a></li>
+  </ul>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
+<<<<<<< HEAD
         <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">zone.js - 暴力之美</a>
       </li>
     
@@ -2132,6 +3402,37 @@ public class AddressDto
     
       <li class="post">
         <a href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">自定义Angular插件 - 网站用户引导</a>
+=======
+        <a href="/blog/2014/02/28/nodejs-get-client-ip/">nodejs获取客户端IP Address</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/21/angular-form-addControl/">细说angular Form addControl方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/angularjs-chinese-guide-public/">Angularjs中文版本开发指南发布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/15/index-for-ng-options/">为Angularjs ngOptions加上index解决方案</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/11/angular-ngclick-stoppropagation/">Angular ngClick阻止冒泡,默认行为</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak-new/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/angular-ngcloak/">ngCloak 实现 Angular 初始化闪烁最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/24/angular-controller-as-syntax-vs-scope/">Angular Controller as Syntax vs Scope</a>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
       </li>
     
   </ul>
@@ -2176,15 +3477,45 @@ public class AddressDto
     </div>
   </div>
   <footer role="contentinfo"><p>
+<<<<<<< HEAD
   Copyright &copy; 2016 - 破 狼 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress
 </a></span>
+=======
+  Copyright &copy; 2014 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 </p>
 
 </footer>
   
+<<<<<<< HEAD
  
  
+=======
+
+<script type="text/javascript">
+      var disqus_shortname = 'greengerong';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 
 
 </body>

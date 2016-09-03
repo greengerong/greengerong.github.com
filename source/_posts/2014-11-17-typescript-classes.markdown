@@ -1,0 +1,282 @@
+---
+layout: post
+title: "TypeScript - Classes"
+date: 2014-11-17 19:10:32 +0800
+comments: true
+categories: [TypeScript, JavaScript]
+---
+##简介
+
+JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式，TypeScript将编译为目前大多数浏览器能允许的普通Javascript代码，所以我们不用在等待ECMAScript 6的到来了。
+
+##类
+我们先看一个关于class-base的实例：
+
+	class Greeter {
+	    greeting: string;
+	    constructor(message: string) {
+	        this.greeting = message;
+	    }
+	    greet() {
+	        return "Hello, " + this.greeting;
+	    }
+	}
+
+	var greeter = new Greeter("world");
+
+这种语法和我们先前在c#，java语言看见的很相似。在这里我们声明了一个Greeter的类，其中包含一个greeting的属性，构造函数，以及greet的方法。
+
+你也许已经注意到了例子中的‘this’关键字，’this‘和java/C#一样代表对象实例的成员访问。
+
+在最后一行我们利用‘new’关键字创建了一个Greeter的对象实例。这将会新建一个对象实例，并调用我们先前定义的构造函数初始化此对象。
+
+##继承
+
+在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：
+
+	class Animal {
+	    name:string;
+	    constructor(theName: string) { this.name = theName; }
+	    move(meters: number) {
+	        alert(this.name + " moved " + meters + "m.");
+	    }
+	}
+
+	class Snake extends Animal {
+	    constructor(name: string) { super(name); }
+	    move() {
+	        alert("Slithering...");
+	        super.move(5);
+	    }
+	}
+
+	class Horse extends Animal {
+	    constructor(name: string) { super(name); }
+	    move() {
+	        alert("Galloping...");
+	        super.move(45);
+	    }
+	}
+
+	var sam = new Snake("Sammy the Python");
+	var tom: Animal = new Horse("Tommy the Palomino");
+
+	sam.move();
+	tom.move(34);
+
+在这个案例中展示了TypeScript的OO继承方式，它和其他语言很相似。在TypeScript中我们采用‘extends’关键字来表示类的继承关系。在这里你可以看见 'Horse'和'Snake'都是继承至'Animal'的子类实现。
+
+在案例中也展示如何去重写父类的方法，在这里'Snake'和'Horse都各自创建了一个‘move’方法来重写父类'Animal'的‘move’方法，并和‘super’关键字来调用父类的方法。
+
+##Private/Public访问限制
+
+####Public为默认行为
+
+你可能注意到了在上例中我们并没有用‘public’关键字去描述类的成员的访问级别让其可见。在C#这类语言中，我们必须显示的标注public关键字才能使得类的成员可见。但是在TypeScript中public为默认访问级别，而不是想c#一样private默认。
+
+有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：
+
+	class Animal {
+	    private name:string;
+	    constructor(theName: string) { this.name = theName; }
+	    move(meters: number) {
+	        alert(this.name + " moved " + meters + "m.");
+	    }
+	}
+
+####理解private(私有)
+
+TypeScript有一个结构化的类型(或者鸭子类型)系统。在我们比较两个不同类型，我们不关心它们来自哪里，只关心对类型的每个成员的兼容性。一旦所有的成员都是兼容的，那么我们就认为这两个类型也是兼容的。
+
+当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：
+
+	class Animal {
+	    private name:stringParameter properties;
+	    constructor(theName: string) { this.name = theName; }
+	}
+
+	class Rhino extends Animal {
+	    constructor() { super("Rhino"); }
+	}
+
+	class Employee {
+	    private name:string;
+	    constructor(theName: string) { this.name = theName; }   
+	}
+
+	var animal = new Animal("Goat");
+	var rhino = new Rhino();
+	var employee = new Employee("Bob");
+
+	animal = rhino;
+	animal = employee; //error: Animal and Employee are not compatible
+
+在上例中我们有'Animal'和‘Rhino’两个类型，'Rhino'是‘Animal’的一个子类。同时我们也定义了一个 'Employee'的类，它和‘Animal’类完全相同。我们分别创建了第三个类的对象，并相互赋值，结果'Animal'和'Rhino'继承关系，所以对于私有字段name在‘Animal’中具有相同的声明  'private name: string'，他们是兼容的。但对于'Employee'则各自声明了一个私有name字段，对于私有字段是不相同的，所以我们不能将employee赋值给animal对象，他们是不兼容的类型。
+
+####参数属性(Parameter properties)
+
+访问限制关键字public'和'private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。
+
+	class Animal {
+	    constructor(private name: string) { }
+	    move(meters: number) {
+	        alert(this.name + " moved " + meters + "m.");
+	    }
+	}
+
+这里我们利用‘private’关键字为类创建了一个私有成员并初始化其值。对于public也类似。
+
+##访问器(Accessors)
+
+TypeScript支持利用getters/setters来控制对成员的访问。让我们可以控制类的成员之间的访问方式。
+
+下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：
+
+	class Employee {
+	    fullName: string;
+	}
+
+	var employee = new Employee();
+	employee.fullName = "Bob Smith";
+	if (employee.fullName) {
+	    alert(employee.fullName);
+	}
+
+在这里我们允许任意的访问内部fullName成员。有时这可能不是我们所期望的。
+
+在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：
+
+	var passcode = "secret passcode";
+
+	class Employee {
+	    private _fullName: string;
+
+	    get fullName(): string {
+	        return this._fullName;
+	    }
+
+	    set fullName(newName: string) {
+	        if (passcode && passcode == "secret passcode") {
+	            this._fullName = newName;
+	        }
+	        else {
+	            alert("Error: Unauthorized update of employee!");
+	        }
+	    }
+	}
+
+	var employee = new Employee();
+	employee.fullName = "Bob Smith";
+	if (employee.fullName) {
+	    alert(employee.fullName);
+	}
+
+这里我们在修改fullName属性的时候验证了passcode值，是否有权限修改。你可以尝试修改passcode的值，使其不匹配，观察下会发生什么问题？
+
+**注意:**访问器使用我们需要设置编译输出为ECMAScript 5。
+
+##静态属性
+
+回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用'static' 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的'this.'.
+
+	class Grid {
+	    static origin = {x: 0, y: 0};
+	    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
+	        var xDist = (point.x - Grid.origin.x);
+	        var yDist = (point.y - Grid.origin.y);
+	        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
+	    }
+	    constructor (public scale: number) { }
+	}
+
+	var grid1 = new Grid(1.0);  // 1x scale
+	var grid2 = new Grid(5.0);  // 5x scale
+
+	alert(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
+	alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+
+##高级特性
+
+####构造函数
+
+当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：
+
+	class Greeter {
+	    greeting: string;
+	    constructor(message: string) {
+	        this.greeting = message;
+	    }
+	    greet() {
+	        return "Hello, " + this.greeting;
+	    }
+	}
+
+	var greeter: Greeter;
+	greeter = new Greeter("world");
+	alert(greeter.greet());
+
+这里“var greeter: Greeter”首先声明一个Greeter类的实例变量。这在很多OO语言中是很自然的方式。
+
+同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：
+
+	var Greeter = (function () {
+	    function Greeter(message) {
+	        this.greeting = message;
+	    }
+	    Greeter.prototype.greet = function () {
+	        return "Hello, " + this.greeting;
+	    };
+	    return Greeter;
+	})();
+
+	var greeter;
+	greeter = new Greeter("world");
+	alert(greeter.greet());
+
+这里'var Greeter'被赋值构造函数，并利用‘new’调用了这个方法得到类的实例。同样我们的类也可以包含静态变量。我们可以这么认为所有的类都可以拥有实例和静态两种类型的成员。
+
+让我们对上例稍微做一些修改：
+
+	class Greeter {
+	    static standardGreeting = "Hello, there";
+	    greeting: string;
+	    greet() {
+	        if (this.greeting) {
+	            return "Hello, " + this.greeting;
+	        }
+	        else {
+	            return Greeter.standardGreeting;
+	        }
+	    }
+	}
+
+	var greeter1: Greeter;
+	greeter1 = new Greeter();
+	alert(greeter1.greet());
+
+	var greeterMaker: typeof Greeter = Greeter;
+	greeterMaker.standardGreeting = "Hey there!";
+	var greeter2:Greeter = new greeterMaker();
+	alert(greeter2.greet());
+
+这里‘greeter1’和上例工作很相似。我们初始化了‘Greeter’类，并调用此对象。其结果在上例已经看见。
+
+接着，我们直接使用了类访问。首先我们定义了一个新的‘greeterMaker’的变量，这变量保持了Greeter类的类型信息，这里我们使用的是‘typeof Greeter’，这会返回Greeter自身的类类型信息。这个类型信息中会包含所以的静态成员信息和实例化对象的构造函数信息。然后通过‘new’ greeterMaker来创建一个Greeter的实例对象，在调用其方法greet。
+
+
+##利用interface来使用class
+
+如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：
+
+	class Point {
+	    x: number;
+	    y: number;
+	}
+
+	interface Point3d extends Point {
+	    z: number;
+	}
+
+	var point3d: Point3d = {x: 1, y: 2, z: 3};
+
+**注意:**TypeScript更准确说是为了类型检查的类型推断。

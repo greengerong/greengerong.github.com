@@ -1,1 +1,17 @@
+<<<<<<< HEAD
+=======
+.bundle
+.DS_Store
+.sass-cache
+.gist-cache
+.pygments-cache
+_deploy
+public
+sass.old
+source.old
+source/_stash
+source/stylesheets/screen.css
+vendor
+node_modules
+>>>>>>> 0bab7647fe4f4f5795aed418af9d97aabf2983a0
 .vagrant
