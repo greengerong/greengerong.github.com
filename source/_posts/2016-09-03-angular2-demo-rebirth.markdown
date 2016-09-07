@@ -31,7 +31,7 @@ Angular2架构的重新设计，使得其在性能方面也得到了巨大的改
 
 总之，Angular2是一门值得我们学习的优秀前端框架。随着Angular2进入了RC6版本，意味发布版将不远了。学习Angular2的时候已到。
 
-========= 未来即将来到
+![ComingSoon.jpg](/images/blog_img/ComingSoon.jpg)
 
 同时笔者也开源了自己的[rebirth](https://github.com/greengerong/rebirth)项目供大家学习。它是一个利用Angular2开发的博客系统前端部分。它涉及到的Angular2知识点非常的全面，包括：组件化，自定义directive，路由，HTTP交互，Template drive form和Reactive form，异步路由，jwt token认证，资源权限控制，动态加载component，jQuery插件集成等常用知识点。
 
