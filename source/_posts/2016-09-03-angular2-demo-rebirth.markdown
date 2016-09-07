@@ -54,16 +54,17 @@ Angular2架构的重新设计，使得其在性能方面也得到了巨大的改
 
 移动端样式：
 
-![https://cloud.githubusercontent.com/assets/2569893/17268750/bd6fe296-5666-11e6-84e0-c78d9b8c29d2.png](https://cloud.githubusercontent.com/assets/2569893/17268750/bd6fe296-5666-11e6-84e0-c78d9b8c29d2.png)
+<img src="https://cloud.githubusercontent.com/assets/2569893/17268750/bd6fe296-5666-11e6-84e0-c78d9b8c29d2.png"  style="max-width:300px;" />
 
 PC端样式：
 
-![https://github.com/greengerong/rebirth/blob/master/shortscreens/rebirth-index.png](https://github.com/greengerong/rebirth/blob/master/shortscreens/rebirth-index.png)
+![https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-index.png](https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-index.png)
 
-![https://github.com/greengerong/rebirth/blob/master/shortscreens/rebirth-question.png](https://github.com/greengerong/rebirth/blob/master/shortscreens/rebirth-question.png)
+![https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-list.png](https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-list.png)
 
-![https://github.com/greengerong/rebirth/blob/master/shortscreens/rebirth-manage-edit.png](https://github.com/greengerong/rebirth/blob/master/shortscreens/rebirth-manage-edit.png)
+![https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-edit.png](https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-edit.png)
 
 
 希望大家能喜欢。有任何的问题可以在笔者的github提issue，笔者会在空闲时间为大家解答。
+
 
