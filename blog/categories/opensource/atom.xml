@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Opensource | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/opensource/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[smartcrop.js智能图片裁剪库]]></title>
+    <link href="http://greengerong.github.io/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian/"/>
+    <updated>2015-10-13T21:58:21+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/10/13/smartcrop-dot-js-zhi-neng-tu-pian-cai-jian</id>
+    <content type="html"><![CDATA[<p>今天将为大家介绍一款近期github上很不错的开源库 &ndash; <a href="https://github.com/jwagner/smartcrop.js">smartcrop.js</a>。它是一款图片处理的智能裁剪库。在很多项目开发中，经常会遇见上传图片的场景，它可能是用户照片信息，也可能是商品图片等。然而在网页布局中，为了更好的用户体验，它们往往都需要一些宽度和高度的限制。对于不合适的图片，常常需要为用户提供一种裁剪方式，以此来满足网站更好的用户体验。但是图片默认的裁剪区域往往被显示在一个固定的位置，而这个位置却往往又不是精准的用户裁剪位置。因此今天为大家介绍的这一款开源库，就是为了解决这类问题，并为用户提供更好的用户体验的。</p>
+
+<p>首先我们可以使用<code>npm install smartcrop</code>或者<code>bower install smartcrop</code>来下载它。然后像如下方式使用它：</p>
+
+<pre><code>SmartCrop.crop(image, {
+        width: 100,
+        height: 100
+    }, 
+    function(result){
+        console.log(result); // {topCrop: {x: 300, y: 200, height: 200, width: 200}}
+    });
+</code></pre>
+
+<p>它会输出一个比较好的最佳图片裁剪位置，如<code>{topCrop: {x: 300, y: 200, height: 200, width: 200}}</code>的数据。</p>
+
+<p>下面是一副来自它的展示网站的案例，请欣赏：</p>
+
+<p><img src="/images/blog_img/smartcrop-%E5%9B%BE%E7%89%87%E8%A3%81%E5%89%AA-%E6%A1%88%E4%BE%8B.png" alt="smartcrop-图片裁剪-案例" /></p>
+
+<p>更多案例：</p>
+
+<ol>
+<li><a href="http://29a.ch/sandbox/2014/smartcrop/examples/testsuite.html">http://29a.ch/sandbox/2014/smartcrop/examples/testsuite.html</a>：这里拥有超过1000个图片效果的展示（流量用户请谨慎点击，图片众多）；</li>
+<li><a href="http://29a.ch/sandbox/2014/smartcrop/examples/testbed.html">http://29a.ch/sandbox/2014/smartcrop/examples/testbed.html</a>：这里允许上传本地的图片，并体验其效果；</li>
+<li><a href="http://29a.ch/sandbox/2014/smartcrop/examples/slideshow.html">http://29a.ch/sandbox/2014/smartcrop/examples/slideshow.html</a>：在这里可以尝试用它创建幻灯片。</li>
+</ol>
+
+
+<p>最后，更多关于smartcrop.js的信息，请参见其github：<a href="https://github.com/jwagner/smartcrop.js">https://github.com/jwagner/smartcrop.js</a>。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ThoughtWorks持续集成平台GO开源了]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source/"/>
+    <updated>2014-02-28T22:11:34+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source</id>
+    <content type="html"><![CDATA[<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0" alt="go" /></p>
+
+<p>ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。</p>
+
+<p>Go下载地址为<a href="http://www.go.cd/download/">http://www.go.cd/download/</a>.</p>
+
+<p>下面是几张来自官方的视图：</p>
+
+<p>GO流程图：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" /></p>
+
+<p>GO截面图：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" /></p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" /></p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" /></p>
+
+<p>GO的版本：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" /></p>
+
+<ul>
+<li> <a href="http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c">Thoughtworks官方的宣布文章</a></li>
+<li> 你也可以在ThoughtWorks中国微信雷小达看到:<a href="http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&amp;mid=200062098&amp;idx=1&amp;sn=25198a84122904cd113ef010637d27ed&amp;uin=MjA0MjY0NDk0MA%3D%3D">GO！我们开源了！</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[微软开放了.NET 4.5.1的源代码]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source/"/>
+    <updated>2014-02-28T12:25:25+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source</id>
+    <content type="html"><![CDATA[<p><a href="http://referencesource.microsoft.com/">.NET Reference Source</a>发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，<a href="http://referencesource-beta.microsoft.com/setup.html">在Visual Studio 2013中调试.NET Framework</a>。</p>
+
+<p>.NET Framework团队的项目经理Alok Shriram在<a href="http://blogs.msdn.com/b/dotnet/archive/2014/02/24/a-new-look-for-net-reference-source.aspx">.NET Framework的博客</a>中撰文介绍了最新的.NET Reference Source。它不仅可以用来浏览最新的.NET代码，而且通过强大的<a href="http://msdn.com/roslyn">Roslyn</a>，改善了“Go to Defination”和“Finding Reference”的在线体验。此外，开发者还可以下载整个源代码包，在Visual Studio中打开并浏览。使用Schabse Laks编写的<a href="http://visualstudiogallery.msdn.microsoft.com/f89b27c5-7d7b-4059-adde-7ccc709fa86e">插件</a>，可以在VS中直接导航到该网站。</p>
+
+<p>通过简单的配置，开发者可以在Visual Studio中单步调试.NET Framework 4.5.1及其后续补丁和更新。这无疑是广大开发者<a href="http://visualstudio.uservoice.com/forums/121579-visual-studio/suggestions/4083118-allow-developers-to-step-through-net-framework-so">翘首以盼的功能</a>。启动Visual Studio 2013，打开Tools &ndash;> Options &ndash;> Debugging &ndash;> General菜单，进行如下配置：</p>
+
+<ul>
+<li>   禁用Just My Code</li>
+<li>   禁用Step over properties and operators</li>
+<li>   禁用Require source files to exactly match the original version</li>
+<li>   选中Enable .NET Framework source stepping</li>
+<li>   选中Enable source server support</li>
+</ul>
+
+
+<p>这样，开发者在调试代码时，就可以通过F11直接进入.NET代码。</p>
+
+<p>这并不是微软第一次开放.NET Framework的源代码。早在2007年，他们就第一次公布了<a href="http://weblogs.asp.net/scottgu/archive/2007/10/03/releasing-the-source-code-for-the-net-framework-libraries.aspx">.NET 3.5的源代码</a>并支持Visual Studio调试。并且对于后续的4.0和4.5，也都提供了相应的源代码包。但当框架升级时，这些旧的包就变得毫无价值了。从4.5.1开始，.NET Framework团队彻底改变了符号索引和发布的过程，使其与构建过程同步，这样在新版本发布时，相应的PDB文件也会从Reference Source网站进行更新。</p>
+
+<p>目前的beta站点只是临时的，届时将会取代现在的旧站点。后续微软也会将还未公布源代码的程序集逐步添加进来。新的.NET Reference Source许可协议回归到了<a href="http://referencesource-beta.microsoft.com/license.html">MS-RSL</a>，这也使得像Mono这样的团队可以放心大胆地使用。</p>
+
+<p>正如Scott Hanselman所说：微软可能并不是开源的，但却绝对是源代码开放的。</p>
+
+<p>Infoq原文链接:<a href="http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly">http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

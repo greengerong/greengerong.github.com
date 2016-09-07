@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Docker | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/docker/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[[翻译]docker生态圈Mindmap]]></title>
+    <link href="http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out/"/>
+    <updated>2014-03-18T05:01:09+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out</id>
+    <content type="html"><![CDATA[<p>Docker是一个开源的Linux容器，其被业界所接受，很快成为了一个产业标准。Docker可以减少应用程序启动
+时候的大量资源的筹备。docker很快的成为了新兴的应用程序容器标准。现在有很多项目正围绕着它处于开发中。
+下面将是Mindmap出我所知道的一些项目。你可以在这里访问<a href="http://www.mindmeister.com/389671722/docker-ecosystem">Mindmap</a>.</p>
+
+<p><a href="http://www.mindmeister.com/389671722/docker-ecosystem"><img src="http://i0.wp.com/allthingsplatforms.com/wp-content/uploads/2014/03/Docker-Ecosystem-v0.1.png?resize=717%2C432" alt="docker mindmap" /></a></p>
+
+<p>英语原文链接<a href="http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/">http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/</a></p>
+]]></content>
+  </entry>
+  
+</feed>

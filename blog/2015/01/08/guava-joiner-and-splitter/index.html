@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>Guava之Joiner 和 Splitter - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="最近在给客户准备一个Guava的分享，所以会陆续的更新关于Guava更多的细节分享。本文将记录Guava中得字符串处理Joiner(连接)和Splitter(分割)处理。 Joiner 首先我们来看看下面我们经常遇见的一个案例： 题目：
+对于一个如下定义List List&lt;String&gt &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/01/08/guava-joiner-and-splitter">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">Guava之Joiner 和 Splitter</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-08T08:09:19+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>最近在给客户准备一个Guava的分享，所以会陆续的更新关于Guava更多的细节分享。本文将记录Guava中得字符串处理Joiner(连接)和Splitter(分割)处理。</p>
+
+<h2>Joiner</h2>
+
+<p>首先我们来看看下面我们经常遇见的一个案例：</p>
+
+<pre class='green'><code>题目：
+对于一个如下定义List
+
+   List&lt;String&gt; list =of("1", "2", null, “3”);
+
+按照’,’分割，并过滤掉null。
+</code></pre>
+
+<p>如果不用第三方库，如common-lange，Guava，用原生java，我们将怎么继续？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">join</span><span class="o">(</span><span class="n">List</span> <span class="n">stringList</span><span class="o">,</span> <span class="n">String</span> <span class="n">delimiter</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>    <span class="n">StringBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="err"> </span>    <span class="k">for</span> <span class="o">(</span><span class="n">Object</span> <span class="n">item</span> <span class="o">:</span> <span class="n">stringList</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">item</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>            <span class="n">builder</span>
+</span><span class='line'>             <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">item</span><span class="o">)</span>
+</span><span class='line'>             <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">delimiter</span><span class="o">);</span><span class="err"> </span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'><span class="err"> </span>    <span class="o">}</span><span class="err"> </span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">builder</span><span class="o">.</span><span class="na">setLength</span><span class="o">(</span><span class="n">builder</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="n">delimiter</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="err"> </span>   <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span><span class="err"> </span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>是不是很简单，但是繁琐，而且这里还有个坑，我们使用append的方式，在每次for完成后，我们必须去修正remove最后的分隔符：builder.setLength(builder.length() delimiter.length());</p>
+
+<p>Guava版本呢？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">joinByGuava</span><span class="o">(</span><span class="n">List</span> <span class="n">stringList</span><span class="o">,</span> <span class="n">String</span> <span class="n">delimiter</span><span class="o">)</span> <span class="o">{</span><span class="err"> </span>
+</span><span class='line'>      <span class="k">return</span>    <span class="n">Joiner</span>
+</span><span class='line'>                 <span class="o">.</span><span class="na">on</span><span class="o">(</span><span class="n">delimiter</span><span class="o">)</span>
+</span><span class='line'>                 <span class="o">.</span><span class="na">skipNulls</span><span class="o">()</span>
+</span><span class='line'>                 <span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">stringList</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们不在考虑更多的细节，并且很有语义的告诉代码的阅读者，用什么分隔符，需要过滤null值再join。</p>
+
+<p><em>note</em>:当然我们也可以用common-lange来很简单的完成：StringUtils.join(stringList, delimiter).但是个人推荐尽量使用Guava替代common-lange，因为Guava还有更多的有用方法，后续会陆续介绍，还有就是Guava的API相对更有语意一点。。</p>
+
+<h2>Splitter</h2>
+
+<h2>MapJoinner和MapSplitter</h2>
+
+<p>对于MapJoinner和MapSplitter的最好案例就是url的param编码。</p>
+
+<h4>MapJoinner</h4>
+
+<pre class='green'><code>题目：
+生产一个查询id: 123,name: green的学生信息的url。
+</code></pre>
+
+<p>利用Guava的MapJoinner的代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'> <span class="n">Joiner</span><span class="o">.</span><span class="na">on</span><span class="o">(</span><span class="s">&quot;&amp;&quot;</span><span class="o">).</span><span class="na">withKeyValueSeparator</span><span class="o">(</span><span class="s">&quot;=&quot;</span><span class="o">).</span><span class="na">join</span><span class="o">(</span><span class="n">ImmutableMap</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;id&quot;</span><span class="o">,</span> <span class="s">&quot;123&quot;</span><span class="o">,</span> <span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;green&quot;</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里采用了on传入map item之间分隔符，以及withKeyValueSeparator传递map项key/value之间的分隔符。所以能够很简单的实现，不用我们在去实现一个的for循环代码。</p>
+
+<h4>MapSplitter</h4>
+
+<pre class='green'><code>题目：
+对url中的查询字符串"id=123&amp;name=green"进行分割
+</code></pre>
+
+<p>利用Guava的MapSplitter的代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">join</span> <span class="o">=</span> <span class="n">Splitter</span><span class="o">.</span><span class="na">on</span><span class="o">(</span><span class="s">&quot;&amp;&quot;</span><span class="o">).</span><span class="na">withKeyValueSeparator</span><span class="o">(</span><span class="s">&quot;=&quot;</span><span class="o">).</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;id=123&amp;name=green&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里同样利用on传入字符串的第一分隔符，withKeyValueSeparator传入项的分隔符，产生map的key/value项，其结果是一个{id=123, name=green}的Map对象。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-08T08:09:19+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/guava/'>Guava</a>, <a class='category' href='/blog/categories/java/'>Java</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/01/05/tddsui-xiang-lu/" title="Previous Post: TDD随想录">&laquo; TDD随想录</a>  
+                <a class="basic-alignment right" href="/blog/2015/01/18/guava-optionalpian/" title="Next Post: Guava-Optional可空类型">Guava-Optional可空类型 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

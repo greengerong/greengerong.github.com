@@ -1,0 +1,642 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>Promise的前世今生和妙用技巧 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="浏览器事件模型和回调机制 JavaScript作为单线程运行于浏览器之中，这是每本JavaScript教科书中都会被提到的。同时出于对UI线程操作的安全性考虑，JavaScript和UI线程也处于同一个线程中。因此对于长时间的耗时操作，将会阻塞UI的响应。为了更好的UI体验， &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/10/22/promisede-miao-yong">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">Promise的前世今生和妙用技巧</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-22T17:16:31+08:00" pubdate data-updated="true">Oct 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>浏览器事件模型和回调机制</h2>
+
+<p>JavaScript作为单线程运行于浏览器之中，这是每本JavaScript教科书中都会被提到的。同时出于对UI线程操作的安全性考虑，JavaScript和UI线程也处于同一个线程中。因此对于长时间的耗时操作，将会阻塞UI的响应。为了更好的UI体验，应该尽量的避免JavaScript中执行较长耗时的操作（如大量for循环的对象diff等）或者是长时间I/O阻塞的任务。所以在浏览器中的大多数任务都是异步（无阻塞）执行的，例如：鼠标点击事件、窗口大小拖拉事件、定时器触发事件、Ajax完成回调事件等。当每一个异步事件完成时，它都将被放入一个叫做”浏览器事件队列“中的事件池中去。而这些被放在事件池中的任务，将会被javascript引擎单线程处理的一个一个的处理，当在此次处理中再次遇见的异步任务，它们也会被放到事件池中去，等待下一次的tick被处理。另外在HTML5中引入了新的组件-Web Worker，它可以在JavaScript线程以外执行这些任务，而不阻塞当前UI线程。</p>
+
+<p>浏览器中的事件循环模型如下图所示：</p>
+
+<p><img src="/images/blog_img/browser-event-base.png" alt="浏览器事件模型" /></p>
+
+<p>由于浏览器的这种内部事件循环机制，所以JavaScript一直以callback回调的方式来处理事件任务。因此无所避免的对于多个的JavaScript异步任务的处理，将会遇见”callback hell“（回调地狱），使得这类代码及其不可读和难易维护。</p>
+
+<pre class='green'><code>asyncTask1(data, function (data1){
+
+    asyncTask2(data1, function (data2){
+
+        asyncTask3(data2, function (data3){
+                // .... 魔鬼式的金字塔还在继续
+        });
+
+    });
+
+});
+</code></pre>
+
+<h2>Promise的横空出世</h2>
+
+<p><img src="/images/blog_img/%E6%8B%89%E9%92%A9-%E6%89%BF%E8%AF%BA-promise.jpg" alt="Promise承诺" /></p>
+
+<p>因此很多JavaScript牛人开始寻找解决这回调地狱的模式设计，随后Promise（jQuery的<code>deferred</code>也属于Promise范畴）便被引入到了JavaScript的世界。Promise在英语中语义为：”承诺“，它表示如A调用一个长时间任务B的时候，B将返回一个”承诺“给A，A不用关心整个实施的过程，继续做自己的任务；当B实施完成的时候，会通过A，并将执行A之间的预先约定的回调。而deferred在英语中语义为：”延迟“，这也说明promise解决的问题是一种带有延迟的事件，这个事件会被延迟到未来某个合适点再执行。</p>
+
+<p><a href="http://promises-aplus.github.io/promises-spec/">Promise/A+规范</a>：</p>
+
+<ul>
+<li>Promise 对象有三种状态： Pending &ndash; Promise对象的初始状态，等到任务的完成或者被拒绝；Fulfilled &ndash; 任务执行完成并且成功的状态；Rejected &ndash; 任务执行完成并且失败的状态；</li>
+<li>Promise的状态只可能从“Pending”状态转到“Fulfilled”状态或者“Rejected”状态，而且不能逆向转换，同时“Fulfilled”状态和“Rejected”状态也不能相互转换；</li>
+<li>Promise对象必须实现then方法，then是promise规范的核心，而且then方法也必须返回一个Promise对象，同一个Promise对象可以注册多个then方法，并且回调的执行顺序跟它们的注册顺序一致；</li>
+<li>then方法接受两个回调函数，它们分别为：成功时的回调和失败时的回调；并且它们分别在：Promise由“Pending”状态转换到“Fulfilled”状态时被调用和在Promise由“Pending”状态转换到“Rejected”状态时被调用。</li>
+</ul>
+
+
+<p>如下面所示：</p>
+
+<p><img src="/images/blog_img/promises-%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="promises 流程图" /></p>
+
+<p>根据<a href="http://promises-aplus.github.io/promises-spec/">Promise/A+规范</a>，我们在文章开始的Promise伪代码就可以转换为如下代码：</p>
+
+<pre class='green'><code>asyncTask1(data)
+    .then(function(data1){
+        return asyncTask2(data1);
+    })
+    .then(function(data2){
+       return asyncTask3(data2);
+    })
+    // 仍然可以继续then方法
+</code></pre>
+
+<p>Promise将原来回调地狱中的回调函数，从横向式增加巧妙的变为了纵向增长。以链式的风格，纵向的书写，使得代码更加的可读和易于维护。</p>
+
+<p>Promise在JavaScript的世界中逐渐的被大家所接受，所以在ES6的标准版中已经引入了Promise的规范了。现在通过Babel，可以完全放心的引入产品环境之中了。</p>
+
+<p>另外，对于解决这类异步任务的方式，在ES7中将会引入<code>async、await</code>两个关键字，以同步的方式来书写异步的任务，它被誉为”JavaScript异步处理的终极方案“。这两个关键字是ES6标准中生成器（<code>generator</code>）和Promise的组合新语法，内置<code>generator</code>的执行器的一种方式。当然<code>async、await</code>的讲解并不会在本文中展开，有兴趣的读者可以参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">MDN资料</a>。</p>
+
+<h2>Promise的妙用</h2>
+
+<p>如上所说Promise在处理异步回调或者是延迟执行任务时候，是一个不错的选择方案。下面我们将介绍一些Promise的使用技巧（下面将利用Angular的<code>$q</code>和<code>$http</code>为例，当然对于jQuery的<code>deferred</code>，ES6的Promise仍然实用）：</p>
+
+<h4>多个异步任务的串行处理</h4>
+
+<p>在上文中提到的回调地狱案例，就是一种试图去将多个异步的任务串行处理的结果，使得代码不断的横向延伸，可读性和维护性急剧下降。当然我们也提到了Promise利用链式和延迟执行模型，将代码从横向延伸拉回了纵向增长。使用Angular中<code>$http</code>的实现如下：</p>
+
+<pre class='green'><code>$http.get('/demo1')
+ .then(function(data){
+     console.log('demo1', data);
+     return $http.get('/demo2', {params: data.result});
+  })
+ .then(function(data){
+     console.log('demo2', data);
+     return $http.get('/demo3', {params: data.result});
+  })
+ .then(function(data){
+     console.log('demo3', data.result);
+  });
+</code></pre>
+
+<p>因为Promise是可以传递的，可以继续<code>then</code>方法延续下去，也可以在纵向扩展的途中改变为其他Promise或者数据。所以在例子中的$http也可以换为其他的Promise（如$<code>timeout</code>，<code>$resource</code> &hellip;）。</p>
+
+<h4>多个异步任务的并行处理</h4>
+
+<p>在有些场景下，我们所要处理的多个异步任务之间并没有像上例中的那么强的依赖关系，只需要在这一系列的异步任务全部完成的时候执行一些特定逻辑。这个时候为了性能的考虑等，我们不需要将它们都串行起来执行，并行执行它们将是一个最优的选择。如果仍然采用回调函数，则这是一个非常恼人的问题。利用Promise则同样可以优雅的解决它：</p>
+
+<pre class='green'><code>$q.all([$http.get('/demo1'),
+        $http.get('/demo2'),
+        $http.get('/demo3')
+])
+.then(function(results){
+    console.log('result 1', results[0]);
+    console.log('result 2', results[1]);
+    console.log('result 3', results[2]);
+});
+</code></pre>
+
+<p>这样就可以等到一堆异步的任务完成后，在执行特定的业务回调了。在Angular中的路由机制<code>ngRoute</code>、<code>uiRoute</code>的resolve机制也是采用同样的原理：在路由执行的时候，会将获取模板的Promise、获取所有resolve数据的Promise都拼接在一起，同时并行的获取它们，然后等待它们都结束的时候，才开始初始化<code>ng-view</code>、<code>ui-view</code>指令的scope对象，以及compile模板节点，并插入页面DOM中，完成一次路由的跳转并且切换了View，将静态的HTML模板变为动态的网页展示出来。</p>
+
+<p>Angular路由机制的伪代码如下：</p>
+
+<pre class='green'><code>    var getTemplatePromise = function(options) {
+         // ... 拼接所有template或者templateUrl
+    };
+
+    var getResolvePromises = function(resolves) {
+        // ... 拼接所有resolve
+    };
+
+    var controllerLoader = function(options, currentScope, tplAndVars, initLocals) {
+        // ...
+
+        ctrlInstance = $controller(options.controller, ctrlLocals);
+        if (options.controllerAs) {
+            currentScope[options.controllerAs] = ctrlInstance;
+        }
+
+        // ...
+
+        return currentScope;
+    };
+
+    var templateAndResolvePromise = $q.all([getTemplatePromise(options)].concat(getResolvePromises(options.resolve || {})));
+
+    return templateAndResolvePromise.then(function resolveSuccess(tplAndVars) {
+        var currentScope = currentScope || $rootScope.$new();
+        controllerLoader(options, currentScope, tplAndVars, initLocals);
+        // ... compile &amp; append dom 
+    });
+</code></pre>
+
+<p>对于这类路由机制的使用，在博主上篇博文<a href="http://greengerong.com/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/">《自定义Angular插件 &ndash; 网站用户引导》</a>中的ng-trainning插件中也采用了它。关于这段代码的具体分析和应用将在后续单独的文章中，敬请大家期待。</p>
+
+<h4>对于同步数据的Promise处理，统一调用接口</h4>
+
+<p>有了Promise的处理，因为在前端代码中最多的异步处理就是Ajax，它们都被包装为了Promise .then的风格。那么对于一部分同步的非异步处理呢？如localStorage、setTimeout、setInterval之类的方法。在大多数情况下，博主仍然推荐使用Promise的方式包装，使得项目Service的返回接口统一。这样也便于像上例中的多个异步任务的串行、并行处理。在Angular路由中对于只设置template的情况，也是这么处理的。</p>
+
+<p>对于setTimeout、setInterval在Angular中都已经为我们内置了$timeout和$interval服务，它们就是一种Promise的封装。对于localStorage呢？可以采用$q.when方法来直接包装localStorage的返回值的为Promise接口，如下所示：</p>
+
+<pre class='green'><code>    var data = $window.localStorage.getItem('data-api-key');
+    return $q.when(data);
+</code></pre>
+
+<p>整个项目的Service层的返回值都可以被封装为统一的风格使用了，项目变得更加的一致和统一。在需要多个Service同时并行或者串行处理的时候，也变得简单了，一致的使用方式。</p>
+
+<h4>对于延迟任务的Promise DSL语义化封装</h4>
+
+<p>在前面已经提到Promise是延迟到未来执行某些特定任务，在调用时候则给消费者返回一个”承诺“，消费者线程并不会被阻塞。在消费者接受到”承诺“之后，消费者就不用再关心这些任务是如何完成的，以及督促生产者的任务执行状态等。直到任务完成后，消费者手中的这个”承诺“就被兑现了。</p>
+
+<p>对于这类延迟机制，在前端的UI交互中也是极其常见的。比如模态窗口的显示，对于用户在模态窗口中的交互结果并不可提前预知的，用户是点击”ok“按钮，或者是”cancel“按钮，这是一个未来将会发生的延迟事件。对于这类场景的处理，也是Promise所擅长的领域。在Angular-UI的Bootstrap的modal的实现也是基于Promise的封装。</p>
+
+<pre class='green'><code>$modal.open({
+    templateUrl: '/templates/modal.html',
+    controller: 'ModalController',
+    controllerAs: 'modal',
+    resolve: {
+    }
+})
+    .result
+    .then(function ok(data) {
+        // 用户点击ok按钮事件
+    }, function cancel(){
+        // 用户点击cancel按钮事件
+    });
+</code></pre>
+
+<p>这是因为modal在open方法的返回值中给了我们一个Promise的result对象（承诺）。等到用户在模态窗口中点击了ok按钮，则Bootstrap会使用<code>$q</code>的<code>defer</code>来<code>resolve</code>来执行ok事件；相反，如果用户点击了cancel按钮，则会使用<code>$q</code>的<code>defer</code>来<code>reject</code>执行cancel事件。</p>
+
+<p>这样就很好的解决了延迟触发的问题，也避免了<code>callback的地狱</code>。我们仍然可以进一步将其返回值语义化，以业务自有的术语命名而形成一套DSL API。</p>
+
+<pre class='green'><code> function open(data){
+    var defer = $q.defer();
+
+    // resolve or reject defer;
+
+    var promise = defer.promise;
+    promise.ok = function(func){
+        promise.then(func);
+        return promise;
+    };
+
+    promise.cancel = function(func){
+        promise.then(null, func);
+        return promise;
+    };
+
+    return promise;
+};
+</code></pre>
+
+<p>则我们可以如下方式来访问它：</p>
+
+<pre class='green'><code>$modal.open(item)
+   .ok(function(data){
+        // ok逻辑
+   })
+   .cancel(function(data){
+       // cancel 逻辑
+   });
+</code></pre>
+
+<p>是不是感觉更具有语义呢？在Angular中$http的返回方法success、error也是同样逻辑的封装。将success的注册函数注册为.then方法的成功回调，error的注册方法注册为then方法的失败回调。所以success和error方法只是Angular框架为我们在Promise语法之上封装的一套语法糖而已。</p>
+
+<p>Angular的success、error回调的实现代码：</p>
+
+<pre class='green'><code>  promise.success = function(fn) {
+    promise.then(function(response) {
+      fn(response.data, response.status, response.headers, config);
+    });
+    return promise;
+  };
+
+  promise.error = function(fn) {
+    promise.then(null, function(response) {
+      fn(response.data, response.status, response.headers, config);
+    });
+    return promise;
+  };
+</code></pre>
+
+<h4>利用Promise来实现管道式AOP拦截</h4>
+
+<p>在软件设计中，AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。 AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a>。</p>
+
+<p>在Angular中同样也内置了一些AOP的设计思想，便于实现程序通用功能与业务模块的分离、解耦、统一处理和维护。$http中的拦截器（interceptors）和装饰器（$provide.decorator）是Angular中两类常见的AOP切入点。前者以管道式执行策略实现，而后者则通过运行时的Promise管道动态实现的。</p>
+
+<p>首先回顾一下Angular的拦截器实现方式：</p>
+
+<pre class='green'><code>// 注册一个拦截器服务
+$provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
+  return {
+    // 可选方法
+    'request': function(config) {
+      // 请求成功后处理
+      return config;
+    },
+
+    // 可选方法
+   'requestError': function(rejection) {
+      // 请求失败后的处理
+      if (canRecover(rejection)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(rejection);
+    },
+
+
+
+    // 可选方法
+    'response': function(response) {
+      // 返回回城处理
+      return response;
+    },
+
+    // 可选方法
+   'responseError': function(rejection) {
+      // 返回失败的处理
+      if (canRecover(rejection)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(rejection);
+    }
+  };
+});
+
+// 将服务注册到拦截器链中
+$httpProvider.interceptors.push('myHttpInterceptor');
+
+
+// 同样也可以将拦截器注册为一个工厂方法。 但上一中方式更为推荐。
+$httpProvider.interceptors.push(['$q', function($q) {
+  return {
+   'request': function(config) {
+       // 同上
+    },
+
+    'response': function(response) {
+       // 同上
+    }
+  };
+}]);
+</code></pre>
+
+<p>这样就可以实现对Angular中的<code>$http</code>或者是<code>$resource</code>的Ajax请求拦截了。但在Angular内部是是如何实现这种拦截方式的呢？Angular使用的就是Promise机制，形成异步管道流，将真实的Ajax请求放置在request、requestError和response、responseError的管道中间，因此就产生了对Ajax请求的拦截。</p>
+
+<p>其源码实现如下：</p>
+
+<pre class='green'><code>var interceptorFactories = this.interceptors = [];
+
+var responseInterceptorFactories = this.responseInterceptors = [];
+
+this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
+  function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
+
+    var defaultCache = $cacheFactory('$http');
+
+    var reversedInterceptors = [];
+
+    forEach(interceptorFactories, function(interceptorFactory) {
+      reversedInterceptors.unshift(isString(interceptorFactory) ? $injector.get(interceptorFactory) : $injector.invoke(interceptorFactory));
+    });
+
+    forEach(responseInterceptorFactories, function(interceptorFactory, index) {
+      var responseFn = isString(interceptorFactory) ? $injector.get(interceptorFactory) : $injector.invoke(interceptorFactory);
+
+      reversedInterceptors.splice(index, 0, {
+        response: function(response) {
+          return responseFn($q.when(response));
+        },
+        responseError: function(response) {
+          return responseFn($q.reject(response));
+        }
+      });
+    });
+    ...
+
+function $http(requestConfig) {
+  ...
+
+  var chain = [serverRequest, undefined];
+  var promise = $q.when(config);
+
+  // apply interceptors
+  forEach(reversedInterceptors, function(interceptor) {
+    if (interceptor.request || interceptor.requestError) {
+      chain.unshift(interceptor.request, interceptor.requestError);
+    }
+    if (interceptor.response || interceptor.responseError) {
+      chain.push(interceptor.response, interceptor.responseError);
+    }
+  });
+
+  while (chain.length) {
+    var thenFn = chain.shift();
+    var rejectFn = chain.shift();
+
+    promise = promise.then(thenFn, rejectFn);
+  }
+
+  promise.success = function(fn) {
+    promise.then(function(response) {
+      fn(response.data, response.status, response.headers, config);
+    });
+    return promise;
+  };
+
+  promise.error = function(fn) {
+    promise.then(null, function(response) {
+      fn(response.data, response.status, response.headers, config);
+    });
+    return promise;
+  };
+
+  return promise;
+};
+</code></pre>
+
+<p>在上面紧接着在<code>$get</code>注入方法之后，Angular会将<code>interceptors</code>和<code>responseInterceptors</code>反转合并到一个<code>reversedInterceptors</code>的拦截器内部变量中保存。最后在$http函数中以<code>[serverRequest, undefined]</code>（<code>serverRequest</code>是Ajax请求的Promise操作）为中心，将<code>reversedInterceptors</code>中的所有拦截器函数依次加入到chain链式数组中。如果是request或requestError，那么就放在链式数组起始位置；相反如果是response或responseError，那么就放在链式数组最后。</p>
+
+<p>注意添加在chain的request和requestError或者response和responseError都一定是成对的，换句话说可能注册一个非空的request与一个为undefined的requestError，或者是一个为undefined的request与非空的requestError。就像chain数组的声明一样<code>（var chain = [serverRequest, undefined];）</code>，成对的放入serverRequest和undefined对象到数组中。因为后面的代码将利用Promise的机制注册这些拦截器函数，实现管道式AOP拦截机制。</p>
+
+<p>在Promise中需要两个函数来注册回调，分别为成功回调和失败回调。在这里request和response会被注册成Promise的成功回调，而requestError和responseError则会注册成Promise的失败回调。所以在chain中添加的request和requestError，response或responseError都是成对出现的，这是为了能在接下来的循环中简洁地注册Promise回调函数。 这些被注册的拦截器链，会通过<code>$q.when(config)</code> Promise启动，它会首先传入<code>$http</code>的config对象，并执行所有的request拦截器，依次再到<code>serverRequest</code>这个Ajax请求，此时将挂起后边所有的response拦截器，直到Ajax请求响应完成，再依次执行剩下的response拦截器回调； 如果在request过程中有异常失败则会执行后边的requestError拦截器，对于Ajax请求的失败或者处理Ajax的response拦截器的异常也会被后面注册的responseError拦截器捕获。</p>
+
+<p>从最后两段代码也能了解到关于<code>$http</code>服务中的success方法和error方法，是Angular为大家提供了一种Promise的便捷写法。success方法是注册一个传入的成功回调和为undefined的错误回调，而error则是注册一个为null的成功回调和一个传入的失败回调。</p>
+
+<h2>总结</h2>
+
+<p>写到这里，本文也进入了尾声。希望大家能够对Promise有一定的理解，并能够”信手拈来“的运用于实际的项目之中，增强代码的可读性和可维护性。在本文中所用到的例子，你都可以在博主的jsbin<a href="http://jsbin.com/bayeva/edit?html,js,output">http://jsbin.com/bayeva/edit?html,js,output</a>中找到它们。</p>
+
+<p>另外，同时也欢迎关注博主的微信公众号[破狼]（微信二维码位于博客右侧），这里将会为大家第一时间推送博主的最新博文，谢谢大家的支持和鼓励。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-22T17:16:31+08:00" pubdate data-updated="true">Oct 22<span>nd</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/promise/'>promise</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/10/18/angular-wang-zhan-yong-hu-yin-dao-cha-jian/" title="Previous Post: 自定义Angular插件 - 网站用户引导">&laquo; 自定义Angular插件 - 网站用户引导</a>  
+                <a class="basic-alignment right" href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/" title="Next Post: JavaScript单线程和浏览器事件循环简述">JavaScript单线程和浏览器事件循环简述 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

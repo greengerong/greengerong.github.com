@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>Swagger - 前后端分离后的契约 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="前后端分离 按照现在的趋势，前后端分离几乎已经是业界对开发和部署方式所达成的一种共识。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人只做前端（HTML/CSS/JavaScript等等），另一部分人只做后端（或者叫服务端），因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">Swagger - 前后端分离后的契约</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-29T10:39:02+08:00" pubdate data-updated="true">Jul 29<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>前后端分离</h3>
+
+<p>按照现在的趋势，前后端分离几乎已经是业界对开发和部署方式所达成的一种共识。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人只做前端（HTML/CSS/JavaScript等等），另一部分人只做后端（或者叫服务端），因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法将前后端开发和部署做到真正的分离。</p>
+
+<p>通常，前后端分别有着自己的开发流程，构建工具，测试等。做前端的谁也不会想要用Maven或者Gradle作为构建工具，同样的道理，做后端的谁也不会想要用Grunt或者Gulp作为构建工具。前后端仅仅通过接口来协作，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。但是这种想法依然还是很理想化，前后端集成往往还是一个很头痛的问题。比如在最后需要集成的时候，我们才发现最开始商量好的数据结构发生了变化，而且这种变化往往是在所难免的，这样就会增加大量的集成时间。</p>
+
+<p>归根结底，还是前端或者后端感知到变化的时间周期太长，不能“及时协商，尽早解决”，最终导致集中爆发。怎么解决这个问题呢？我们需要提前协商好一些契约，并将这些契约作为可以被测试的中间产品，然后前后端都通过自动化测试来检验这些契约，一旦契约发生变化，测试就会失败。这样，每个失败的测试都会驱动双方再次协商，有效的缩短了反馈周期，并且降低集成风险。具体的实践方式，请参加我同事的一篇博文，“前后端分离了，然后呢？”<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/</a>。</p>
+
+<p>不过，仅仅靠纪律是不够的，还需要通过工具的辅助来提高效率。下面，我们就来看一下，一个API设计工具——Swagger，将如何帮助我们更好的实现“前后端分离”。</p>
+
+<h3>Swagger</h3>
+
+<p>Swagger包括库、编辑器、代码生成器等很多部分，这里我们主要讲一下Swagger Editor。这是一个完全开源的项目，并且它也是一个基于Angular的成功案例，我们可以下载源码并自己部署它，也可以修改它或集成到我们自己的软件中。</p>
+
+<p>在Swagger Editor中，我们可以基于YAML语法定义我们的RESTful API，然后它会自动生成一篇排版优美的API文档，并且提供实时预览。相信大多数朋友都遇到过这样一个场景：明明调用的是之前约定好的API，拿到的结果却不是想要的。可能因为是有人修改了API的接口，却忘了更新文档；或者是文档更新的不及时；又或者是文档写的有歧义，大家的理解各不相同。总之，让API文档总是与API定义同步更新，是一件非常有价值的事。下面我们通过一个例子来感受一下Swagger给我们带来的好处。</p>
+
+<p>首先我们需要安装一个Swagger Editor，或者也可以直接使用在线版本<a href="http://editor.swagger.io/">http://editor.swagger.io/</a>。如果需要在本地启动编辑器，执行以下三行命令即可（前提是已经安装好了Node.js）：</p>
+
+<pre class='green'><code>git clone https://github.com/swagger-api/swagger-editor.git
+cd swagger-editor
+npm start
+</code></pre>
+
+<p>当我们修改了API的定义之后，在编辑器右侧就可以看到相应的API文档了，而且永远是最新的。</p>
+
+<p><img src="/images/blog_img/SwaggerEditor.png" alt="Swagger editor" /></p>
+
+<p>不仅如此，它还能够自动生成Mock server所需要的代码，这样一来前端开发就再也不用等着后端API
+的实现了。除此之外，它还有一个更强大的功能，甚至能够帮助我们自动生成不同语言的客户端的代码。Swagger是基于插件来实现各种不同的语言的，所以，如果已经提供的语言中没有你正在用的，你也可以自己实现相应的插件，甚至是从源代码级别进行定制化。</p>
+
+<p><img src="/images/blog_img/SwaggerGenerateClient.png" alt="Swagger generate client" /></p>
+
+<h3>契约测试</h3>
+
+<p>谈到了前后端分离，那么在所难免，会遇到一些集成的问题：一拨人在全心全意的进行前端开发，另一拨人在心无旁骛的做后端开发，那么谁应该为集成买单呢？在现在这个持续集成、持续交付的年代里，我们应该如何去保证双方不会分道扬镳、越走越远呢？</p>
+
+<p>所以，在一开始就定一个契约就成了迫在眉睫的事情，双方就API相关的内容，包括路径、参数、类型等达成一致，当然，这份契约并不是一旦创建就不能修改的，而且，如果一开始没有设计好，很有可能会频繁的修改。这个时候，要让双方都能够实时的跟踪最新的API就成了一个难题。还好，在总结了前人的经验和教训之后，我们早已有了应对之策，那就是<code>契约测试</code>。</p>
+
+<p>老马（Martin Fowler）早在2011年的时候就发表了一篇博客<a href="http://martinfowler.com/bliki/IntegrationContractTest.html">http://martinfowler.com/bliki/IntegrationContractTest.html</a>，专门讨论了如何做契约测试。</p>
+
+<p>首先，我们先假设我们已经有了一份契约，可能是基于JSON格式的，有可能是基于XML格式的，这都不重要。然后，前端会根据这份契约建立一个Mock server，所有的测试都发往这个Mock server。有两方面的原因：一是这个时候可能后台的API还没有开发完成；二是有可能因为网络等其他方面的原因导致直接调用真实的后台API会很不稳定或者很耗时。到这里，可能有人就要说了，如果后台的API实现和之前约定的并不一样，怎么能保证到了集成的时候双方还能很顺利的集成呢？其实这个问题并不难，只需要让前端的测试定期连接真实的API执行一遍就能尽早的发现差异性。比方说，在我们平常的build pipeline上添加一个job，让这些测试每天在午夜里连着真实的API执行。如果，第二天发现这些测试有的失败了，那么就需要和开发后台API的人员进行一次沟通了，很有可能由于真实的业务逻辑发生了变化，API在实现的时候，已经和之前的契约不一致了，如果是这样，那么相应的测试和契约定义就需要更新以满足最新的业务需求。</p>
+
+<p>总之，进行契约测试的目的就是尽早的发现差异性，并作出调整，将最后集成的风险降到最低。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-29T10:39:02+08:00" pubdate data-updated="true">Jul 29<span>th</span>, 2015</time> 
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/" title="Previous Post: tsd-提升IDE对JavaScript智能感知的能力">&laquo; tsd-提升IDE对JavaScript智能感知的能力</a>  
+                <a class="basic-alignment right" href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/" title="Next Post: 设计-简约而不简单">设计-简约而不简单 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

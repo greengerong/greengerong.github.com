@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Guava | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/guava/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Guava-Optional可空类型]]></title>
+    <link href="http://greengerong.github.io/blog/2015/01/18/guava-optionalpian/"/>
+    <updated>2015-01-18T14:05:36+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/01/18/guava-optionalpian</id>
+    <content type="html"><![CDATA[<p>接上篇Guava之Joiner和Splitter，本篇将介绍Guava的另外一个有用的对象Optional<T>,这在Java中Google Guava首先给我们提出可空对象模型的。在其他语言如c#这是已经存在很久的模式，并包含在.net类库中Nullable<T>(Int?也是一个可空类型)。</p>
+
+<h2>Null sucks</h2>
+
+<p>回到本文主题Optional。在我日常编程中NullPointerException是肯定是大家遇见最多的异常错误:</p>
+
+<p>为此Doug Lea曾说过:</p>
+
+<pre><code>Null sucks.
+</code></pre>
+
+<p>Sir C. A. R. Hoare也曾说过：</p>
+
+<pre><code>I call it my billion-dollar mistake.
+</code></pre>
+
+<p>从上面我们能够足以看出NullPointerExceptiond的出现频率和可恨之处。因此在GOF的设计模式中我们也专门提出了空对象模式(或称特例模式)来应对这可恶的NullPointerExceptiond。空对象模式主要以返回一些<em>无意义并不影响处理逻辑的特定对象来替代null对象</em>，从而避免没必要的null对象的判断。
+例如在计算一组员工的总共薪资的时候，对于返回的null对象则我们可以返回默认值为了<em>0</em>薪资的员工对象，那么我们就不需要做任何null的判断。</p>
+
+<h2>员工薪资问题</h2>
+
+<p>那么在Guava的Optional又该怎么解决呢？在讲解Optional之前，让我们仍然以计算一组员工的总共薪资为例用原生java代码将来看看：</p>
+
+<p>```java</p>
+
+<pre><code>@Test
+public void should_get_total_age_for_all_employees() throws Exception {
+    final List&lt;Employee&gt; list = Lists.newArrayList(new Employee("em1", 30), new Employee("em2", 40), null, new Employee("em4", 18));
+    int sum = 0;
+    for (Employee employee : list) {
+        if (employee != null) {
+            sum += employee.getAge();
+        }
+    }
+    System.out.println(sum);
+
+}
+
+private class Employee {
+    private final String name;
+    private final int age;
+
+    public Employee(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+}
+</code></pre>
+
+<p>```</p>
+
+<p>如果换成Guava Optional将如何：</p>
+
+<p>```java</p>
+
+<pre><code> @Test
+public void should_get_total_age_for_all_employees() throws Exception {
+    final List&lt;Employee&gt; list = Lists.newArrayList(new Employee("em1", 30),
+          new Employee("em2", 40),
+           null,
+           new Employee("em4", 18));
+
+    int sum = 0;
+    for (Employee employee : list) {
+        sum += Optional.fromNullable(employee).or(new Employee("dummy", 0)).getAge();
+    }
+
+    System.out.println(sum);
+}
+</code></pre>
+
+<p>```
+从上面可以清晰看出，我们不在担心对象对空了，利用Optional的fromNullable创建了一个可空对象，并将其or上一个dummy的员工信息，所以在这里我们不在担心NullPointerExceptiond。</p>
+
+<p>也许你会说和利用三目运算 ( <em>?</em>:_)没什么差别，在此例子中功能是的确是没多大差距，但是个人觉得Guava更有语义，更通用一些，而且满足很多空对象模式使用的场景。</p>
+
+<h2>Optional API</h2>
+
+<p>*. OptionalObject.isPresent(): 返回对象是否有值。</p>
+
+<p>*. Optional.absent(): 返回一个空Optional对象,isPresent() 将会返回false</p>
+
+<p>*. Optional.of(): 创Optional对象，输入参数不能为null</p>
+
+<p>*. Optional.fromNullable(): 创Optional对象，输入可以为null</p>
+
+<p>*. OptionalObject.asSet(): 和Optional对象值合并，如果为null则返回size为0的Set</p>
+
+<p>*. OptionalObject.or(): 和Optional对象值合并，如果为null为空加则返回or参数作为默认值</p>
+
+<p>*. OptionalObject.orNull(): 和Optional对象值合并，如果为null为空加则返回Null作为默认值</p>
+
+<p>上面的api都是我们在使用Optional的时候最常用的方法属性方法，注意如果我们创建了Optional对象，但是没有判断isPresent()是否存在，就直接get这是会抛异常的，这属于乱用Optional情况，和直接用Null并没什么差别。</p>
+
+<p>```java</p>
+
+<pre><code>final Optional&lt;Object&gt; obj = Optional.fromNullable(null);
+final Object o = obj.get();
+</code></pre>
+
+<p>```</p>
+
+<p>同样Optional为空对象模式，可以添加默认值，null不会影响我们的处理，如果为null我们无法继续程序处理的情况，需要抛异常或者中断的的，还是需要抛异常、中断，利用Preconditions.checkNotNull等，而不是继续套一层Optional对象，这也属于乱用Optional之列。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Guava之Joiner 和 Splitter]]></title>
+    <link href="http://greengerong.github.io/blog/2015/01/08/guava-joiner-and-splitter/"/>
+    <updated>2015-01-08T08:09:19+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/01/08/guava-joiner-and-splitter</id>
+    <content type="html"><![CDATA[<p>最近在给客户准备一个Guava的分享，所以会陆续的更新关于Guava更多的细节分享。本文将记录Guava中得字符串处理Joiner(连接)和Splitter(分割)处理。</p>
+
+<h2>Joiner</h2>
+
+<p>首先我们来看看下面我们经常遇见的一个案例：</p>
+
+<pre><code>题目：
+对于一个如下定义List
+
+   List&lt;String&gt; list =of("1", "2", null, “3”);
+
+按照’,’分割，并过滤掉null。
+</code></pre>
+
+<p>如果不用第三方库，如common-lange，Guava，用原生java，我们将怎么继续？</p>
+
+<p>```java</p>
+
+<pre><code>public static String join(List stringList, String delimiter) {    
+    StringBuilder builder = new StringBuilder();
+
+     for (Object item : stringList) { 
+        if (item != null) { 
+            builder
+             .append(item)
+             .append(delimiter); 
+         }
+     }     
+
+   builder.setLength(builder.length() delimiter.length());
+
+    return builder.toString(); 
+}
+</code></pre>
+
+<p>```</p>
+
+<p>是不是很简单，但是繁琐，而且这里还有个坑，我们使用append的方式，在每次for完成后，我们必须去修正remove最后的分隔符：builder.setLength(builder.length() delimiter.length());</p>
+
+<p>Guava版本呢？</p>
+
+<p>```java</p>
+
+<pre><code>    public static String joinByGuava(List stringList, String delimiter) { 
+        return    Joiner
+                   .on(delimiter)
+                   .skipNulls()
+                   .join(stringList);
+    }
+</code></pre>
+
+<p>```</p>
+
+<p>我们不在考虑更多的细节，并且很有语义的告诉代码的阅读者，用什么分隔符，需要过滤null值再join。</p>
+
+<p><em>note</em>:当然我们也可以用common-lange来很简单的完成：StringUtils.join(stringList, delimiter).但是个人推荐尽量使用Guava替代common-lange，因为Guava还有更多的有用方法，后续会陆续介绍，还有就是Guava的API相对更有语意一点。。</p>
+
+<h2>Splitter</h2>
+
+<h2>MapJoinner和MapSplitter</h2>
+
+<p>对于MapJoinner和MapSplitter的最好案例就是url的param编码。</p>
+
+<h4>MapJoinner</h4>
+
+<pre><code>题目：
+生产一个查询id: 123,name: green的学生信息的url。
+</code></pre>
+
+<p>利用Guava的MapJoinner的代码如下：</p>
+
+<p>```java</p>
+
+<pre><code>Joiner.on("&amp;").withKeyValueSeparator("=").join(ImmutableMap.of("id", "123", "name", "green"));
+</code></pre>
+
+<p>```</p>
+
+<p>这里采用了on传入map item之间分隔符，以及withKeyValueSeparator传递map项key/value之间的分隔符。所以能够很简单的实现，不用我们在去实现一个的for循环代码。</p>
+
+<h4>MapSplitter</h4>
+
+<pre><code>题目：
+对url中的查询字符串"id=123&amp;name=green"进行分割
+</code></pre>
+
+<p>利用Guava的MapSplitter的代码如下：</p>
+
+<p>```java</p>
+
+<pre><code>final Map&lt;String, String&gt; join = Splitter.on("&amp;").withKeyValueSeparator("=").split("id=123&amp;name=green");
+</code></pre>
+
+<p>```</p>
+
+<p>这里同样利用on传入字符串的第一分隔符，withKeyValueSeparator传入项的分隔符，产生map的key/value项，其结果是一个{id=123, name=green}的Map对象。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Guava - EventBus(事件总线)]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/"/>
+    <updated>2014-11-27T21:49:40+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/27/guava-eventbus</id>
+    <content type="html"><![CDATA[<p>Guava在<a href="http://code.google.com/p/guava-libraries/">guava-libraries</a>中为我们提供了事件总线EventBus库，它是事件发布订阅模式的实现，让我们能在领域驱动设计(DDD)中以事件的弱引用本质对我们的模块和领域边界很好的解耦设计。</p>
+
+<p>不再多的废话，直奔Guava EventBus主题。首先Guava为我们提供了同步事件EventBus和异步实现AsyncEventBus两个事件总线，他们都不是单例的，官方理由是并不想我们我们的使用方式。当然如果我们想其为单例，我们可以很容易封装它，一个单例模式保证只创建一个实例就对了。</p>
+
+<p>下面将以EventBus为例，AsyncEventBus使用方式与其一致的。</p>
+
+<h4>订阅</h4>
+
+<p>首先EventBus为我们提供了register方法来订阅事件，Guava在这里的实现很友好，我们不需要实现任何的额外接口或者base类，只需要在订阅方法上标注上<strong>@Subscribe</strong>和保证<strong>只有一个输入参数</strong>的方法就可以搞定。这样对于简单的某些事件，我们甚至可以直接</p>
+
+<p>```java</p>
+
+<pre><code>new Object() {
+
+    @Subscribe
+    public void lister(Integer integer) {
+        System.out.printf("%d from int%n", integer);
+    }
+}
+</code></pre>
+
+<p>```</p>
+
+<p>Guava发布的事件默认不会处理线程安全的，但我们可以标注@AllowConcurrentEvents来保证其线程安全</p>
+
+<h4>发布</h4>
+
+<p>对于事件源，则可以通过post方法发布事件。 正在这里对于Guava对于事件的发布，是依据上例中订阅方法的方法参数类型决定的，换而言之就是post传入的类型和其基类类型可以收到此事件。例如下例：</p>
+
+<p>```java</p>
+
+<pre><code>final EventBus eventBus = new EventBus();
+eventBus.register(new Object() {
+
+    @Subscribe
+    public void lister(Integer integer) {
+        System.out.printf("%s from int%n", integer);
+    }
+
+    @Subscribe
+    public void lister(Number integer) {
+        System.out.printf("%s from Number%n", integer);
+    }
+
+    @Subscribe
+    public void lister(Long integer) {
+        System.out.printf("%s from long%n", integer);
+    }
+});
+
+eventBus.post(1);
+eventBus.post(1L);
+</code></pre>
+
+<p>```</p>
+
+<p>在这里有    Integer，Long，与它们基类Number。我们发送一个整数数据的时候，或者Integer和Number的方法接收，而Long类型则Long类型和Number类型接受。</p>
+
+<p>所以博主建议对于每类时间封装一个特定的事件类型是必要的。</p>
+
+<h4>DeadEvent</h4>
+
+<p>DeadEvent暂时不清楚怎么翻译更合意，它描述的是死亡事件，即没有没任何订阅者关心，没有被处理，以DeadEvent类型参数的方法表示.例如在上例中我们post一个Object类型，如下：</p>
+
+<p>```java</p>
+
+<pre><code>final EventBus eventBus = new EventBus();
+eventBus.register(new Object() {
+
+    @Subscribe
+    public void lister(DeadEvent event) {
+        System.out.printf("%s=%s from dead events%n", event.getSource().getClass(), event.getEvent());
+    }
+});
+
+eventBus.post(new Object());
+</code></pre>
+
+<p>```</p>
+
+<p>更多Guava博文：</p>
+
+<ol>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Guava - 并行编程Futures]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/"/>
+    <updated>2014-11-21T20:41:30+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures</id>
+    <content type="html"><![CDATA[<p>Guava为Java并行编程Future提供了很多有用扩展，其主要接口为ListenableFuture，并借助于Futures静态扩展。</p>
+
+<p>继承至Future的ListenableFuture，允许我们添加回调函数在线程运算完成时返回值或者方法执行完成立即返回。</p>
+
+<p>对ListenableFuture添加回调函数：</p>
+
+<p>```java</p>
+
+<pre><code>Futures.addCallback(ListenableFuture&lt;V&gt;, FutureCallback&lt;V&gt;, Executor)
+</code></pre>
+
+<p>```</p>
+
+<p>其中 FutureCallback<V>是一个包含onSuccess(V),onFailure(Throwable)的接口。</p>
+
+<p>使用如：</p>
+
+<p>```java</p>
+
+<pre><code>Futures.addCallback(ListenableFuture, new FutureCallback&lt;Object&gt;() {
+
+    public void onSuccess(Object result) {
+        System.out.printf("onSuccess with: %s%n", result);
+    }
+
+    public void onFailure(Throwable thrown) {
+        System.out.printf("onFailure %s%n", thrown.getMessage());
+    }
+});
+</code></pre>
+
+<p>```</p>
+
+<p>同时Guava中Futures对于Future扩展还有：</p>
+
+<ul>
+<li><p>transform：对于ListenableFuture的返回值进行转换。</p></li>
+<li><p>allAsList：对多个ListenableFuture的合并，返回一个当所有Future成功时返回多个Future返回值组成的List对象。注：当其中一个Future失败或者取消的时候，将会进入失败或者取消。</p></li>
+<li><p>successfulAsList：和allAsList相似，唯一差别是对于失败或取消的Future返回值用null代替。不会进入失败或者取消流程。</p></li>
+<li><p>immediateFuture/immediateCancelledFuture： 立即返回一个待返回值的ListenableFuture。</p></li>
+<li><p>makeChecked: 将ListenableFuture 转换成CheckedFuture。CheckedFuture 是一个ListenableFuture ，其中包含了多个版本的get 方法，方法声明抛出检查异常.这样使得创建一个在执行逻辑中可以抛出异常的Future更加容易</p></li>
+<li><p>JdkFutureAdapters.listenInPoolThread(future): guava同时提供了将JDK Future转换为ListenableFuture的接口函数。</p></li>
+</ul>
+
+
+<p>下边是一个对于Future的测试demo：</p>
+
+<p>```java</p>
+
+<pre><code>@Test
+public void should_test_furture() throws Exception {
+    ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+
+    ListenableFuture future1 = service.submit(new Callable&lt;Integer&gt;() {
+        public Integer call() throws InterruptedException {
+            Thread.sleep(1000);
+            System.out.println("call future 1.");
+            return 1;
+        }
+    });
+
+    ListenableFuture future2 = service.submit(new Callable&lt;Integer&gt;() {
+        public Integer call() throws InterruptedException {
+            Thread.sleep(1000);
+            System.out.println("call future 2.");
+    //       throw new RuntimeException("----call future 2.");
+            return 2;
+        }
+    });
+
+    final ListenableFuture allFutures = Futures.allAsList(future1, future2);
+
+    final ListenableFuture transform = Futures.transform(allFutures, new AsyncFunction&lt;List&lt;Integer&gt;, Boolean&gt;() {
+        @Override
+        public ListenableFuture apply(List&lt;Integer&gt; results) throws Exception {
+            return Futures.immediateFuture(String.format("success future:%d", results.size()));
+        }
+    });
+
+    Futures.addCallback(transform, new FutureCallback&lt;Object&gt;() {
+
+        public void onSuccess(Object result) {
+            System.out.println(result.getClass());
+            System.out.printf("success with: %s%n", result);
+        }
+
+        public void onFailure(Throwable thrown) {
+            System.out.printf("onFailure%s%n", thrown.getMessage());
+        }
+    });
+
+    System.out.println(transform.get());
+}
+</code></pre>
+
+<p>```</p>
+
+<p>   官方资料主页：<a href="https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained">https://awk.so/@code.google.com!/p/guava-libraries/wiki/ListenableFutureExplained</a></p>
+
+<p>更多Guava博文：</p>
+
+<ol>
+<li><a href="http://greengerong.github.io/blog/2014/11/21/guava-bing-xing-bian-cheng-futures/">Guava &ndash; 并行编程Futures</a></li>
+<li><a href="http://greengerong.github.io/blog/2014/11/27/guava-eventbus/">Guava &ndash; EventBus(事件总线)</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,1575 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。 &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/page/3">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao/">前端获取元素定位位置的法宝</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-08T07:09:23+08:00" pubdate data-updated="true">Sep 8<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/blog_img/box-chrome.png" alt="box chrome" /></p>
+
+<p>在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。对于稍复杂的场景我们可能需要考虑被positioned的祖先元素。</p>
+
+<p>但往往不是所有的事情都是这么简单的。笔者最新在项目开发中就遇见这样一个问题：这里的HTML是嵌入的，其来自jpedal商业软件从PDF文件自动生成的；为了展示的样式，jpedal统一使用了 position:absolute和relative来定位PDF元素。然而由于业务的需求，我们需要操作这类HTML。其中一个需求就是需要在每段文字附近显示操作工具条。</p>
+
+<p>对于这类未知的DOM定位，那么我们就需要遍历它的DOM树来计算它的相对位置了。行为下面的这段代码：</p>
+
+<pre class='green'><code>    function isStaticPositioned(element) {
+      return (getStyle(element, 'position') || 'static' ) === 'static';
+    }
+
+    var parentOffsetEl = function(element) {
+      var docDomEl = $document[0];
+      var offsetParent = element.offsetParent || docDomEl;
+      while (offsetParent &amp;&amp; offsetParent !== docDomEl &amp;&amp; isStaticPositioned(offsetParent) ) {
+        offsetParent = offsetParent.offsetParent;
+      }
+      return offsetParent || docDomEl;
+    };
+</code></pre>
+
+<p>在这里，我们会根据元素递归查询它所在的的DOM树中被positioned的最接近的祖先元素，然后才计算它们的相对位置。</p>
+
+<p>这是一段来自Angular-UI bootstrap的$position服务的源码。这也是本文将要提到的获取定位元素位置的法宝。其源码位置在<a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js">https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js</a>。</p>
+
+<p>在$position服务中为我们提供了3个有用的位置服务：position、offset和positionElements。position是计算具体元素的定位位置，返回一个带有width、height、top、left的对象；positionElements则是返回某元素相对于其依赖容器元素的定位位置，一个带有top、left的对象。</p>
+
+<p>笔者为了测试这写API，在jsbin中写了一个特定的指令：</p>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", ['ui.bootstrap.position'])
+.directive('position', ['$position', function($position){
+    return {
+        restrict: 'EA',
+        templateUrl: '/position.html',
+        scope:{
+            title:"@"
+        },
+        link:function(scope, elm, iAttrs){
+        scope.data =  $position.position(elm);
+       }
+    };
+}]);
+</code></pre>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;script type="text/ng-template" id="/position.html"&gt;
+   &lt;table class="table"&gt;
+       &lt;thead&gt;
+           &lt;th colspan="2"&gt;{{title}}&lt;/th&gt;
+       &lt;/thead&gt;
+    &lt;tbody&gt;
+       &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
+       &lt;td&gt;{{field}}&lt;/td&gt;
+       &lt;td&gt;{{data[field] | number}}&lt;/td&gt;
+     &lt;/tr&gt;
+    &lt;/tbody&gt;
+   &lt;/table&gt;
+ &lt;/script&gt;
+</code></pre>
+
+<p>所以我们可以如下测试这类API：</p>
+
+<pre class='green'><code>&lt;position title ="no positioned parent"&gt;&lt;/position&gt;
+
+&lt;div style="position: relative;padding:50px;"&gt;
+    &lt;position title ="relative parent"&gt;&lt;/position&gt;
+
+     &lt;div style="position: absolute;top:250px; padding:50px;"&gt;
+         &lt;position title="relative-&gt;absolute parent"&gt;&lt;/position&gt;
+     &lt;/div&gt;
+ &lt;/div&gt;
+
+ &lt;div style="position: absolute;top:0px;left:250px; padding:50px;"&gt;
+         &lt;position title="absolute parent"&gt;&lt;/position&gt;
+ &lt;/div&gt;
+</code></pre>
+
+<p>其效果可以在<a href="http://jsbin.com/deximu/edit?html,js,output">jsbin demo</a>:</p>
+
+<p><img src="/images/blog_img/ng-$position-example.png" alt="$position demo" /></p>
+
+<p>同样你也可以在官方的文档中看见对它的测试: <a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html">https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html</a>。</p>
+
+<p>简单的说：如果我们需要获取某个元素的定位信息，则我们可以用 $position.position(element)；获取相对于固定元素的定位，则可以使用$position.positionElements(hostEl, targetEl, positionStr, appendToBody)。其中positionStr是一个横向和纵向的字符串，如：&#8221;top-left&#8221;、&#8221;bottom-left&#8221;。其默认值为center。如笔者项目所期望的在某文字段落的左上角显示工具条：</p>
+
+<pre class='green'><code>$position.after($toolbar);
+var elPosition = $position.positionElements($paragraph, $toolbar, “top-left”);
+$toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
+</code></pre>
+
+<p>当然也不要忘记为toolbar元素设置position: absolute;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/03/angular-inputge-shi-hua/">Angular Input格式化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-03T16:29:35+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天在Angular中文群有位同学问到：如何实现对input box的格式化。如下的方式对吗？</p>
+
+<pre class='green'><code> &lt;input type="text" ng-model="demo.text | uppercase" /&gt;
+</code></pre>
+
+<p>这当然是不对的。在Angular中filter（过滤器）是为了显示数据的格式，它将$scope上的Model数据格式化View显示的数据绑定到DOM之上。它并不会负责ngModel的绑定值的格式化。</p>
+
+<p>在Angular中ngModel作为Angular双向绑定中的重要组成部分，负责View控件交互数据到$scope上Model的同步。当然这里存在一些差异，View上的显示和输入都是字符串类型，而在Model上的数据则是有特定数据类型的，例如常用的Number、Date、Array、Object等。ngModel为了实现数据到Model的类型转换，在ngModelController中提供了两个管道数组$formatters和$parsers，它们分别是将Model的数据转换为View交互控件显示的值和将交互控件得到的View值转换为Model数据。它们都是一个数组对象，在ngModel启动数据转换时，会以UNIX管道式传递执行这一系列的转换。Angular允许我们手动的添加$formatters和$parsers的转换函数（unshift、push）。同时在这里也是做数据验证的最佳时机，能够转换意味应该是合法的数据。</p>
+
+<p><img src="/images/blog_img/ngModelController-%E7%94%9F%E5%91%BD%E7%8E%AF.png" alt="ngModel" /></p>
+
+<p>同时，我们也可以利用Angular指令的reuqire来获取到这个ngModelController。如下方式来使用它的$parses和$formaters：</p>
+
+<pre class='green'><code>.directive('textTransform', [function() {
+
+    return {
+        require: 'ngModel',
+        link: function(scope, element, iAttrs, ngModelCtrl) {
+            ngModelCtrl.$parsers.push(function(value) {
+                ...
+            });
+
+            ngModelCtrl.$formatters.push(function(value) {
+                ...
+            });
+        }
+    };
+}]);
+</code></pre>
+
+<p>因此，开篇所描述的输入控件的大写格式化，则可以利用ngModelController实现，在对于View文字大小的格式化，这个特殊的场景下，利用css特性text-transform会更简单。所以实现如下：</p>
+
+<pre class='green'><code> .directive('textTransform', function() {
+     var transformConfig = {
+         uppercase: function(input){
+             return input.toUpperCase();
+         },
+         capitalize: function(input){
+             return input.replace(
+                 /([a-zA-Z])([a-zA-Z]*)/gi,
+                 function(matched, $1, $2){
+                    return $1.toUpperCase() + $2;
+                });
+         },
+         lowercase: function(input){
+             return input.toLowerCase();
+         }
+     };
+    return {
+        require: 'ngModel',
+        link: function(scope, element, iAttrs, modelCtrl) {
+            var transform = transformConfig[iAttrs.textTransform];
+            if(transform){
+                modelCtrl.$parsers.push(function(input) {
+                    return transform(input || "");
+                }); 
+
+                element.css("text-transform", iAttrs.textTransform);
+            }
+        }
+    };
+});
+</code></pre>
+
+<p>则，在HTML就可以如下方式使用指令, demo效果参见<a href="http://jsbin.com/baqaso/edit?html,js,output">jsbin demo</a>：</p>
+
+<pre class='green'><code>&lt;input type="text" ng-model="demo.text" text-transform="capitalize" /&gt;
+&lt;input type="text" ng-model="demo.text" text-transform="uppercase" /&gt;
+&lt;input type="text" ng-model="demo.text" text-transform="lowercase" /&gt;
+</code></pre>
+
+<p>在这里利用了css text-transform特性，对于其它的方式，我们可以使用keydown、keyup、keypress等来实现。如<a href="https://github.com/greengerong/green.inputmask4angular">inputMask</a>和<a href="https://github.com/greengerong/ngmodel-format">ngmodel-format</a>。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/02/angularshi-xian-di-gui-zhi-ling-tree-view/">Angular实现递归指令 - Tree View</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-02T07:47:21+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在层次数据结构展示中，树是一种极其常见的展现方式。比如系统中目录结构、企业组织结构、电子商务产品分类都是常见的树形结构数据。</p>
+
+<p>这里我们采用Angular的方式来实现这类常见的tree view结构。</p>
+
+<p>首先我们定义数据结构，采用以children属性来挂接子节点方式来展现树层次结构，示例如下：</p>
+
+<pre class='green'><code>[
+   {
+      "id":"1",
+      "pid":"0",
+      "name":"家用电器",
+      "children":[
+         {
+            "id":"4",
+            "pid":"1",
+            "name":"大家电"
+         }
+      ]
+   },
+   {
+     ...
+   }
+   ...
+]
+</code></pre>
+
+<p>则我们对于ng way的tree view可以实现为：</p>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module('ng.demo', [])
+.directive('treeView',[function(){
+
+     return {
+          restrict: 'E',
+          templateUrl: '/treeView.html',
+          scope: {
+              treeData: '=',
+              canChecked: '=',
+              textField: '@',
+              itemClicked: '&amp;',
+              itemCheckedChanged: '&amp;',
+              itemTemplateUrl: '@'
+          },
+         controller:['$scope', function($scope){
+             $scope.itemExpended = function(item, $event){
+                 item.$$isExpend = ! item.$$isExpend;
+                 $event.stopPropagation();
+             };
+
+             $scope.getItemIcon = function(item){
+                 var isLeaf = $scope.isLeaf(item);
+
+                 if(isLeaf){
+                     return 'fa fa-leaf';
+                 }
+
+                 return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';   
+             };
+
+             $scope.isLeaf = function(item){
+                return !item.children || !item.children.length; 
+             };
+
+             $scope.warpCallback = function(callback, item, $event){
+                  ($scope[callback] || angular.noop)({
+                     $item:item,
+                     $event:$event
+                 });
+             };
+         }]
+     };
+ }]);
+</code></pre>
+
+<p>HTML:</p>
+
+<p>树内容主题HTML： /treeView.html</p>
+
+<pre class='green'><code>&lt;ul class="tree-view"&gt;
+       &lt;li ng-repeat="item in treeData" ng-include="'/treeItem.html'" &gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>每个item节点的HTML：/treeItem.html</p>
+
+<pre class='green'><code>&lt;i ng-click="itemExpended(item, $event);" class=""&gt;&lt;/i&gt;
+
+&lt;input type="checkbox" ng-model="item.$$isChecked" class="check-box" ng-if="canChecked" ng-change="warpCallback('itemCheckedChanged', item, $event)"&gt;
+
+&lt;span class='text-field' ng-click="warpCallback('itemClicked', item, $event);"&gt;&lt;/span&gt;
+&lt;ul ng-if="!isLeaf(item)" ng-show="item.$$isExpend"&gt;
+   &lt;li ng-repeat="item in item.children" ng-include="'/treeItem.html'"&gt;
+   &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>这里的技巧在于利用ng-include来加载子节点和数据，以及利用一个warpCallback方法来转接函数外部回调函数，利用angular.noop的空对象模式来避免未注册的回调场景。对于View交互的数据隔离采用了直接封装在元数据对象的方式，但它们都以$$开头，如$$isChecked、$$isExpend。在Angular程序中以$$开头的对象会被认为是内部的私有变量，在angular.toJson的时候，它们并不会被序列化，所以利用$http发回服务端更新的时候，它们并不会影响服务端传送的数据。同时，在客户端，我们也能利用对象的这些$$属性来控制View的状态，如item.$$isChecked来默认选中某一节点。</p>
+
+<p>我们就可以如下方式来使用这个tree-view：</p>
+
+<pre class='green'><code>&lt;tree-view tree-data="demo.tree" text-field="name" value-field='id' item-clicked="demo.itemClicked($item)" item-checked-changed="demo.itemCheckedChanged($item)" can-checked="true"&gt;&lt;/tree-view&gt;
+</code></pre>
+
+<p>效果如下，当然你也可以在<a href="http://jsbin.com/vefuqu/edit?html,js,output">jsbin中体验它</a>：</p>
+
+<p> <img src="/images/blog_img/ng-tree-view-sample.png" alt="ng-tree-view" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/30/ramdajshan-shu-bian-cheng/">Ramdajs函数编程</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-30T11:46:30+08:00" pubdate data-updated="true">Aug 30<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/blog_img/ramda-logo.png" alt="ramdajs函数式编程" /></p>
+
+<p>在JavaScript语言世界，函数是第一等公民。JavaScript函数是继承自Function的对象,函数能作另一个函数的参数或者返回值使用，这便形成了我们常说的高阶函数（或称函数对象）。这就构成函数编程的第一要素。在JavaScript世界中有很多的函数式编程库能辅助我们的JavaScript函数式体验，在它们之中最为成功的要数Underscore或lodash。</p>
+
+<p>如下lodash实例代码：</p>
+
+<pre class='green'><code>var users = [
+  { 'user': 'barney',  'age': 36 },
+  { 'user': 'fred',    'age': 40 },
+  { 'user': 'pebbles', 'age': 18 }
+];
+
+var names = _.chain(users)
+    .pluck('user')
+    .join(" , ")
+    .value();
+console.log(names);
+</code></pre>
+
+<p>它以链式、惰性求值著称，形成了一套自有的DSL风格。更多关于lodash的编程可以参见博主的另一篇文章<a href="http://greengerong.com/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a>。</p>
+
+<p>函数式思想展现的是一种纯粹的数学思维。函数并不代表任何物质（对象，相对于面向对象思想而言），而它仅仅代表一种针对数据的转换行为。一个函数可以是原子的算法子（函数），也可以是多个原子算法子组成的组合算法子。它们是对行为的最高抽象，具有非凡的抽象能力和表现力。</p>
+
+<p>虽然Underscore或lodash也提供了<em>.compose（或</em>.flowRight）函数来实现函数组合的能力，但ramdajs具有更强的组合力。</p>
+
+<p>ramdajs是一个更具有函数式代表的JavaScript库，可以在这里了解更多关于它的信息<a href="http://ramdajs.com/0.17/">http://ramdajs.com/0.17/</a>。它的这种能力主要来自它自有的两大能力：自动柯里化和函数参数优先于数据。</p>
+
+<h4>自动柯里化</h4>
+
+<p>在计算机科学中，柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数的技术。这个技术由 Christopher Strachey 以逻辑学家 Haskell Curry 命名的，尽管它是 Moses Schnfinkel 和 Gottlob Frege 发明的。</p>
+
+<p>在理论计算机科学中，柯里化提供了在简单的理论模型中比如只接受一个单一参数的lambda 演算中研究带有多个参数的函数的方式。</p>
+
+<p>ramdajs利用这一技术，默认所有API函数都支持自动柯里化。这为它提供了可以将另一个函数组合的先决条件。如常用的map操作需要接受两个参数，在ramdajs中可以如下两种方式实现：</p>
+
+<pre class='green'><code>R.map(function(item){
+    return item *2;
+ }, 
+ [2,3,5]
+); //输出[4, 6, 10]
+
+
+var map = R.map(function(item){
+    return item *2;
+});
+map([2,3,5]); //输出[4, 6, 10]
+</code></pre>
+
+<p>如果我们传入2个完备的参数，则R.map函数将会直接执行。否则，它将返回另一个函数，等待参数完备时才执行。</p>
+
+<p>关于JavaScript函数的柯里化，你还可以从博主的《JavaScript函数柯里化》中了解更多<a href="http://www.cnblogs.com/whitewolf/p/4495517.html">http://www.cnblogs.com/whitewolf/p/4495517.html</a></p>
+
+<h4>函数参数优先于数据</h4>
+
+<p>在UnderScore和lodash这类库中，都要求首先传入数据，然后才是转换函数。而在ramdajs却是颠覆性的改变。在它的规约中数据参数是最后一个参数，而转换函数和配置参数则优于数据参数，排在前面。</p>
+
+<p>将转换函数放置在前面，再加上函数的自动柯里化，就可以在不触及数据的情况下，将一个函数算法子包装进另一个算法子中，实现两个独立转换功能的组合。</p>
+
+<p>假设，我们拥有如下两个基础算法子:</p>
+
+<ol>
+<li>R.multiply(a, b)：实现 a *b；
+2：R.map(func, data)：实现集合 a &ndash;> b的map。</li>
+</ol>
+
+
+<p>因为可以自动柯里化，所以有</p>
+
+<pre class='green'><code>R.multiply(10, 2); // 20
+
+R.multiply(10) (2); // 20
+</code></pre>
+
+<p>所以上面对数组map的例子则可以转为如下形式：</p>
+
+<pre class='green'><code>R.map(R.multiply(2)) ([2, 5, 10, 80]); // [4, 10, 20, 160]
+</code></pre>
+
+<p>R.map(R.multiply(2))的返回值也是一个函数，它是一个组合转换函数。它组合了map和multiply行为。它利用R.map组合封装了R.multiply(2)返回的柯里化函数，它等待map函数传入对应的被乘数。</p>
+
+<h4>ramdajs的组合</h4>
+
+<p>有了上面的两个条件，再加上ramdajs为我们提供的R.compose方法，我们就能很容易的实现更多算法子的组合。R.compose是从右向左执行的数据流向。</p>
+
+<p>用ramdajs的组合来实现开篇lodash一样的用户名拼接的例子，则我们可以分为2个算法子的组合：</p>
+
+<ol>
+<li>R.pluck(prop)：选择对象固定属性；</li>
+<li>R.join(data)：对数组的字符串拼接。</li>
+</ol>
+
+
+<p>则代码如下所示：</p>
+
+<pre class='green'><code>var joinUserName = R.compose(R.join(" , "), R.pluck("user"));
+joinUserName(users); // "barney , fred , pebbles"
+</code></pre>
+
+<p>这里的函数式组合可表示为下图：</p>
+
+<p><img src="/images/blog_img/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%AE%97%E6%B3%95%E5%AD%90%E7%BB%84%E5%90%88.png" alt="函数式组合" /></p>
+
+<p>如果我们希望join用户的年龄，则如下：</p>
+
+<pre class='green'><code>var joinUserAge = R.compose(R.join(" , "), R.pluck("age"));
+joinUserAge(users); // "36 , 40 , 18"
+</code></pre>
+
+<p>假设我们希望输出的不是用户年龄，而是用户生日，则我们可以轻易组合上一个减法的算法子：</p>
+
+<ol>
+<li>R.subtract(a, b)：实现 a &ndash; b 数学算法。</li>
+</ol>
+
+
+<p>则代码如下：</p>
+
+<pre class='green'><code>var joinUserBrithDay = R.compose(R.join(","),R.map(R.subtract(new Date().getFullYear())),R.pluck("age"));
+joinUserBrithDay(users); // "1979,1975,1997"
+</code></pre>
+
+<p>再如，我们希望获取最年轻的用户：</p>
+
+<p>lodash实现：</p>
+
+<pre class='green'><code>_.chain(users)
+  .sortBy("age")
+  .first()
+  .value();
+</code></pre>
+
+<p>ramdajs则，可以组合获取第一个元素的R.head算法子和排序算法子R.sortBy：</p>
+
+<pre class='green'><code>var youngestUser = R.compose(R.head, R.sortBy(R.prop("age")));
+youngestUser(users); // Object {user: "pebbles", age: 18}
+</code></pre>
+
+<p>比如我们希望获取年长的用户，则只需再组合一个反序排列的算法子R.reverse：</p>
+
+<pre class='green'><code>var olderUser = R.compose(R.head, R.reverse, R.sortBy(R.prop("age")));
+olderUser(users); // Object {user: "fred", age: 40}         
+</code></pre>
+
+<p>希望你也能像我一样喜欢上ramdajs，关于它的更多资料，请参见其官网 <a href="http://ramdajs.com/0.17/">http://ramdajs.com/0.17/</a>。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/07/zhi-jie-bu-deng-yu-jian-dan/">设计-简约而不简单</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-07T16:12:35+08:00" pubdate data-updated="true">Aug 7<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文来自<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">hxfirefox</a>，他是笔者在某国内大型企业提供敏捷XP咨询项目的内部教练。本文也是由他交给笔者帮助review，同时也授权发布在笔者的博客中。</p>
+
+<p>原文地址为：<a href="https://github.com/hxfirefox/blog/blob/master/TDD/%E7%9B%B4%E6%8E%A5%E5%B9%B6%E4%B8%8D%E7%AE%80%E5%8D%95.md">直接不等于简单</a>。</p>
+
+<h4>码农的博弈</h4>
+
+<p>了解XP(极限编程)的人都知道，XP有一项实践叫做简单设计(simple design)，站在这项实践对立面的是过度设计。当我们从客户价值的中心视角去审视那些我们遇到过的过度设计，自然而然就会得出一个结论：</p>
+
+<p><em>“又TM被那些美其名曰项目经理和程序员的孙子们给忽悠了，这些功能我其实都用不到，但我还花了这么多冤枉钱去购买，下次议价时一定要砍掉80%的预算。”</em></p>
+
+<p><img src="http://ano.lolcathost.org/pics/pcartoon1.jpg" alt="img1" /></p>
+
+<p>一旦得出这个结论，那么很快客户和开发团队将陷入无止境的撕逼状态，群体攻击增强300%，单体理智降低80%，所以为了避免程序猿的世界被破坏，并从根本上保障码农群体可怜的经济来源，就应当想办法给客户这样一种错觉：</p>
+
+<p><em>“你要的功能必须值这个价，如果想要新增一个功能就应该要额外收费。”</em></p>
+
+<p>对于开发人员而言，想在这场博弈中获胜的最佳方法就是砍掉那些完全只为满足自我虚荣心(以此证明自己技艺是如何炉火纯青)的多余设计和实现，只完美地产出客户真正需要和关心的功能，这就是简单设计。</p>
+
+<h4>似乎简单的直接设计</h4>
+
+<p>理论总是非常easy，但是，请注意这里的<strong>但是</strong>，由于汉字的博大精深和内涵丰富，再遇上程序员这种伴随二进制进化的只有0和1二个极端的特殊生物，“简单”一词的含义被引申到了更广的范围，演化成了简单粗暴，出现了一种在编码中随处可见的风景——我称之为<strong>直接设计(directly design)</strong>。</p>
+
+<p>直接设计看上去像是一种“按图索骥”的编程方法，开发人员将流程图上的处理及分支用直白的代码表达出来，比如最近在工作中遇到的一个例子：</p>
+
+<p>设备对于端口的获得信息默认情况下需要进行处理，当端口被配置为A或B类型时，则该端口获得的信息无需处理，转化为流程图如下。</p>
+
+<p><img src="https://www.processon.com/chart_image/thumb/55c438d6e4b08c136f0791c9.png" width = "300" height = "300" alt="flowchart" align=center /></p>
+
+<p>产生的代码如下：
+例1</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也许团队中有那么一两个了解过clean code和重构的人，那么这段代码可能演变成如下：
+例2</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span> <span class="o">||</span> <span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但这还不够，再改造一下：
+例3</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">isPortTypeAOrB</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">isPortTypeAOrB</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span> <span class="o">||</span> <span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在看上去似乎舒服多了，代码也好理解了，进行到这一步代码可以算是大的提升，但是这就结束了吗？其实这只是转嫁了问题，问题并没有结束，因为现在isPortTypeAOrB方法开始变得复杂难懂起来。不论编码资历深浅，大多数开发人员都写过类似例1的代码，这些直接设计总是自觉或不自觉地跑出来，像个幽灵一样。那么这些直接设计从何而来？</p>
+
+<p>审视自己的经历，直接设计代码产生的原因有很多，归结起来有以下几种可能性：</p>
+
+<ul>
+<li>习惯于面向过程编程的开发人员转向面向对象，惯性使然</li>
+<li>新手们被要求严格地按规划的流程编码，这是最快地让新手熟练起来的方法</li>
+<li>开发人员误解了简单的含义，认为简单就是直接，忽视了设计，也即简单而不设计</li>
+</ul>
+
+
+<p>人人都爱直接设计，不只是开发人员，因为那样不费脑力，有章可循，且按图索骥后责任就变成了流程的设计人员，既可以轻轻松松，又能趋利避害，不这么做似乎于情于理都很难说过去。其实直接设计并不代表代码质量有问题，相反只要意图足够清晰和简单，那么还是要推荐直接设计，毕竟开发人员都是这样被教育出来的。但是直接设计有一个很突出的缺陷——丑陋，因为总是会把过多的细节暴露出来，尤其是在分支处理上，就像上面的例1那样。</p>
+
+<p>也许有人觉得这样直接挺清晰，挺容易理解，其实问题也就在这里，现在这样的分支只有两个，当用户觉得这样的需求还不能满足需要时，就会要求更多，也许会有5个，10个甚至近百个分支，那时对于开发人员而言就要不断地增加新的分支代码，就像下面的代码这样。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">A</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">B</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">C</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">D</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">().</span><span class="na">getPortType</span><span class="o">()</span> <span class="o">==</span> <span class="n">InPortType</span><span class="o">.</span><span class="na">E</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>并且在新增分支时还要小心翼翼地考虑与原有分支的逻辑关系，嵌套分支看来是在所难免了，用不了几个迭代，这些代码就会变得一堆意大利面条。</p>
+
+<p><img src="http://richkeycafe.com/UploadFile/201142631318888.jpg" alt="pasta_img" /></p>
+
+<p>也许，万幸的是，功能都实现，你幸福地点上一根烟，满足地看着自己的杰作，突然，有个新手菜鸟心怀崇敬地问你：“大牛，这段代码是什么意思？”，你盯着代码半天心里嘀咕着，这TM是什么鬼，我怎么也看不懂了，然后只好敷衍地回答一句“这个不明白吗？回去看看设计文档！”，好不容易打发走了这个新手，项目经理找到了你，告诉了你一个晴天霹雳，客户又改需求了，可能又要新增十几个分支，你眼前一黑，感叹一声又要加班了，但又不得不重新重头解读一遍自己创作的一切，看看哪里能够插入一个新需求，于是加班又开始了。</p>
+
+<p><img src="http://hackles.org/strips/cartoon75.png" alt="bad_condition" /></p>
+
+<h4>简单设计需要设计</h4>
+
+<p>直截了当地设计过多地暴露细节造成扩展性和维护性也直截了当地下降，这种结局是所有开发人员都努力想避免的，如此看来简单设计并不简单，<strong>关键是设计，因为简单设计更需要设计</strong>，套用一句经典的广告语：<strong>简约而不简单</strong>，这才是简单设计想到达到的目的。现在试着重新解读简单设计，个人认为简单设计原则可以分成三个层次：</p>
+
+<ul>
+<li>实现具有用户价值的需求，简单的说就是用户要什么你就给他什么</li>
+<li>代码设计应当职责简单，简单地说就是做好一件事</li>
+<li>设计应尽可能针对一到两个问题展开，做到即设计要简单，足够针对性的解决问题即可</li>
+</ul>
+
+
+<p>让我们看看从上面角度怎么来设计，仍然以上面的例子为例。根据这个原则，将上述需求实例化，可以得到：</p>
+
+<ul>
+<li>when port type == A, it should not handle message</li>
+<li>when port type == B, it should not handle message</li>
+<li>when port type != A &amp;&amp; != B, it should handle message</li>
+</ul>
+
+
+<p>将端口类型进行归纳，可以发现其实端口是否处理消息由端口类型决定，一种端口类型是不需要处理消息类型，而另一种则是需要处理类型，因此端口消息处理只需要关心哪些端口是属于需要处理的类型即可。从这点出发可以看出例1做了太多可以委托他人去做的事情，因此设计上需要考虑将功能分离，特别是判断逻辑与功能主体剥离，使得单个主体的功能尽量简单来满足简单设计的第二条原则，按照上述思路，转化为如下代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMsgRecvdFromPort</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">checkNotNull</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">parseMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">parseMsg</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">filter</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// only ports not in disabled list could be parsed</span>
+</span><span class='line'>        <span class="n">handleMsg</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">doRecord</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">filter</span><span class="o">(</span><span class="n">RecvMsg</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">DisabledPortFilter</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getIn</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而DisabledPortFilter负责管理禁用端口，提供注册及过滤功能，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DisabledPortFilter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// FilterRule in HashMap means rule for filting with port</span>
+</span><span class='line'>    <span class="c1">// Sometimes you need to composite multi-conditions to filting, not only type of port</span>
+</span><span class='line'>    <span class="c1">// FilterRule is an interface, so any one wants to use filter should offer an implementation</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">InPort</span><span class="o">,</span> <span class="n">FilterRule</span><span class="o">&gt;</span> <span class="n">disableHandleList</span> <span class="o">=</span> <span class="n">Maps</span><span class="o">.</span><span class="na">newHashMap</span><span class="o">();</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">DisabledPortFilter</span> <span class="n">portFilter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DisabledPortFilter</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">DisabledPortFilter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">DisabledPortFilter</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">portFilter</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">registDisabledPort</span><span class="o">(</span><span class="n">InPort</span> <span class="n">inPort</span><span class="o">,</span> <span class="n">FilterRule</span> <span class="n">rule</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">disableHandleList</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">inPort</span><span class="o">,</span> <span class="n">rule</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">unregistDisabeldPort</span><span class="o">(</span><span class="n">InPort</span> <span class="n">inPort</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">disableHandleList</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">inPort</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">InPort</span> <span class="n">in</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">!</span><span class="n">disableHandleList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">in</span><span class="o">).</span><span class="na">matchFilter</span><span class="o">(</span><span class="n">in</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>FilterRule定义如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FilterRule</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matchFilter</span><span class="o">(</span><span class="n">InPort</span> <span class="n">inPort</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将例1中在一个方法中执行的过程分解到多个类中，每个类的职责更为单一，将复杂的过滤逻辑通过转化放在各个实现类中，也可以帮助开发者及维护者能够在某一时间点只关注其中某一中过滤规则。完成上述转化后，原来可能冗余繁复的分支处理消失了，取而代之的是短短的几行简单易懂的代码。并且转化后还带来了维护上的便利与代码扩展性的提升，当客户新增需求时，只需要增加对应的FilterRule实现，并注册到DisabledPortFilter中就可以，而不用去修改原有代码，不知不觉中又契合了OCP原则。
+对照前后例子，发生变化原因是针对逻辑判断与功能主体分离这一点问题进行了设计，后面的设计都是在此基础上展开，一次只设计一个切入点使得开发人员更容易控制开发思路，而不至于过多复杂的设计带来的思维混乱，因此简单设计原则中的第三条显得尤为重要，很多时候是我们自己想的太多而导致停滞不前，举步维艰。</p>
+
+<h4>简单设计之路</h4>
+
+<p>简单设计是一条光明大道，但通向简单设计的路却并不简单，布满荆棘，很多时候并非我们不知道简单设计，而是在一次次与时间、进度博弈的过程中自觉或不自觉地放弃了简单设计，不少简单设计只需要我们再多想那么一点点，捅破这层窗户纸并不难，要做的只是多想一点，多看一眼，往往这片刻的思考就会对我们的编码产生巨大的影响，这也正是通向简单设计道路上唯一可以依靠的工具，你要做的只是多想一点，多看一眼。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/">Swagger - 前后端分离后的契约</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-29T10:39:02+08:00" pubdate data-updated="true">Jul 29<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>前后端分离</h3>
+
+<p>按照现在的趋势，前后端分离几乎已经是业界对开发和部署方式所达成的一种共识。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人只做前端（HTML/CSS/JavaScript等等），另一部分人只做后端（或者叫服务端），因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法将前后端开发和部署做到真正的分离。</p>
+
+<p>通常，前后端分别有着自己的开发流程，构建工具，测试等。做前端的谁也不会想要用Maven或者Gradle作为构建工具，同样的道理，做后端的谁也不会想要用Grunt或者Gulp作为构建工具。前后端仅仅通过接口来协作，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。但是这种想法依然还是很理想化，前后端集成往往还是一个很头痛的问题。比如在最后需要集成的时候，我们才发现最开始商量好的数据结构发生了变化，而且这种变化往往是在所难免的，这样就会增加大量的集成时间。</p>
+
+<p>归根结底，还是前端或者后端感知到变化的时间周期太长，不能“及时协商，尽早解决”，最终导致集中爆发。怎么解决这个问题呢？我们需要提前协商好一些契约，并将这些契约作为可以被测试的中间产品，然后前后端都通过自动化测试来检验这些契约，一旦契约发生变化，测试就会失败。这样，每个失败的测试都会驱动双方再次协商，有效的缩短了反馈周期，并且降低集成风险。具体的实践方式，请参加我同事的一篇博文，“前后端分离了，然后呢？”<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/</a>。</p>
+
+<p>不过，仅仅靠纪律是不够的，还需要通过工具的辅助来提高效率。下面，我们就来看一下，一个API设计工具——Swagger，将如何帮助我们更好的实现“前后端分离”。</p>
+
+<h3>Swagger</h3>
+
+<p>Swagger包括库、编辑器、代码生成器等很多部分，这里我们主要讲一下Swagger Editor。这是一个完全开源的项目，并且它也是一个基于Angular的成功案例，我们可以下载源码并自己部署它，也可以修改它或集成到我们自己的软件中。</p>
+
+<p>在Swagger Editor中，我们可以基于YAML语法定义我们的RESTful API，然后它会自动生成一篇排版优美的API文档，并且提供实时预览。相信大多数朋友都遇到过这样一个场景：明明调用的是之前约定好的API，拿到的结果却不是想要的。可能因为是有人修改了API的接口，却忘了更新文档；或者是文档更新的不及时；又或者是文档写的有歧义，大家的理解各不相同。总之，让API文档总是与API定义同步更新，是一件非常有价值的事。下面我们通过一个例子来感受一下Swagger给我们带来的好处。</p>
+
+<p>首先我们需要安装一个Swagger Editor，或者也可以直接使用在线版本<a href="http://editor.swagger.io/">http://editor.swagger.io/</a>。如果需要在本地启动编辑器，执行以下三行命令即可（前提是已经安装好了Node.js）：</p>
+
+<pre class='green'><code>git clone https://github.com/swagger-api/swagger-editor.git
+cd swagger-editor
+npm start
+</code></pre>
+
+<p>当我们修改了API的定义之后，在编辑器右侧就可以看到相应的API文档了，而且永远是最新的。</p>
+
+<p><img src="/images/blog_img/SwaggerEditor.png" alt="Swagger editor" /></p>
+
+<p>不仅如此，它还能够自动生成Mock server所需要的代码，这样一来前端开发就再也不用等着后端API
+的实现了。除此之外，它还有一个更强大的功能，甚至能够帮助我们自动生成不同语言的客户端的代码。Swagger是基于插件来实现各种不同的语言的，所以，如果已经提供的语言中没有你正在用的，你也可以自己实现相应的插件，甚至是从源代码级别进行定制化。</p>
+
+<p><img src="/images/blog_img/SwaggerGenerateClient.png" alt="Swagger generate client" /></p>
+
+<h3>契约测试</h3>
+
+<p>谈到了前后端分离，那么在所难免，会遇到一些集成的问题：一拨人在全心全意的进行前端开发，另一拨人在心无旁骛的做后端开发，那么谁应该为集成买单呢？在现在这个持续集成、持续交付的年代里，我们应该如何去保证双方不会分道扬镳、越走越远呢？</p>
+
+<p>所以，在一开始就定一个契约就成了迫在眉睫的事情，双方就API相关的内容，包括路径、参数、类型等达成一致，当然，这份契约并不是一旦创建就不能修改的，而且，如果一开始没有设计好，很有可能会频繁的修改。这个时候，要让双方都能够实时的跟踪最新的API就成了一个难题。还好，在总结了前人的经验和教训之后，我们早已有了应对之策，那就是<code>契约测试</code>。</p>
+
+<p>老马（Martin Fowler）早在2011年的时候就发表了一篇博客<a href="http://martinfowler.com/bliki/IntegrationContractTest.html">http://martinfowler.com/bliki/IntegrationContractTest.html</a>，专门讨论了如何做契约测试。</p>
+
+<p>首先，我们先假设我们已经有了一份契约，可能是基于JSON格式的，有可能是基于XML格式的，这都不重要。然后，前端会根据这份契约建立一个Mock server，所有的测试都发往这个Mock server。有两方面的原因：一是这个时候可能后台的API还没有开发完成；二是有可能因为网络等其他方面的原因导致直接调用真实的后台API会很不稳定或者很耗时。到这里，可能有人就要说了，如果后台的API实现和之前约定的并不一样，怎么能保证到了集成的时候双方还能很顺利的集成呢？其实这个问题并不难，只需要让前端的测试定期连接真实的API执行一遍就能尽早的发现差异性。比方说，在我们平常的build pipeline上添加一个job，让这些测试每天在午夜里连着真实的API执行。如果，第二天发现这些测试有的失败了，那么就需要和开发后台API的人员进行一次沟通了，很有可能由于真实的业务逻辑发生了变化，API在实现的时候，已经和之前的契约不一致了，如果是这样，那么相应的测试和契约定义就需要更新以满足最新的业务需求。</p>
+
+<p>总之，进行契约测试的目的就是尽早的发现差异性，并作出调整，将最后集成的风险降到最低。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/">tsd-提升IDE对JavaScript智能感知的能力</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-26T00:55:31+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。</p>
+
+<p>追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索，然后展示出已经使用过的对象成员。这种方式的缺点是，其智能感知的的能力并不精准，经常会显示出很多无关的代码提示。</p>
+
+<p>在很多现代化开发方式中，IDE的强大支持和模块化组织这种“工程化”的思想是我们应对大规模开发的方式之一，这也已经被业界所认同。所以在最近两年，JavaScript的世界也提出了大规模开发的方案，其中有Google的Dart和微软的TypeScript。随着Angular2.0放弃了自家的Dart，而选择了TypeScript，也标志着TypeScript的逐渐成熟。TypeScript是微软总架构师Anders Hejlsberg设计的新语言，他是软件界的传奇人物，是Delphi和.NET的设计者。TypeScript是一种可以编译成传统JavaScript的语言，它并不是完全的创造了一门新语言，而TypeScript是JavaScript语言的超集，它最大的特点就是引入了类型系统。并在编译为JavaScript文件后，可以输出“.ts”的类型元数据信息，为我们IDE的智能感知和重构提供了重要的依据。</p>
+
+<p>关于TypeScript的更多知识，在这里笔者就不在叙述过多。有兴趣的读者可以到<a href="http://www.typescriptlang.org/">http://www.typescriptlang.org/</a>学习，本节要讲的，是它的另一个特性：它编译输出的元数据信息文件（<code>*.d.ts</code>），它可以在不需要修改原有JavaScript文件的情况下，而给JavaScript添加元数据类型信息，而这些类型信息则可以辅助IDE，给出有智能的提示信息，以及重构的依据。</p>
+
+<p>在TypeScript的开源社区，已经为很多的第三方库实现了这类模板文件，我们可以很快的应用在我们的项目之中。当然这里所说的额第三方包含我们常用的：Angular、jQuery、underscore、lodash、jasmine等。</p>
+
+<p>在官方同时也为我们提供了一个方便的工具叫TSD（全称为：TypeScript Definition manager for DefinitelyTyped），它是借鉴NPM包管理工具的思想，实现了一个类似的包管理工具，我们不需要任何的学习成本，只管像使用NPM一样使用它。</p>
+
+<p>这里是TSD主页:<a href="http://definitelytyped.org/tsd/">http://definitelytyped.org/tsd/</a>，你可以在这里深入了解它，或者是查询你所需要的模板库是否存在于TSD仓库。</p>
+
+<p>TSD也是一个Nodejs的工具，所以我们安装它非常容易，只需要在命令行中输入（对于有些Linux用户需要sudo）：</p>
+
+<pre class='green'><code>npm install tsd -g
+</code></pre>
+
+<p>安装我们需要的模板库，也很简单，如jQuery和Angular的安装：</p>
+
+<pre class='green'><code>tsd install jquery angular --save
+</code></pre>
+
+<p>这样TSD就会帮助我们下载jQuery和Angular的d.ts文件，并存放在当前目录的typings独立子目录下，并且它会将我们需要的依赖信息保存在一个叫tsd.json的文件，如NPM的package.json一样，方便于我们的版本管理，以及团队之间的共享。我们只需要共享这个tsd.json文件给其他同事，然后</p>
+
+<pre class='green'><code>tsd install
+</code></pre>
+
+<p>一切都可以满意就绪了。</p>
+
+<p>tsd.json文件的格式如下：</p>
+
+<p><img src="/images/blog_img/tsd-install.png" alt="tsd文件目录" /></p>
+
+<p>同时候TSD工具还会为我们在typing目录下生产一个tsd.d.ts文件，它会为我们引入这些模板文件，使得IDE能够识别出这样模板文件：</p>
+
+<pre class='green'><code>/// &lt;reference path="angularjs/angular.d.ts" /&gt;
+/// &lt;reference path="jquery/jquery.d.ts" /&gt;
+</code></pre>
+
+<p>下面是我们在Intellij中得到的智能感知图：</p>
+
+<p><img src="/images/blog_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
+
+<p>目前能够很好支持TypeScript这一特性的工具有：Intellij家族、微软自家的VS工具、Sublime。有了TSD这一工具，也许我们虽然还不能尝试TypeScript的特性，但我们仍然可以利用它来帮助我们的普通JavaScript开发。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/25/tui-jian-shu-ji-yi-dong-appce-shi-de-22tiao-jun-gui/">推荐书籍 -《移动App测试的22条军规》</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-25T01:29:56+08:00" pubdate data-updated="true">Jul 25<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在今天的博文中，博主希望给大家分享一本博主同事黄勇的最新利作：《移动App测试的22条军规》。黄勇是ThoughtWorks资深敏捷QA和咨询师。对于我来说，和黄勇在一起的工作的这个项目，是我至今所一直怀念的那种少有的项目。黄勇在团队中以资深QA的团队协调能力和专业技能，不仅保障了项目的交付质量，同时也能很好的协调从客户到开发中的各个环节。</p>
+
+<h4>移动互联网的兴起</h4>
+
+<p>在当今世界，移动互联网已经兴起了，它距离我们大家，已经不再那么遥远了，已经开始慢慢的融入了我们的生活之中。特别在最近两年，BAT这等巨头在移动互联网的扩张和斗争层起不穷，微信和支付宝的市场之战，滴滴、快滴、Uber的快速崛起，我们的生活也被些日星月异的移动App所改变。</p>
+
+<p>特别在今年笔者的感触比较深，笔者维护着国内Angular中文社区群。某一天，作为日常惯例上线QQ群，为大家解决一些技术问题。当我帮助某某同学解决完他的问题的时候，突然，他向我发起私聊窗口，问笔者要支付宝账号，希望给笔者支付宝红包来感谢笔者的帮助。不禁的深叹：我们的消费观念已经改变了，我们开始选择了移动互联网，开始接受了网上消费。到这里这件事还没有完成，随后笔者将此感触消息发到了自己朋友圈。在满是“赞”的同时，笔者也陆续收到总共32元人民币的红包，都是为了感谢笔者“双狼说”的文章或者是平时的技术帮助。再次不禁的感慨万千：移动互联网已经来到了我们的身边，并且也在改变着我们的生活！世界这么大，移动互联网就在你身边。</p>
+
+<p><img src="/images/blog_img/%E4%BA%92%E8%81%94%E7%BD%91%E6%B6%88%E8%B4%B9%E8%A7%82%E5%BF%B5%E7%9A%84%E6%94%B9%E5%8F%98.jpg" alt="互联网消费观念的改变" /></p>
+
+<h4>《这是一个属于移动App开发者的时代》</h4>
+
+<p>下面是摘自同事《移动App测试的22条军规》中：来自Testin云测 联合创始人、CEO 王军的书序《这是一个属于移动App开发者的时代》：</p>
+
+<p>一年前，当我陪同Google董事会主席施密特先生在中关村海龙市场考察时，面对蓬勃发展的移动互联网和不确定的未来格局，施密特说到“移动App开发者将是未来的核心”。回想移动互联网的发展不过只有几年的历史，但以移动App为核心的创新正在影响着我们的现在，并且改变人类的未来。</p>
+
+<p>人们的吃、喝、购物、旅游、用车、医疗健康的方方面面，我们花的每一分钱，可能都会跟移动App有关。虽然现阶段移动互联网和传统经济仅仅结合更于紧密的是移动游戏、电商、O2O，但随着技术的进步、创业者的创新，移动互联网与传统经济的接触将更为紧密，可穿戴、医疗、支付或者是所有的钱包。人类经济发展到现在位置，GDP或者是实体经济，是围绕着过去的现金和信用卡而支撑的体系，如果现金、信用卡被移动App颠覆了，我们所有的一切未来只是一个ID，只是手机上一个App，那这个信托责任是多么的巨大。伴随着传统互联网的发展，过去几十年在传统的IT建设上投资的钱，已经不是千万美金、数亿美金来算，是一个庞大的固定资产，而APP开发者三年前可能还是一个屌丝，就是无业的，或者是刚进校门的，可能几年之后就成长为一个承担人们数亿、数十亿资产管理的平台。作为软件，App不存在bug是不可能的，开发者的责任就是要在App发布前竭尽所能进行全面的测试，发现App是否存在隐患，判断支付的时候会不会崩溃，确保用户体验至少是可以接受的，还有没有让用户使用不爽的地方，这是App开发者必须承担的责任。</p>
+
+<p>历史上第一个”Bug”诞生至今已有70年，期间经历了第三次工业革命、信息革命。现在，移动互联网已经无所不在。软件测试的重要性随着信息技术的发展，越来越被人们重视。功能测试、性能测试、压力测试、安全测试、用户体验测试，许多的专业词汇涌现出来。</p>
+
+<p>测试在云端？移动App爆发所带来的碎片化困扰着开发者，于是我们在2011年创立了专门向移动App开发者提供云测试和质量管理的服务平台Testin云测，把传统的测试从本地搬到了云端。开发者在App中集成专用的测试SDK，一旦用户使用App时发生崩溃。SDK会把崩溃的堆栈信息，App版本等信息上报到云端。堆栈信息能够定位到出现崩溃的文件、类名、函数名、代码行，开发者在云端根据崩溃的堆栈信息能够快速定位并修复问题。</p>
+
+<p>移动App测试的重要性？移动互联网的产品讲究的快，产品开发也是快速迭代的模式。我们很难像传统测试那样花费半年或者几个月的时间去测试整个系统。那云端测试恰好就帮助我们在既保证产品快速发布的情况下，又能够把控好产品的质量。开发者可以在完成基础的测试工作后将产品发布市场，一方面通过市场完善产品的能力；一方面在用户使用的过程中收集并修复产品的Bug，类如微信就经常进行灰度发布。</p>
+
+<p>移动App测试的难度？云端测试一直以来存在几个难题：1、各类App或游戏的开发语言不统一，收集用户的崩溃信息较难；1、上报的堆栈信息因混淆或者语言本身因数，内容辨识度较低，很难定位问题；3、信息量太大，没有很好的去重。经过多年发展，崩溃分析用户性能管理能够跨平台支撑Cocos2d-x、Unity3d引擎，Java、C、C++、Objective-C、JavaScript、Lua、C#等不同编程语言。崩溃的堆栈信息更是通过符号化能力，清晰地将不可读的内容符号为出现崩溃的文件、类名、函数名、代码行。同一崩溃的去重是提高开发者工作效率的重要因素，通过对不同崩溃堆栈直接函数的调用关系判断及每日过亿条崩溃数据的分析。崩溃分析SDK不断总结、优化自身的去重算法。举个例子，一个崩溃可能在1万个用户终端出现过。云端可以判断出是同一块代码导致的，这种场景在传统测试中很难去分析。</p>
+
+<p>如今，移动App的开发者越来越多，开发工具、引擎的发展迭代也在加快，App开发极为快速，而成本却在逐步降低。但移动App作为软件，传统的软件工程测试方法与质量体系，在飞速增长的移动App开发模式和生态体系中很难有效地发挥作用，《移动App测试的22条军规》的实战建议实用、简明、有效，将帮助开发者在激烈竞争的环境下能够脱颖而出，能更好地创新并快速发展。</p>
+
+<h4>《移动App测试的22条军规》</h4>
+
+<p>本书的在线购买或试读地址为：<a href="http://item.m.jd.com/ware/view.action?wareId=11730286&amp;from=timeline&amp;isappinstalled=0">http://item.m.jd.com/ware/view.action?wareId=11730286&amp;from=timeline&amp;isappinstalled=0</a></p>
+
+<p><img src="http://img11.360buyimg.com/n1/jfs/t1615/101/742241908/97316/39b2b3e/55a8c17eNcf6e3c5b.jpg" alt="http://img11.360buyimg.com/n1/jfs/t1615/101/742241908/97316/39b2b3e/55a8c17eNcf6e3c5b.jpg" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/06/angular-modulesheng-ming-huo-qu-zhong-zai/">Angular Module声明和获取重载</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-06T08:30:33+08:00" pubdate data-updated="true">Jul 6<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>module是angular中重要的模块组织方式，它提供了将一组内聚的业务组件（controller、service、filter、directive&hellip;）封装在一起的能力。这样做可以将代码按照业务领域问题分module的封装，然后利用module的依赖注入其关联的模块内容，使得我们能够更好的”分离关注点“，达到更好的”高内聚低耦合“。”高内聚低耦合“是来自面向对象设计原则。内聚是指模块或者对象内部的完整性，一组紧密联系的逻辑应该被封装在同一模块、对象等代码单元中，而不是分散在各处；耦合则指模块、对象等代码单元之间的依赖程度，如果一个模块的修改，会影响到另一个模块，则说明这两模块之间是相互依赖紧耦合的。</p>
+
+<p>同时module也是我们angular代码的入口，首先需要声明module，然后才能定义angular中的其他组件元素，如controller、service、filter、directive、config代码块、run代码块等。</p>
+
+<p>关于module的定义为：angular.module(&lsquo;com.ngbook.demo&rsquo;, [])。关于module函数可以传递3个参数，它们分别为：</p>
+
+<ol>
+<li>name：模块定义的名称，它应该是一个唯一的必选参数，它会在后边被其他模块注入或者是在ngAPP指令中声明应用程序主模块；</li>
+<li>requires：模块的依赖，它是声明本模块需要依赖的其他模块的参数。特别注意：如果在这里没有声明模块的依赖，则我们是无法在模块中使用依赖模块的任何组件的；它是个可选参数。</li>
+<li>configFn： 模块的启动配置函数，在angular config阶段会调用该函数，对模块中的组件进行实例化对象实例之前的特定配置，如我们常见的对$routeProvider配置应用程序的路由信息。它等同于”module.config“函数，建议用”module.config“函数替换它。这也是个可选参数。</li>
+</ol>
+
+
+<p>对于angular.module方法，我们常用的方式有有种，分别为angular.module(&lsquo;com.ngbook.demo&rsquo;, [可选依赖])和angular.module(&lsquo;com.ngbook.demo&rsquo;)。请注意它是完全不同的方式，一个是声明创建module，而另外一个则是获取已经声明了的module。在应用程序中，对module的声明应该有且只有一次；对于获取module，则可以有多次。推荐将angular组件独立分离在不同的文件中，module文件中声明module，其他组件则引入module，需要注意的是在打包或者script方式引入的时候，我们需要首先加载module声明文件，然后才能加载其他组件模块。</p>
+
+<p>在angular中文社区群中，有时会听见某些同学问关于”ng:areq“的错误：</p>
+
+<pre class='green'><code> [ng:areq] Argument 'DemoCtrl' is not a function, got undefined！
+</code></pre>
+
+<p>这往往是因为忘记定义controller或者是声明了多次module，多次声明module会导致前边的module定义信息被清空，所以程序就会找不到已定义的组件。这我们也能从angular源码中了解到（来自loader.js）：</p>
+
+<pre class='green'><code>function setupModuleLoader(window) {
+            ...
+            function ensure(obj, name, factory) {
+                return obj[name] || (obj[name] = factory());
+            }
+            var angular = ensure(window, 'angular', Object);
+            return ensure(angular, 'module', function() {
+                var modules = {};
+                return function module(name, requires, configFn) {
+                    var assertNotHasOwnProperty = function(name, context) {
+                        if (name === 'hasOwnProperty') {
+                            throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
+                        }
+                    };
+
+                    assertNotHasOwnProperty(name, 'module');
+                    if (requires &amp;&amp; modules.hasOwnProperty(name)) {
+                        modules[name] = null;
+                    }
+                    return ensure(modules, name, function() {
+                        if (!requires) {
+                            throw $injectorMinErr('nomod', "Module '{0}' is not available! You either misspelled " +
+                                "the module name or forgot to load it. If registering a module ensure that you " +
+                                "specify the dependencies as the second argument.", name);
+                        }
+                        var invokeQueue = [];
+                        var runBlocks = [];
+                        var config = invokeLater('$injector', 'invoke');
+                        var moduleInstance = {
+                            _invokeQueue: invokeQueue,
+                            _runBlocks: runBlocks,
+                            requires: requires,
+                            name: name,
+                            provider: invokeLater('$provide', 'provider'),
+                            factory: invokeLater('$provide', 'factory'),
+                            service: invokeLater('$provide', 'service'),
+                            value: invokeLater('$provide', 'value'),
+                            constant: invokeLater('$provide', 'constant', 'unshift'),
+                            animation: invokeLater('$animateProvider', 'register'),
+                            filter: invokeLater('$filterProvider', 'register'),
+                            controller: invokeLater('$controllerProvider', 'register'),
+                            directive: invokeLater('$compileProvider', 'directive'),
+                            config: config,
+                            run: function(block) {
+                                runBlocks.push(block);
+                                return this;
+                            }
+                        };
+                        if (configFn) {
+                            config(configFn);
+                        }
+                        return moduleInstance;
+
+                        function invokeLater(provider, method, insertMethod) {
+                            return function() {
+                                invokeQueue[insertMethod || 'push']([provider, method, arguments]);
+                                return moduleInstance;
+                            };
+                        }
+                    });
+                };
+            });
+        }
+</code></pre>
+
+<p>在代码中，我们能了解到angular在启动时，会设置全局的angular对象，然后在angular对象上发布module这个API。关于module API代码，能清晰的看见第一行谓语句，module名称不能以hasOwnProperty命名，否则会抛出”badname“的错误信息。紧接着，如果传入了name参数，其表示是声明module，则会删除已有的module信息，将其置为null。</p>
+
+<p>从moduleInstance的定义，我们能够看出，angular.module为我们公开的API有：<em>invokeQueue、</em>runBlocks、requires、name、provider、factory、servic、value、constant、animation、filter、controller、directive、config、run。其中<em>invokeQueue和</em>runBlocks是按名约定的私有属性，请不要随意使用，其他API都是我们常用的angular组件定义方法，从invokeLater代码中能看到这类angular组件定义的返回依然是moduleInstance实例，这就形成了流畅API，推荐使用链式定义这些组件，而不是声明一个全局的module变量。</p>
+
+<p>最后，如果传入了第三个参数configFn，则会将它配置到config信息中，当angular进入config阶段时，它们将会依次执行，进行对angular应用或者angular组件如service等的实例化前的配置。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/30/dong-tai-bang-ding-html/">动态绑定HTML</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-30T06:38:36+08:00" pubdate data-updated="true">Jun 30<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在Web前端开发中，我们经常会遇见需要动态的将一些来自后端或者是动态拼接的HTML字符串绑定到页面DOM显示，特别是在内容管理系统（CMS：是Content Management System的缩写），这样的需求，更是遍地皆是。</p>
+
+<p>对于对angular的读者肯定首先会想到ngBindHtml，对,angular为我们提供了这个指令来动态绑定HTML，它会将计算出来的表达式结果用innerHTML绑定到DOM。但是，问题并不是这么简单。在Web安全中XSS（Cross-site scripting，脚本注入攻击），它是在Web应用程序中很典型的计算机安全漏洞。XSS攻击指的是通过对网页注入可执行客户端代码且成功地被浏览器执行，来达到攻击的目的，形成了一次有效XSS攻击，一旦攻击成功，它可能会获取到用户的一些敏感信息、改变用户的体验、诱导用户等非法行为，有时XSS攻击还会合其他攻击方式同时实施比如SQL注入攻击服务器和数据库、Click劫持、相对链接劫持等实施钓鱼，它带来的危害是巨大的，也是web安全的头号大敌。更多的Web安全问题，请参考wiki <a href="https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82">https://en.wikipedia.org/wiki/Cross-site_scripting%E3%80%82</a></p>
+
+<p>在angular中默认是不相信添加的HTML内容，对于添加的HTML内容，首先必须利用$sce.trustAsHtml，告诉angular这是可信的HTML内容。否则你将会得到$sce:unsafe的异常错误。</p>
+
+<pre class='green'><code>Error: [$sce:unsafe] Attempting to use an unsafe value in a safe context.
+</code></pre>
+
+<p>下面是一个绑定简单的angular链接的demo：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div ng-controller="DemoCtrl as demo"&gt;
+    &lt;div ng-bind-html="demo.html"&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("DemoCtrl", ["$sce", function($sce) {
+        var vm = this;
+
+        var html = '&lt;p&gt;hello &lt;a href="https://angular.io/"&gt;angular&lt;/a&gt;&lt;/p&gt;';
+        vm.html = $sce.trustAsHtml(html);
+
+        return vm;
+    }]);
+</code></pre>
+
+<p>对于简单的静态HTML，这个问题就解决了。但对于复杂的HTML，这里的复杂是指带有angular表达式、指令的HTML模板，对于它们来说，我们不仅希望绑定大DOM显示，同时还希望得到angular强大的双向绑定机制。ngBindHhtml并不会和$scope关联双向绑定，如果在HTML中存在ngClick、ngHref、ngSHow、ngHide等angular指令，它们并不会被compile，点击这些按钮，也不会发生任何反应，绑定的表达式也不会在更新。例如尝试将上次的链接变为：ng-href=&ldquo;demo.link&#8221;，链接并不会被解析，在DOM看见的仍然会是原样的HTML字符串。</p>
+
+<p>在angular中的所有指令要生效，都需要经过compile，在compile中包含了pre-link和post-link，连接上特定行为，才能工作。大部分情况下compile，是会在angular启动时，自动compile的。但如果是对于动态添加的模板，则需要手动的compile。angular中为我们提供了$compile服务来实现这一功能。下面是一个比较通用的compile例子：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;body ng-controller="DemoCtrl as demo"&gt;
+    &lt;dy-compile html="{{demo.html}}"&gt; 
+    &lt;/dy-compile&gt;
+    &lt;button ng-click="demo.change();"&gt;change&lt;/button&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .directive("dyCompile", ["$compile", function($compile) {
+        return {
+            replace: true,
+            restrict: 'EA',
+            link: function(scope, elm, iAttrs) {
+                var DUMMY_SCOPE = {
+                        $destroy: angular.noop
+                    },
+                    root = elm,
+                    childScope,
+                    destroyChildScope = function() {
+                        (childScope || DUMMY_SCOPE).$destroy();
+                    };
+
+                iAttrs.$observe("html", function(html) {
+                    if (html) {
+                        destroyChildScope();
+                        childScope = scope.$new(false);
+                        var content = $compile(html)(childScope);
+                        root.replaceWith(content);
+                        root = content;
+                    }
+
+                    scope.$on("$destroy", destroyChildScope);
+                });
+            }
+        };
+    }])
+    .controller("DemoCtrl", [function() {
+        var vm = this;
+
+         vm.html = '&lt;h2&gt;hello : &lt;a ng-href="{{demo.link}}"&gt;angular&lt;/a&gt;&lt;/h2&gt;';  
+
+        vm.link = 'https://angular.io/';
+        var i = 0;
+        vm.change = function() {
+            vm.html = '&lt;h3&gt;change after : &lt;a ng-href="{{demo.link}}"&gt;' + (++i) + '&lt;/a&gt;&lt;/h3&gt;';  
+        };
+    }]);
+</code></pre>
+
+<p>这里创建了一个叫dy-compile的指令，它首先会监听绑定属性html值的变化，当html内容存在的时候，它会尝试首先创个一个子scope，然后利用$compile服务来动态连接传入的html，并替换掉当前DOM节点；这里创建子scope的原因，是方便在每次销毁DOM的时，也能容易的销毁掉scope，去掉HTML compile带来的watchers函数，并在最后的父scope销毁的时候，也会尝试销毁该scope。</p>
+
+<p>因为有了上边的compile的编译和连接，则ngHref指令就可以生效了。这里只是尝试给出动态compile angular模块的例子，具体的实现方式，请参照你的业务来声明特定的directive。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/2/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

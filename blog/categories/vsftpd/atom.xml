@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Vsftpd | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/vsftpd/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Vsftpd Refusing to Run With Writable Root Inside Chroot]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/"/>
+    <updated>2014-11-12T19:38:05+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot</id>
+    <content type="html"><![CDATA[<p><img src="/images/blog_img/vsftpd.jpg" alt="vsftpd" /></p>
+
+<p>今天记录一个在安装vsftpd的时候遇见错误：</p>
+
+<pre><code>500 OOPS: vsftpd: refusing to run with writable root inside chroot ()
+</code></pre>
+
+<p>在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制，而这在最近的更新里是不被允许的。要修复这个错误，可以用命令chmod a-w /home/$user去除用户根目录的写权限,或者在vsftpd。conf配置允许writeable。</p>
+
+<p>设置允许writeable为：</p>
+
+<pre><code>allow_writeable_chroot=YES
+</code></pre>
+
+<p>最简单的方式就是允许writeable。</p>
+]]></content>
+  </entry>
+  
+</feed>

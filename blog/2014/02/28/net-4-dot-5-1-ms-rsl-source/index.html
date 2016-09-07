@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>微软开放了.NET 4.5.1的源代码 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content=".NET Reference Source发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，在Visual Studio 2013中调试.NET Framework。 .NET Framework团队的项目经理Alok Shriram在.NET &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2014/02/28/net-4-dot-5-1-ms-rsl-source">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">微软开放了.NET 4.5.1的源代码</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-28T12:25:25+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://referencesource.microsoft.com/">.NET Reference Source</a>发布了beta版，可以在线浏览.NET Framework 4.5.1的源代码，并且可以通过配置，<a href="http://referencesource-beta.microsoft.com/setup.html">在Visual Studio 2013中调试.NET Framework</a>。</p>
+
+<p>.NET Framework团队的项目经理Alok Shriram在<a href="http://blogs.msdn.com/b/dotnet/archive/2014/02/24/a-new-look-for-net-reference-source.aspx">.NET Framework的博客</a>中撰文介绍了最新的.NET Reference Source。它不仅可以用来浏览最新的.NET代码，而且通过强大的<a href="http://msdn.com/roslyn">Roslyn</a>，改善了“Go to Defination”和“Finding Reference”的在线体验。此外，开发者还可以下载整个源代码包，在Visual Studio中打开并浏览。使用Schabse Laks编写的<a href="http://visualstudiogallery.msdn.microsoft.com/f89b27c5-7d7b-4059-adde-7ccc709fa86e">插件</a>，可以在VS中直接导航到该网站。</p>
+
+<p>通过简单的配置，开发者可以在Visual Studio中单步调试.NET Framework 4.5.1及其后续补丁和更新。这无疑是广大开发者<a href="http://visualstudio.uservoice.com/forums/121579-visual-studio/suggestions/4083118-allow-developers-to-step-through-net-framework-so">翘首以盼的功能</a>。启动Visual Studio 2013，打开Tools &ndash;> Options &ndash;> Debugging &ndash;> General菜单，进行如下配置：</p>
+
+<ul>
+<li>   禁用Just My Code</li>
+<li>   禁用Step over properties and operators</li>
+<li>   禁用Require source files to exactly match the original version</li>
+<li>   选中Enable .NET Framework source stepping</li>
+<li>   选中Enable source server support</li>
+</ul>
+
+
+<p>这样，开发者在调试代码时，就可以通过F11直接进入.NET代码。</p>
+
+<p>这并不是微软第一次开放.NET Framework的源代码。早在2007年，他们就第一次公布了<a href="http://weblogs.asp.net/scottgu/archive/2007/10/03/releasing-the-source-code-for-the-net-framework-libraries.aspx">.NET 3.5的源代码</a>并支持Visual Studio调试。并且对于后续的4.0和4.5，也都提供了相应的源代码包。但当框架升级时，这些旧的包就变得毫无价值了。从4.5.1开始，.NET Framework团队彻底改变了符号索引和发布的过程，使其与构建过程同步，这样在新版本发布时，相应的PDB文件也会从Reference Source网站进行更新。</p>
+
+<p>目前的beta站点只是临时的，届时将会取代现在的旧站点。后续微软也会将还未公布源代码的程序集逐步添加进来。新的.NET Reference Source许可协议回归到了<a href="http://referencesource-beta.microsoft.com/license.html">MS-RSL</a>，这也使得像Mono这样的团队可以放心大胆地使用。</p>
+
+<p>正如Scott Hanselman所说：微软可能并不是开源的，但却绝对是源代码开放的。</p>
+
+<p>Infoq原文链接:<a href="http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly">http://www.infoq.com/cn/news/2014/02/microsoft-net-source-code?utm_campaign=infoq_content&amp;utm_source=infoq&amp;utm_medium=feed&amp;utm_term=global&amp;utm_reader=feedly</a>.</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-28T12:25:25+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2014</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dot-net/'>.net</a>, <a class='category' href='/blog/categories/opensource/'>opensource</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2014/02/28/nodejs-get-client-ip/" title="Previous Post: nodejs获取客户端IP Address">&laquo; nodejs获取客户端IP Address</a>  
+                <a class="basic-alignment right" href="/blog/2014/02/28/ci-tools-go-open-source/" title="Next Post: ThoughtWorks持续集成平台GO开源了">ThoughtWorks持续集成平台GO开源了 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

@@ -1,0 +1,3542 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="angular中的$scope是页面（view）和数据（model）之间的桥梁，它链接了页面元素和model，也是angular双向绑定机制的核心。 而ngModel是angular用来处理表单（form）的最重要的指令，它链接了页面表单中的可交互元素和位于$scope之上的model， &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/page/4">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/29/ngmodel-zhi-bu-geng-xin-slash-xian-shi/">ngModel 值不更新/显示</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-29T06:50:10+08:00" pubdate data-updated="true">Jun 29<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>angular中的$scope是页面（view）和数据（model）之间的桥梁，它链接了页面元素和model，也是angular双向绑定机制的核心。</p>
+
+<p>而ngModel是angular用来处理表单（form）的最重要的指令，它链接了页面表单中的可交互元素和位于$scope之上的model，它会自动把ngModel所指向的model值渲染到form表单的可交互元素上，同时也会根据用户在form表单的输入或交互来更新此model值。</p>
+
+<p>在源码中，model值的格式化、解析、验证都是由ngModel指令所对应的控制器ngModelController来实现的。</p>
+
+<p>在笔者所维护的国内ng群中，经常被问到一个问题：</p>
+
+<pre class='green'><code>    为什么我的ng-model=“xxx”值不能在页面显示了呢?
+</code></pre>
+
+<p>对于ngModel的这类问题主要分为两类：</p>
+
+<ul>
+<li>model值不满足表单验证条件,所以angular不会渲染它</li>
+<li>由于JavaScript特殊的原型链继承机制，对$scope中属性的赋值并不能更新到父$scope</li>
+</ul>
+
+
+<p>在本节中，我们将会详细分析此类问题，借此深入剖析ngModel的工作原理。</p>
+
+<h4>验证引起的model值不显示</h4>
+
+<p>我们先来看一个修改商品数量的例子，要求为必须输入1-100的个数；</p>
+
+<p>下面是对应的html代码：</p>
+
+<pre class='green'><code>&lt;body class="container"&gt;
+  &lt;div ng-controller="DemoCtrl as demo"&gt;
+   &lt;div ng-form="form" class="form-horizontal"&gt;
+      &lt;div class="form-group" ng-class="{'has-error': form.amount.$invalid }"&gt;
+      &lt;label for="amount"&gt;Amount&lt;/label&gt;
+      &lt;!-- 这个input将工作不正常 --&gt;
+    &lt;input id="amount" name="amount" type="number" ng-model="demo.amount" class="form-control" placeholder="1 - 100" min="1" max="100"/&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/body&gt;
+</code></pre>
+
+<p>javascript代码：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("DemoCtrl", [function(){
+    var vm = this;
+
+    vm.amount = 0;
+
+    return vm;
+}]);
+</code></pre>
+
+<p> 在代码中我们已经为ngModel变量amount赋值了整数“0”，可是界面显示效果仍然显示&#8221;1 &ndash; 100&#8221;的placeholder(如下图)。</p>
+
+<p><img src="/images/blog_img/ngModel-vadation-question.png" alt="ng-model绑定值不改变:验证" /></p>
+
+<p>下面是关于angular number组件ngModel转换函数代码：</p>
+
+<pre class='green'><code>var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+
+function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+    textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+    ctrl.$parsers.push(function(value) {
+        var empty = ctrl.$isEmpty(value);
+        if (empty || NUMBER_REGEXP.test(value)) {
+            ctrl.$setValidity('number', true);
+            return value === '' ? null : (empty ? value : parseFloat(value));
+        } else {
+            ctrl.$setValidity('number', false);
+            return undefined;
+        }
+    });
+
+    addNativeHtml5Validators(ctrl, 'number', numberBadFlags, null, ctrl.$$validityState);
+
+    ctrl.$formatters.push(function(value) {
+        return ctrl.$isEmpty(value) ? '' : '' + value;
+    });
+
+    if (attr.min) {
+        var minValidator = function(value) {
+            var min = parseFloat(attr.min);
+            return validate(ctrl, 'min', ctrl.$isEmpty(value) || value &gt;= min, value);
+        };
+
+        ctrl.$parsers.push(minValidator);
+        ctrl.$formatters.push(minValidator);
+    }
+
+    if (attr.max) {
+        var maxValidator = function(value) {
+            var max = parseFloat(attr.max);
+            return validate(ctrl, 'max', ctrl.$isEmpty(value) || value &lt;= max, value);
+        };
+
+        ctrl.$parsers.push(maxValidator);
+        ctrl.$formatters.push(maxValidator);
+    }
+
+    ctrl.$formatters.push(function(value) {
+        return validate(ctrl, 'number', ctrl.$isEmpty(value) || isNumber(value), value);
+    });
+}
+</code></pre>
+
+<p>ngModel作为angular双向绑定中的重要组成部分，负责view控件交互数据到$scope上model的同步。当然这里存在一些差异，view上的显示和输入都是字符串类型，而在model上的数据则是有特定类型的，如常用的int、float、Date、Array、Object等。ngModel为了实现数据到model的类型转换，在ngModelController中提供了两个管道数组$formatters和$parsers，它们分别是将model的数据转换为view交互控件显示的值和将交互控件得到的view值转换为model数据，它们都是一个数组对象，在ngModel启动数据转换时，会以UNIX管道式传递执行这一些列的转换。我们也可以手动的添加$formatters和$parsers的转换函数（unshift、push），当然在这里也是做数据验证的最佳时机，能够转换意味应该是合法的数据。</p>
+
+<p>在number组件代码中，我们清晰看见：依次添加了对数字验证转换、最小值合法性验证、最大值合法验证。首先会启动$parsers转换，如果在转换过程中出现不合法验证则会设置ngModelController.$setValidity验证错误，则返回undefined。对于model数据到交互控件显示，同样也会经过$formatters转换管道，对于没有通过验证的逻辑，同样也会ngModelController.$setValidity设置验证错误，返回undefined，因此这不合法的model数据不会显示在交互控件上。</p>
+
+<h4>原型链继承问题</h4>
+
+<p>JavaScript中每个对象都会链接到一个原型对象，并且他可以从中继承属性。即使通过字面量创建的对象也会链接到Object.prototype，它是JavaScript中的标配对象。JavaScript的原型链继承相对于其他语言常见的继承，是一种另类的继承，它是实施于对象上的动态继承方式，而非常见的实施与类型class之上的静态继承体系。JavaScript的这种继承方式很灵活，一个对象可以被多个对象继承，而且他们共享同一实例对象，但理解起来显得格外复杂，从JavaScript原型和原型链可以看出它的复杂性。在Javascript中，每个函数都有一个原型属性prototype指向自身的原型，而由这个函数创建的对象也有一个<strong>proto</strong>属性指向这个原型，而函数的原型是一个对象，所以这个对象也会有一个<strong>proto</strong>指向自己的原型，这样逐层深入直到Object对象的原型，这样就形成了原型链。下面的是JavaScript原型继承基础原型和原型链展示图。</p>
+
+<p><img src="/images/blog_img/javascript-%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF.png" alt="javascript-原型继承" /></p>
+
+<p>函数是由Function函数创建的对象，因此函数也有一个<strong>proto</strong>属性指向Function函数的原型。需要注意的是，真正形成原型链的是每个对象的<strong>proto</strong>属性，而不是函数的prototype属性。更多的内容关于原型和原型链的知识，请参考《Javascript模式》这本书。</p>
+
+<p>JavaScript的原型链连接只在属性检索的时候才会启用，如果我们尝试去获取对象的某个属性值，但该对象没有此属性名，则JavaScript会试着从原型对象中获取该属性值。如果那个对象也没有该属性名，那么在继续从它的原型中寻找，依次类推，直到Object.prototype，如果仍然没有找到该属性值，则返回结果为undefined。不幸的是，这种原型链连接检索，只会在属性检索的的时候启用，并不会在更新属性值时启用，因此当我们对于基础类型（非引用对象上的属性，换句通俗的话来说，就是不会出现“.”运算符）的属性更新的时候，它并不能更新父对象的属性，替代方式是在自身对象上创建了该属性。这也是angular中对于基础类型的属性，不能在子controller中被修改的原因，导致在子controller中ngModel的更新并不会反应在父controller上。</p>
+
+<p>下边是关于该问题的一个简化例子：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div ng-controller="ParentCtrl"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;h4&gt;Parent Controller:&lt;/h4&gt;
+        &lt;pre&gt;&lt;/pre&gt;
+        &lt;input type="text" ng-model="greet" class="form-control" /&gt;
+    &lt;/div&gt;
+    &lt;div ng-controller="ChildCtrl"&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h4&gt;Child controller:&lt;/h4&gt;
+            &lt;pre&gt;&lt;/pre&gt;
+            &lt;input type="text" ng-model="greet" class="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript：</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("ParentCtrl", ["$scope", function($scope) {
+
+        $scope.greet = "hello angular!";
+
+    }])
+    .controller("ChildCtrl", angular.noop);
+</code></pre>
+
+<p>从初始化显示效果中，我们能看出子$scope之继承了来自父$scope的greet属性，都显示为&#8221;hello angular!&ldquo;。如果我们尝试利用父controller提供了input控件改变父$scope的greet属性，你也能看见子controller区域的显示也会被及时更新。对于ngController默认会使用原型链继承其父对象的属性，所有的$scope的根$scope或称祖$scope是来自ngApp节点创建的$rootScope，换句话说，$rootScope是万物之源，所有的$scope都直接或者间接继承至它。</p>
+
+<p><img src="/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-1.png" alt="ngModel-controller继承" /></p>
+
+<p>当我们尝试去改变输入框的greet属性的时，则发生了下面的情况：子controller区域发生了更新，父controller区域却无法更新。因为上面所说的JavaScript的原型链检索并不对更新启用，对于基础类型JavaScript在自身对象（这里是子$scope）上创建了一个同名的变量。你也想可以从下面angular调试插件batarang截图中看出来。一旦利用子controller的input控件修改了greet属性，再次之后我再次尝试修改父controller区域的greet属性，子controller区别不会在像初始化时候那样及时同步了，它们之间完全独立了，各自拥有了自己的greet属性。</p>
+
+<p><img src="/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-2.png" alt="ngModel-controller继承" /></p>
+
+<p>batarang插件截图</p>
+
+<p><img src="/images/blog_img/ngModel-%E5%80%BC%E4%B8%8D%E6%9B%B4%E6%96%B0-javascript-issue-3.png" alt="ngModel-controller继承" /></p>
+
+<p>经过上面的例子分析，相信作为读者的你已经能够理解这类由于继承链引用问题导致的ngModel不能更新问题了，请记住：这是JavaScript原型继承的issue，并不是angular的issue。</p>
+
+<p>那么我们在子controller中如何更新父controller的属性值呢？这个问题已经很简单了，issue的问题在于没有启用原型链的检索，那么如果我们将ngModel的属性变为引用对象，换句话说：在ngModel的属性值中加了“.”，那么在JavaScript的原型链检索就会启动了。</p>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;div ng-controller="ParentCtrl"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;h4&gt;Parent Controller:&lt;/h4&gt;
+        &lt;pre&gt;&lt;/pre&gt;
+        &lt;input type="text" ng-model="vm.greet" class="form-control" /&gt;
+    &lt;/div&gt;
+    &lt;div ng-controller="ChildCtrl"&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h4&gt;Child controller:&lt;/h4&gt;
+            &lt;pre&gt;&lt;/pre&gt;
+            &lt;input type="text" ng-model="vm.greet" class="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", [])
+    .controller("ParentCtrl", ["$scope", function($scope) {
+
+        $scope.vm = {
+            greet: "hello angular!"
+        };
+
+    }])
+    .controller("ChildCtrl", angular.noop);
+</code></pre>
+
+<p>jsbin demo: <a href="http://jsbin.com/metufi/1/edit?html,js,output">http://jsbin.com/metufi/1/edit?html,js,output</a></p>
+
+<p>这里在ngModel属性值多引入了“vm”变量，这个时候，不管我们尝试修改greet值，整个页面都会得到相应的同步。关于这个问题，作者更推荐使用angular 1.2后的controller as vm的方式解决，更多的信息请阅读《使用controller as vm方式.md》一节。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/16/angularzhong-de-mvvmmo-shi/">angular中的MVVM模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-16T11:33:55+08:00" pubdate data-updated="true">Jun 16<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p> 在开始介绍angular原理之前，我们有必要先了解下mvvm模式在angular中运用。虽然在angular社区一直将angular统称为前端MVC框架，同时angular团队也称它为MVW（Whatever）框架，但angular框架整体上更接近MVVM模式。下面是Igor Minar发布在Google+ <a href="https://plus.google.com/+IgorMinar/posts/DRUAkZmXjNV">https://plus.google.com/+IgorMinar/posts/DRUAkZmXjNV</a>的文章内容：</p>
+
+<p> MVC vs MVVM vs MVP. What a controversial topic that many developers can spend hours and hours debating and arguing about.</p>
+
+<p>For several years +AngularJS was closer to MVC (or rather one of its client-side variants), but over time and thanks to many refactorings and api improvements, it&rsquo;s now closer to MVVM – the $scope object could be considered the ViewModel that is being decorated by a function that we call a Controller.</p>
+
+<p>Being able to categorize a framework and put it into one of the MV* buckets has some advantages. It can help developers get more comfortable with its apis by making it easier to create a mental model that represents the application that is being built with the framework. It can also help to establish terminology that is used by developers.</p>
+
+<p>Having said, I&rsquo;d rather see developers build kick-ass apps that are well-designed and follow separation of concerns, than see them waste time arguing about MV* nonsense. And for this reason, I hereby declare AngularJS to be MVW framework &ndash; Model-View-Whatever. Where Whatever stands for &ldquo;whatever works for you&rdquo;.</p>
+
+<p>Angular gives you a lot of flexibility to nicely separate presentation logic from business logic and presentation state. Please use it fuel your productivity and application maintainability rather than heated discussions about things that at the end of the day don&rsquo;t matter that much.</p>
+
+<p>在文中特别指出angular在多次的API重构和改善，它越来越接近于MVVM模式，$scope可以被认为是ViewModl，而Controller则是装饰、加工处理这个ViewModel的JavaScript函数。作者更希望大家关注于实现一个成功的，具有好的设计以及遵循“分离关注点”原则的应用程序，而不是去争论MV*，所以他将angular称为MVW框架，是什么并不重要，只要适合你的应用就行。</p>
+
+<p> MVVM模式是Model-View-ViewMode（模型-视图-视图模型）模式的简称，其最早出现在微软的WPF和Silverlight框架中。MVVM模式利用框架内置的双向绑定技术对MVP（Model-View-Presenter）模式的变型，引入了专门的ViewModel（视图模型）来实现View和Model的粘合，让View和Model的进一步分离和解耦。MVVM模式的优势有如下四点：</p>
+
+<ol>
+<li>低耦合：View可以独立于Model变化和修改，同一个ViewModel可以被多个View复用；并且可以做到View和Model的变化互不影响；</li>
+<li>可重用性：可以把一些视图的逻辑放在ViewModel，让多个View复用；</li>
+<li>独立开发：开发人员可以专注与业务逻辑和数据的开发（ViewModel），界面设计人员可以专注于UI(View)的设计；</li>
+<li>可测试性：清晰的View分层，使得针对表现层业务逻辑的测试更容易，更简单。</li>
+</ol>
+
+
+<p>下面是angular中关于MVVM模式的运用：</p>
+
+<p><img src="/images/blog_img/angular-mvvm.png" alt="angular mvvm" /></p>
+
+<p>在angular中MVVM模式主要分为四部分：</p>
+
+<ol>
+<li>View：它专注于界面的显示和渲染，在angular中则是包含一堆声明式Directive的视图模板。</li>
+<li>ViewModel：它是View和Model的粘合体，负责View和Model的交互和协作，它负责给View提供显示的数据，以及提供了View中Command事件操作Model的途径；在angular中$scope对象充当了这个ViewModel的角色；</li>
+<li>Model：它是与应用程序的业务逻辑相关的数据的封装载体，它是业务领域的对象，Model并不关心会被如何显示或操作，所以模型也不会包含任何界面显示相关的逻辑。在web页面中，大部分Model都是来自Ajax的服务端返回数据或者是全局的配置对象；而angular中的service则是封装和处理这些与Model相关的业务逻辑的场所，这类的业务服务是可以被多个Controller或者其他service复用的领域服务。</li>
+<li>Controller：这并不是MVVM模式的核心元素，但它负责ViewModel对象的初始化，它将组合一个或者多个service来获取业务领域Model放在ViewModel对象上，使得应用界面在启动加载的时候达到一种可用的状态。</li>
+</ol>
+
+
+<p>View不能直接与Model交互，而是通过$scope这个ViewModel来实现与Model的交互。对于界面表单的交互，通过ngModel指令来实现View和ViewModel的同步。ngModelController包含$parsers和$formatters两个转换器管道，它们分别实现View表单输入值到Model数据类型转换和Model数据到View表单数据的格式化。对于用户界面的交互Command事件（如ngClick、ngChange等）则会转发到ViewModel对象上，通过ViewModel来实现对于Model的改变。然而对于Model的任何改变，也会反应在ViewModel之上，并且会通过$scope的“脏检查机制”（$digest）来更新到View。从而实现View和Model的分离，达到对前端逻辑MVVM的分层架构。</p>
+
+<p>angular中MVVM模式的实现，以领域Model为中心思维，遵循“分离关注点”设计原则，这也是与jQuery以DOM驱动的思维所不同之处。所以我们在做angular开发的时候应该谨记下面几点：</p>
+
+<h4>绝不要先设计你的页面，然后用DOM操作去改变它</h4>
+
+<p>在以往的jQuery开发中，我们会首先设计页面DOM结构，然后在利用jQuery来改变DOM结构或者实现动态交互效果。因为jQuery是为DOM驱动而设计的，对于拥有大量复杂的前端交互的项目，JavaScript的逻辑变得越来越臃肿，交互逻辑分散各处。</p>
+
+<p>在MVVM模式下的angular开发中， 我们首先需要在脑子里挂着Model的弦。不能老想着“我有XXX这个DOM，我希望让它做XXX这种动态效果”，我们需要从要完成的目标开始思考我们需要或拥有怎么样的Model数据，然后设计我们的应用， 最后才是设计视图，并用$scope来粘合它们。</p>
+
+<h4>Directive不是封装jQuery代码的“天堂”</h4>
+
+<p>如上条所述，我们不能一开始就去想如何利用DOM操作的方法去实现应用目标，然后“冠冕堂皇”的写上一堆jQuery的代码，并将其封装到angular的directive中，最后不得不加上$scope.$apply()来通知angular你的ViewModel的改变，需要启动“脏检查机制”来更新你的改变到View。作者在多个客户项目中看见这种将Directive作为封装jQuery代码“天堂”的例子，其实对于这类问题，大部分情况下，我们都可以用很少了angular代码将其重构为真正的angular way。特别在ng社区经常看见在angular directive中利用jQuery的on方法绑定click、keydown、blur等事件的代码，大部分情况我们都能以对应的ng事件（ngClick、ngChange、ngBlur）来重构它们。</p>
+
+<p>对于这类问题，首先我们应该尽量尝试复用angular的内置指令，以真正的angular way去思考我们的问题，请慎重的引入jQuery的DOM方法和操作。</p>
+
+<p>关于angular MVVM模式的资料，你还可以参考视频：<a href="https://frontendmasters.com/courses/angularjs-mvc-mvvm-mvwhatever/#v=ypur7bfbcq">https://frontendmasters.com/courses/angularjs-mvc-mvvm-mvwhatever/#v=ypur7bfbcq</a>。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/11/jshan-shu-ke-li-hua/">JavaScript函数柯里化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-11T19:37:18+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>函数式</h4>
+
+<p>JavaScript是以函数为一等公民的函数式语言。函数在JavaScript中也是一个对象（继承制Function），函数也可以作为参数传递成函数变量。最近几年函数式也因为其无副作用的特性、透明性、惰性计算等在高并发，大数据领域火起来了。</p>
+
+<p>JavaScript中也有如Underscore、lodash之类的函数式库，如lodash的使用方式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">users</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">user</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; , &quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">value</span><span class="p">();</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">names</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>关于lodash更多内容请参考<a href="http://www.cnblogs.com/whitewolf/p/4417873.html">JavaScript工具库之Lodash</a>.</p>
+
+<h4>柯里化</h4>
+
+<p>今天文章将以高阶函数中的柯里化方式来，看看JavaScript的函数式能力。</p>
+
+<p>在计算机科学中，柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数的技术。这个技术由 Christopher Strachey 以逻辑学家 Haskell Curry 命名的，尽管它是 Moses Schnfinkel 和 Gottlob Frege 发明的。</p>
+
+<p>在理论计算机科学中，柯里化提供了在简单的理论模型中比如只接受一个单一参数的lambda 演算中研究带有多个参数的函数的方式。</p>
+
+<h4>JavaScript的柯里化实现</h4>
+
+<p>下边的例子，我们将把柯里化方式泛化为接受任意个参数，直到声明的方法参数个数饱和才执行，所以根据参数个数可以有多种柯里化函数产生。</p>
+
+<p>代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre class='green'><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">global</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">FN_ARGS</span> <span class="o">=</span> <span class="sr">/^function\s*[^\(]*\(\s*([^\)]*)\)/m</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">FN_ARG_SPLIT</span> <span class="o">=</span> <span class="sr">/,/</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">FN_ARG</span> <span class="o">=</span> <span class="sr">/^\s*(_?)(\S+?)\1\s*$/</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">STRIP_COMMENTS</span> <span class="o">=</span> <span class="sr">/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">getArgLength</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">func</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">fnText</span> <span class="o">=</span> <span class="nx">func</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">replace</span><span class="p">(</span><span class="nx">STRIP_COMMENTS</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">argDecl</span> <span class="o">=</span> <span class="nx">fnText</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">FN_ARGS</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>        <span class="nx">argDecl</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="nx">FN_ARG_SPLIT</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">arg</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">FN_ARG</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">all</span><span class="p">,</span> <span class="nx">underscore</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">params</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">params</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">curryFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">func</span><span class="p">,</span> <span class="nx">len</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">len</span> <span class="o">=</span> <span class="nx">len</span> <span class="o">||</span> <span class="nx">getArgLength</span><span class="p">(</span><span class="nx">func</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="p">[].</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="p">[].</span><span class="nx">slice</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">arguments</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="nx">len</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">global</span><span class="p">.</span><span class="nx">curryFunc</span> <span class="o">=</span> <span class="nx">curryFunc</span><span class="p">;</span>
+</span><span class='line'><span class="p">})(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">z</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 1:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)(</span><span class="mi">3</span><span class="p">));</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 2:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">));</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 3:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">3</span><span class="p">)(</span><span class="mi">2</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">y</span> <span class="o">*</span> <span class="nx">z</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 1:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)(</span><span class="mi">6</span><span class="p">));</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 2:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">2</span><span class="p">)(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">));</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result 3:&quot;</span><span class="p">,</span> <span class="nx">curryFunc</span><span class="p">(</span><span class="nx">add</span><span class="p">)(</span><span class="mi">2</span><span class="p">)(</span><span class="mi">6</span><span class="p">)(</span><span class="mi">4</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">sayHello</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">curryFunc</span><span class="p">(</span><span class="nx">sayHello</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先上面会利用正则来获取传入函数的参数个数。再返回一个函数的代理，每次的调用都会将传入参数缓存在args临时变量中，直到参数个数饱和才会立即执行。代码比较冗长，慢慢品味，当然有不足之处，也希望大家指出来。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/10/qian-duan-html-css-gui-fan/">前端HTML-CSS规范</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-10T08:15:28+08:00" pubdate data-updated="true">May 10<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div class="heading" id="toc">
+    <h2>目录</h2>
+</div>
+<div class="section toc">
+    <div class="col">
+        <h4><a href="http://codeguide.bootcss.com/#html">HTML</a></h4>
+        <ul>
+            <li><a href="http://codeguide.bootcss.com/#html-syntax">语法</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-doctype">HTML5 doctype</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-lang">语言属性（Language attribute）</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-encoding">字符编码</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-ie-compatibility-mode">IE 兼容模式</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-style-script">引入 CSS 和 JavaScript 文件</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-practicality">实用为王</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-attribute-order">属性顺序</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-boolean-attributes">布尔（boolean）型属性</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-reducing-markup">减少标签的数量</a></li>
+            <li><a href="http://codeguide.bootcss.com/#html-javascript">JavaScript 生成的标签</a></li>
+        </ul>
+    </div>
+    <div class="col">
+        <h4><a href="http://codeguide.bootcss.com/#css">CSS</a></h4>
+        <ul>
+            <li><a href="http://codeguide.bootcss.com/#css-syntax">语法</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-declaration-order">声明顺序</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-media-queries">媒体查询（Media query）的位置</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-prefixed-properties">带前缀的属性</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-single-declarations">单行规则声明</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-shorthand">简写形式的属性声明</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-nesting">Less 和 Sass 中的嵌套</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-comments">注释</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-classes">class 命名</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-selectors">选择器</a></li>
+            <li><a href="http://codeguide.bootcss.com/#css-organization">代码组织</a></li>
+        </ul>
+    </div>
+</div>
+<div class="section" id="golden-rule">
+    <div class="col">
+        <h2>黄金定律</h2>
+        <p>一个项目应该永远遵循同一套编码规范！</p>
+    </div>
+    <div class="col">
+        <blockquote>
+            <p>不管有多少人共同参与同一项目，一定要确保每一行代码都像是同一个人编写的。</p>
+        </blockquote>
+    </div>
+</div>
+<div class="heading" id="html">
+    <h2>HTML</h2>
+</div>
+<div class="section" id="html-syntax">
+    <div class="col">
+        <h3>语法</h3>
+        <ul>
+            <li>用两个空格来代替制表符（tab） &#8211; 这是唯一能保证在所有环境下获得一致展现的方法。</li>
+            <li>嵌套元素应当缩进一次（即两个空格）。</li>
+            <li>对于属性的定义，确保全部使用双引号，绝不要使用单引号。</li>
+            <li>不要在自闭合（self-closing）元素的尾部添加斜线 &#8211; <a href="http://dev.w3.org/html5/spec-author-view/syntax.html#syntax-start-tag">HTML5 规范</a>中明确说明这是可选的。</li>
+            <li>不要省略可选的结束标签（closing tag）（例如，<code>&lt;/li&gt;</code> 或 <code>&lt;/body&gt;</code>）。</li>
+        </ul>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Page title<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"images/company-logo.png"</span> <span class="na">alt=</span><span class="s">"Company"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h1</span> <span class="na">class=</span><span class="s">"hello-world"</span><span class="nt">&gt;</span>Hello, world!<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-doctype">
+    <div class="col">
+        <h3>HTML5 doctype</h3>
+        <p>为每个 HTML 页面的第一行添加标准模式（standard mode）的声明，这样能够确保在每个浏览器中拥有一致的展现。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-lang">
+    <div class="col">
+        <h3>语言属性</h3>
+        <p>根据 HTML5 规范：</p>
+        <blockquote>
+            <p>强烈建议为 html 根元素指定 lang 属性，从而为文档设置正确的语言。这将有助于语音合成工具确定其所应该采用的发音，有助于翻译工具确定其翻译时所应遵守的规则等等。</p>
+        </blockquote>
+        <p>更多关于 <code>lang</code> 属性的知识可以从 <a href="http://www.w3.org/html/wg/drafts/html/master/semantics.html#the-html-element">此规范</a> 中了解。</p>
+        <p>这里列出了<a href="http://reference.sitepoint.com/html/lang-codes">语言代码表</a>。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"zh-CN"</span><span class="nt">&gt;</span>
+  <span class="c">&lt;!-- ... --&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-ie-compatibility-mode">
+    <div class="col">
+        <h3>IE 兼容模式</h3>
+        <p>IE 支持通过特定的 <code>&lt;meta&gt;</code> 标签来确定绘制当前页面所应该采用的 IE 版本。除非有强烈的特殊需求，否则最好是设置为 <strong>edge mode</strong>，从而通知 IE 采用其所支持的最新的模式。</p>
+        <p><a href="http://stackoverflow.com/questions/6771258/whats-the-difference-if-meta-http-equiv-x-ua-compatible-content-ie-edge-e">阅读这篇 stack overflow 上的文章</a>可以获得更多有用的信息。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"X-UA-Compatible"</span> <span class="na">content=</span><span class="s">"IE=Edge"</span><span class="nt">&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-encoding">
+    <div class="col">
+        <h3>字符编码</h3>
+        <p>通过明确声明字符编码，能够确保浏览器快速并容易的判断页面内容的渲染方式。这样做的好处是，可以避免在 HTML 中使用字符实体标记（character entity），从而全部与文档编码一致（一般采用 UTF-8 编码）。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-style-script">
+    <div class="col">
+        <h3>引入 CSS 和 JavaScript 文件</h3>
+        <p>根据 HTML5 规范，在引入 CSS 和 JavaScript 文件时一般不需要指定 <code>type</code> 属性，因为 <code>text/css</code> 和 <code>text/javascript</code> 分别是它们的默认值。</p>
+        <h4>HTML5 spec links</h4>
+        <ul>
+            <li><a href="http://www.w3.org/TR/2011/WD-html5-20110525/semantics.html#the-link-element">Using link</a></li>
+            <li><a href="http://www.w3.org/TR/2011/WD-html5-20110525/semantics.html#the-style-element">Using style</a></li>
+            <li><a href="http://www.w3.org/TR/2011/WD-html5-20110525/scripting-1.html#the-script-element">Using script</a></li>
+        </ul>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="c">&lt;!-- External CSS --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"code-guide.css"</span><span class="nt">&gt;</span>
+
+<span class="c">&lt;!-- In-document CSS --&gt;</span>
+<span class="nt">&lt;style&gt;</span>
+  <span class="c">/* ... */</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="c">&lt;!-- JavaScript --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"code-guide.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-practicality">
+    <div class="col">
+        <h3>实用为王</h3>
+        <p>尽量遵循 HTML 标准和语义，但是不要以牺牲实用性为代价。任何时候都要尽量使用最少的标签并保持最小的复杂度。</p>
+    </div>
+</div>
+<div class="section" id="html-attribute-order">
+    <div class="col">
+        <h3>属性顺序</h3>
+        <p>HTML 属性应当按照以下给出的顺序依次排列，确保代码的易读性。</p>
+        <ul>
+            <li><code>class</code></li>
+            <li><code>id</code>, <code>name</code></li>
+            <li><code>data-*</code></li>
+            <li><code>src</code>, <code>for</code>, <code>type</code>, <code>href</code></li>
+            <li><code>title</code>, <code>alt</code></li>
+            <li><code>aria-*</code>, <code>role</code></li>
+        </ul>
+        <p>class 用于标识高度可复用组件，因此应该排在首位。id 用于标识具体组件，应当谨慎使用（例如，页面内的书签），因此排在第二位。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">"..."</span> <span class="na">id=</span><span class="s">"..."</span> <span class="na">data-modal=</span><span class="s">"toggle"</span> <span class="na">href=</span><span class="s">"#"</span><span class="nt">&gt;</span>
+  Example link
+<span class="nt">&lt;/a&gt;</span>
+
+<span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">"form-control"</span> <span class="na">type=</span><span class="s">"text"</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"..."</span> <span class="na">alt=</span><span class="s">"..."</span><span class="nt">&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-boolean-attributes">
+    <div class="col">
+        <h3>布尔（boolean）型属性</h3>
+        <p>布尔型属性可以在声明时不赋值。XHTML 规范要求为其赋值，但是 HTML5 规范不需要。</p>
+        <p>更多信息请参考 <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#boolean-attributes">WhatWG section on boolean attributes</a>：</p>
+        <blockquote>
+            <p>元素的布尔型属性如果有值，就是 true，如果没有值，就是 false。</p>
+        </blockquote>
+        <p>如果<em>一定</em>要为其赋值的话，请参考 WhatWG 规范：</p>
+        <blockquote>
+            <p>如果属性存在，其值必须是空字符串或 [&#8230;] 属性的规范名称，并且不要再收尾添加空白符。</p>
+        </blockquote>
+        <p><strong>简单来说，就是不用赋值。</strong></p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">disabled</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"checkbox"</span> <span class="na">value=</span><span class="s">"1"</span> <span class="na">checked</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;select&gt;</span>
+  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"1"</span> <span class="na">selected</span><span class="nt">&gt;</span>1<span class="nt">&lt;/option&gt;</span>
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-reducing-markup">
+    <div class="col">
+        <h3>减少标签的数量</h3>
+        <p>编写 HTML 代码时，尽量避免多余的父元素。很多时候，这需要迭代和重构来实现。请看下面的案例：</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="c">&lt;!-- Not so great --&gt;</span>
+<span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"avatar"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"..."</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/span&gt;</span>
+
+<span class="c">&lt;!-- Better --&gt;</span>
+<span class="nt">&lt;img</span> <span class="na">class=</span><span class="s">"avatar"</span> <span class="na">src=</span><span class="s">"..."</span><span class="nt">&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="html-javascript">
+    <div class="col">
+        <h3>JavaScript 生成的标签</h3>
+        <p>通过 JavaScript 生成的标签让内容变得不易查找、编辑，并且降低性能。能避免时尽量避免。</p>
+    </div>
+</div>
+<div class="heading" id="css">
+    <h2>CSS</h2>
+</div>
+<div class="section" id="css-syntax">
+    <div class="col">
+        <h3>语法</h3>
+        <ul>
+            <li>用两个空格来代替制表符（tab） &#8211; 这是唯一能保证在所有环境下获得一致展现的方法。</li>
+            <li>为选择器分组时，将单独的选择器单独放在一行。</li>
+            <li>为了代码的易读性，在每个声明块的左花括号前添加一个空格。</li>
+            <li>声明块的右花括号应当单独成行。</li>
+            <li>每条声明语句的 <code>:</code> 后应该插入一个空格。</li>
+            <li>为了获得更准确的错误报告，每条声明都应该独占一行。</li>
+            <li>所有声明语句都应当以分号结尾。最后一条声明语句后面的分号是可选的，但是，如果省略这个分号，你的代码可能更易出错。</li>
+            <li>对于以逗号分隔的属性值，每个逗号后面都应该插入一个空格（例如，<code>box-shadow</code>）。</li>
+            <li>不要在 <code>rgb()</code>、<code>rgba()</code>、<code>hsl()</code>、<code>hsla()</code> 或 <code>rect()</code> 值的<em>内部</em>的逗号后面插入空格。这样利于从多个属性值（既加逗号也加空格）中区分多个颜色值（只加逗号，不加空格）。</li>
+            <li>对于属性值或颜色参数，省略小于 1 的小数前面的 0 （例如，<code>.5</code> 代替 <code>0.5</code>；<code>-.5px</code> 代替 <code>-0.5px</code>）。</li>
+            <li>十六进制值应该全部小写，例如，<code>#fff</code>。在扫描文档时，小写字符易于分辨，因为他们的形式更易于区分。</li>
+            <li>尽量使用简写形式的十六进制值，例如，用 <code>#fff</code> 代替 <code>#ffffff</code>。</li>
+            <li>为选择器中的属性添加双引号，例如，<code>input[type="text"]</code>。<a href="http://mathiasbynens.be/notes/unquoted-attribute-values#css">只有在某些情况下是可选的</a>，但是，为了代码的一致性，建议都加上双引号。</li>
+            <li>避免为 0 值指定单位，例如，用 <code>margin: 0;</code> 代替 <code>margin: 0px;</code>。</li>
+        </ul>
+        <p>对于这里用到的术语有疑问吗？请参考 Wikipedia 上的 <a href="http://en.wikipedia.org/wiki/Cascading_Style_Sheets#Syntax">syntax section of the Cascading Style Sheets article</a>。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Bad CSS */</span>
+<span class="nc">.selector</span><span class="o">,</span> <span class="nc">.selector-secondary</span><span class="o">,</span> <span class="nc">.selector</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">text</span><span class="o">]</span> <span class="p">{</span>
+  <span class="k">padding</span><span class="o">:</span><span class="m">15px</span><span class="p">;</span>
+  <span class="k">margin</span><span class="o">:</span><span class="m">0px</span> <span class="m">0px</span> <span class="m">15px</span><span class="p">;</span>
+  <span class="k">background-color</span><span class="o">:</span><span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="o">,</span> <span class="m">0</span><span class="o">,</span> <span class="m">0</span><span class="o">,</span> <span class="m">0</span><span class="o">.</span><span class="m">5</span><span class="p">);</span>
+  <span class="n">box</span><span class="o">-</span><span class="n">shadow</span><span class="o">:</span><span class="m">0px</span> <span class="m">1px</span> <span class="m">2px</span> <span class="m">#CCC</span><span class="o">,</span><span class="k">inset</span> <span class="m">0</span> <span class="m">1px</span> <span class="m">0</span> <span class="m">#FFFFFF</span>
+<span class="p">}</span>
+
+<span class="c">/* Good CSS */</span>
+<span class="nc">.selector</span><span class="o">,</span>
+<span class="nc">.selector-secondary</span><span class="o">,</span>
+<span class="nc">.selector</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="s2">"text"</span><span class="o">]</span> <span class="p">{</span>
+  <span class="k">padding</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+  <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+  <span class="k">background-color</span><span class="o">:</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">,.</span><span class="m">5</span><span class="p">);</span>
+  <span class="n">box</span><span class="o">-</span><span class="n">shadow</span><span class="o">:</span> <span class="m">0</span> <span class="m">1px</span> <span class="m">2px</span> <span class="m">#ccc</span><span class="o">,</span> <span class="k">inset</span> <span class="m">0</span> <span class="m">1px</span> <span class="m">0</span> <span class="m">#fff</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-declaration-order">
+    <div class="col">
+        <h3>声明顺序</h3>
+        <p>相关的属性声明应当归为一组，并按照下面的顺序排列：</p>
+        <ol>
+            <li>Positioning</li>
+            <li>Box model</li>
+            <li>Typographic</li>
+            <li>Visual</li>
+        </ol>
+        <p>由于定位（positioning）可以从正常的文档流中移除元素，并且还能覆盖盒模型（box model）相关的样式，因此排在首位。盒模型排在第二位，因为它决定了组件的尺寸和位置。</p>
+        <p>其他属性只是影响组件的<em>内部（inside）</em>或者是不影响前两组属性，因此排在后面。</p>
+        <p>完整的属性列表及其排列顺序请参考 <a href="http://twitter.github.com/recess">Recess</a>。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="nc">.declaration-order</span> <span class="p">{</span>
+  <span class="c">/* Positioning */</span>
+  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+  <span class="k">top</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="k">right</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="k">bottom</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="k">left</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="k">z-index</span><span class="o">:</span> <span class="m">100</span><span class="p">;</span>
+
+  <span class="c">/* Box-model */</span>
+  <span class="k">display</span><span class="o">:</span> <span class="k">block</span><span class="p">;</span>
+  <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
+  <span class="k">width</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+  <span class="k">height</span><span class="o">:</span> <span class="m">100px</span><span class="p">;</span>
+
+  <span class="c">/* Typography */</span>
+  <span class="k">font</span><span class="o">:</span> <span class="k">normal</span> <span class="m">13px</span> <span class="s2">"Helvetica Neue"</span><span class="o">,</span> <span class="k">sans-serif</span><span class="p">;</span>
+  <span class="k">line-height</span><span class="o">:</span> <span class="m">1</span><span class="o">.</span><span class="m">5</span><span class="p">;</span>
+  <span class="k">color</span><span class="o">:</span> <span class="m">#333</span><span class="p">;</span>
+  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+
+  <span class="c">/* Visual */</span>
+  <span class="k">background-color</span><span class="o">:</span> <span class="m">#f5f5f5</span><span class="p">;</span>
+  <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="m">#e5e5e5</span><span class="p">;</span>
+  <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
+
+  <span class="c">/* Misc */</span>
+  <span class="k">opacity</span><span class="o">:</span> <span class="m">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-import">
+    <div class="col">
+        <h3>不要使用 <code>@import</code></h3>
+        <p>与 <code>&lt;link&gt;</code> 标签相比，<code>@import</code> 指令要慢很多，不光增加了额外的请求次数，还会导致不可预料的问题。替代办法有以下几种：</p>
+        <ul>
+            <li>使用多个 <code>&lt;link&gt;</code> 元素</li>
+            <li>通过 Sass 或 Less 类似的 CSS 预处理器将多个 CSS 文件编译为一个文件</li>
+            <li>通过 Rails、Jekyll 或其他系统中提供过 CSS 文件合并功能</li>
+        </ul>
+        <p>请参考 <a href="http://www.stevesouders.com/blog/2009/04/09/dont-use-import/">Steve Souders 的文章</a>了解更多知识。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="html"><span class="c">&lt;!-- Use link elements --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"core.css"</span><span class="nt">&gt;</span>
+
+<span class="c">&lt;!-- Avoid @imports --&gt;</span>
+<span class="nt">&lt;style&gt;</span>
+  <span class="k">@import</span> <span class="nt">url</span><span class="o">(</span><span class="s2">"more.css"</span><span class="o">)</span><span class="p">;</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-media-queries">
+    <div class="col">
+        <h3>媒体查询（Media query）的位置</h3>
+        <p>将媒体查询放在尽可能相关规则的附近。不要将他们打包放在一个单一样式文件中或者放在文档底部。如果你把他们分开了，将来只会被大家遗忘。下面给出一个典型的实例。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="nc">.element</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.element-avatar</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.element-selected</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+<span class="k">@media</span> <span class="o">(</span><span class="nt">min-width</span><span class="o">:</span> <span class="nt">480px</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nc">.element</span> <span class="p">{</span> <span class="o">...</span><span class="p">}</span>
+  <span class="nc">.element-avatar</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+  <span class="nc">.element-selected</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-prefixed-properties">
+    <div class="col">
+        <h3>带前缀的属性</h3>
+        <p>当使用特定厂商的带有前缀的属性时，通过缩进的方式，让每个属性的值在垂直方向对齐，这样便于多行编辑。</p>
+        <p>在 Textmate 中，使用 <strong>Text → Edit Each Line in Selection</strong> (⌃⌘A)。在 Sublime Text 2 中，使用 <strong>Selection → Add Previous Line</strong> (⌃⇧↑) 和 <strong>Selection →  Add Next Line</strong> (⌃⇧↓)。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Prefixed properties */</span>
+<span class="nc">.selector</span> <span class="p">{</span>
+  <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">box</span><span class="o">-</span><span class="n">shadow</span><span class="o">:</span> <span class="m">0</span> <span class="m">1px</span> <span class="m">2px</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">,.</span><span class="m">15</span><span class="p">);</span>
+          <span class="n">box</span><span class="o">-</span><span class="n">shadow</span><span class="o">:</span> <span class="m">0</span> <span class="m">1px</span> <span class="m">2px</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">,.</span><span class="m">15</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-single-declarations">
+    <div class="col">
+        <h3>单行规则声明</h3>
+        <p>对于<strong>只包含一条声明</strong>的样式，为了易读性和便于快速编辑，建议将语句放在同一行。对于带有多条声明的样式，还是应当将声明分为多行。</p>
+        <p>这样做的关键因素是为了错误检测 &#8211; 例如，CSS 校验器指出在 183 行有语法错误。如果是单行单条声明，你就不会忽略这个错误；如果是单行多条声明的话，你就要仔细分析避免漏掉错误了。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Single declarations on one line */</span>
+<span class="nc">.span1</span> <span class="p">{</span> <span class="k">width</span><span class="o">:</span> <span class="m">60px</span><span class="p">;</span> <span class="p">}</span>
+<span class="nc">.span2</span> <span class="p">{</span> <span class="k">width</span><span class="o">:</span> <span class="m">140px</span><span class="p">;</span> <span class="p">}</span>
+<span class="nc">.span3</span> <span class="p">{</span> <span class="k">width</span><span class="o">:</span> <span class="m">220px</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="c">/* Multiple declarations, one per line */</span>
+<span class="nc">.sprite</span> <span class="p">{</span>
+  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
+  <span class="k">width</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
+  <span class="k">height</span><span class="o">:</span> <span class="m">15px</span><span class="p">;</span>
+  <span class="k">background-image</span><span class="o">:</span> <span class="sx">url(../img/sprite.png)</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.icon</span>           <span class="p">{</span> <span class="k">background-position</span><span class="o">:</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span> <span class="p">}</span>
+<span class="nc">.icon-home</span>      <span class="p">{</span> <span class="k">background-position</span><span class="o">:</span> <span class="m">0</span> <span class="m">-20px</span><span class="p">;</span> <span class="p">}</span>
+<span class="nc">.icon-account</span>   <span class="p">{</span> <span class="k">background-position</span><span class="o">:</span> <span class="m">0</span> <span class="m">-40px</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-shorthand">
+    <div class="col">
+        <h3>简写形式的属性声明</h3>
+        <p>在需要显示地设置所有值的情况下，应当尽量限制使用简写形式的属性声明。常见的滥用简写属性声明的情况如下：</p>
+        <ul>
+            <li><code>padding</code></li>
+            <li><code>margin</code></li>
+            <li><code>font</code></li>
+            <li><code>background</code></li>
+            <li><code>border</code></li>
+            <li><code>border-radius</code></li>
+        </ul>
+        <p>大部分情况下，我们不需要为简写形式的属性声明指定所有值。例如，HTML 的 heading 元素只需要设置上、下边距（margin）的值，因此，在必要的时候，只需覆盖这两个值就可以。过度使用简写形式的属性声明会导致代码混乱，并且会对属性值带来不必要的覆盖从而引起意外的副作用。</p>
+        <p>MDN（Mozilla Developer Network）上一片非常好的关于<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties">shorthand properties</a> 的文章，对于不太熟悉简写属性声明及其行为的用户很有用。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Bad example */</span>
+<span class="nc">.element</span> <span class="p">{</span>
+  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">0</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="k">background</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
+  <span class="k">background</span><span class="o">:</span> <span class="sx">url("image.jpg")</span><span class="p">;</span>
+  <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">3px</span> <span class="m">3px</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Good example */</span>
+<span class="nc">.element</span> <span class="p">{</span>
+  <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="k">background-color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
+  <span class="k">background-image</span><span class="o">:</span> <span class="sx">url("image.jpg")</span><span class="p">;</span>
+  <span class="k">border-top</span><span class="o">-</span><span class="k">left</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
+  <span class="k">border-top</span><span class="o">-</span><span class="k">right</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-nesting">
+    <div class="col">
+        <h3>Less 和 Sass 中的嵌套</h3>
+        <p>避免非必要的嵌套。这是因为虽然你可以使用嵌套，但是并不意味着应该使用嵌套。只有在必须将样式限制在父元素内（也就是后代选择器），并且存在多个需要嵌套的元素时才使用嵌套。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="scss"><span class="c1">// Without nesting</span>
+<span class="nc">.table</span> <span class="o">&gt;</span> <span class="nt">thead</span> <span class="o">&gt;</span> <span class="nt">tr</span> <span class="o">&gt;</span> <span class="nt">th</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+<span class="nc">.table</span> <span class="o">&gt;</span> <span class="nt">thead</span> <span class="o">&gt;</span> <span class="nt">tr</span> <span class="o">&gt;</span> <span class="nt">td</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+
+<span class="c1">// With nesting</span>
+<span class="nc">.table</span> <span class="o">&gt;</span> <span class="nt">thead</span> <span class="o">&gt;</span> <span class="nt">tr</span> <span class="p">{</span>
+  <span class="o">&gt;</span> <span class="nt">th</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+  <span class="o">&gt;</span> <span class="nt">td</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-comments">
+    <div class="col">
+        <h3>注释</h3>
+        <p>代码是由人编写并维护的。请确保你的代码能够自描述、注释良好并且易于他人理解。好的代码注释能够传达上下文关系和代码目的。不要简单地重申组件或 class 名称。</p>
+        <p>对于较长的注释，务必书写完整的句子；对于一般性注解，可以书写简洁的短语。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Bad example */</span>
+<span class="c">/* Modal header */</span>
+<span class="nc">.modal-header</span> <span class="p">{</span>
+  <span class="o">...</span>
+<span class="p">}</span>
+
+<span class="c">/* Good example */</span>
+<span class="c">/* Wrapping element for .modal-title and .modal-close */</span>
+<span class="nc">.modal-header</span> <span class="p">{</span>
+  <span class="o">...</span>
+<span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-classes">
+    <div class="col">
+        <h3>class 命名</h3>
+        <ul>
+            <li>class 名称中只能出现小写字符和破折号（dashe）（不是下划线，也不是驼峰命名法）。破折号应当用于相关 class 的命名（类似于命名空间）（例如，<code>.btn</code> 和 <code>.btn-danger</code>）。</li>
+            <li>避免过度任意的简写。<code>.btn</code> 代表 <em>button</em>，但是 <code>.s</code> 不能表达任何意思。</li>
+            <li>class 名称应当尽可能短，并且意义明确。</li>
+            <li>使用有意义的名称。使用有组织的或目的明确的名称，不要使用表现形式（presentational）的名称。</li>
+            <li>基于最近的父 class 或基本（base） class 作为新 class 的前缀。</li>
+            <li>使用 <code>.js-*</code> class 来标识行为（与样式相对），并且不要将这些 class 包含到 CSS 文件中。</li>
+        </ul>
+        <p>在为 Sass 和 Less 变量命名是也可以参考上面列出的各项规范。</p>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Bad example */</span>
+<span class="nc">.t</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.red</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.header</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+<span class="c">/* Good example */</span>
+<span class="nc">.tweet</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.important</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.tweet-header</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-selectors">
+    <div class="col">
+        <h3>选择器</h3>
+        <ul>
+            <li>对于通用元素使用 class ，这样利于渲染性能的优化。</li>
+            <li>对于经常出现的组件，避免使用属性选择器（例如，<code>[class^="..."]</code>）。浏览器的性能会受到这些因素的影响。</li>
+            <li>选择器要尽可能短，并且尽量限制组成选择器的元素个数，建议不要超过 3 。</li>
+            <li><strong>只有</strong>在必要的时候才将 class 限制在最近的父元素内（也就是后代选择器）（例如，不使用带前缀的 class 时 &#8211; 前缀类似于命名空间）。</li>
+        </ul>
+        <p>扩展阅读：</p>
+        <ul>
+            <li><a href="http://markdotto.com/2012/02/16/scope-css-classes-with-prefixes/">Scope CSS classes with prefixes</a></li>
+            <li><a href="http://markdotto.com/2012/03/02/stop-the-cascade/">Stop the cascade</a></li>
+        </ul>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/* Bad example */</span>
+<span class="nt">span</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.page-container</span> <span class="nf">#stream</span> <span class="nc">.stream-item</span> <span class="nc">.tweet</span> <span class="nc">.tweet-header</span> <span class="nc">.username</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.avatar</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+<span class="c">/* Good example */</span>
+<span class="nc">.avatar</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.tweet-header</span> <span class="nc">.username</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="nc">.tweet</span> <span class="nc">.avatar</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-organization">
+    <div class="col">
+        <h3>代码组织</h3>
+        <ul>
+            <li>以组件为单位组织代码段。</li>
+            <li>制定一致的注释规范。</li>
+            <li>使用一致的空白符将代码分隔成块，这样利于扫描较大的文档。</li>
+            <li>如果使用了多个 CSS 文件，将其按照组件而非页面的形式分拆，因为页面会被重组，而组件只会被移动。</li>
+        </ul>
+    </div>
+    <div class="col">
+        <div class="highlight"><pre class='green'><code class="css"><span class="c">/*</span>
+<span class="c"> * Component section heading</span>
+<span class="c"> */</span>
+
+<span class="nc">.element</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+
+<span class="c">/*</span>
+<span class="c"> * Component section heading</span>
+<span class="c"> *</span>
+<span class="c"> * Sometimes you need to include optional context for the entire component. Do that up here if it's important enough.</span>
+<span class="c"> */</span>
+
+<span class="nc">.element</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+<span class="c">/* Contextual sub-component or modifer */</span>
+<span class="nc">.element-heading</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+</code></pre></div>
+    </div>
+</div>
+<div class="section" id="css-editor-prefs">
+    <div class="col">
+        <h3>编辑器配置</h3>
+        <p>将你的编辑器按照下面的配置进行设置，以避免常见的代码不一致和差异：</p>
+        <ul>
+            <li>用两个空格代替制表符（soft-tab 即用空格代表 tab 符）。</li>
+            <li>保存文件时，删除尾部的空白符。</li>
+            <li>设置文件编码为 UTF-8。</li>
+            <li>在文件结尾添加一个空白行。</li>
+        </ul>
+        <p>参照文档并将这些配置信息添加到项目的 <code>.editorconfig</code> 文件中。例如：<a href="https://github.com/twbs/bootstrap/blob/master/.editorconfig">Bootstrap 中的 .editorconfig 实例</a>。更多信息请参考 <a href="http://editorconfig.org/">about EditorConfig</a>。</p>
+    </div>
+</div>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fa25e97c8b6d0ae5501b3b46d61ed807f' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script src=" http://hm.baidu.com/h.js?a25e97c8b6d0ae5501b3b46d61ed807f" type="text/javascript"></script>
+<script src="./编码规范_files/h.js" type="text/javascript"></script>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/09/qian-duan-javascriptgui-fan/">前端JavaScript规范</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-09T23:18:20+08:00" pubdate data-updated="true">May 9<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="MathJax_Message" style="display: none;"></div><div class="container"><h1 id="javascript规范">JavaScript规范</h1>
+
+
+
+<h2 id="目录"><a>目录</a></h2>
+
+<ol>
+<li><a href="#types">类型</a></li>
+<li><a href="#objects">对象</a></li>
+<li><a href="#arrays">数组</a></li>
+<li><a href="#strings">字符串</a></li>
+<li><a href="#functions">函数</a></li>
+<li><a href="#properties">属性</a></li>
+<li><a href="#variables">变量</a></li>
+<li><a href="#conditionals">条件表达式和等号</a></li>
+<li><a href="#blocks">块</a></li>
+<li><a href="#comments">注释</a></li>
+<li><a href="#whitespace">空白</a></li>
+<li><a href="#commas">逗号</a></li>
+<li><a href="#semicolons">分号</a></li>
+<li><a href="#type-coercion">类型转换</a></li>
+<li><a href="#naming-conventions">命名约定</a></li>
+<li><a href="#accessors">存取器</a></li>
+<li><a href="#constructors">构造器</a></li>
+<li><a href="#events">事件</a></li>
+<li><a href="#modules">模块</a></li>
+<li><a href="#jquery">jQuery</a></li>
+<li><a href="#es5">ES5 兼容性</a></li>
+<li><a href="#html-css-js">HTML、CSS、JavaScript分离</a></li>
+<li><a href="#jshint">使用jsHint</a></li>
+<li><a href="#tools">前端工具</a></li>
+</ol>
+
+<h2 id="类型"><a>类型</a></h2>
+
+<ul>
+<li><p><strong>原始值</strong>: 相当于传值(JavaScript对象都提供了字面量)，使用字面量创建对象。</p>
+
+<ul><li><code>string</code></li>
+<li><code>number</code></li>
+<li><code>boolean</code></li>
+<li><code>null</code></li>
+<li><code>undefined</code></li></ul>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> foo = <span class="hljs-number">1</span>,
+    bar = foo;
+
+bar = <span class="hljs-number">9</span>;
+
+console.log(foo, bar); <span class="hljs-comment">// =&gt; 1, 9</span></code></pre></li>
+<li><p><strong>复杂类型</strong>: 相当于传引用</p>
+
+<ul><li><code>object</code></li>
+<li><code>array</code></li>
+<li><code>function</code></li></ul>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> foo = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>],
+    bar = foo;
+
+bar[<span class="hljs-number">0</span>] = <span class="hljs-number">9</span>;
+
+console.log(foo[<span class="hljs-number">0</span>], bar[<span class="hljs-number">0</span>]); <span class="hljs-comment">// =&gt; 9, 9</span></code></pre></li>
+</ul>
+
+
+
+<h2 id="对象"><a>对象</a></h2>
+
+<ul>
+<li><p>使用字面值创建对象</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> item = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Object</span>();
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> item = {};</code></pre></li>
+<li><p>不要使用保留字 <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Reserved_Words">reserved words</a> 作为键</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> superman = {
+  <span class="hljs-keyword">class</span>: <span class="hljs-string">'superhero'</span>,
+  <span class="hljs-keyword">default</span>: { clark: <span class="hljs-string">'kent'</span> },
+  private: <span class="hljs-literal">true</span>
+};
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> superman = {
+  klass: <span class="hljs-string">'superhero'</span>,
+  defaults: { clark: <span class="hljs-string">'kent'</span> },
+  hidden: <span class="hljs-literal">true</span>
+};</code></pre></li>
+</ul>
+
+
+
+<h2 id="数组"><a>数组</a></h2>
+
+<ul>
+<li><p>使用字面值创建数组</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> items = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> items = [];</code></pre></li>
+<li><p>如果你不知道数组的长度，使用push</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> someStack = [];
+
+
+<span class="hljs-comment">// bad</span>
+someStack[someStack.length] = <span class="hljs-string">'abracadabra'</span>;
+
+<span class="hljs-comment">// good</span>
+someStack.push(<span class="hljs-string">'abracadabra'</span>);</code></pre></li>
+<li><p>当你需要拷贝数组时使用slice. <a href="http://jsperf.com/converting-arguments-to-an-array/7">jsPerf</a></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> len = items.length,
+    itemsCopy = [],
+    i;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; len; i++) {
+  itemsCopy[i] = items[i];
+}
+
+<span class="hljs-comment">// good</span>
+itemsCopy = items.slice();</code></pre></li>
+<li><p>使用slice将类数组的对象转成数组.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trigger</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> args = [].slice.apply(<span class="hljs-built_in">arguments</span>);
+  ...
+}</code></pre></li>
+</ul>
+
+
+
+<h2 id="字符串"><a>字符串</a></h2>
+
+<ul>
+<li><p>对字符串使用单引号 <code>''</code>(因为大多时候我们的字符串。特别html会出现<code>"</code>)</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> name = <span class="hljs-string">"Bob Parr"</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> name = <span class="hljs-string">'Bob Parr'</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> fullName = <span class="hljs-string">"Bob "</span> + <span class="hljs-keyword">this</span>.lastName;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> fullName = <span class="hljs-string">'Bob '</span> + <span class="hljs-keyword">this</span>.lastName;</code></pre></li>
+<li><p>超过80(也有规定140的，项目具体可制定)个字符的字符串应该使用字符串连接换行</p></li>
+<li><p>注: 如果过度使用，长字符串连接可能会对性能有影响. <a href="http://jsperf.com/ya-string-concat">jsPerf</a> &amp; <a href="https://github.com/airbnb/javascript/issues/40">Discussion</a></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> errorMessage = <span class="hljs-string">'This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.'</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> errorMessage = <span class="hljs-string">'This is a super long error that \
+was thrown because of Batman. \
+When you stop to think about \
+how Batman had anything to do \
+with this, you would get nowhere \
+fast.'</span>;
+
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> errorMessage = <span class="hljs-string">'This is a super long error that '</span> +
+  <span class="hljs-string">'was thrown because of Batman.'</span> +
+  <span class="hljs-string">'When you stop to think about '</span> +
+  <span class="hljs-string">'how Batman had anything to do '</span> +
+  <span class="hljs-string">'with this, you would get nowhere '</span> +
+  <span class="hljs-string">'fast.'</span>;</code></pre></li>
+<li><p>编程时使用join而不是字符串连接来构建字符串，特别是IE: <a href="http://jsperf.com/string-vs-array-concat/2">jsPerf</a>.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> items,
+    messages,
+    length, i;
+
+messages = [{
+    state: <span class="hljs-string">'success'</span>,
+    message: <span class="hljs-string">'This one worked.'</span>
+},{
+    state: <span class="hljs-string">'success'</span>,
+    message: <span class="hljs-string">'This one worked as well.'</span>
+},{
+    state: <span class="hljs-string">'error'</span>,
+    message: <span class="hljs-string">'This one did not work.'</span>
+}];
+
+length = messages.length;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">inbox</span><span class="hljs-params">(messages)</span> {</span>
+  items = <span class="hljs-string">'&lt;ul&gt;'</span>;
+
+  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; length; i++) {
+    items += <span class="hljs-string">'&lt;li&gt;'</span> + messages[i].message + <span class="hljs-string">'&lt;/li&gt;'</span>;
+  }
+
+  <span class="hljs-keyword">return</span> items + <span class="hljs-string">'&lt;/ul&gt;'</span>;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">inbox</span><span class="hljs-params">(messages)</span> {</span>
+  items = [];
+
+  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; length; i++) {
+    items[i] = messages[i].message;
+  }
+
+  <span class="hljs-keyword">return</span> <span class="hljs-string">'&lt;ul&gt;&lt;li&gt;'</span> + items.join(<span class="hljs-string">'&lt;/li&gt;&lt;li&gt;'</span>) + <span class="hljs-string">'&lt;/li&gt;&lt;/ul&gt;'</span>;
+}</code></pre></li>
+</ul>
+
+
+
+<h2 id="函数"><a>函数</a></h2>
+
+<ul>
+<li><p>函数表达式:</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// 匿名函数表达式</span>
+<span class="hljs-keyword">var</span> anonymous = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+};
+
+<span class="hljs-comment">// 有名函数表达式</span>
+<span class="hljs-keyword">var</span> named = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">named</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+};
+
+<span class="hljs-comment">// 立即调用函数表达式</span>
+(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'Welcome to the Internet. Please follow me.'</span>);
+})();</code></pre></li>
+<li><p>绝对不要在一个非函数块里声明一个函数，把那个函数赋给一个变量。浏览器允许你这么做，但是它们解析不同。</p></li>
+<li><p><strong>注:</strong> ECMA-262定义把<code>块</code>定义为一组语句，函数声明不是一个语句。<a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97">阅读ECMA-262对这个问题的说明</a>.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">if</span> (currentUser) {
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> {</span>
+    console.log(<span class="hljs-string">'Nope.'</span>);
+  }
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">if</span> (currentUser) {
+  <span class="hljs-keyword">var</span> test = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> {</span>
+    console.log(<span class="hljs-string">'Yup.'</span>);
+  };
+}</code></pre></li>
+<li><p>绝对不要把参数命名为 <code>arguments</code>, 这将会逾越函数作用域内传过来的 <code>arguments</code> 对象.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nope</span><span class="hljs-params">(name, options, arguments)</span> {</span>
+  <span class="hljs-comment">// ...stuff...</span>
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">yup</span><span class="hljs-params">(name, options, args)</span> {</span>
+  <span class="hljs-comment">// ...stuff...</span>
+}</code></pre></li>
+</ul>
+
+
+
+<h2 id="属性"><a>属性</a></h2>
+
+<ul>
+<li><p>当使用变量和特殊非法变量名时，访问属性时可以使用中括号(<code>.</code> 优先).</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> luke = {
+  jedi: <span class="hljs-literal">true</span>,
+  age: <span class="hljs-number">28</span>
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getProp</span><span class="hljs-params">(prop)</span> {</span>
+  <span class="hljs-keyword">return</span> luke[prop];
+}
+
+<span class="hljs-keyword">var</span> isJedi = getProp(<span class="hljs-string">'jedi'</span>);</code></pre></li>
+</ul>
+
+
+
+<h2 id="变量"><a>变量</a></h2>
+
+<ul>
+<li><p>总是使用 <code>var</code> 来声明变量，如果不这么做将导致产生全局变量，我们要避免污染全局命名空间。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+superPower = <span class="hljs-keyword">new</span> SuperPower();
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> superPower = <span class="hljs-keyword">new</span> SuperPower();</code></pre></li>
+<li><p>使用一个 <code>var</code> 以及新行声明多个变量，缩进4个空格。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> items = getItems();
+<span class="hljs-keyword">var</span> goSportsTeam = <span class="hljs-literal">true</span>;
+<span class="hljs-keyword">var</span> dragonball = <span class="hljs-string">'z'</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> items = getItems(),
+    goSportsTeam = <span class="hljs-literal">true</span>,
+    dragonball = <span class="hljs-string">'z'</span>;</code></pre></li>
+<li><p>最后再声明未赋值的变量，当你想引用之前已赋值变量的时候很有用。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> i, len, dragonball,
+    items = getItems(),
+    goSportsTeam = <span class="hljs-literal">true</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> i, items = getItems(),
+    dragonball,
+    goSportsTeam = <span class="hljs-literal">true</span>,
+    len;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> items = getItems(),
+    goSportsTeam = <span class="hljs-literal">true</span>,
+    dragonball,
+    length,
+    i;</code></pre></li>
+<li><p>在作用域顶部声明变量，避免变量声明和赋值引起的相关问题。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  test();
+  console.log(<span class="hljs-string">'doing stuff..'</span>);
+
+  <span class="hljs-comment">//..other stuff..</span>
+
+  <span class="hljs-keyword">var</span> name = getName();
+
+  <span class="hljs-keyword">if</span> (name === <span class="hljs-string">'test'</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  }
+
+  <span class="hljs-keyword">return</span> name;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> name = getName();
+
+  test();
+  console.log(<span class="hljs-string">'doing stuff..'</span>);
+
+  <span class="hljs-comment">//..other stuff..</span>
+
+  <span class="hljs-keyword">if</span> (name === <span class="hljs-string">'test'</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  }
+
+  <span class="hljs-keyword">return</span> name;
+}
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> name = getName();
+
+  <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">arguments</span>.length) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  }
+
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">arguments</span>.length) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  }
+
+  <span class="hljs-keyword">var</span> name = getName();
+
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre></li>
+</ul>
+
+
+
+<h2 id="条件表达式和等号"><a>条件表达式和等号</a></h2>
+
+<ul>
+<li>合理使用 <code>===</code> 和 <code>!==</code> 以及 <code>==</code> 和 <code>!=</code>.</li>
+<li>合理使用表达式逻辑操作运算.</li>
+<li><p>条件表达式的强制类型转换遵循以下规则：</p>
+
+<ul><li><strong>对象</strong> 被计算为 <strong>true</strong></li>
+<li><strong>Undefined</strong> 被计算为 <strong>false</strong></li>
+<li><strong>Null</strong> 被计算为 <strong>false</strong></li>
+<li><strong>布尔值</strong> 被计算为 <strong>布尔的值</strong></li>
+<li><strong>数字</strong> 如果是 <strong>+0, -0, or NaN</strong> 被计算为 <strong>false</strong> , 否则为 <strong>true</strong></li>
+<li><strong>字符串</strong> 如果是空字符串 <code>''</code> 则被计算为 <strong>false</strong>, 否则为 <strong>true</strong></li></ul>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">if</span> ([<span class="hljs-number">0</span>]) {
+  <span class="hljs-comment">// true</span>
+  <span class="hljs-comment">// An array is an object, objects evaluate to true</span>
+}</code></pre></li>
+<li><p>使用快捷方式.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">if</span> (name !== <span class="hljs-string">''</span>) {
+  <span class="hljs-comment">// ...stuff...</span>
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">if</span> (name) {
+  <span class="hljs-comment">// ...stuff...</span>
+}
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">if</span> (collection.length &gt; <span class="hljs-number">0</span>) {
+  <span class="hljs-comment">// ...stuff...</span>
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">if</span> (collection.length) {
+  <span class="hljs-comment">// ...stuff...</span>
+}</code></pre></li>
+<li><p>阅读 <a href="http://javascriptweblog.wordpress.com/2011/02/07/truth-equality-and-javascript/#more-2108">Truth Equality and JavaScript</a> 了解更多</p></li>
+</ul>
+
+
+
+<h2 id="块"><a>块</a></h2>
+
+<ul>
+<li><p>给所有多行的块使用大括号</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">if</span> (test)
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">if</span> (test) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">if</span> (test) {
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; }
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre></li>
+</ul>
+
+
+
+<h2 id="注释"><a>注释</a></h2>
+
+<ul>
+<li><p>使用 <code>/** ... */</code> 进行多行注释，包括描述，指定类型以及参数值和返回值</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-comment">// make() returns a new element</span>
+<span class="hljs-comment">// based on the passed in tag name</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// @param &lt;String&gt; tag</span>
+<span class="hljs-comment">// @return &lt;Element&gt; element</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">make</span><span class="hljs-params">(tag)</span> {</span>
+
+  <span class="hljs-comment">// ...stuff...</span>
+
+  <span class="hljs-keyword">return</span> element;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-comment">/**
+ * make() returns a new element
+ * based on the passed in tag name
+ *
+ * @param &lt;String&gt; tag
+ * @return &lt;Element&gt; element
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">make</span><span class="hljs-params">(tag)</span> {</span>
+
+  <span class="hljs-comment">// ...stuff...</span>
+
+  <span class="hljs-keyword">return</span> element;
+}</code></pre></li>
+<li><p>使用 <code>//</code> 进行单行注释，在评论对象的上面进行单行注释，注释前放一个空行.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> active = <span class="hljs-literal">true</span>;  <span class="hljs-comment">// is current tab</span>
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-comment">// is current tab</span>
+<span class="hljs-keyword">var</span> active = <span class="hljs-literal">true</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getType</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'fetching type...'</span>);
+  <span class="hljs-comment">// set the default type to 'no type'</span>
+  <span class="hljs-keyword">var</span> type = <span class="hljs-keyword">this</span>._type || <span class="hljs-string">'no type'</span>;
+
+  <span class="hljs-keyword">return</span> type;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getType</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'fetching type...'</span>);
+
+  <span class="hljs-comment">// set the default type to 'no type'</span>
+  <span class="hljs-keyword">var</span> type = <span class="hljs-keyword">this</span>._type || <span class="hljs-string">'no type'</span>;
+
+  <span class="hljs-keyword">return</span> type;
+}</code></pre></li>
+<li><p>如果你有一个问题需要重新来看一下或如果你建议一个需要被实现的解决方法的话需要在你的注释前面加上 <code>FIXME</code> 或 <code>TODO</code> 帮助其他人迅速理解</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Calculator</span><span class="hljs-params">()</span> {</span>
+
+  <span class="hljs-comment">// FIXME: shouldn't use a global here</span>
+  total = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}</code></pre>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Calculator</span><span class="hljs-params">()</span> {</span>
+
+  <span class="hljs-comment">// TODO: total should be configurable by an options param</span>
+  <span class="hljs-keyword">this</span>.total = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}</code></pre></li>
+<li>满足规范的文档，在需要文档的时候，可以尝试<a href="http://usejsdoc.org/">jsdoc</a>.</li>
+</ul>
+
+
+
+<h2 id="空白"><a>空白</a></h2>
+
+<ul>
+<li>缩进、格式化能帮助团队更快得定位修复代码BUG.</li>
+<li><p>将tab设为4个空格</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+∙∙<span class="hljs-keyword">var</span> name;
+}
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+∙<span class="hljs-keyword">var</span> name;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+∙∙∙∙<span class="hljs-keyword">var</span> name;
+}</code></pre></li>
+<li><p>大括号前放一个空格</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span>{</span>
+  console.log(<span class="hljs-string">'test'</span>);
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'test'</span>);
+}
+
+<span class="hljs-comment">// bad</span>
+dog.set(<span class="hljs-string">'attr'</span>,{
+  age: <span class="hljs-string">'1 year'</span>,
+  breed: <span class="hljs-string">'Bernese Mountain Dog'</span>
+});
+
+<span class="hljs-comment">// good</span>
+dog.set(<span class="hljs-string">'attr'</span>, {
+  age: <span class="hljs-string">'1 year'</span>,
+  breed: <span class="hljs-string">'Bernese Mountain Dog'</span>
+});</code></pre></li>
+<li><p>在做长方法链时使用缩进.</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+$(<span class="hljs-string">'#items'</span>).find(<span class="hljs-string">'.selected'</span>).highlight().end().find(<span class="hljs-string">'.open'</span>).updateCount();
+
+<span class="hljs-comment">// good</span>
+$(<span class="hljs-string">'#items'</span>)
+  .find(<span class="hljs-string">'.selected'</span>)
+    .highlight()
+    .end()
+  .find(<span class="hljs-string">'.open'</span>)
+    .updateCount();
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> leds = stage.selectAll(<span class="hljs-string">'.led'</span>).data(data).enter().append(<span class="hljs-string">'svg:svg'</span>).class(<span class="hljs-string">'led'</span>, <span class="hljs-literal">true</span>)
+    .attr(<span class="hljs-string">'width'</span>,  (radius + margin) * <span class="hljs-number">2</span>).append(<span class="hljs-string">'svg:g'</span>)
+    .attr(<span class="hljs-string">'transform'</span>, <span class="hljs-string">'translate('</span> + (radius + margin) + <span class="hljs-string">','</span> + (radius + margin) + <span class="hljs-string">')'</span>)
+    .call(tron.led);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> leds = stage.selectAll(<span class="hljs-string">'.led'</span>)
+    .data(data)
+  .enter().append(<span class="hljs-string">'svg:svg'</span>)
+    .class(<span class="hljs-string">'led'</span>, <span class="hljs-literal">true</span>)
+    .attr(<span class="hljs-string">'width'</span>,  (radius + margin) * <span class="hljs-number">2</span>)
+  .append(<span class="hljs-string">'svg:g'</span>)
+    .attr(<span class="hljs-string">'transform'</span>, <span class="hljs-string">'translate('</span> + (radius + margin) + <span class="hljs-string">','</span> + (radius + margin) + <span class="hljs-string">')'</span>)
+    .call(tron.led);</code></pre></li>
+</ul>
+
+
+
+<h2 id="逗号"><a>逗号</a></h2>
+
+<ul>
+<li><p>不要将逗号放前面</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> once
+  , upon
+  , aTime;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> once,
+    upon,
+    aTime;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> hero = {
+    firstName: <span class="hljs-string">'Bob'</span>
+  , lastName: <span class="hljs-string">'Parr'</span>
+  , heroName: <span class="hljs-string">'Mr. Incredible'</span>
+  , superPower: <span class="hljs-string">'strength'</span>
+};
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> hero = {
+  firstName: <span class="hljs-string">'Bob'</span>,
+  lastName: <span class="hljs-string">'Parr'</span>,
+  heroName: <span class="hljs-string">'Mr. Incredible'</span>,
+  superPower: <span class="hljs-string">'strength'</span>
+};</code></pre></li>
+<li><p>不要加多余的逗号，这可能会在IE下引起错误，同时如果多一个逗号某些ES3的实现会计算多数组的长度。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> hero = {
+  firstName: <span class="hljs-string">'Kevin'</span>,
+  lastName: <span class="hljs-string">'Flynn'</span>,
+};
+
+<span class="hljs-keyword">var</span> heroes = [
+  <span class="hljs-string">'Batman'</span>,
+  <span class="hljs-string">'Superman'</span>,
+];
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> hero = {
+  firstName: <span class="hljs-string">'Kevin'</span>,
+  lastName: <span class="hljs-string">'Flynn'</span>
+};
+
+<span class="hljs-keyword">var</span> heroes = [
+  <span class="hljs-string">'Batman'</span>,
+  <span class="hljs-string">'Superman'</span>
+];</code></pre></li>
+</ul>
+
+
+
+<h2 id="分号"><a>分号</a></h2>
+
+<ul>
+<li><p>语句结束一定要加分号</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> name = <span class="hljs-string">'Skywalker'</span>
+  <span class="hljs-keyword">return</span> name
+})()
+
+<span class="hljs-comment">// good</span>
+(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> name = <span class="hljs-string">'Skywalker'</span>;
+  <span class="hljs-keyword">return</span> name;
+})();
+
+<span class="hljs-comment">// good</span>
+;(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> name = <span class="hljs-string">'Skywalker'</span>;
+  <span class="hljs-keyword">return</span> name;
+})();</code></pre></li>
+</ul>
+
+
+
+<h2 id="类型转换"><a>类型转换</a></h2>
+
+<ul>
+<li>在语句的开始执行类型转换.</li>
+<li><p>字符串:</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">//  =&gt; this.reviewScore = 9;</span>
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> totalScore = <span class="hljs-keyword">this</span>.reviewScore + <span class="hljs-string">''</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> totalScore = <span class="hljs-string">''</span> + <span class="hljs-keyword">this</span>.reviewScore;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> totalScore = <span class="hljs-string">''</span> + <span class="hljs-keyword">this</span>.reviewScore + <span class="hljs-string">' total score'</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> totalScore = <span class="hljs-keyword">this</span>.reviewScore + <span class="hljs-string">' total score'</span>;</code></pre></li>
+<li><p>对数字使用 <code>parseInt</code> 并且总是带上类型转换的基数.，如<code>parseInt(value, 10)</code></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> inputValue = <span class="hljs-string">'4'</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> val = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Number</span>(inputValue);
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> val = +inputValue;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> val = inputValue &gt;&gt; <span class="hljs-number">0</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> val = <span class="hljs-built_in">parseInt</span>(inputValue);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> val = <span class="hljs-built_in">Number</span>(inputValue);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> val = <span class="hljs-built_in">parseInt</span>(inputValue, <span class="hljs-number">10</span>);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-comment">/**
+ * parseInt was the reason my code was slow.
+ * Bitshifting the String to coerce it to a
+ * Number made it a lot faster.
+ */</span>
+<span class="hljs-keyword">var</span> val = inputValue &gt;&gt; <span class="hljs-number">0</span>;</code></pre></li>
+<li><p>布尔值:</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> age = <span class="hljs-number">0</span>;
+
+<span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> hasAge = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Boolean</span>(age);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> hasAge = <span class="hljs-built_in">Boolean</span>(age);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> hasAge = !!age;</code></pre></li>
+</ul>
+
+
+
+<h2 id="命名约定"><a>命名约定</a></h2>
+
+<ul>
+<li><p>避免单个字符名，让你的变量名有描述意义。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">q</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-comment">// ...stuff...</span>
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">query</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-comment">// ..stuff..</span>
+}</code></pre></li>
+<li><p>当命名对象、函数和实例时使用驼峰命名规则</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> OBJEcttsssss = {};
+<span class="hljs-keyword">var</span> this_is_my_object = {};
+<span class="hljs-keyword">var</span> <span class="hljs-keyword">this</span>-is-my-object = {};
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">c</span><span class="hljs-params">()</span> {</span>};
+<span class="hljs-keyword">var</span> u = <span class="hljs-keyword">new</span> user({
+  name: <span class="hljs-string">'Bob Parr'</span>
+});
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> thisIsMyObject = {};
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">thisIsMyFunction</span><span class="hljs-params">()</span> {</span>};
+<span class="hljs-keyword">var</span> user = <span class="hljs-keyword">new</span> User({
+  name: <span class="hljs-string">'Bob Parr'</span>
+});</code></pre></li>
+<li><p>当命名构造函数或类时使用驼峰式大写</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">user</span><span class="hljs-params">(options)</span> {</span>
+  <span class="hljs-keyword">this</span>.name = options.name;
+}
+
+<span class="hljs-keyword">var</span> bad = <span class="hljs-keyword">new</span> user({
+  name: <span class="hljs-string">'nope'</span>
+});
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">User</span><span class="hljs-params">(options)</span> {</span>
+  <span class="hljs-keyword">this</span>.name = options.name;
+}
+
+<span class="hljs-keyword">var</span> good = <span class="hljs-keyword">new</span> User({
+  name: <span class="hljs-string">'yup'</span>
+});</code></pre></li>
+<li><p>命名私有属性时前面加个下划线 <code>_</code></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">this</span>.__firstName__ = <span class="hljs-string">'Panda'</span>;
+<span class="hljs-keyword">this</span>.firstName_ = <span class="hljs-string">'Panda'</span>;
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">this</span>._firstName = <span class="hljs-string">'Panda'</span>;</code></pre></li>
+<li><p>当保存对 <code>this</code> 的引用时使用 <code>self(python 风格)</code>,避免<code>this issue</code>.Angular建议使用<code>vm(MVVM模式中view-model)</code></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+    console.log(self);
+  };
+}</code></pre></li>
+</ul>
+
+
+
+<h2 id="存取器"><a>存取器</a></h2>
+
+<ul>
+<li>属性的存取器函数不是必需的</li>
+<li><p>如果你确实有存取器函数的话使用getVal() 和 setVal(‘hello’),<code>java getter、setter风格</code>或者<code>jQuery风格</code></p></li>
+<li><p>如果属性是布尔值，使用isVal() 或 hasVal()</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">if</span> (!dragon.age()) {
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">if</span> (!dragon.hasAge()) {
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre></li>
+<li><p>可以创建get()和set()函数，但是要保持一致</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Jedi</span><span class="hljs-params">(options)</span> {</span>
+  options || (options = {});
+  <span class="hljs-keyword">var</span> lightsaber = options.lightsaber || <span class="hljs-string">'blue'</span>;
+  <span class="hljs-keyword">this</span>.set(<span class="hljs-string">'lightsaber'</span>, lightsaber);
+}
+
+Jedi.prototype.set = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key, val)</span> {</span>
+  <span class="hljs-keyword">this</span>[key] = val;
+};
+
+Jedi.prototype.get = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(key)</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[key];
+};</code></pre></li>
+</ul>
+
+
+
+<h2 id="构造器"><a>构造器</a></h2>
+
+<ul>
+<li><p>给对象原型分配方法，而不是用一个新的对象覆盖原型，覆盖原型会使继承出现问题。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Jedi</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'new jedi'</span>);
+}
+
+<span class="hljs-comment">// bad</span>
+Jedi.prototype = {
+  fight: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fight</span><span class="hljs-params">()</span> {</span>
+    console.log(<span class="hljs-string">'fighting'</span>);
+  },
+
+  block: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">block</span><span class="hljs-params">()</span> {</span>
+    console.log(<span class="hljs-string">'blocking'</span>);
+  }
+};
+
+<span class="hljs-comment">// good</span>
+Jedi.prototype.fight = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fight</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'fighting'</span>);
+};
+
+Jedi.prototype.block = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">block</span><span class="hljs-params">()</span> {</span>
+  console.log(<span class="hljs-string">'blocking'</span>);
+};</code></pre></li>
+<li><p>方法可以返回 <code>this</code> 帮助方法可链。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+Jedi.prototype.jump = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">this</span>.jumping = <span class="hljs-literal">true</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+};
+
+Jedi.prototype.setHeight = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(height)</span> {</span>
+  <span class="hljs-keyword">this</span>.height = height;
+};
+
+<span class="hljs-keyword">var</span> luke = <span class="hljs-keyword">new</span> Jedi();
+luke.jump(); <span class="hljs-comment">// =&gt; true</span>
+luke.setHeight(<span class="hljs-number">20</span>) <span class="hljs-comment">// =&gt; undefined</span>
+
+<span class="hljs-comment">// good</span>
+Jedi.prototype.jump = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">this</span>.jumping = <span class="hljs-literal">true</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+};
+
+Jedi.prototype.setHeight = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(height)</span> {</span>
+  <span class="hljs-keyword">this</span>.height = height;
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+};
+
+<span class="hljs-keyword">var</span> luke = <span class="hljs-keyword">new</span> Jedi();
+
+luke.jump()
+  .setHeight(<span class="hljs-number">20</span>);</code></pre></li>
+<li><p>可以写一个自定义的toString()方法，但是确保它工作正常并且不会有副作用。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Jedi</span><span class="hljs-params">(options)</span> {</span>
+  options || (options = {});
+  <span class="hljs-keyword">this</span>.name = options.name || <span class="hljs-string">'no name'</span>;
+}
+
+Jedi.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getName</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name;
+};
+
+Jedi.prototype.toString = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toString</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-string">'Jedi - '</span> + <span class="hljs-keyword">this</span>.getName();
+};</code></pre></li>
+</ul>
+
+
+
+<h2 id="事件"><a>事件</a></h2>
+
+<ul>
+<li><p>当给事件附加数据时，传入一个哈希而不是原始值，这可以让后面的贡献者加入更多数据到事件数据里而不用找出并更新那个事件的事件处理器</p>
+
+<pre class="prettyprint"><code class="language-js hljs "><span class="hljs-comment">// bad</span>
+$(<span class="hljs-keyword">this</span>).trigger(<span class="hljs-string">'listingUpdated'</span>, listing.id);
+
+...
+
+$(<span class="hljs-keyword">this</span>).on(<span class="hljs-string">'listingUpdated'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e, listingId)</span> {</span>
+  <span class="hljs-comment">// do something with listingId</span>
+});</code></pre>
+
+<p>更好:</p>
+
+<pre class="prettyprint"><code class="language-js hljs "><span class="hljs-comment">// good</span>
+$(<span class="hljs-keyword">this</span>).trigger(<span class="hljs-string">'listingUpdated'</span>, { listingId : listing.id });
+
+...
+
+$(<span class="hljs-keyword">this</span>).on(<span class="hljs-string">'listingUpdated'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e, data)</span> {</span>
+  <span class="hljs-comment">// do something with data.listingId</span>
+});</code></pre></li>
+</ul>
+
+
+
+<h2 id="模块"><a>模块</a></h2>
+
+<ul>
+<li>这个文件应该以驼峰命名，并在同名文件夹下，同时导出的时候名字一致</li>
+<li>对于公开API库可以考虑加入一个名为noConflict()的方法来设置导出的模块为之前的版本并返回它</li>
+<li><p>总是在模块顶部声明 <code>'use strict';</code>，引入<code>[JSHint规范](http://jshint.com/)</code></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// fancyInput/fancyInput.js</span>
+
+（<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(global)</span> {</span>
+<span class="hljs-pi">  'use strict'</span>;
+
+  <span class="hljs-keyword">var</span> previousFancyInput = global.FancyInput;
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FancyInput</span><span class="hljs-params">(options)</span> {</span>
+    <span class="hljs-keyword">this</span>.options = options || {};
+  }
+
+  FancyInput.noConflict = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">noConflict</span><span class="hljs-params">()</span> {</span>
+    global.FancyInput = previousFancyInput;
+    <span class="hljs-keyword">return</span> FancyInput;
+  };
+
+  global.FancyInput = FancyInput;
+})(<span class="hljs-keyword">this</span>);</code></pre></li>
+</ul>
+
+
+
+<h2 id="jquery"><a>jQuery</a></h2>
+
+<ul>
+<li><p>对于jQuery对象以<code>$</code>开头，以和原生DOM节点区分。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-keyword">var</span> menu = $(<span class="hljs-string">".menu"</span>);
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-keyword">var</span> $menu = $(<span class="hljs-string">".menu"</span>);</code></pre></li>
+<li><p>缓存jQuery查询</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setSidebar</span><span class="hljs-params">()</span> {</span>
+  $(<span class="hljs-string">'.sidebar'</span>).hide();
+
+  <span class="hljs-comment">// ...stuff...</span>
+
+  $(<span class="hljs-string">'.sidebar'</span>).css({
+    <span class="hljs-string">'background-color'</span>: <span class="hljs-string">'pink'</span>
+  });
+}
+
+<span class="hljs-comment">// good</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setSidebar</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">var</span> $sidebar = $(<span class="hljs-string">'.sidebar'</span>);
+  $sidebar.hide();
+
+  <span class="hljs-comment">// ...stuff...</span>
+
+  $sidebar.css({
+    <span class="hljs-string">'background-color'</span>: <span class="hljs-string">'pink'</span>
+  });
+}</code></pre></li>
+<li><p>对DOM查询使用级联的 <code>$('.sidebar ul')</code> 或 <code>$('.sidebar ul')</code>，<a href="http://jsperf.com/jquery-find-vs-context-sel/16">jsPerf</a></p></li>
+<li><p>对有作用域的jQuery对象查询使用 <code>find</code></p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+$(<span class="hljs-string">'.sidebar'</span>, <span class="hljs-string">'ul'</span>).hide();
+
+<span class="hljs-comment">// bad</span>
+$(<span class="hljs-string">'.sidebar'</span>).find(<span class="hljs-string">'ul'</span>).hide();
+
+<span class="hljs-comment">// good</span>
+$(<span class="hljs-string">'.sidebar ul'</span>).hide();
+
+<span class="hljs-comment">// good</span>
+$(<span class="hljs-string">'.sidebar &gt; ul'</span>).hide();
+
+<span class="hljs-comment">// good (slower)</span>
+$sidebar.find(<span class="hljs-string">'ul'</span>);
+
+<span class="hljs-comment">// good (faster)</span>
+$($sidebar[<span class="hljs-number">0</span>]).find(<span class="hljs-string">'ul'</span>);</code></pre></li>
+<li><p>每个页面只使用一次document的ready事件，这样便于调试与行为流跟踪。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs ">$(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+   <span class="hljs-comment">//do your page init.  </span>
+});</code></pre></li>
+<li><p>事件利用<code>jQuery.on</code>从页面分离到JavaScript文件。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-comment">// bad</span>
+&lt;a id=<span class="hljs-string">"myLink"</span> href=<span class="hljs-string">"#"</span> onclick=<span class="hljs-string">"myEventHandler();"</span>&gt;<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">a</span>&gt;</span>
+
+// good
+<span class="hljs-tag">&lt;<span class="hljs-title">a</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"myLink"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"#"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">a</span>&gt;</span>
+
+$("#myLink").on("click", myEventHandler);
+</span></code></pre></li>
+<li><p>对于Ajax使用promise方式。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs ">    <span class="hljs-comment">// bad</span>
+    $.ajax({
+        ...
+        success : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+        },
+        error : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+        } 
+    })
+
+    <span class="hljs-comment">// good</span>
+    $.ajax({.
+        ..
+    }).then( <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( )</span>{</span>
+        <span class="hljs-comment">// success</span>
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( )</span>{</span>
+        <span class="hljs-comment">// error</span>
+    })</code></pre></li>
+<li><p>利用promise的deferred对象解决延迟注册问题。</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> dtd = $.Deferred(); <span class="hljs-comment">// 新建一个deferred对象</span>
+　　<span class="hljs-keyword">var</span> wait = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(dtd)</span>{</span>
+　　　　<span class="hljs-keyword">var</span> tasks = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+　　　　　　alert(<span class="hljs-string">"执行完毕！"</span>);
+　　　　　　dtd.resolve(); <span class="hljs-comment">// 改变deferred对象的执行状态</span>
+　　　　};
+　　　　setTimeout(tasks,<span class="hljs-number">5000</span>);
+　　　　<span class="hljs-keyword">return</span> dtd;
+　　};</code></pre></li>
+<li>HTML中Style、以及JavaScript中style移到CSS中class，在HTML、JavaScript中引入class，而不是直接style。</li>
+</ul>
+
+
+
+<h2 id="ecmascript-5兼容性"><a>ECMAScript 5兼容性</a></h2>
+
+<p>尽量采用ES5方法，特别数组map、filter、forEach方法简化日常开发。在老式IE浏览器中引入<a href="https://github.com/es-shims/es5-shim">ES5-shim</a>。或者也可以考虑引入<a href="http://underscorejs.org/">underscore</a>、<a href="https://lodash.com/">lodash</a> 常用辅助库. <br>
+  - 参考<a href="https://twitter.com/kangax/">Kangax</a>的 ES5 <a href="http://kangax.github.com/es5-compat-table/">compatibility table</a> <br>
+ - <a href="http://www.cnblogs.com/whitewolf/p/4417873.html">JavaScript工具库之Lodash</a> <br>
+ - <a href="http://www.cnblogs.com/whitewolf/p/4357916.html">Babel-现在开始使用 ES6</a></p>
+
+
+
+<h2 id="htmlcssjavascript分离"><a>HTML、CSS、JavaScript分离</a></h2>
+
+<ul>
+<li>页面DOM结构使用HTML，样式则采用CSS，动态DOM操作JavaScript。不要混用在HTML中</li>
+<li>分离在不同类型文件，文件link。</li>
+<li>HTML、CSS、JavaScript变量名都需要有业务价值。CSS以中划线分割的全小写命名，JavaScript则首字母小写的驼峰命名。</li>
+<li>CSS可引入Bootstrap、Foundation等出名响应式设计框架。以及SASS、LESS工具书写CSS。</li>
+<li>对于CSS、JavaScript建议合并为单文件，减少Ajax的连接数。也可以引入AMD(Require.js)加载方式。</li>
+<li>对于内部大部分企业管理系统，可以尝试采用前端 MVC框架组织代码。如Angular、React + flux架构、Knockout等。</li>
+<li>对于兼容性可用<a href="http://modernizr.com/">Modernizr</a>规范库辅助。</li>
+</ul>
+
+
+
+<h2 id="使用jshint"><a>使用jsHint</a></h2>
+
+<ul>
+<li>前端项目中推荐引入<a href="http://jshint.com/">jshint</a>插件来规范项目编码规范。以及一套完善的IDE配置。</li>
+<li>注意：jshint需要引入nodejs 工具grunt或gulp插件，建议企业级nodejs npm私服。</li>
+</ul>
+
+
+
+<h2 id="前端工具"><a>前端工具</a></h2>
+
+<ul>
+<li>前端第三方JavaScript包管理工具bower(<code>bower install jQuery</code>)，bower可以实现第三方库的依赖解析、下载、升级管理等。建议建立企业级bower私服。</li>
+<li>前端构建工具，可以采用grunt或者gulp工具，可以实现html、css、js压缩、验证、测试，文件合并、watch和liveload等所有前端任务。建议企业级nodejs npm私服。</li>
+<li>前端开发IDE： WebStorm( Idea )、Sublime为最佳 。项目组统一IDE。IDE统一配置很重要。</li>
+</ul></div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/12/typescript-modules-mo-kuai/">TypeScript - Modules(模块)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T16:52:50+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>简介</h2>
+
+<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
+
+<h2>第一步</h2>
+
+<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
+
+<h4>单文件的验证逻辑</h4>
+
+<pre class='green'><code>interface StringValidator {
+    isAcceptable(s: string): boolean;
+}
+
+var lettersRegexp = /^[A-Za-z]+$/;
+var numberRegexp = /^[0-9]+$/;
+
+class LettersOnlyValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return lettersRegexp.test(s);
+    }
+}
+
+class ZipCodeValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return s.length === 5 &amp;&amp; numberRegexp.test(s);
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: StringValidator; } = {};
+validators['ZIP code'] = new ZipCodeValidator();
+validators['Letters only'] = new LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h4>增加模块化</h4>
+
+<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
+
+<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
+
+<h4>模块化的Validators</h4>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+
+    var lettersRegexp = /^[A-Za-z]+$/;
+    var numberRegexp = /^[0-9]+$/;
+
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h2>分离模块文件</h2>
+
+<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
+
+<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
+
+<h4>多文件的内部模块</h4>
+
+<h6>Validation.ts</h6>
+
+<pre class='green'><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+}
+</code></pre>
+
+<h6>LettersOnlyValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var lettersRegexp = /^[A-Za-z]+$/;
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>ZipCodeValidator.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var numberRegexp = /^[0-9]+$/;
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>Test.ts</h6>
+
+<pre class='green'><code>/// &lt;reference path="Validation.ts" /&gt;
+/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
+/// &lt;reference path="ZipCodeValidator.ts" /&gt;
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
+
+<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
+
+<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
+
+<h6>#MyTestPage.html (excerpt)</h6>
+
+<pre class='green'><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
+&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
+&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
+&lt;script src="Test.js" type="text/javascript" /&gt;
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/">JavaScript工具库之Lodash</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-11T14:53:27+08:00" pubdate data-updated="true">Apr 11<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>你还在为JavaScript中的数据转换、匹配、查找等烦恼吗？一堆看似简单的foreach，却冗长无趣，可仍还在不停的repeat it！也许你已经用上了Underscore.js，不错，你已经进步很大一步了。然而今天我希望你能更进一步，利用lodash替换掉Underscore。</p>
+
+<p>lodash一开始是Underscore.js库的一个fork，因为和其他(Underscore.js的)贡献者意见相左。John-David Dalton的最初目标，是提供更多“一致的跨浏览器行为……，并改善性能”。之后，该项目在现有成功的基础之上取得了更大的成果。最近lodash也发布了3.5版，成为了npm包仓库中依赖最多的库。它正在摆脱屌丝身份，成为开发者的常规选择之一。</p>
+
+<p>现在我们所熟知的很多开源项目都已经使用或者转到了lodash阵营之上。比如JavaScript转译器Babel、博客平台Ghost，和项目脚手架工具Yeoman。特别Ghost是从Underscore迁移到了lodash，Ghost的创始人John O&#8217;Nolan对于此曾评价到：“这是一个非常明智的选择，它几乎完全是由我们开源开发社区推动的。我们发现lodash包含更多的功能，更好的性能、恰到好处地使用了semver，并且在Node.js社区（以及其他依赖）中越来越抢眼“。</p>
+
+<h2>lodash演练</h2>
+
+<p>lodash主要使用了延迟计算，使得lodash其性能远远超过Underscore。在lodash中延迟计算意味着在我们的链式方法在显示或隐式的value()调用之前是不会执行的。由于这种执行的延后，因此lodash可以进行shortcut fusion这样的优化，通过合并链式iteratee大大降低迭代的次数。从而大大提供其执行性能。</p>
+
+<p>百说不如一练，下面我们以用户信息为例：</p>
+
+<pre class='green'><code>var users = [
+  { 'user': 'barney',  'age': 36 },
+  { 'user': 'fred',    'age': 40 },
+  { 'user': 'pebbles', 'age': 18 }
+];
+</code></pre>
+
+<h4>1. 获取所有用户名字，并以”，“分割</h4>
+
+<pre class='green'><code>var names = _.chain(users)
+  .map(function(user){
+    return user.user;
+  })
+  .join(" , ")
+  .value();
+console.log(names);
+</code></pre>
+
+<p>个人比较喜欢lodash延迟计算的现实value，以及JavaScript的函数式风格。在这里首先将users对象包装成为lodash对象，再map获取所有用户的名称，并最后利用join将用户名称以”，“连接在一起。注意这里只是一串方法链，如果你没有显样的调用value方法，使其立即执行的化，你将会得到如下的LodashWrapper延迟表达式：</p>
+
+<pre class='green'><code> LodashWrapper {__wrapped__: LazyWrapper, __actions__: Array[1], __chain__: true, constructor: function, after: function…}
+</code></pre>
+
+<p> 因为延迟表达式的存在，因此我们可以多次增加方法链，但这并不会被执行，所以不会存在性能的问题，最后知道我们需要使用的时候，使用value显式立即执行即可。</p>
+
+<h4>2. 获取最年轻的用户</h4>
+
+<pre class='green'><code> var youngest = _.chain(users)
+  .min(function(user){
+    return user.age;
+  })
+  .value();
+console.log(youngest);
+</code></pre>
+
+<p>这里利用了lodash提供的min函数可以轻易的解决。</p>
+
+<p>在这里博主还希望用另外一个方式解释lodash方法链的优化,上面的方法可以等价为下面的方式，以age排序的第一个user：</p>
+
+<pre class='green'><code>var youngest2 = _.chain(users)
+  .sortBy("age")
+  .map(function(user){
+    console.log("map", user);
+    return user;
+  })
+  .first()
+  .value();
+console.log(youngest2);
+</code></pre>
+
+<p>在这里博主多加了一个map作为log输出，如果你执行这行代码的时候，你会惊奇的看见这里只会有一个user的输出，这点可以证明在立即执行的时候lodash为我们的方法链做了可靠的优化；如果我们去掉first函数你则会看见有3个user对象的输出。</p>
+
+<h4>3. 获取最年长的用户</h4>
+
+<pre class='green'><code>var oldest  = _.chain(users)
+  .max(function(user){
+    return user.age;
+  })
+  .value();
+
+console.log(oldest );
+</code></pre>
+
+<p>这里则使用lodash的max函数。</p>
+
+<h4>4. 用户数组到用户Map的转换</h4>
+
+<p>在开发中我们经常会有把一堆数组形式的数据转换为Object形式的数组，便于根据属性key值查找，下面将以user对象来演示：</p>
+
+<pre class='green'><code>var userObj = _.chain(users)
+  .map(function(user){
+    return [user.user, user.age];
+  })
+  .zipObject()
+  .value();
+console.log(userObj);
+</code></pre>
+
+<p>利用lodash首先将user数组map为[key, value]的数组集合，最后利用zipObject将结果转换为Object对象，zipObject会利用结果集的第一项作为key，第二项作为value生产Object。</p>
+
+<h2>结尾</h2>
+
+<p>我们在这里展示知识lodash中很小一部分的API，正如随笔开始所说：lodash是为了提供更多“一致的跨浏览器行为……，并改善性能”API。所有的lodash API你可以在这里<a href="https://lodash.com/docs#matches">https://lodash.com/docs#matches</a>查找。</p>
+
+<p>本文的所演示的demo，你也可以在jsbin <a href="http://jsbin.com/xocixubaru/1/edit?html,js,output">http://jsbin.com/xocixubaru/1/edit?html,js,output</a>演示。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/22/babel-kai-shi-es6ti-yan/">(转)Babel-现在开始使用 ES6</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T20:11:07+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在 2 月 20 号 ECMAScript 第六版就正式推出了，这门语言一直保持稳定快速的发展而且新功能也在慢慢被现在主流的 JavaScript 引擎所接受。不过要想在浏览器端或者 Node 端直接运行 ES6 代码还得等上一些日子。幸好 TC39 (负责研究开发 EMCAScript 规格的组织) 做了大量工作让我们现在可以使用 ES6 中的大部分特性了。</p>
+
+<h2>代码转换</h2>
+
+<p>能够实现 ES6 到 ES5 的代码转换多亏了 <a href="https://babeljs.io/">Babel</a> (以前叫 6to5) 以及 Traceur 之类的项目。这些转换器 (更准确地说是源代码到源代码的编译器) 可以把你写的符合 ECMAScript 6 标准的代码完美地转换为 ECMAScript 5 标准的代码，并且可以确保良好地运行在所有主流 JavaScript 引擎中。</p>
+
+<p>我们这里目前在使用 Babel，主要是因为它对 ES6 的支持程度比其它同类更高，而且 Babel 拥有完善的文档和一个很棒的<a href="https://babeljs.io/repl/">在线交互式编程环境</a>。</p>
+
+<h2>起步</h2>
+
+<p>在用 ES6 标准开始一个新项目的时候我们会建立一个目录结构来确保用 ES6 编写的代码能和编译出的 ES5 代码区分开。原始的 ES6 代码我们放在 src 目录下，而编译好的文件就是 lib 目录。这样的命名我们会在本文一直使用。（补充一点，lib 目录应该被加入 .gitignore 文件中）</p>
+
+<h2>安装 Babel</h2>
+
+<p>如果你还没安装 Babel 可以使用 npm 来安装：</p>
+
+<pre class='green'><code>npm install -g babel
+</code></pre>
+
+<p>Babel 一旦安装完成就可以开始编译你的 ES6 代码了。再确认一遍你已经在 src 目录放入了一些 ES6 文件，下面的命令将会把这个目录下所有 .es6, .es 和 .js 后缀的文件编译成符合 ES5 规范的代码到 lib 目录下：</p>
+
+<pre class='green'><code>babel -d lib/ src/
+</code></pre>
+
+<p>如果你想在文件有改动的时候自动完成这些编译工作可以使用这些常用的 JavaScript 构建工具：<a href="https://github.com/babel/grunt-babel">Grunt</a>, <a href="https://github.com/babel/gulp-babel">Gulp</a> 和 <a href="https://github.com/babel/broccoli-babel-transpiler">Brocolli</a>.</p>
+
+<h2>给 ES6 标准库一个&#8221;腻子&#8221;</h2>
+
+<p>Babel 作为一个源到源的编译器不可能呈现所有 ES6 标准库中的新特性，例如 Map 和 Set 构造器和 Array 下的一些新方法。要使用这些我们需要一个&#8221;腻子&#8221;来填补这些不足。现在有很多 ES6 的腻子比如 core-js，它适用与 Node, io.js 和浏览器。</p>
+
+<p>译者注: 本节原始标题为 Polyfilling the standard library，术语 polyfill 来自于一个家装产品Polyfilla:</p>
+
+<p>Polyfilla 是一个英国产品，在美国称之为 Spackling Paste (刮墙的,在中国称为腻子)。记住这一点就行: 把旧的浏览器想象成为一面有了裂缝的墙.这些 polyfill 会帮助我们把这面墙的裂缝抹平,还我们一个更好的光滑的墙壁 (浏览器)</p>
+
+<h2>编写 ES6 代码</h2>
+
+<p>现在构建 ES6 代码的工具已经备齐了那我们就开始真正有趣的部分。我们不会过多着眼于某个新特性，如果你有需要可以阅读 <a href="https://github.com/lukehoban">Luke Hoban</a> 的 <a href="https://github.com/lukehoban/es6features">feature list</a>.</p>
+
+<p>我们先在 src 目录下创建一个叫 person.es6 的文件：</p>
+
+<pre class='green'><code>import 'core-js/shim';
+
+export default class Person {
+
+  constructor( name ) {
+    this.name = name;
+  }
+
+  sayHello() {
+    return `Hello ${ this.name }!`;
+  }
+
+  sayHelloThreeTimes() {
+    let hello = this.sayHello();
+    return `${ hello } `.repeat(3);
+  }
+}
+</code></pre>
+
+<p>在这个很简单的例子中我们用了数个需要 Babel 来解决兼容性的语法，还有一个新的方法 String#repeat 须要由 core-js 处理。你可以用本文开头给出的 Babel 命令行代码或者用 <a href="http://ow.ly/JJyhz">REPL</a> 得到运行结果。</p>
+
+<h2>发布到 npm</h2>
+
+<p>目前为止我们可以编写、编译和运行 ES6 代码，不过你也许还想把你的代码发布到 npm 上。你显然不能直接发布然后期望每个人都来自己编译一次。</p>
+
+<p>幸好，npm 允许你在发布前用 <a href="https://docs.npmjs.com/misc/scripts">prepublish script</a> 选项来修改，这个特性在 CoffeeScript 项目中已经被广泛使用了。</p>
+
+<p>现在把 package.json 文件加入到项目根目录中：</p>
+
+<pre class='green'><code>{
+  "name": "person",
+  "version": "0.1.0",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile"
+  },
+  "main": "lib/person.js",
+  "dependencies": {
+    "core-js": "^0.6.0"
+  },
+  "devDependencies": {
+    "babel": "^4.6.0"
+  }
+}
+</code></pre>
+
+<p>注意这个 compile script 会直接运行你在右边提供 Babel 命令，这样你就可以直接运行 npm run compile 来编译而不需要键入文件目录了，而 prepublish script 会在你每次执行 npm publish 的时候自动运行。</p>
+
+<p>还有就是为什么 Babel 会被加入 development dependencies 中，这样如果有人想参与这个项目就不用全局安装 Babel 了，npm 会把你项目下包含可执行文件的 node_modules 目录加入到系统环境变量 path 中。</p>
+
+<h2>.npmignore 文件</h2>
+
+<p>最后你需要确保发布的是编译出的文件而不是原始的 ES6 文件。如果你的项目根目录有 .gitignore 而没有 .npmignore 那 npm 就会自动忽略你项目中包含在 .gitignore 里所有的 文件和目录。添加 .npmignore 这样你发布的包里就是编译好的文件：</p>
+
+<pre class='green'><code>src/
+</code></pre>
+
+<h2>总结</h2>
+
+<p>编写 ES6 代码并使用源到源的编译器如 <a href="https://babeljs.io/">Babel</a> 或者 <a href="https://github.com/google/traceur-compiler">Traceur</a> 来转换成标准 ES5 代码
+使用 ES6 标准库腻子如 <a href="https://github.com/zloirock/core-js">core-js</a>
+记得在发布到 npm 的时候添加 .npmignore 文件
+你可以在我们的 <a href="https://github.com/mammaldev/update-couch-designs">update-couch-designs</a> 项目中看到一个完整的例子，这个项目是我们用于更新和新建 CouchDB 设计文档的简单脚本。</p>
+
+<p>原文：<a href="http://www.kchanzen.com/using-es6-today/">懂香&mdash;《现在开始使用 ES6》</a>
+翻译自 <a href="http://mammal.io/articles/using-es6-today/">Using ES6 with npm today</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/">(翻译)反射处理java泛型</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-18T21:08:30+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>当我们声明了一个泛型的接口或类，或需要一个子类继承至这个泛型类，而我们又希望利用反射获取这些泛型参数信息。这就是本文将要介绍的<strong>ReflectionUtil</strong>就是为了解决这类问题的辅助工具类，为<strong>java.lang.reflect</strong>标准库的工具类。它提供了便捷的访问泛型对象类型(java.reflect.Type)的反射方法。</p>
+
+<p>本文假设你已经了解java反射知识，并能熟练的应用。如果还不了解java反射知识，那么你可以先移步到<a href="http://docs.oracle.com/javase/tutorial/reflect">Oracel反射课程</a>,这可能是你开始学习反射的好起点.</p>
+
+<p>ReflectionUtil中包含以下几种功能：</p>
+
+<ol>
+<li>通过Type获取对象class;</li>
+<li>通过Type创建对象;</li>
+<li>获取泛型对象的泛型化参数;</li>
+<li>检查对象是否存在默认构造函数;</li>
+<li>获取指定类型中的特定field类型;</li>
+<li>获取指定类型中的特定method返回类型;</li>
+<li>根据字符串标示获取枚举常量;</li>
+<li>ReflectionUtil下载地址.</li>
+</ol>
+
+
+<h2>通过Type获取对象class</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TYPE_NAME_PREFIX</span> <span class="o">=</span> <span class="s">&quot;class &quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getClassName</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">==</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">className</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">TYPE_NAME_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">className</span> <span class="o">=</span> <span class="n">className</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">TYPE_NAME_PREFIX</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">className</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getClass</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'>            <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">getClassName</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">className</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">className</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法ReflectionUtil#getClass(Type)实现了从<strong>java.lang.reflect.Type</strong>获取<strong>java.lang.Class</strong>对象名称。这里利用了Type的toString方法获取所在类型的class。如<strong>&ldquo;class some.package.Foo&rdquo;</strong>,截取后部分class名称，在利用<strong>Class.forName(String)</strong>获取class对象。</p>
+
+<h2>通过Type创建对象</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Object</span> <span class="nf">newInstance</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'>        <span class="kd">throws</span> <span class="n">ClassNotFoundException</span><span class="o">,</span> <span class="n">InstantiationException</span><span class="o">,</span> <span class="n">IllegalAccessException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="n">getClass</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">clazz</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法ReflectionUtil#newInstance(Type type)实现根据Type构造对象实例。在这里输入的Type不能是抽象类、接口、数组类型、以及基础类型、Void否则会发生InstantiationException异常。</p>
+
+<h2>获取泛型对象的泛型化参数</h2>
+
+<p>首先假设我们有如下两个对象：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FooChild</span> <span class="kd">extends</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>怎么获取子类在Foo中传入的泛型Class<T>类型呢？</p>
+
+<p>比较常用的做法有以下两种：</p>
+
+<h4>强制FooChild传入自己的class类型(这也是比较常用的做法)：</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">tClass</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">Foo</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">tClass</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">tClass</span> <span class="o">=</span> <span class="n">tClass</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FooChild</span> <span class="kd">extends</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">FooChild</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="n">FooChild</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">//content</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>利用反射获取：</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Type</span><span class="o">[]</span> <span class="nf">getParameterizedTypes</span><span class="o">(</span><span class="n">Object</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Type</span> <span class="n">superclassType</span> <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getGenericSuperclass</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">ParameterizedType</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">superclassType</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="o">((</span><span class="n">ParameterizedType</span><span class="o">)</span><span class="n">superclassType</span><span class="o">).</span><span class="na">getActualTypeArguments</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法ReflectionUtil#getParameterizedTypes(Object)利用反射获取运行时泛型参数的类型，并数组的方式返回。本例中为返回一个T类型的Type数组。</p>
+
+<p>为了Foo得到T的类型我们将会如下使用此方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="n">Type</span><span class="o">[]</span> <span class="n">parameterizedTypes</span> <span class="o">=</span> <span class="n">ReflectionUtil</span><span class="o">.</span><span class="na">getParameterizedTypes</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;)</span><span class="n">ReflectionUtil</span><span class="o">.</span><span class="na">getClass</span><span class="o">(</span><span class="n">parameterizedTypes</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注意</strong>:</p>
+
+<p>在java.lang.reflect.ParameterizedType#getActualTypeArguments() documentation:的文档中你能看见如下文字：</p>
+
+<pre class='green'><code>in some cases, the returned array can be empty. This can occur. if this type represents 
+a non-parameterized type nested within a parameterized type.
+</code></pre>
+
+<p>当传入的对象为非泛型类型，则会返回空数组形式。</p>
+
+<h2>检查对象是否存在默认构造函数</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">hasDefaultConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SecurityException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">empty</span> <span class="o">=</span> <span class="o">{};</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">clazz</span><span class="o">.</span><span class="na">getConstructor</span><span class="o">(</span><span class="n">empty</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法ReflectionUtil#hasDefaultConstructor利用java.lang.reflect.Constructor检查是否存在默认的无参构造函数。</p>
+
+<h2>获取指定类型中的特定field类型</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getFieldClass</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">propertyClass</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Field</span> <span class="n">field</span> <span class="o">:</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredFields</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">field</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">propertyClass</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">getType</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">propertyClass</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在某些情况下你希望利用已知的类型信息和特定的字段名字想获取字段的类型，那么ReflectionUtil#getFieldClass(Class&lt;?>, String)可以帮助你。ReflectionUtil#getFieldClass(Class&lt;?>, String) 利用<strong>Class#getDeclaredFields()</strong>获取字段并循环比较<strong>java.lang.reflect.Field#getName()</strong>字段名称，返回字段所对应的类型对象。</p>
+
+<h2>获取指定类型中的特定method返回类型</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getMethodReturnType</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">returnType</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Method</span> <span class="n">method</span> <span class="o">:</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">returnType</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">getReturnType</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">returnType</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法ReflectionUtil#getMethodReturnType(Class&lt;?>, String)可以帮助你根据对象类型和方法名称获取其所对应的方法返回类型。ReflectionUtil#getMethodReturnType(Class&lt;?>, String)利用<strong>Class#getDeclaredMethods()</strong>并以<strong>java.lang.reflect.Method#getName()</strong>比对方法名称，返回找到的方法的返回值类型(Method#getReturnType()).</p>
+
+<h2>根据字符串标示获取枚举常量</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre class='green'><code class='java'><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">({</span> <span class="s">&quot;unchecked&quot;</span><span class="o">,</span> <span class="s">&quot;rawtypes&quot;</span> <span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Object</span> <span class="nf">getEnumConstant</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">==</span><span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Enum</span><span class="o">.</span><span class="na">valueOf</span><span class="o">((</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">Enum</span><span class="o">&gt;)</span><span class="n">clazz</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法ReflectionUtil#getEnumConstant(Class&lt;?>, String)为利用制定的枚举类型和枚举名称获取其对象。这里的名称必须和存在的枚举常量匹配。</p>
+
+<h2>ReflectionUtil下载地址</h2>
+
+<p>你可以从这里下载<a href="http://qussay.com/wp-content/uploads/2013/09/ReflectionUtil.java">ReflectionUtil.java</a>.
+原英文版地址： <a href="http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/">http://qussay.com/2013/09/28/handling-java-generic-types-with-reflection/</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/14/sql-xing-lie-dao-zhi/">SQL 行列倒置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-14T17:06:28+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SQL的的行列倒置已经不是新知识了，但在博主的技术咨询期间，仍发现其实有很多人并不了解这块，所以在此专门写一篇博客记录。本文将以Mysql为例，并以数据采集指标信息获取为例子。在下面的例子，你可以在sqlfiddle运行。</p>
+
+<p>首先我们需要创建数据库Schema：</p>
+
+<pre class='green'><code>    CREATE TABLE Chart
+        (`createTime` DateTime, `kpi` varchar(30), `field` varchar(30), `value` double);
+
+    INSERT INTO Chart
+        (`createTime`,`kpi`, `field`, `value`)
+    VALUES
+        ("2015-02-01 12:00:00", 'disk', 'disk', 20),
+        ("2015-02-01 12:15:00", 'disk', 'disk', 30),
+        ("2015-02-01 12:20:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:30:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:35:00", 'disk', 'disk', 25),
+        ("2015-02-01 12:40:00", 'disk', 'disk', 25),
+
+        ("2015-02-01 12:00:00", 'disk', 'disk-all', 20),
+        ("2015-02-01 12:20:00", 'disk', 'disk-all', 30),
+        ("2015-02-01 12:25:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:30:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:35:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:40:00", 'disk', 'disk-all', 25),
+        ("2015-02-01 12:40:00", 'cpu', 'cpu-all', 25),
+        ("2015-02-01 12:40:00", 'cpu', 'cpu', 25)
+    ;
+</code></pre>
+
+<p>在这里字段分别代表：createTime = 数据采集时间，kpi = 数据采集指标，field = 作为指标的小类(一个kpi可以包含多个field)，value = 采集的数据</p>
+
+<p>当我们创建好了数据结构，下面因为我们希望获取出所有的 固定时间范围内的特定kpi的数据，注意因为可能一个kpi中的多个field，但是某些field漏采了部分时间的数据，所以这里我们需要补充异常点0. 并由于EChart这类图表库，希望我们输入的是横轴和纵轴为两个独立的数组对象表示。所以我们需要如下：</p>
+
+<pre class='green'><code>option = {
+    ....
+
+    xAxis : [
+        {
+            type : 'category',
+            boundaryGap : false,
+            data : ['周一','周二','周三','周四','周五','周六','周日']
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value',
+            axisLabel : {
+                formatter: '{value} °C'
+            }
+        }
+    ],
+    series : [
+        {
+            ....
+            data:[11, 11, 15, 13, 12, 13, 10]
+        },
+        {
+           ....
+            data:[11, 11, 15, 13, 12, 13, 10]
+        }
+    ]
+};
+</code></pre>
+
+<p>取出横轴比较容易，如下：</p>
+
+<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>但是纵轴如果我们以同样方式取出，可能存在需要我们自动程序补值，并且需要保证每项数据和横轴对应，所以我们的程序处理会比较复杂，如下：</p>
+
+<pre class='green'><code>SELECT createTime,kpi, field, value FROM Chart WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>结果为：</p>
+
+<pre class='green'><code>createTime  kpi field   value
+February, 01 2015 12:00:00  disk    disk    20
+February, 01 2015 12:15:00  disk    disk    30
+February, 01 2015 12:20:00  disk    disk    25
+February, 01 2015 12:00:00  disk    disk-all    20
+February, 01 2015 12:20:00  disk    disk-all    30
+February, 01 2015 12:25:00  disk    disk-all    25
+</code></pre>
+
+<p>有没有其他方案更佳的呢？当然那就是本文要说的sql的倒置，如果我们能够把返回数据转换为如下：</p>
+
+<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
+disk         20                            30                     25                       0
+disk-all     20                             0                     30                       25
+</code></pre>
+
+<p>那么程序就很好处理了。在上面我们已经能够取出所有的横轴数据并排序，接下来我们将可以很简单的做到行列倒置：如下：</p>
+
+<pre class='green'><code>SELECT field,
+SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
+SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
+SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
+SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
+GROUP BY field
+</code></pre>
+
+<p>这样返回数据满足我们的需求了。</p>
+
+<hr />
+
+<p>下面我们来分析下这句SQL，</p>
+
+<ol>
+<li>首先我们利用‘IF(createTime = &lsquo;2015-02-01 12:00:00&rsquo;, value, 0)’来处理插值，并对每行数据转为以时间为列数据,并可以利用IF来补’0‘，将会如下：</li>
+</ol>
+
+
+<p>SQL：</p>
+
+<pre class='green'><code>SELECT field,
+IF(createTime = '2015-02-01 12:00:00', value, 0) as '2015-02-01 12:00:00',
+IF(createTime = '2015-02-01 12:15:00', value, 0) as '2015-02-01 12:15:00',
+IF(createTime = '2015-02-01 12:20:00', value, 0) as '2015-02-01 12:20:00',
+IF(createTime = '2015-02-01 12:25:00', value, 0) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00');
+</code></pre>
+
+<p>结果为：</p>
+
+<pre class='green'><code>field   ‘2015-02-01 12:00:00’   ‘2015-02-01 12:15:00’   ‘2015-02-01 12:20:00’   ‘2015-02-01 12:25:00’
+disk               20                       0                       0                       0
+disk                0                       30                      0                       0
+disk                0                       0                       25                      0
+disk-all            20                      0                       0                       0
+disk-all            0                       0                       30                      0
+disk-all            0                       0                       0                       25
+</code></pre>
+
+<ol>
+<li>这下我们就可以利用sql的聚合函数sum和group by来聚合数据行：</li>
+</ol>
+
+
+<p>SQL:</p>
+
+<pre class='green'><code>SELECT field,
+SUM(IF(createTime = '2015-02-01 12:00:00', value, 0)) as '2015-02-01 12:00:00',
+SUM(IF(createTime = '2015-02-01 12:15:00', value, 0)) as '2015-02-01 12:15:00',
+SUM(IF(createTime = '2015-02-01 12:20:00', value, 0)) as '2015-02-01 12:20:00',
+SUM(IF(createTime = '2015-02-01 12:25:00', value, 0)) as '2015-02-01 12:25:00' 
+FROM Chart
+WHERE kpi = 'disk' and (createTime BETWEEN '2015-02-01 12:00:00' AND '2015-02-01 12:25:00')
+GROUP BY field
+</code></pre>
+
+<p>效果如上。</p>
+
+<p>对于sql行列转置可以简述为分为两部分：</p>
+
+<ol>
+<li>利用条件逻辑(mysql： IF， sql server： case &hellip; when(sql server 2005开始支持数据透视表pivot) ..)将 需要倒置的数据变为列。</li>
+<li>利用聚合函数(sum、max、min&hellip;)group by 合并数据。这里需要注意max、min需要注意数据的边界，如存在负数且默认值采用0，那么max就会存在问题，所以一般sum是最安全的(任何数加0都不会改变结果)；但对于特定场景max、min也是安全方案。</li>
+</ol>
+
+
+<p>我们也可以将上面两次请求合并为一次，这就需要mysql的动态拼接，如下：</p>
+
+<pre class='green'><code>SELECT 
+@time_sql := group_concat("SUM(IF(createTime = '", t.createTime, "', value, 0)) AS '" , t.createTime, "'")  
+FROM (
+ SELECT DISTINCT createTime FROM Chart ORDER BY createTime
+) AS t;
+
+ set @v_sql = CONCAT("SELECT field", IF(ISNULL(@time_sql) , " ", CONCAT(", ", @time_sql)) ," FROM Chart GROUP BY field");
+
+prepare stmt from @v_sql; 
+EXECUTE stmt;   
+deallocate prepare stmt; 
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/5/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

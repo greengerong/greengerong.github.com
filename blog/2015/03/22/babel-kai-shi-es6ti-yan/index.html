@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>(转)Babel-现在开始使用 ES6 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在 2 月 20 号 ECMAScript 第六版就正式推出了，这门语言一直保持稳定快速的发展而且新功能也在慢慢被现在主流的 JavaScript 引擎所接受。不过要想在浏览器端或者 Node 端直接运行 ES6 代码还得等上一些日子。幸好 TC39 (负责研究开发 EMCAScript &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/03/22/babel-kai-shi-es6ti-yan">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">(转)Babel-现在开始使用 ES6</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T20:11:07+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在 2 月 20 号 ECMAScript 第六版就正式推出了，这门语言一直保持稳定快速的发展而且新功能也在慢慢被现在主流的 JavaScript 引擎所接受。不过要想在浏览器端或者 Node 端直接运行 ES6 代码还得等上一些日子。幸好 TC39 (负责研究开发 EMCAScript 规格的组织) 做了大量工作让我们现在可以使用 ES6 中的大部分特性了。</p>
+
+<h2>代码转换</h2>
+
+<p>能够实现 ES6 到 ES5 的代码转换多亏了 <a href="https://babeljs.io/">Babel</a> (以前叫 6to5) 以及 Traceur 之类的项目。这些转换器 (更准确地说是源代码到源代码的编译器) 可以把你写的符合 ECMAScript 6 标准的代码完美地转换为 ECMAScript 5 标准的代码，并且可以确保良好地运行在所有主流 JavaScript 引擎中。</p>
+
+<p>我们这里目前在使用 Babel，主要是因为它对 ES6 的支持程度比其它同类更高，而且 Babel 拥有完善的文档和一个很棒的<a href="https://babeljs.io/repl/">在线交互式编程环境</a>。</p>
+
+<h2>起步</h2>
+
+<p>在用 ES6 标准开始一个新项目的时候我们会建立一个目录结构来确保用 ES6 编写的代码能和编译出的 ES5 代码区分开。原始的 ES6 代码我们放在 src 目录下，而编译好的文件就是 lib 目录。这样的命名我们会在本文一直使用。（补充一点，lib 目录应该被加入 .gitignore 文件中）</p>
+
+<h2>安装 Babel</h2>
+
+<p>如果你还没安装 Babel 可以使用 npm 来安装：</p>
+
+<pre class='green'><code>npm install -g babel
+</code></pre>
+
+<p>Babel 一旦安装完成就可以开始编译你的 ES6 代码了。再确认一遍你已经在 src 目录放入了一些 ES6 文件，下面的命令将会把这个目录下所有 .es6, .es 和 .js 后缀的文件编译成符合 ES5 规范的代码到 lib 目录下：</p>
+
+<pre class='green'><code>babel -d lib/ src/
+</code></pre>
+
+<p>如果你想在文件有改动的时候自动完成这些编译工作可以使用这些常用的 JavaScript 构建工具：<a href="https://github.com/babel/grunt-babel">Grunt</a>, <a href="https://github.com/babel/gulp-babel">Gulp</a> 和 <a href="https://github.com/babel/broccoli-babel-transpiler">Brocolli</a>.</p>
+
+<h2>给 ES6 标准库一个&#8221;腻子&#8221;</h2>
+
+<p>Babel 作为一个源到源的编译器不可能呈现所有 ES6 标准库中的新特性，例如 Map 和 Set 构造器和 Array 下的一些新方法。要使用这些我们需要一个&#8221;腻子&#8221;来填补这些不足。现在有很多 ES6 的腻子比如 core-js，它适用与 Node, io.js 和浏览器。</p>
+
+<p>译者注: 本节原始标题为 Polyfilling the standard library，术语 polyfill 来自于一个家装产品Polyfilla:</p>
+
+<p>Polyfilla 是一个英国产品，在美国称之为 Spackling Paste (刮墙的,在中国称为腻子)。记住这一点就行: 把旧的浏览器想象成为一面有了裂缝的墙.这些 polyfill 会帮助我们把这面墙的裂缝抹平,还我们一个更好的光滑的墙壁 (浏览器)</p>
+
+<h2>编写 ES6 代码</h2>
+
+<p>现在构建 ES6 代码的工具已经备齐了那我们就开始真正有趣的部分。我们不会过多着眼于某个新特性，如果你有需要可以阅读 <a href="https://github.com/lukehoban">Luke Hoban</a> 的 <a href="https://github.com/lukehoban/es6features">feature list</a>.</p>
+
+<p>我们先在 src 目录下创建一个叫 person.es6 的文件：</p>
+
+<pre class='green'><code>import 'core-js/shim';
+
+export default class Person {
+
+  constructor( name ) {
+    this.name = name;
+  }
+
+  sayHello() {
+    return `Hello ${ this.name }!`;
+  }
+
+  sayHelloThreeTimes() {
+    let hello = this.sayHello();
+    return `${ hello } `.repeat(3);
+  }
+}
+</code></pre>
+
+<p>在这个很简单的例子中我们用了数个需要 Babel 来解决兼容性的语法，还有一个新的方法 String#repeat 须要由 core-js 处理。你可以用本文开头给出的 Babel 命令行代码或者用 <a href="http://ow.ly/JJyhz">REPL</a> 得到运行结果。</p>
+
+<h2>发布到 npm</h2>
+
+<p>目前为止我们可以编写、编译和运行 ES6 代码，不过你也许还想把你的代码发布到 npm 上。你显然不能直接发布然后期望每个人都来自己编译一次。</p>
+
+<p>幸好，npm 允许你在发布前用 <a href="https://docs.npmjs.com/misc/scripts">prepublish script</a> 选项来修改，这个特性在 CoffeeScript 项目中已经被广泛使用了。</p>
+
+<p>现在把 package.json 文件加入到项目根目录中：</p>
+
+<pre class='green'><code>{
+  "name": "person",
+  "version": "0.1.0",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile"
+  },
+  "main": "lib/person.js",
+  "dependencies": {
+    "core-js": "^0.6.0"
+  },
+  "devDependencies": {
+    "babel": "^4.6.0"
+  }
+}
+</code></pre>
+
+<p>注意这个 compile script 会直接运行你在右边提供 Babel 命令，这样你就可以直接运行 npm run compile 来编译而不需要键入文件目录了，而 prepublish script 会在你每次执行 npm publish 的时候自动运行。</p>
+
+<p>还有就是为什么 Babel 会被加入 development dependencies 中，这样如果有人想参与这个项目就不用全局安装 Babel 了，npm 会把你项目下包含可执行文件的 node_modules 目录加入到系统环境变量 path 中。</p>
+
+<h2>.npmignore 文件</h2>
+
+<p>最后你需要确保发布的是编译出的文件而不是原始的 ES6 文件。如果你的项目根目录有 .gitignore 而没有 .npmignore 那 npm 就会自动忽略你项目中包含在 .gitignore 里所有的 文件和目录。添加 .npmignore 这样你发布的包里就是编译好的文件：</p>
+
+<pre class='green'><code>src/
+</code></pre>
+
+<h2>总结</h2>
+
+<p>编写 ES6 代码并使用源到源的编译器如 <a href="https://babeljs.io/">Babel</a> 或者 <a href="https://github.com/google/traceur-compiler">Traceur</a> 来转换成标准 ES5 代码
+使用 ES6 标准库腻子如 <a href="https://github.com/zloirock/core-js">core-js</a>
+记得在发布到 npm 的时候添加 .npmignore 文件
+你可以在我们的 <a href="https://github.com/mammaldev/update-couch-designs">update-couch-designs</a> 项目中看到一个完整的例子，这个项目是我们用于更新和新建 CouchDB 设计文档的简单脚本。</p>
+
+<p>原文：<a href="http://www.kchanzen.com/using-es6-today/">懂香&mdash;《现在开始使用 ES6》</a>
+翻译自 <a href="http://mammal.io/articles/using-es6-today/">Using ES6 with npm today</a></p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T20:11:07+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/es6/'>ES6</a>, <a class='category' href='/blog/categories/javascript/'>JavaScript</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/03/18/fan-she-chu-li-javafan-xing/" title="Previous Post: (翻译)反射处理java泛型">&laquo; (翻译)反射处理java泛型</a>  
+                <a class="basic-alignment right" href="/blog/2015/04/11/qian-duan-ku-zhi-lodash/" title="Next Post: JavaScript工具库之Lodash">JavaScript工具库之Lodash &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

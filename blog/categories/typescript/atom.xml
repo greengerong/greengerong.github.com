@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: TypeScript | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/typescript/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[tsd-提升IDE对JavaScript智能感知的能力]]></title>
+    <link href="http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li/"/>
+    <updated>2015-07-26T00:55:31+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li</id>
+    <content type="html"><![CDATA[<p>在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。</p>
+
+<p>追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索，然后展示出已经使用过的对象成员。这种方式的缺点是，其智能感知的的能力并不精准，经常会显示出很多无关的代码提示。</p>
+
+<p>在很多现代化开发方式中，IDE的强大支持和模块化组织这种“工程化”的思想是我们应对大规模开发的方式之一，这也已经被业界所认同。所以在最近两年，JavaScript的世界也提出了大规模开发的方案，其中有Google的Dart和微软的TypeScript。随着Angular2.0放弃了自家的Dart，而选择了TypeScript，也标志着TypeScript的逐渐成熟。TypeScript是微软总架构师Anders Hejlsberg设计的新语言，他是软件界的传奇人物，是Delphi和.NET的设计者。TypeScript是一种可以编译成传统JavaScript的语言，它并不是完全的创造了一门新语言，而TypeScript是JavaScript语言的超集，它最大的特点就是引入了类型系统。并在编译为JavaScript文件后，可以输出“.ts”的类型元数据信息，为我们IDE的智能感知和重构提供了重要的依据。</p>
+
+<p>关于TypeScript的更多知识，在这里笔者就不在叙述过多。有兴趣的读者可以到<a href="http://www.typescriptlang.org/">http://www.typescriptlang.org/</a>学习，本节要讲的，是它的另一个特性：它编译输出的元数据信息文件（<code>*.d.ts</code>），它可以在不需要修改原有JavaScript文件的情况下，而给JavaScript添加元数据类型信息，而这些类型信息则可以辅助IDE，给出有智能的提示信息，以及重构的依据。</p>
+
+<p>在TypeScript的开源社区，已经为很多的第三方库实现了这类模板文件，我们可以很快的应用在我们的项目之中。当然这里所说的额第三方包含我们常用的：Angular、jQuery、underscore、lodash、jasmine等。</p>
+
+<p>在官方同时也为我们提供了一个方便的工具叫TSD（全称为：TypeScript Definition manager for DefinitelyTyped），它是借鉴NPM包管理工具的思想，实现了一个类似的包管理工具，我们不需要任何的学习成本，只管像使用NPM一样使用它。</p>
+
+<p>这里是TSD主页:<a href="http://definitelytyped.org/tsd/">http://definitelytyped.org/tsd/</a>，你可以在这里深入了解它，或者是查询你所需要的模板库是否存在于TSD仓库。</p>
+
+<p>TSD也是一个Nodejs的工具，所以我们安装它非常容易，只需要在命令行中输入（对于有些Linux用户需要sudo）：</p>
+
+<pre><code>npm install tsd -g
+</code></pre>
+
+<p>安装我们需要的模板库，也很简单，如jQuery和Angular的安装：</p>
+
+<pre><code>tsd install jquery angular --save
+</code></pre>
+
+<p>这样TSD就会帮助我们下载jQuery和Angular的d.ts文件，并存放在当前目录的typings独立子目录下，并且它会将我们需要的依赖信息保存在一个叫tsd.json的文件，如NPM的package.json一样，方便于我们的版本管理，以及团队之间的共享。我们只需要共享这个tsd.json文件给其他同事，然后</p>
+
+<pre><code>tsd install
+</code></pre>
+
+<p>一切都可以满意就绪了。</p>
+
+<p>tsd.json文件的格式如下：</p>
+
+<p><img src="/images/blog_img/tsd-install.png" alt="tsd文件目录" /></p>
+
+<p>同时候TSD工具还会为我们在typing目录下生产一个tsd.d.ts文件，它会为我们引入这些模板文件，使得IDE能够识别出这样模板文件：</p>
+
+<pre><code>/// &lt;reference path="angularjs/angular.d.ts" /&gt;
+/// &lt;reference path="jquery/jquery.d.ts" /&gt;
+</code></pre>
+
+<p>下面是我们在Intellij中得到的智能感知图：</p>
+
+<p><img src="/images/blog_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
+
+<p>目前能够很好支持TypeScript这一特性的工具有：Intellij家族、微软自家的VS工具、Sublime。有了TSD这一工具，也许我们虽然还不能尝试TypeScript的特性，但我们仍然可以利用它来帮助我们的普通JavaScript开发。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TypeScript - Modules(模块)]]></title>
+    <link href="http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai/"/>
+    <updated>2015-04-12T16:52:50+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/04/12/typescript-modules-mo-kuai</id>
+    <content type="html"><![CDATA[<h2>简介</h2>
+
+<p>在TypeScript中提供了module(模块)的方式管理和组织代码结构。这里覆盖了内部和外部的模块，以及在何时怎么使用它。当然也有一些高级话题如何使用外部模块以及如何组织公用模块。</p>
+
+<h2>第一步</h2>
+
+<p>让我们从下面的例子开始，这个例子将会贯通本文。首先我们写了一段字符串验证的例子，用来验证用户在web页面form表单输入的信息，或者是外部文件导出的数据信息。</p>
+
+<h4>单文件的验证逻辑</h4>
+
+<pre><code>interface StringValidator {
+    isAcceptable(s: string): boolean;
+}
+
+var lettersRegexp = /^[A-Za-z]+$/;
+var numberRegexp = /^[0-9]+$/;
+
+class LettersOnlyValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return lettersRegexp.test(s);
+    }
+}
+
+class ZipCodeValidator implements StringValidator {
+    isAcceptable(s: string) {
+        return s.length === 5 &amp;&amp; numberRegexp.test(s);
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: StringValidator; } = {};
+validators['ZIP code'] = new ZipCodeValidator();
+validators['Letters only'] = new LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h4>增加模块化</h4>
+
+<p>我们将会增加更多的验证逻辑，并且我们希望有个好的代码组织来避免全部的污染和命名冲突。所以更好的方式是给一个命名空间来  组织我们的对象在一个模块中。</p>
+
+<p>在下面我们将把所有的验证逻辑移到一个叫‘Validation’的模块来组织我们的代码逻辑。因为我们希望interface和class在外部模块可见，所以我们加上了‘export’关键字导出成员。相反lettersRegexp和numberRegexp的逻辑是你不实现，我们并不希望暴露给外部模块。在文件最后的测试代码是放在外部模块，例如Validation.LettersOnlyValidator之类的。</p>
+
+<h4>模块化的Validators</h4>
+
+<pre><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+
+    var lettersRegexp = /^[A-Za-z]+$/;
+    var numberRegexp = /^[0-9]+$/;
+
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<h2>分离模块文件</h2>
+
+<p>随之项目代码的增加，我们希望能够分离文件，让项目更好的维护和开发。</p>
+
+<p>在下面我们将分离我们的验证逻辑为多个文件。虽然分离在多个文件，但是我们仍然可以共享一个命名空间，因为需要告诉编译器文件之间的关系，所以我在文件开始加入了reference tags得标记。再对于我们的测试代码没有什么改变。</p>
+
+<h4>多文件的内部模块</h4>
+
+<h6>Validation.ts</h6>
+
+<pre><code>module Validation {
+    export interface StringValidator {
+        isAcceptable(s: string): boolean;
+    }
+}
+</code></pre>
+
+<h6>LettersOnlyValidator.ts</h6>
+
+<pre><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var lettersRegexp = /^[A-Za-z]+$/;
+    export class LettersOnlyValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return lettersRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>ZipCodeValidator.ts</h6>
+
+<pre><code>/// &lt;reference path="Validation.ts" /&gt;
+module Validation {
+    var numberRegexp = /^[0-9]+$/;
+    export class ZipCodeValidator implements StringValidator {
+        isAcceptable(s: string) {
+            return s.length === 5 &amp;&amp; numberRegexp.test(s);
+        }
+    }
+}
+</code></pre>
+
+<h6>Test.ts</h6>
+
+<pre><code>/// &lt;reference path="Validation.ts" /&gt;
+/// &lt;reference path="LettersOnlyValidator.ts" /&gt;
+/// &lt;reference path="ZipCodeValidator.ts" /&gt;
+
+// Some samples to try
+var strings = ['Hello', '98052', '101'];
+// Validators to use
+var validators: { [s: string]: Validation.StringValidator; } = {};
+validators['ZIP code'] = new Validation.ZipCodeValidator();
+validators['Letters only'] = new Validation.LettersOnlyValidator();
+// Show whether each string passed each validator
+strings.forEach(s =&gt; {
+    for (var name in validators) {
+        console.log('"' + s + '" ' + (validators[name].isAcceptable(s) ? ' matches ' : ' does not match ') + name);
+    }
+});
+</code></pre>
+
+<p>如果存在多文件的依赖，我们需要保证编译器能加载各个文件。这里有两种方式做到：</p>
+
+<p>第一种方式：可以利用 &mdash;out 连接多个输入文件让编译器编译成一个单一js文件（）。这样编译器会自动根据 reference tags 自动组织多个文件编译成一个js文件。我们也可以组织个别的文件如：。</p>
+
+<p>第二种方式：我们也可以采用预先文件的编辑来加载多个文件，我们可以使用script tag在web页面加载来控制文件顺序，例如：</p>
+
+<h6>#MyTestPage.html (excerpt)</h6>
+
+<pre><code>&lt;script src="Validation.js" type="text/javascript" /&gt;
+&lt;script src="LettersOnlyValidator.js" type="text/javascript" /&gt;
+&lt;script src="ZipCodeValidator.js" type="text/javascript" /&gt;
+&lt;script src="Test.js" type="text/javascript" /&gt;
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TypeScript - Classes]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/17/typescript-classes/"/>
+    <updated>2014-11-17T19:10:32+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/17/typescript-classes</id>
+    <content type="html"><![CDATA[<h2>简介</h2>
+
+<p>JavaScript语言基于函数和原型链继承机制的方式构建可重用的组件。这对于OO方面编程来说显得比较笨拙。在下一代的JavaScript标准ECMAScript 6为我们提供了基于class base的OO设计方式。在TypeScript中我们也允许使用这种方式，TypeScript将编译为目前大多数浏览器能允许的普通Javascript代码，所以我们不用在等待ECMAScript 6的到来了。</p>
+
+<h2>类</h2>
+
+<p>我们先看一个关于class-base的实例：</p>
+
+<pre><code>class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+var greeter = new Greeter("world");
+</code></pre>
+
+<p>这种语法和我们先前在c#，java语言看见的很相似。在这里我们声明了一个Greeter的类，其中包含一个greeting的属性，构造函数，以及greet的方法。</p>
+
+<p>你也许已经注意到了例子中的‘this’关键字，’this‘和java/C#一样代表对象实例的成员访问。</p>
+
+<p>在最后一行我们利用‘new’关键字创建了一个Greeter的对象实例。这将会新建一个对象实例，并调用我们先前定义的构造函数初始化此对象。</p>
+
+<h2>继承</h2>
+
+<p>在TypeScript中我们可以使用我们常用的OO设计模式。当然对于OO设计最基本的是类型的继承(继承一个存在的类，复用存在的逻辑)，下例就是一个关于类继承的例子：</p>
+
+<pre><code>class Animal {
+    name:string;
+    constructor(theName: string) { this.name = theName; }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+
+class Snake extends Animal {
+    constructor(name: string) { super(name); }
+    move() {
+        alert("Slithering...");
+        super.move(5);
+    }
+}
+
+class Horse extends Animal {
+    constructor(name: string) { super(name); }
+    move() {
+        alert("Galloping...");
+        super.move(45);
+    }
+}
+
+var sam = new Snake("Sammy the Python");
+var tom: Animal = new Horse("Tommy the Palomino");
+
+sam.move();
+tom.move(34);
+</code></pre>
+
+<p>在这个案例中展示了TypeScript的OO继承方式，它和其他语言很相似。在TypeScript中我们采用‘extends’关键字来表示类的继承关系。在这里你可以看见 &lsquo;Horse'和'Snake'都是继承至'Animal'的子类实现。</p>
+
+<p>在案例中也展示如何去重写父类的方法，在这里'Snake'和'Horse都各自创建了一个‘move’方法来重写父类'Animal'的‘move’方法，并和‘super’关键字来调用父类的方法。</p>
+
+<h2>Private/Public访问限制</h2>
+
+<h4>Public为默认行为</h4>
+
+<p>你可能注意到了在上例中我们并没有用‘public’关键字去描述类的成员的访问级别让其可见。在C#这类语言中，我们必须显示的标注public关键字才能使得类的成员可见。但是在TypeScript中public为默认访问级别，而不是想c#一样private默认。</p>
+
+<p>有时我们希望封装隐藏类的内部成员控制类成员的可见性，这个时候我们可以使用‘private’这类关键字来标示成员。如我们希望隐藏‘Animal’的name属性：</p>
+
+<pre><code>class Animal {
+    private name:string;
+    constructor(theName: string) { this.name = theName; }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+</code></pre>
+
+<h4>理解private(私有)</h4>
+
+<p>TypeScript有一个结构化的类型(或者鸭子类型)系统。在我们比较两个不同类型，我们不关心它们来自哪里，只关心对类型的每个成员的兼容性。一旦所有的成员都是兼容的，那么我们就认为这两个类型也是兼容的。</p>
+
+<p>当类型检查系统比较两个‘private’成员时，将会认为是不同的对象。对于两个类型比较，当一个类型拥有私有成员的时候，那么另外一个类必须包含相同声明的私有变量(同一处声明，多为继承体现)。如下例：</p>
+
+<pre><code>class Animal {
+    private name:stringParameter properties;
+    constructor(theName: string) { this.name = theName; }
+}
+
+class Rhino extends Animal {
+    constructor() { super("Rhino"); }
+}
+
+class Employee {
+    private name:string;
+    constructor(theName: string) { this.name = theName; }   
+}
+
+var animal = new Animal("Goat");
+var rhino = new Rhino();
+var employee = new Employee("Bob");
+
+animal = rhino;
+animal = employee; //error: Animal and Employee are not compatible
+</code></pre>
+
+<p>在上例中我们有'Animal'和‘Rhino’两个类型，'Rhino'是‘Animal’的一个子类。同时我们也定义了一个 &lsquo;Employee'的类，它和‘Animal’类完全相同。我们分别创建了第三个类的对象，并相互赋值，结果'Animal'和'Rhino'继承关系，所以对于私有字段name在‘Animal’中具有相同的声明  'private name: string'，他们是兼容的。但对于'Employee'则各自声明了一个私有name字段，对于私有字段是不相同的，所以我们不能将employee赋值给animal对象，他们是不兼容的类型。</p>
+
+<h4>参数属性(Parameter properties)</h4>
+
+<p>访问限制关键字public'和'private也可以通过参数属性方式快捷初始化类成员字段，参数属性可以让我们一步创建类成员。下例是上例中我们去掉了‘theName’，利用‘private name: string’声明在构造函数参数上，它会为我们创建一个私有的name成员的同时初始化这个字段。</p>
+
+<pre><code>class Animal {
+    constructor(private name: string) { }
+    move(meters: number) {
+        alert(this.name + " moved " + meters + "m.");
+    }
+}
+</code></pre>
+
+<p>这里我们利用‘private’关键字为类创建了一个私有成员并初始化其值。对于public也类似。</p>
+
+<h2>访问器(Accessors)</h2>
+
+<p>TypeScript支持利用getters/setters来控制对成员的访问。让我们可以控制类的成员之间的访问方式。</p>
+
+<p>下面演示如何转化普通的类为get/set方式，如下是没有get/set的方式：</p>
+
+<pre><code>class Employee {
+    fullName: string;
+}
+
+var employee = new Employee();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+</code></pre>
+
+<p>在这里我们允许任意的访问内部fullName成员。有时这可能不是我们所期望的。</p>
+
+<p>在下边我们希望将其转化为在修改fullName的时候必须提供一个正确的passcode，使得不能任意修改此类name，如下：</p>
+
+<pre><code>var passcode = "secret passcode";
+
+class Employee {
+    private _fullName: string;
+
+    get fullName(): string {
+        return this._fullName;
+    }
+
+    set fullName(newName: string) {
+        if (passcode &amp;&amp; passcode == "secret passcode") {
+            this._fullName = newName;
+        }
+        else {
+            alert("Error: Unauthorized update of employee!");
+        }
+    }
+}
+
+var employee = new Employee();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+</code></pre>
+
+<p>这里我们在修改fullName属性的时候验证了passcode值，是否有权限修改。你可以尝试修改passcode的值，使其不匹配，观察下会发生什么问题？</p>
+
+<p><strong>注意:</strong>访问器使用我们需要设置编译输出为ECMAScript 5。</p>
+
+<h2>静态属性</h2>
+
+<p>回到类主题，上面我们所描述都是关于如何创建类的实例成员。我们同样也可以创建类的静态成员，其可见性为类级访问。我们可以使用'static' 关键字标注类级成员。在下面的例子中表格原点对于所有表格都是通用的，所以我们可以用‘static’来定义类级成员。那么可以采用类名(Grid.)来访问访问该成员，类似于对象成员的'this.&lsquo;.</p>
+
+<pre><code>class Grid {
+    static origin = {x: 0, y: 0};
+    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
+        var xDist = (point.x - Grid.origin.x);
+        var yDist = (point.y - Grid.origin.y);
+        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
+    }
+    constructor (public scale: number) { }
+}
+
+var grid1 = new Grid(1.0);  // 1x scale
+var grid2 = new Grid(5.0);  // 5x scale
+
+alert(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
+alert(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+</code></pre>
+
+<h2>高级特性</h2>
+
+<h4>构造函数</h4>
+
+<p>当我们在TypeScript中声明一个类的时候，有时可能会创建多种声明方式。首先类的实例方式：</p>
+
+<pre><code>class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+var greeter: Greeter;
+greeter = new Greeter("world");
+alert(greeter.greet());
+</code></pre>
+
+<p>这里“var greeter: Greeter”首先声明一个Greeter类的实例变量。这在很多OO语言中是很自然的方式。</p>
+
+<p>同时也利用new关键字实例化了这个类的实例，并调用构造函数初始化该对象。下面我们可以看看同等的JavaScript将会如何去做：</p>
+
+<pre><code>var Greeter = (function () {
+    function Greeter(message) {
+        this.greeting = message;
+    }
+    Greeter.prototype.greet = function () {
+        return "Hello, " + this.greeting;
+    };
+    return Greeter;
+})();
+
+var greeter;
+greeter = new Greeter("world");
+alert(greeter.greet());
+</code></pre>
+
+<p>这里'var Greeter'被赋值构造函数，并利用‘new’调用了这个方法得到类的实例。同样我们的类也可以包含静态变量。我们可以这么认为所有的类都可以拥有实例和静态两种类型的成员。</p>
+
+<p>让我们对上例稍微做一些修改：</p>
+
+<pre><code>class Greeter {
+    static standardGreeting = "Hello, there";
+    greeting: string;
+    greet() {
+        if (this.greeting) {
+            return "Hello, " + this.greeting;
+        }
+        else {
+            return Greeter.standardGreeting;
+        }
+    }
+}
+
+var greeter1: Greeter;
+greeter1 = new Greeter();
+alert(greeter1.greet());
+
+var greeterMaker: typeof Greeter = Greeter;
+greeterMaker.standardGreeting = "Hey there!";
+var greeter2:Greeter = new greeterMaker();
+alert(greeter2.greet());
+</code></pre>
+
+<p>这里‘greeter1’和上例工作很相似。我们初始化了‘Greeter’类，并调用此对象。其结果在上例已经看见。</p>
+
+<p>接着，我们直接使用了类访问。首先我们定义了一个新的‘greeterMaker’的变量，这变量保持了Greeter类的类型信息，这里我们使用的是‘typeof Greeter’，这会返回Greeter自身的类类型信息。这个类型信息中会包含所以的静态成员信息和实例化对象的构造函数信息。然后通过‘new’ greeterMaker来创建一个Greeter的实例对象，在调用其方法greet。</p>
+
+<h2>利用interface来使用class</h2>
+
+<p>如上所述，类主要声明了类实例类型和构造函数两件事。因为类主要创建类型，所以我们可以在同一地方使用interface来替代它：</p>
+
+<pre><code>class Point {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point {
+    z: number;
+}
+
+var point3d: Point3d = {x: 1, y: 2, z: 3};
+</code></pre>
+
+<p><strong>注意:</strong>TypeScript更准确说是为了类型检查的类型推断。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TypeScript - 基本类型系统]]></title>
+    <link href="http://greengerong.github.io/blog/2014/11/13/typescript-basic-types/"/>
+    <updated>2014-11-13T19:53:50+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/11/13/typescript-basic-types</id>
+    <content type="html"><![CDATA[<p>对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。</p>
+
+<h4>Boolean</h4>
+
+<p>在JavaScript和TypeScript中也具有最基本的逻辑断言值true/false，采用'boolean'类型。</p>
+
+<pre><code>var isDone: boolean = false;
+</code></pre>
+
+<h4>Number</h4>
+
+<p>如JavaScript，TypeScript所有的数值类型采用浮点型计数，其类型为‘number’。</p>
+
+<pre><code>var height: number = 6;
+</code></pre>
+
+<h4>String</h4>
+
+<p>在webpages的JavaScript或者服务端的应用程序最基本的功能就是处理文本数据。在其他语言中大多使用'string'去代表文本数据类型。TypeScript和JavaScript一样也是用双引号(&ldquo;)或者单引号包裹文本数据。</p>
+
+<pre><code>var name: string = "bob";
+    name = 'smith';
+</code></pre>
+
+<h4>Array</h4>
+
+<p>在TypeScript中如JavaScript一样允许我们操结合操作。数组类型可以使用下边两种方式之一。</p>
+
+<p>第一种方式，你可以在数据类型之后带上'[]&lsquo;:</p>
+
+<pre><code>var list:number[] = [1, 2, 3];
+</code></pre>
+
+<p>第二种方式，也可以采用泛型的数组类型：</p>
+
+<pre><code>var list:Array&lt;number&gt; = [1, 2, 3];
+</code></pre>
+
+<h4>Enum</h4>
+
+<p>TypeScript为JavaScript新增了枚举这种标准的集合数据类型。和在c#中一样，枚举是为一组数值类型一组更友好的名称。</p>
+
+<pre><code>enum Color {Red, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>默认枚举类型其实数值从0开始，你可以可用手动设置某一个成员的数值。例如我们可以将上文的起始值定为1：</p>
+
+<pre><code>enum Color {Red = 1, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>或是手动设置全部的枚举成员：</p>
+
+<pre><code>enum Color {Red = 1, Green = 2, Blue = 4};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>枚举类型可以和容易从一个数值类型获取对应枚举名称。例如我们有一个数值类型2，但不确认将匹配哪一个枚举成员，那么我们可以如下使用：</p>
+
+<pre><code>enum Color {Red = 1, Green, Blue};
+var colorName: string = Color[2];
+
+alert(colorName);
+</code></pre>
+
+<h4>Any</h4>
+
+<p>有时我们需要描述一些我们不知道的什么写进应用的动态数据类型，这可能来自第三方用户或者lib。在这里我们希望该数据不要加入TypeScript的类型检查,是的此值通过编译时检查。为此我们可以采用‘any’类型标注：</p>
+
+<pre><code>var notSure: any = 4;
+notSure = "maybe a string instead";
+notSure = false; // okay, definitely a boolean
+</code></pre>
+
+<p>‘any’类型是一种强大的兼容存在的JavaScript库的类型系统。他允许跳过TypeScript的编译时类型的检查。</p>
+
+<p>&lsquo;any'类型对于我们只知道部分数据类型，但是不是所有的数据类型的类型系统。如一个混合了多种类型的集合数组。</p>
+
+<pre><code>var list:any[] = [1, true, "free"];
+
+list[1] = 100;
+</code></pre>
+
+<h4>Void</h4>
+
+<p>和‘any’相对的数据类型则是’Void‘，它代表没有任何数据类型。我们常用的一个方法没有任何返回值：</p>
+
+<pre><code>function warnUser(): void {
+    alert("This is my warning message");
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,1253 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="
+"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/page/2">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/">书写高效的CSS代码-（待开发）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-13T21:36:54+08:00" pubdate data-updated="true">Oct 13<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/">CSS尺寸和字体单位-em、px还是%</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-09T07:00:04+08:00" pubdate data-updated="true">Oct 9<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在页面整体布局中，页面元素的尺寸大小（长度、宽度、内外边距等）和页面字体的大小也是重要的工作之一。一个合理设置，则会让页面看起来层次分明，重点鲜明，赏心悦目。反之，一个不友好的页面尺寸和字体大小设置，则会增加页面的复杂性，增加用户对页面理解的复杂性；甚至在当下访问终端（iPhone、iPad、PC、Android&hellip;）层出不穷的今天，适应各式各样的访问终端，将成为手中的一块“烫手的山芋”。所以在近几年，“九宫格”式的“流式布局”再度回归。为了提供页面布局，及其它的可维护性、可扩展性，我们尝试将页面元素的大小，以及字体大小都设置为相对值，不再是孤立的固定像素点。使其能在父元素的尺寸变化的同时，子元素也能随之适应变化。以及结合少量最新CSS3的@media查询，来实现“响应式布局”，bootstrap这类CSS框架大势兴起。</p>
+
+<p>然而在CSS中，W3C文档把尺寸单位划为为两类：相对长度单位和绝对长度单位。然而相对长度单位按照不同的参考元素，又可以分为字体相对单位和视窗相对单位。字体相对单位有：em、ex、ch、rem；视窗相对单位则包含：vw、vh、vmin、vmax几种。绝对定位则是固定尺寸，它们采用的是物理度量单位：cm、mm、in、px、pt以及pc。但在实际应用中，我们使用最广泛的则是em、rem、px以及百分比（%）来度量页面元素的尺寸。</p>
+
+<ol>
+<li>px：为像素单位。它是显示屏上显示的每一个小点，为显示的最小单位。它是一个绝对尺寸单位；</li>
+<li>em：它是描述相对于应用在当前元素的字体尺寸，所以它也是相对长度单位。一般浏览器字体大小默认为16px，则2em == 32px；</li>
+<li>%： 百分比，它是一个更纯粹的相对长度单位。它描述的是相对于父元素的百分比值。如50%，则为父元素的一半。</li>
+</ol>
+
+
+<p>这里需要注意的是：em是相对于应用于当前当前元素的字体尺寸；而百分比则是相对于父元素的尺寸。如下面示例：</p>
+
+<p>HTML：</p>
+
+<pre class='green'><code>&lt;div class="parent"&gt;
+     &lt;div class="em-demo"&gt;
+      设置长度为5em demo
+     &lt;/div&gt;
+
+     &lt;div class="percentage-demo"&gt;
+      设置长度为80% demo
+     &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>CSS：</p>
+
+<pre class='green'><code>div{
+    border: 1px dashed #808080;
+    margin:10px
+}
+
+.parent{
+    width: 200px;
+    font-size: 18px;
+}
+
+.em-demo{
+    width: 5em;
+}
+
+.percentage-demo{
+    width: 80%
+}
+</code></pre>
+
+<p>则其效果图为(<a href="http://jsbin.com/xihusojale/edit?html,css,output">http://jsbin.com/xihusojale/edit?html,css,output</a>)：</p>
+
+<p><img src="/images/blog_img/em-percentage-demo.png" alt="em percentage demo" /></p>
+
+<p>从图上我们可以看出：设置5em的div的第一行字符刚好为5个字符大小，因为如上所说，它是相对于当前元素字体的尺寸， 5 * 18 = 90px。而百分比显示则会比较大一些，因为它是相对于父元素的尺寸比例， 200 * 80% = 160px。</p>
+
+<p>对于px、em和百分比都能设置元素的尺寸和字体大小，但是它们各自有自己所不同的应用场景。不合理的运用，则会导致页面的混乱、难易维护和扩展。对于它们的使用，有如下几点被大家所认同的最佳实践：</p>
+
+<ol>
+<li>尽量使用相对尺寸单位</li>
+</ol>
+
+
+<p>使用相对尺寸单位计量，则在调整页面的布局的时候，不需要遍历所有的内部DOM结构，重新设置内部子元素的尺寸大小，同时它也能更好的适应与多中分辨率和屏幕终端。采用相对定位，并不意味着页面整体的自适应。</p>
+
+<p>当然，对于希望整体网站的“响应式设计”，适应当今层出不穷的的各类访问终端，相对尺寸布局将发挥更大的价值。我们仅需要利用CSS3的@media查询来设置外围的整体宽度，以及少量在设备上不一致的用户体验。关于“响应式布局”，可以更多的参考bootstrap这类新兴的CSS框架。</p>
+
+<p>对于相对尺寸单位的设置：em和%因为它们相对的参考物不同，所以它们也有不同的使用场景。如果希望随着当前元素的字体尺寸而改变尺寸，则使用em最佳，如：行高、字体大小。相反，如果是随着父容器或者是整体页面布局而改变尺寸，则使用%更好，如元素的高度和宽度设置。</p>
+
+<ol>
+<li>只在可预知的元素上使用绝对尺寸</li>
+</ol>
+
+
+<p>并不是所有的元素设置相对尺寸就是最佳的。对于如图表icon、如video这类多媒体元素、网页整体的宽度这类可预知尺寸，设置为绝对路径可能反而是最佳的选择。但他们需要试具体场景而定，从而获得最佳体验。不管我们如此设置相对尺寸，但在外层也总会有一些绝对尺寸度量，才可能存在百分比这类相对尺寸设置。</p>
+
+<ol>
+<li>字体尺寸尽量使用em、rem</li>
+</ol>
+
+
+<p>和尽量使用相对尺寸单位一样，为了字体大小的可维护性和伸缩性，W3C更推荐使用em作为字体尺寸单位。需要注意的是，如果存在3层以及3层以上的字体相对尺寸的设置，则对于实际字体大小的计算，就会变得相对麻烦。这个时候，在满足浏览器兼容性的情况下，可以考虑使用CSS3的新特性rem：根据固定根元素的字体大小来设置相对尺寸大小，这也是近几年移动APP所兴起的使用方式。</p>
+
+<p>rem的兼容性，我们可以用<a href="http://caniuse.com/#feat=rem">Can I Use</a>网站获取。</p>
+
+<p><img src="/images/blog_img/rem-%E5%85%BC%E5%AE%B9%E6%80%A7.png" alt="rem 兼容性" /></p>
+
+<ol>
+<li>@media查询做平台适配，但禁止随处滥用</li>
+</ol>
+
+
+<p>如上所说CSS3的@media查询，能帮助我们做到多平台终端的自适应布局，得到一个更好的用户体验。但这绝不意味着我们可以随处滥用它，在CSS代码中存在太多的平台差异的代码，这也会增加代码可读性、维护性的难度。更好的方式则是仅在必须使用它的场景下，合理的使用它，如页面外围的整体宽度，不同显示的菜单栏等。更多的体验适应性，可以移动到使用“流式布局”来实现。</p>
+
+<p>关于响应式设计，这是对开发周期、成本和平台体验的一个权衡的结果。如果不考虑开发、维护的成本，则为不同平台终端提供不同的页面设计，这样得到的用户体验会更友好。但在实际开发中，开发和维护成本、产品生命周期也是一个重要的权衡标准，而响应式设计则是它们之间的权衡结果。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/">多彩的Console打印新玩法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-28T08:53:40+08:00" pubdate data-updated="true">Sep 28<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Chrome应该是每一个Web开发者必备的工具之一。它有而强大的Devtool，辅助我们的JavaScript调试，审视DOM元素，CSS即时修改等。以及它还有一个的庞大的插件系统，同时我们也可以很容易的扩展属于自己的Chrome插件。如果希望了解更多的Chrome常用调试，请参见笔者早期的微信推送文章<a href="http://mp.weixin.qq.com/s?__biz=MjM5NTM1NDcyOQ==&amp;mid=204026297&amp;idx=1&amp;sn=47294644cc7298ea3c57736ed0a75173&amp;scene=23&amp;srcid=0928aP9a3QHDyTOtc2Nhrszw#rd">《15个必须知道的chrome开发者技巧》</a>。</p>
+
+<p>Chrome中的控制台console，是我们检查程序允许是否正常的常用工具之一，同时它也是我们打印调试日志信息，运行调试代码的常用工具。在国内近几年，它也成为了程序员招聘的渠道之一。如下面百度的招聘信息：</p>
+
+<p><img src="/images/blog_img/baidu-console-recruitment.png" alt="百度console招聘" /></p>
+
+<p>在Console中打印日志的方式有log、info、warn、error这几类方式。但它们并不是本文的主题。对于日志信息打印来说，一直都显得很单调。直到最新版的Chrome和Firefox (+31)，我们可以尝试更多多彩的打印格式了。在最新的Google chrome文档中console.log支持如下的格式：</p>
+
+<ol>
+<li>%s   字符串格式化；</li>
+<li>%d/%i    整数格式化；</li>
+<li>%f   小数位数据格式化；</li>
+<li>%o   可扩展的DOM节点格式化；</li>
+<li>%O   可扩展的JavaScript对象格式化；</li>
+<li>%c   利用CSS来自定义样式格式化输出。</li>
+</ol>
+
+
+<p>本文将要说的就是%c这个格式化器。我们可以利用CSS样式来控制打印信息的输出。这样我们就可以得到一个多彩的日志信息，或者就是招聘广告了。</p>
+
+<p>下面代码输出效果为：</p>
+
+<pre class='green'><code>console.log('%c [破狼]-[双狼说]!', 'background: #008000; color: #fff');
+</code></pre>
+
+<p>效果：</p>
+
+<p><img src="/images/blog_img/console-log-po-lang.png" alt="彩色的console log" /></p>
+
+<p>再如：下面这段来自<a href="http://stackoverflow.com/questions/7505623/colors-in-javascript-console">http://stackoverflow.com/questions/7505623/colors-in-javascript-console</a>示例，文字光影的效果：</p>
+
+<p>代码比较长，请移步到stackoverflow查看。这里主要是利用的text-shadow这个CSS3特性来实现的，文字光影效果：</p>
+
+<pre class='green'><code>var css = "text-shadow: -1px -1px hsl(0,100%,50%), 1px 1px hsl(5.4, 100%, 50%), 3px 2px hsl(10.8, 100%, 50%), .....";// 
+
+console.log("%cExample %s", css, 'all code runs happy');
+</code></pre>
+
+<p>效果如下：</p>
+
+<p><img src="/images/blog_img/console-log-demo-colorful-code.jpg" alt="彩色的console log" /></p>
+
+<p>在github也有<a href="https://github.com/adamschwartz/log">log</a>的repo，感兴趣的读者也可以研究研究。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/24/es7-javascript-decorators/">细说ES7 JavaScript Decorators</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-24T15:00:40+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>开篇概述</h2>
+
+<p>在上篇的<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中，我们预先体验了ES7的Decorators，虽然它只是一个简单的日志AOP拦截Demo。但它也足以让我们体会到ES7 Decorators的强大魅力所在。所以为什么博主会为它而专门写作此文。在Angular2中的TypeScript Annotate就是标注装潢器的另一类实现。同样如果你也是一个React的爱好者，你应该已经发现了redux2中也开始利用ES7的Decorators进行了大量重构。</p>
+
+<p>尝试过Python的同学们，我相信你做难忘的应该是装潢器。由<a href="https://github.com/wycats">Yehuda Katz</a>提出的<a href="https://github.com/wycats/javascript-decorators">decorator模式</a>，就是借鉴于Python的这一特性。作为读者的你，可以从上一篇博文<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中看到它们之间的联系。</p>
+
+<h2>Decorators</h2>
+
+<h4>背后原理</h4>
+
+<p>ES7的Decorators让我们能够在设计时对类、属性等进行标注和修改成为了可能。Decorators利用了ES5的</p>
+
+<pre class='green'><code>Object.defineProperty(target, name, descriptor);
+</code></pre>
+
+<p>来实现这一特性。如果你还不了解Object.defineProperty，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">MDN文档</a>。首先我们来考虑一个普通的ES6类：</p>
+
+<pre class='green'><code>class Person {
+  name() { return `${this.first} ${this.last}` }
+}
+</code></pre>
+
+<p>执行这一段class，给Person.prototype注册一个name属性，粗略的和如下代码相似：</p>
+
+<pre class='green'><code>Object.defineProperty(Person.prototype, 'name', {
+  value: specifiedFunction,
+  enumerable: false,
+  configurable: true,
+  writable: true
+});
+</code></pre>
+
+<p>如果利用装潢器来标注一个属性呢？</p>
+
+<pre class='green'><code>class Person {
+  @readonly
+  name() { return `${this.first} ${this.last}` }
+}
+</code></pre>
+
+<p>在这种装潢下的属性，则会在利用Object.defineProperty为Person.prototype注册name属性之前，执行这段装潢器：</p>
+
+<pre class='green'><code>let descriptor = {
+  value: specifiedFunction,
+  enumerable: false,
+  configurable: true,enumerable、
+  writable: true
+};
+
+descriptor = readonly(Person.prototype, 'name', descriptor) || descriptor;
+Object.defineProperty(Person.prototype, 'name', descriptor);
+</code></pre>
+
+<p>从上面的伪代码中，我们能看出，装潢器只是在Object.defineProperty为Person.prototype注册属性之前，执行一个装饰函数，其属于一类对Object.defineProperty的拦截。所以它和Object.defineProperty具有一致的方法签名，它们的3个参数分别为：</p>
+
+<ol>
+<li>obj：作用的目标对象；</li>
+<li>prop：作用的属性名；</li>
+<li>descriptor: 针对该属性的描述符。</li>
+</ol>
+
+
+<p>这里最重要的是descriptor这个参数，它是一个数据或访问器的属性描述对象。在对数据和访问器属性描述时，它们都具有configurable、enumerable属性可用。而在数据描述时，value、writable属性则是数据所特有的。get、set属性则是访问器属性描述所特有的。属性描述器中的属性决定了对象prop属性的一些特性。比如 enumerable，它决定了目标对象是否可被枚举，能够在for…in循环中遍历到，或者出现在Object.keys法的返回值中；writable则决定了目标对象的属性是否可以被更改。完整的属性描述，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description">MDN文档</a>。</p>
+
+<p>对于descriptor中的属性，它们可以被我们在Decorators中使用，或者修改的，以达到我们标注或者拦截的目的。这也是装潢器拦截的主体信息。</p>
+
+<h4>作用于访问器</h4>
+
+<p>装潢器也可以作用与属性的getter/setter访问器之上，如下将属性标注为不可枚举的代码：</p>
+
+<pre class='green'><code>class Person {
+  @nonenumerable
+  get kidCount() { return this.children.length; }
+}
+
+function nonenumerable(target, name, descriptor) {
+  descriptor.enumerable = false;
+  return descriptor;
+}
+</code></pre>
+
+<p>下面是一个更复杂的对访问器的备用录模式运用：</p>
+
+<pre class='green'><code>class Person {
+  @memoize
+  get name() { return `${this.first} ${this.last}` }
+  set name(val) {
+    let [first, last] = val.split(' ');
+    this.first = first;
+    this.last = last;
+  }
+}
+
+let memoized = new WeakMap();
+function memoize(target, name, descriptor) {
+  let getter = descriptor.get, setter = descriptor.set;
+
+  descriptor.get = function() {
+    let table = memoizationFor(this);
+    if (name in table) { return table[name]; }
+    return table[name] = getter.call(this);
+  }
+
+  descriptor.set = function(val) {
+    let table = memoizationFor(this);
+    setter.call(this, val);
+    table[name] = val;
+  }
+}
+
+function memoizationFor(obj) {
+  let table = memoized.get(obj);
+  if (!table) { table = Object.create(null); memoized.set(obj, table); }
+  return table;
+}   
+</code></pre>
+
+<h4>作用域类上</h4>
+
+<p>同样Decorators也可以为class装潢，如下对类是否annotated的标注：</p>
+
+<pre class='green'><code>// A simple decorator
+@annotation
+class MyClass { }
+
+function annotation(target) {
+   // Add a property on target
+   target.annotated = true;
+}
+</code></pre>
+
+<h4>也可以是一个工厂方法</h4>
+
+<p>对于装潢器来说，它同样也可以是一个工厂方法，接受配置参数信息，并返回一个应用于目标函数的装潢函数。如下例子，对类可测试性的标记：</p>
+
+<pre class='green'><code>@isTestable(true)
+class MyClass { }
+
+function isTestable(value) {
+   return function decorator(target) {
+      target.isTestable = value;
+   }
+}
+</code></pre>
+
+<p>同样工厂方法，也可以被应用于属性之上，如下对可枚举属性的配置：</p>
+
+<pre class='green'><code>class C {
+  @enumerable(false)
+  method() { }
+}
+
+function enumerable(value) {
+  return function (target, key, descriptor) {
+     descriptor.enumerable = value;
+     return descriptor;
+  }
+}
+</code></pre>
+
+<p>同样在上篇<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中对于日志拦截的日志类型配置信息，也是利用工厂方法来实现的。它是一个更复杂的工厂方式的Decorators实现。</p>
+
+<h4>后续</h4>
+
+<p>如上一篇博问所说：虽然它是ES7的特性，但在Babel大势流行的今天，我们可以利用Babel来使用它。我们可以利用Babel命令行工具，或者grunt、gulp、webpack的babel插件来使用Decorators。</p>
+
+<p>关于ES7 Decorators的更有意思的玩法，你可以参见牛人实现的常用的Decorators：<a href="https://github.com/jayphelps/core-decorators.js">core-decorators</a>。以及<a href="http://raganwald.com/">raganwald</a>的<a href="http://raganwald.com/2015/06/26/decorators-in-es7.html">如何用Decorators来实现Mixin</a>。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-23T07:11:07+08:00" pubdate data-updated="true">Sep 23<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上篇博文<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>中，笔者利用CoffeeScript支持的高阶函数，以及方法调用可省略括符的特性，实现了一个类似Python装潢器的日志Demo。这只是一种伪实现，JavaScript实现装潢器，我们需要等到ECMAScript7才行，在ES7特性中带来了Decorators，它就是我们所需要的装潢器特性。虽然它是ES7的特性，但在Babel大势流行的今天，我们可以利用Babel来使用它。关于Babel的推荐文章，请参见另一篇文章<a href="http://greengerong.com/blog/2015/03/22/babel-kai-shi-es6ti-yan/">Babel-现在开始使用 ES6</a>。</p>
+
+<p>下面我们仍然和上节<a href="http://greengerong.com/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a>一样，实现一个ES7 Decorators版的日志拦截示例。我们希望得到的代码效果如下：</p>
+
+<pre class='green'><code>class MyClass {
+  @log('MyClass add')
+  add(a, b){
+    return a + b;
+  }
+  @log('MyClass product')
+  product(a, b){
+    return a * b;
+  }
+  @log('MyClass error')
+  error(){
+     throw 'Something is wrong!';
+   }
+}
+</code></pre>
+
+<p>在ES7中Decorators，也是一个函数，我们只需要在它前面加上@符号，并将它标注在特定的目标，如class、method等，则可以实现方法的包裹拦截。它的传入参数有：target, name, descriptor。它们分别标记目标，标记目标名称，以及目标描述信息。在descriptor中，包括configurable、enumerable、writable，value四个属性。它们分别可以控制目标的读写、枚举，以及目标值。</p>
+
+<p>所以我们可以如下实现：</p>
+
+<pre class='green'><code>let log = (type) =&gt; {
+    const logger = new Logger('#console');
+    return (target, name, descriptor) =&gt; {
+      const method = descriptor.value;
+      descriptor.value =  (...args) =&gt; {
+            logger.info(`(${type}) before function execute: ${name}(${args}) = ?`);
+            let ret;
+            try {
+                ret = method.apply(target, args);
+                logger.info(`(${type})after function execute success: ${name}(${args}) =&gt; ${ret}`);
+            } catch (error) {
+                logger.error(`(${type}) function execute error: ${name}(${args}) =&gt; ${error}`);
+            } finally {
+                logger.info(`(${type}) function execute done: ${name}(${args}) =&gt; ${ret}`);
+            }
+            return ret;
+        }
+    }
+}
+</code></pre>
+
+<p>首先我们将原来的方法体缓存起来，直到方法调用时，才会被调用以实现方法调用前后的日志拦截，打印相关信息。示例的效果如下：</p>
+
+<p><img src="/images/blog_img/es7-decorators-log-aop.png" alt="es7 decorators log aop" /></p>
+
+<p>整个demo示例，你也可以在codepen上细细把玩：</p>
+
+<p data-height="350" data-theme-id="0" data-slug-hash="epzbMV" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/epzbMV/'>ES7 Decorators</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async="true" src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/22/coffeescript-shi-xian-python-zhuang-huang-qi/">CoffeeScript实现Python装潢器</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-22T21:09:03+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上篇<a href="http://greengerong.com/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript &ndash; NgComponent封装</a>中，我们讲述了CoffeeScript这门小巧的语言，摒弃JavaScript中糟粕（“坑”）部分，并将JavaScript中精粹部分发挥到淋淋尽致。虽然笔者更喜欢ES6 + Babel或者TypeScript这类鲜明特性的JavaScript语法。但是CoffeeScript也不失为一门不错的JavaScript扩展语言，特别在Ruby社区仍然是一个很好的选择。</p>
+
+<p>在本节中，我们将会利用CoffeeScript来模拟Python中的装潢器实现。Python的装潢器是属于一类来自于语言层次的AOP实现。AOP是Aspect-Oriented Programming的缩写，意为：面向切面编程。通过编译时（Compile）植入代码、运行期（Runtime）动态代理、以及框架提供管道式执行等策略实现程序通用功能与业务模块的分离，统一处理、维护的一种解耦设计。AOP是OOP的延续，是软件开发中的一个热点，也是很多服务端框架（如Java世界的Spring）中的核心内容之一，是函数式编程的一种衍生范型。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可复用性，同时提高开发效率。 AOP实用的场景主要有：权限控制、日志模块、事务处理、性能统计、异常处理等独立、通用的非业务模块。关于更多的AOP资料请参考<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a>。</p>
+
+<p>在Python中的装潢器也是一个普通的函数，我们只需要使用@符号将方法标注在另一个方法签名上就能实现对被标注方法的装潢。这也是Python这门函数式语言中高阶函数的运用。被装潢的方法将会被传入装潢函数中，被装潢包裹以实现方法的拦截。</p>
+
+<p>Python中的装潢器如下：</p>
+
+<pre class='green'><code>def deco(func):
+    def _deco(*args, **kwargs):
+        print("before %s called." % func.__name__)
+        ret = func(*args, **kwargs)
+        print("  after %s called. result: %s" % (func.__name__, ret))
+        return ret
+    return _deco
+
+@deco
+def myfunc(a, b):
+    print(" myfunc(%s,%s) called." % (a, b))
+    return a+b
+</code></pre>
+
+<p>这里的装潢器deco，将会包裹myfunc方法，实现调用前后的日志信息拦截。</p>
+
+<p>在CoffeeScript中，我们如何实现呢？在CoffeeScript并没有真正的装潢器这一特性，但它存在高阶函数，可以如下包裹：</p>
+
+<pre class='green'><code>log(myfunc)
+</code></pre>
+
+<p>在CoffeeScript中，我们也可以简化去掉方法（）符号：</p>
+
+<pre class='green'><code>log myfunc
+</code></pre>
+
+<p>如果我们再像Python一样强制加上@符号，并将log函数放在方法声明右边，则似乎就有点接近Python的装潢器：</p>
+
+<pre class='green'><code>f = @log (a, b) -&gt; a + b
+</code></pre>
+
+<p>不知作为读者的你，是否也有点装潢的感觉呢？不用着急，我们在来看一个完整的demo示例：</p>
+
+<p data-height="268" data-theme-id="0" data-slug-hash="wKKQKv" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/wKKQKv/'>CoffeeScript- decorator</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async="true" src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+<p>这里利用了高阶函数的log函数来包装我们的自定义函数。其实这只是高阶函数的运用，如果这门语法也能省略掉方法调用的（），则完全也可以做到如上实现。希望作为读者的你，到这里已经明白的在函数式中高阶函数的魅力，以及其重要性。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/19/verlet-js-javascript-wu-li-yin-qing/">Verlet-js JavaScript 物理引擎</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-19T22:20:34+08:00" pubdate data-updated="true">Sep 19<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>subprotocol最近在Github上开源了verlet-js。地址为<a href="https://github.com/subprotocol/verlet-js">https://github.com/subprotocol/verlet-js</a>。verlet-js是一个集成Verlet的物理引擎，利用JavaScript编写。verlet-js支持粒子系统、距离限制、角度限制等。其Github声称基于这些基础，则可以帮助我们构建几乎任何我们所能想象到的东西。</p>
+
+<p>其官网为我们提供了一下几个demo：</p>
+
+<ol>
+<li><a href="http://subprotocol.com/verlet-js/examples/shapes.html">Shapes (verlet-js Hello world)</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/tree.html">Fractal Trees</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/cloth.html">Cloth</a></li>
+<li><a href="http://subprotocol.com/verlet-js/examples/spiderweb.html">Spiderweb</a></li>
+</ol>
+
+
+<p>笔者觉得<a href="http://subprotocol.com/verlet-js/examples/spiderweb.html">Spiderweb</a>特别有意思，下面是它的效果截图：</p>
+
+<p><img src="/images/blog_img/verlet-js-Spiderweb.png" alt="verlet-js Spiderweb" /></p>
+
+<p><img src="/images/blog_img/verlet-js-cloth.png" alt="verlet-js Spiderweb" /></p>
+
+<p>Github地址：<a href="https://github.com/subprotocol/verlet-js">https://github.com/subprotocol/verlet-js</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/15/html5te-shu-su-ji-tu/">HTML5特性速记图</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-15T15:03:35+08:00" pubdate data-updated="true">Sep 15<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天推荐大家一张HTML5特性速记图，供大家平时查阅，也可以打印放在电脑旁帮助速记、速查。此图笔者收集于网络图片。</p>
+
+<p><img src="/images/blog_img/HTML5%E7%89%B9%E6%AE%8A%E9%80%9F%E8%AE%B0%E5%9B%BE.PNG" alt="angualr meet coffeescript" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/">Angular遇上CoffeeScript - NgComponent封装</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-12T22:09:23+08:00" pubdate data-updated="true">Sep 12<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/blog_img/Angular-meetting-CoffeeScript.jpg" alt="angualr meet coffeescript" /></p>
+
+<p>CoffeeScript是基于JavaScript的一门扩展小巧语言，它需要编译成JavaScript，然后再运行与浏览器或者Nodejs平台。JavaScript由于商业原因10天时间就匆忙诞生，所以存在很多弊病。但如《JavaScript精粹》一书中所说：JavaScript也存在着一颗华丽的心脏，如果我们能避开JavaScript中的“坑”，使用其精华的部分，这将是一门令人爱不释手的语言. 而CoffeeScript则是尝试使用这部分简洁的方式展示JavaScript的这部分优秀的精华，避免那些困扰JavaScript开发者的“坑”.CoffeeScript借鉴于Python和Ruby这两门语言，函数式风格、鸭子类型、OO风格一体的一门简洁语言。</p>
+
+<p>Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module、双向绑定、依赖注入、Directive、MVVM等机制。更多资料参见博主其他博文。当Angular遇见CoffeeScript这门语言，将会发生什么呢？</p>
+
+<p>想让我们来看一眼笔者利用CoffeeScript对Angular1.x代码的封装后效果。</p>
+
+<pre class='green'><code>## controller
+class DemoController extends NgComponent
+   @inject 'demoService'
+   @controller 'ng.green.demo'   
+
+   __init__: =&gt;
+      @demoService.getLang().then (data) =&gt;
+        @lang = data 
+
+## service  
+class DemoService extends NgComponent
+   @inject '$q'
+   @service 'ng.green.demo' 
+
+   getLang: =&gt;
+      data = data : ['JavaScript', 'CoffeeScript', 'TypeScript', 'ES6']
+      @$q.when(data)
+
+## directive controller   
+class JsonDumpController extends NgComponent
+   @inject '$log'
+   @controller 'ng.green.demo'   
+
+   __init__: =&gt;
+      @$log.info('This is form directive controller')
+
+## directive       
+class JsonDumpDirective extends NgComponent
+  @inject '$timeout', '$http', '$cacheFactory', '$log'
+  @directive 'ng.green.demo' 
+  restrict: 'EA'
+  templateUrl: '/jsonDump.html'
+  scope: 
+    json: "="
+  controller: 'JsonDumpController'
+  link: (scope, elm, iAttrs) =&gt;
+    @$timeout (() =&gt; @$log.info '$timeout &amp; $log injector worked on link function!' ), 100
+</code></pre>
+
+<p>有了上面的对controller、service、directive的定义，则我们可以如下方式使用：</p>
+
+<pre class='green'><code>&lt;div ng-app="ng.green.demo" ng-controller="DemoController as demo" class="container"&gt;
+  &lt;json-dump json="demo.lang"&gt;&lt;/json-dump&gt;
+  &lt;script type="text/ng-template" id="/jsonDump.html"&gt; 
+  &lt;hr /&gt;
+  &lt;pre&gt;&lt;/pre&gt;
+&lt;/script&gt; 
+&lt;/div&gt;
+</code></pre>
+
+<p>不知各位看官对如上代码感觉如何？是不是更简化、语义化、有点ng的感觉。其中笔者还有意模仿Python，如<strong>init</strong>作为初始化方式。在这里每个class会自声明组件类型，以及声明式注入，module自注册。</p>
+
+<p>不管如何看，下面我来看看NgComponent到底做了什么？</p>
+
+<pre class='green'><code>class NgComponent
+    @controller: (moduleName, moduleResolver) -&gt;
+      componentName = @$$componentName(true)
+      angular.module(moduleName, moduleResolver).controller componentName, @      
+
+    @service: (moduleName, moduleResolver) -&gt;
+      componentName = @$$componentName()
+      angular.module(moduleName, moduleResolver).service componentName, @
+
+    @directive: (moduleName, moduleResolver) -&gt;
+      componentName = @$$componentName().replace('Directive','')
+      directiveClass = @
+      directiveFactory = (args...) -&gt;
+          new directiveClass(args...)          
+      directiveFactory.$inject = @$inject
+      angular.module(moduleName, moduleResolver).directive componentName, directiveFactory    
+
+    @$$componentName: (upperCaseFirstLetter = false) -&gt;
+      # regex for ie
+      componentName = @name || @toString().match(/function\s*(.*?)\(/)?[1]
+      if upperCaseFirstLetter
+       firstLetter =  componentName.substr(0,1).toUpperCase()
+      else
+        firstLetter = componentName.substr(0,1).toLowerCase()
+      (componentName = "#{firstLetter}#{componentName.substr(1)}") unless upperCaseFirstLetter
+      componentName
+
+    @inject: (args...) -&gt;
+      @$inject = args
+
+    constructor: (args...) -&gt;
+      for key, index in @constructor.$inject
+        @[key] = args[index]
+
+      @__init__?()
+</code></pre>
+
+<p>在NgComponent中定义了controller、service、directive注册接口，这里可以是声明创建module，也可以是在已声明的module上注册这些组件类型。对于组件命名也才采用了约定胜于配置，它们都以class类型为基础，controller为首字母大写的驼峰命名，service则首字母小写驼峰命名，directive则会去掉Directive标记并首字母小写注册。</p>
+
+<p>同时这里也声明了@inject方法，使得我们可以在定义在类型之上定义$inejct属性，Angular的注入声明。对于Angular的注入服务，在构造函数中会将他们一一添加到当前类实例对象之上。在依赖添加完毕后，也会调用对象初始化方法，这里是模拟Python的<strong>init</strong>。</p>
+
+<p>Demo效果可以在codepen查看 <a href="http://codepen.io/greengerong/pen/EVVQZg?editors=101">http://codepen.io/greengerong/pen/EVVQZg?editors=101</a>：</p>
+
+<p data-height="268" data-theme-id="0" data-slug-hash="EVVQZg" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/EVVQZg/'>Angular meet CoffeeScript</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+<p>本文笔者的突发奇想，希望能给读者一些启发，也许你还有更好的DSL封装，欢迎多多交流。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/">扩展Bootstrap Tooltip插件使其可交互</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-09T13:20:20+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近在公司某项目开发中遇见一特殊需求，请笔者帮助，因此有了本文的插件。在前端开发中tooltip是一个极其常用的插件，它能更好向使用者展示更多的文档等帮助信息。它们通常都是一些静态文本信息。但同事他们的需求是需要动态交互，在文本信息中存在帮助网页的链接。如果使用常规tooltip，则在用户移出tooltip依赖DOM节点后，tooltip panel则将被隐藏。所以用户没有办法点击到这些交互链接。</p>
+
+<p>所以我们期望：给用户一定的时间使得用户能够将鼠标从依赖节点移动到tooltip panel；并且如果用户鼠标停留在tooltip上则不能隐藏，使得用户能够与位于tooltip上的链接或者是其他form表单控件交互。</p>
+
+<p>也许你觉得这并不难，在网上Google就有很多代码可直接使用。是的，如下面这段来自plnkr.co的代码（<a href="http://plnkr.co/edit/x2VMhh?p=preview">http://plnkr.co/edit/x2VMhh?p=preview</a>）：</p>
+
+<pre class='green'><code>$(".pop").popover({ trigger: "manual" , html: true, animation:false})
+    .on("mouseenter", function () {
+        var _this = this;
+        $(this).popover("show");
+        $(".popover").on("mouseleave", function () {
+            $(_this).popover('hide');
+        });
+    }).on("mouseleave", function () {
+        var _this = this;
+        setTimeout(function () {
+            if (!$(".popover:hover").length) {
+                $(_this).popover("hide");
+            }
+        }, 300);
+});
+</code></pre>
+
+<p>它是使用bootstrap的popover来实现的，从bootstrap的源码能看到popover是继承至tooltip的组件之一。这里是通过将popover的触发方式设为手动触发，由我们自己来控制显示和隐藏它的时机。并且在依赖节点离开的时候，给定300ms的延迟等待用户进入tooltip panel，如果300ms还没有进入tooltip则隐藏它。否则就阻止隐藏tooltip的逻辑。</p>
+
+<p>这代码虽然功能可用，但具有代码洁癖的博主并不太满意这样的代码。它难以阅读维护，同时重用性也将极差。所以笔者决定要以bootstrap插件方式来一bs way写这款插件。</p>
+
+<p>当笔者查阅bootstrap tooltip源码时，发现它是一个扩展性很不错的插件。tooltip的显示和隐藏依赖于它内部的hoverState状态来控制，in代表在依赖节点元素之上，out则代表移出了DOM元素。并且它也支持延迟动画机制。所以我们可以如下方式控制hoverState的状态：</p>
+
+<pre class='green'><code>var DelayTooltip = function (element, options) {
+    this.init('delayTooltip', element, options);
+    this.initDelayTooltip();
+};
+
+DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    trigger: 'hover',
+    delay: {hide: 600}
+});
+
+DelayTooltip.prototype.delayTooltipEnter = function(){
+        this.hoverState = 'in';
+    };
+
+    DelayTooltip.prototype.delayTooltipLeave = function(){
+        this.hoverState = 'out';
+        this.leave(this);
+    };
+
+  DelayTooltip.prototype.initDelayTooltip = function(){
+      this.tip()
+          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
+          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
+  };
+</code></pre>
+
+<p>这里在构造tooltip对象同时也注册tooltip panel的mouseenter、mouseleave.事件，并设置对应的hoverState状态。当移出tooltip panel时，这里需要手动的调用来自tooltip继类的leave方法。对于隐藏延时则设置在默认option中，使其能够可配置。</p>
+
+<p>上面的代码就是我们所需要扩展tooltip的所有的代码。当然要想作为一个通用的bootstrap插件，还需要它固定的插件配置代码。插件全部代码如下：</p>
+
+<pre class='green'><code>(function ($) {
+  'use strict';
+
+  var DelayTooltip = function (element, options) {
+    this.init('delayTooltip', element, options);
+    this.initDelayTooltip();
+  };
+
+  if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js');
+
+  DelayTooltip.VERSION  = '0.1';
+
+  DelayTooltip.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
+    trigger: 'hover',
+    delay: {hide: 300}
+  });
+
+  DelayTooltip.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype);
+
+  DelayTooltip.prototype.constructor = DelayTooltip;
+
+  DelayTooltip.prototype.getDefaults = function () {
+    return DelayTooltip.DEFAULTS;
+  };
+
+    DelayTooltip.prototype.delayTooltipEnter = function(){
+        this.hoverState = 'in';
+    };
+
+    DelayTooltip.prototype.delayTooltipLeave = function(){
+        this.hoverState = 'out';
+        this.leave(this);
+    };
+
+  DelayTooltip.prototype.initDelayTooltip = function(){
+      this.tip()
+          .on('mouseenter.'  +  this.type, $.proxy(this.delayTooltipEnter, this))
+          .on('mouseleave.' + this.type, $.proxy(this.delayTooltipLeave, this));
+  };
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this);
+      var data    = $this.data('bs.delayTooltip');
+      var options = typeof option == 'object' &amp;&amp; option;
+
+      if (!data &amp;&amp; /destroy|hide/.test(option)) return;
+      if (!data) $this.data('bs.delayTooltip', (data = new DelayTooltip(this, options)));
+      if (typeof option == 'string') data[option]();
+    });
+  }
+
+  var old = $.fn.delayTooltip;
+
+  $.fn.delayTooltip             = Plugin;
+  $.fn.delayTooltip.Constructor = DelayTooltip;
+
+  $.fn.delayTooltip.noConflict = function () {
+    $.fn.delayTooltip = old;
+    return this;
+  };
+
+})(jQuery);
+</code></pre>
+
+<p>这里基本都是bootstrap插件机制的固定模板，仅仅需要套用上就行。有了这个插件扩展，那么我们就可以如下使用这款插件：你也可以在jsbin中查看效果<a href="http://jsbin.com/wicoki/edit?html,js,output">http://jsbin.com/wicoki/edit?html,js,output</a>:</p>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;div id="tooltip"&gt;bs tooltip:你能点击链接？&lt;/div&gt;
+&lt;hr&gt;
+&lt;div  id="delayTooltip"&gt;delay tooltip：尝试点击链接&lt;/div&gt;
+&lt;hr&gt;
+&lt;div id="delayTooltipInHtml" data-html="true" data-placement="bottom" data-toggle="delayTooltip"&gt;delay tooltip:利用html标签实现&lt;/div&gt;
+</code></pre>
+
+<p>JavaScript 代码：</p>
+
+<pre class='green'><code>(function(global, $){
+
+    var page = function(){
+
+    };
+
+    page.prototype.bootstrap = function(){
+        var html = 'Weclome to my blog &lt;a target="_blank" href="greengerong.github.io"&gt;破狼博客&lt;/a&gt;!&lt;input type="text" placeholder="input some thing"/&gt;';
+        $('#tooltip').tooltip( {
+            html: true,
+            placement: 'top',
+            title: html
+        });
+
+        $('#delayTooltip').delayTooltip( {
+            html: true,
+            placement: 'bottom',
+            title: html
+        });
+
+  $('#delayTooltipInHtml').attr('title', html).delayTooltip();
+
+  return this;
+};
+
+     global.Page = page;
+
+})(this, jQuery);
+
+$(function(){
+    'use strict';
+  var page = new window.Page().bootstrap();
+    //
+});
+</code></pre>
+
+<p>这款插件既支持jQuery在HTML中声明属性的方式，同时也可以在javascript中使用。效果如下：</p>
+
+<p><img src="/images/blog_img/delay-tooltip-example.png" alt="bootstrap dealy-tooltip" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

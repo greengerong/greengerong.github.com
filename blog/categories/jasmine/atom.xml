@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Jasmine | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/jasmine/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Jasmine测试ng Promises - Provide and Spy]]></title>
+    <link href="http://greengerong.github.io/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/"/>
+    <updated>2014-09-29T15:53:45+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy</id>
+    <content type="html"><![CDATA[<p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
+
+<pre><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+      StoreService.listStores().then(function(branches) {
+        Contact.retrieveContactInfo().then(function(userInfo) {
+            //more code here crossing user and stores data
+        });  
+      });
+    });
+</code></pre>
+
+<p>下面让我们来尝试如何用angular提供的$provide创建一个依赖的实现，以及利用jasmine帮助我们fake方法的返回值：</p>
+
+<p>代码如下，有详细注释帮助你去理解这段代码：</p>
+
+<pre><code>    describe("Store Controller", function() {
+      var $controller, Contact, StoreService, createController, scope;
+
+      beforeEach(function() {
+        module('myApp.store');
+
+        // Provide will help us create fake implementations for our dependencies
+        module(function($provide) {
+
+          // Fake StoreService Implementation returning a promise
+          $provide.value('StoreService', {
+            listStores: function() {
+              return { 
+                then: function(callback) {return callback([{ some: "thing", hoursInfo: {isOpen: true}}]);}
+              };
+            },
+            chooseStore: function() { return null;}
+          });
+
+          // Fake Contact Implementation return an empty object 
+          $provide.value('Contact', {
+            retrieveContactInfo: function() {
+              return {
+                then: function(callback) { return callback({});}
+              };
+            }
+          });
+
+          return null;
+        });
+      });
+
+      beforeEach(function() {
+
+        // When Angular Injects the StoreService and Contact dependencies, 
+        // it will use the implementation we provided above
+        inject(function($controller, $rootScope, _StoreService_, _Contact_) {
+          scope = $rootScope.$new();
+          StoreService = _StoreService_;
+          Contact = _Contact_;
+          createController = function(params) {
+            return $controller("StoresCtrl", {
+              $scope: scope,
+              $stateParams: params || {}
+            });
+          };
+        });
+      });
+
+      it("should call the store service to retrieve the store list", function() {
+        var user = { address: {street: 1}};
+
+        // Jasmine spy over the listStores service. 
+        // Since we provided a fake response already we can just call through. 
+        spyOn(StoreService, 'listStores').and.callThrough();
+
+        // Jasmine spy also allows to call Fake implementations via the callFake function 
+        // or we can return our own response via 'and.returnValue
+        // Here we can override the response we previously defined and return a promise with a user object
+        spyOn(Contact, 'retrieveContactInfo').and.callFake(function() {
+          return {
+            then: function(callback) { return callback(user); }
+          };
+        });
+
+        createController();
+        // Since we setup a spy we can now expect that spied function to have been called 
+        // or to have been called with certain parameters..etc
+        expect(StoreService.listStores).toHaveBeenCalled();
+      });
+    });
+</code></pre>
+
+<p>原文地址:<a href="http://ng-learn.org/2014/08/Testing_Promises_with_Jasmine_Provide_Spy/">Testing Promises with Jasmine &ndash; Provide and Spy</a></p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>最新Angular2案例rebirth开源 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在过去的几年时间里，Angular1.x显然是非常成功的.但由于最初的架构设计和Web标准的快速发展，逐渐的显现出它的滞后和不适应。这些问题包括性能瓶颈、滞后于急速发展的Web标准、移动化等多平台发展，学习难度等。 所以Angular团队最终决定全新方式构建Angular2框架。 &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2016/09/03/angular2-demo-rebirth">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">最新Angular2案例rebirth开源</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-09-03T22:33:18+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在过去的几年时间里，Angular1.x显然是非常成功的.但由于最初的架构设计和Web标准的快速发展，逐渐的显现出它的滞后和不适应。这些问题包括性能瓶颈、滞后于急速发展的Web标准、移动化等多平台发展，学习难度等。</p>
+
+<p>所以Angular团队最终决定全新方式构建Angular2框架。Angular2框架现在已经进入RC6版本，很快将进入最终的发布版。Angular2带来了很多不错的特性，它们包括跨平台、高性能、高效开发等。</p>
+
+<p>由于在Angular中引入了render层隔离设计，所以它也很容易实现跨平台的拓展。理论上只需要实现目标平台的render层处理。目前在Angular2的生态圈中已有的跨平台框架如下：</p>
+
+<ul>
+<li>Web： <a href="https://angular.io/">Angular框架自身</a>;</li>
+<li>Universal / Isomorphic: <a href="https://universal.angular.io/">Universal</a>;</li>
+<li>Progressive Web App: <a href="https://mobile.angular.io/">mobile-toolkit</a>;</li>
+<li>NativeScript: <a href="https://github.com/NativeScript/nativescript-angular">nativescript-angular</a>;</li>
+<li>React Native: <a href="https://github.com/angular/react-native-renderer">react-native-renderer</a>;</li>
+<li>Ionic2: <a href="http://ionic.io/2/">Ionic2</a>;</li>
+<li>Electron: <a href="https://github.com/angular/angular-electron/">angular-electron</a>;</li>
+<li>&hellip;</li>
+</ul>
+
+
+<p>Angular2架构的重新设计，使得其在性能方面也得到了巨大的改善：</p>
+
+<ul>
+<li>组件树和单向的@Input、@Output使得变更的影响变得可预知，不再需要Angular1那样多次的digest直到稳定；以及结合<code>ChangeDetectionStrategy.OnPush</code>与immutablejs或者是Rxjs，Angular2的变更检查算法复杂度降为了log(n)。相对于Angular1，得到了至少5倍的性能提升；</li>
+<li>Universal服务端渲染能够更好提升首屏加载的性能；</li>
+<li>AOT技术引入，能够让组件处理的生成代码提前到构建时期；再加上TypeScript的tree shaking等技术，能够更大化的减小加载JavaScript文件大小和提升运行时性能；</li>
+<li>Web端Web Worker的实现，能够更好的解放我们的UI线程，得到更好的而用户体验，以及性能的提升；</li>
+</ul>
+
+
+<p>不仅仅这些，Angular2还有很多的优秀特性。如：基于TypeScript的静态类型检查、拥抱web标准（Shadow dom，fetch API）等等。</p>
+
+<p>总之，Angular2是一门值得我们学习的优秀前端框架。随着Angular2进入了RC6版本，意味发布版将不远了。学习Angular2的时候已到。</p>
+
+<p>========= 未来即将来到</p>
+
+<p>同时笔者也开源了自己的<a href="https://github.com/greengerong/rebirth">rebirth</a>项目供大家学习。它是一个利用Angular2开发的博客系统前端部分。它涉及到的Angular2知识点非常的全面，包括：组件化，自定义directive，路由，HTTP交互，Template drive form和Reactive form，异步路由，jwt token认证，资源权限控制，动态加载component，jQuery插件集成等常用知识点。</p>
+
+<p>同时<a href="https://github.com/greengerong/rebirth">rebirth</a>项目也集成了很多前端优秀的技术实践：</p>
+
+<ul>
+<li>Angular2 + rxjs</li>
+<li>bootstrap-sass</li>
+<li>codemirror + markdownit(online markdown文档编辑器)</li>
+<li>webpack2 + DashboardPlugin(代码打包)</li>
+<li>TypeScript2 + @types</li>
+<li>stubby(数据mock框架)</li>
+<li>tslint + codelyzer(ts代码和Angular2组件静态检查)</li>
+<li>angular2-template-loader(Angular2 component的html、css打包)</li>
+<li>karma + phantomjs(TDD开发)</li>
+<li>sass + postcss(css样式组织)</li>
+<li>typedoc(ts文档)</li>
+<li>fontgen-loader(icon font)</li>
+</ul>
+
+
+<p>在这里为大家放上几张<a href="https://github.com/greengerong/rebirth">rebirth</a>效果图，供大家预览：</p>
+
+<p>移动端样式：</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/2569893/17268750/bd6fe296-5666-11e6-84e0-c78d9b8c29d2.png"  style="max-width:300px;" /></p>
+
+<p>PC端样式：</p>
+
+<p><img src="https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-index.png" alt="https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-index.png" /></p>
+
+<p><img src="https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-list.png" alt="https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-list.png" /></p>
+
+<p><img src="https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-edit.png" alt="https://github.com/greengerong/rebirth/raw/master/shortscreens/rebirth-manage-edit.png" /></p>
+
+<p>希望大家能喜欢。有任何的问题可以在笔者的github提issue，笔者会在空闲时间为大家解答。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-09-03T22:33:18+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2016</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/angular2/'>angular2</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/rebirth/'>rebirth</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/" title="Previous Post: Zone.js - 暴力之美">&laquo; Zone.js - 暴力之美</a>  
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

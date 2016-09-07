@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Css | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/css/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[书写高效的CSS代码-（待开发）]]></title>
+    <link href="http://greengerong.github.io/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma/"/>
+    <updated>2015-10-13T21:36:54+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/10/13/shu-xie-gao-xiao-de-css-dai-ma</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CSS尺寸和字体单位-em、px还是%]]></title>
+    <link href="http://greengerong.github.io/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent/"/>
+    <updated>2015-10-09T07:00:04+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/10/09/css-chi-cun-dan-wei-em-px-huan-shi-percent</id>
+    <content type="html"><![CDATA[<p>在页面整体布局中，页面元素的尺寸大小（长度、宽度、内外边距等）和页面字体的大小也是重要的工作之一。一个合理设置，则会让页面看起来层次分明，重点鲜明，赏心悦目。反之，一个不友好的页面尺寸和字体大小设置，则会增加页面的复杂性，增加用户对页面理解的复杂性；甚至在当下访问终端（iPhone、iPad、PC、Android&hellip;）层出不穷的今天，适应各式各样的访问终端，将成为手中的一块“烫手的山芋”。所以在近几年，“九宫格”式的“流式布局”再度回归。为了提供页面布局，及其它的可维护性、可扩展性，我们尝试将页面元素的大小，以及字体大小都设置为相对值，不再是孤立的固定像素点。使其能在父元素的尺寸变化的同时，子元素也能随之适应变化。以及结合少量最新CSS3的@media查询，来实现“响应式布局”，bootstrap这类CSS框架大势兴起。</p>
+
+<p>然而在CSS中，W3C文档把尺寸单位划为为两类：相对长度单位和绝对长度单位。然而相对长度单位按照不同的参考元素，又可以分为字体相对单位和视窗相对单位。字体相对单位有：em、ex、ch、rem；视窗相对单位则包含：vw、vh、vmin、vmax几种。绝对定位则是固定尺寸，它们采用的是物理度量单位：cm、mm、in、px、pt以及pc。但在实际应用中，我们使用最广泛的则是em、rem、px以及百分比（%）来度量页面元素的尺寸。</p>
+
+<ol>
+<li>px：为像素单位。它是显示屏上显示的每一个小点，为显示的最小单位。它是一个绝对尺寸单位；</li>
+<li>em：它是描述相对于应用在当前元素的字体尺寸，所以它也是相对长度单位。一般浏览器字体大小默认为16px，则2em == 32px；</li>
+<li>%： 百分比，它是一个更纯粹的相对长度单位。它描述的是相对于父元素的百分比值。如50%，则为父元素的一半。</li>
+</ol>
+
+
+<p>这里需要注意的是：em是相对于应用于当前当前元素的字体尺寸；而百分比则是相对于父元素的尺寸。如下面示例：</p>
+
+<p>HTML：</p>
+
+<pre><code>&lt;div class="parent"&gt;
+     &lt;div class="em-demo"&gt;
+      设置长度为5em demo
+     &lt;/div&gt;
+
+     &lt;div class="percentage-demo"&gt;
+      设置长度为80% demo
+     &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>CSS：</p>
+
+<pre><code>div{
+    border: 1px dashed #808080;
+    margin:10px
+}
+
+.parent{
+    width: 200px;
+    font-size: 18px;
+}
+
+.em-demo{
+    width: 5em;
+}
+
+.percentage-demo{
+    width: 80%
+}
+</code></pre>
+
+<p>则其效果图为(<a href="http://jsbin.com/xihusojale/edit?html,css,output">http://jsbin.com/xihusojale/edit?html,css,output</a>)：</p>
+
+<p><img src="/images/blog_img/em-percentage-demo.png" alt="em percentage demo" /></p>
+
+<p>从图上我们可以看出：设置5em的div的第一行字符刚好为5个字符大小，因为如上所说，它是相对于当前元素字体的尺寸， 5 * 18 = 90px。而百分比显示则会比较大一些，因为它是相对于父元素的尺寸比例， 200 * 80% = 160px。</p>
+
+<p>对于px、em和百分比都能设置元素的尺寸和字体大小，但是它们各自有自己所不同的应用场景。不合理的运用，则会导致页面的混乱、难易维护和扩展。对于它们的使用，有如下几点被大家所认同的最佳实践：</p>
+
+<ol>
+<li>尽量使用相对尺寸单位</li>
+</ol>
+
+
+<p>使用相对尺寸单位计量，则在调整页面的布局的时候，不需要遍历所有的内部DOM结构，重新设置内部子元素的尺寸大小，同时它也能更好的适应与多中分辨率和屏幕终端。采用相对定位，并不意味着页面整体的自适应。</p>
+
+<p>当然，对于希望整体网站的“响应式设计”，适应当今层出不穷的的各类访问终端，相对尺寸布局将发挥更大的价值。我们仅需要利用CSS3的@media查询来设置外围的整体宽度，以及少量在设备上不一致的用户体验。关于“响应式布局”，可以更多的参考bootstrap这类新兴的CSS框架。</p>
+
+<p>对于相对尺寸单位的设置：em和%因为它们相对的参考物不同，所以它们也有不同的使用场景。如果希望随着当前元素的字体尺寸而改变尺寸，则使用em最佳，如：行高、字体大小。相反，如果是随着父容器或者是整体页面布局而改变尺寸，则使用%更好，如元素的高度和宽度设置。</p>
+
+<ol>
+<li>只在可预知的元素上使用绝对尺寸</li>
+</ol>
+
+
+<p>并不是所有的元素设置相对尺寸就是最佳的。对于如图表icon、如video这类多媒体元素、网页整体的宽度这类可预知尺寸，设置为绝对路径可能反而是最佳的选择。但他们需要试具体场景而定，从而获得最佳体验。不管我们如此设置相对尺寸，但在外层也总会有一些绝对尺寸度量，才可能存在百分比这类相对尺寸设置。</p>
+
+<ol>
+<li>字体尺寸尽量使用em、rem</li>
+</ol>
+
+
+<p>和尽量使用相对尺寸单位一样，为了字体大小的可维护性和伸缩性，W3C更推荐使用em作为字体尺寸单位。需要注意的是，如果存在3层以及3层以上的字体相对尺寸的设置，则对于实际字体大小的计算，就会变得相对麻烦。这个时候，在满足浏览器兼容性的情况下，可以考虑使用CSS3的新特性rem：根据固定根元素的字体大小来设置相对尺寸大小，这也是近几年移动APP所兴起的使用方式。</p>
+
+<p>rem的兼容性，我们可以用<a href="http://caniuse.com/#feat=rem">Can I Use</a>网站获取。</p>
+
+<p><img src="/images/blog_img/rem-%E5%85%BC%E5%AE%B9%E6%80%A7.png" alt="rem 兼容性" /></p>
+
+<ol>
+<li>@media查询做平台适配，但禁止随处滥用</li>
+</ol>
+
+
+<p>如上所说CSS3的@media查询，能帮助我们做到多平台终端的自适应布局，得到一个更好的用户体验。但这绝不意味着我们可以随处滥用它，在CSS代码中存在太多的平台差异的代码，这也会增加代码可读性、维护性的难度。更好的方式则是仅在必须使用它的场景下，合理的使用它，如页面外围的整体宽度，不同显示的菜单栏等。更多的体验适应性，可以移动到使用“流式布局”来实现。</p>
+
+<p>关于响应式设计，这是对开发周期、成本和平台体验的一个权衡的结果。如果不考虑开发、维护的成本，则为不同平台终端提供不同的页面设计，这样得到的用户体验会更友好。但在实际开发中，开发和维护成本、产品生命周期也是一个重要的权衡标准，而响应式设计则是它们之间的权衡结果。</p>
+]]></content>
+  </entry>
+  
+</feed>

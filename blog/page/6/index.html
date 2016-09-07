@@ -1,0 +1,1430 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="简介 关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这种模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。 &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/page/6">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/13/typescript-interfaces/">TypeScript - Interfaces</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-13T21:49:25+08:00" pubdate data-updated="true">Nov 13<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>简介</h4>
+
+<p>关注于数据值的 &lsquo;shape&#8217;的类型检查是TypeScript核心设计原则。这种模式有时被称为‘鸭子类型’或者‘结构子类型化’。 在TypeScript中接口interfaces的责任就是命名这些类型，而且还是你的代码之间或者是与外部项目代码的契约。</p>
+
+<h2>初见Interface</h2>
+
+<p>理解interface的最好办法，就是写个hello world程序：</p>
+
+<pre class='green'><code>function printLabel(labelledObj: {label: string}) {
+  console.log(labelledObj.label);
+}
+
+var myObj = {size: 10, label: "Size 10 Object"};
+printLabel(myObj);
+</code></pre>
+
+<p>在这里类型检查系统会检查printLabel这个函数，printLabel函数要求传入一个包含一个label的字符串属性。上例可以了解我们传入的对象可以有多个属性，但是类型检查系统只会检查printLabel所要求的label属性是否满足其要求。</p>
+
+<p>接下来我们可以进一步简化，声明一个interface来描述一个具有label字符串属性的对象：</p>
+
+<pre class='green'><code>interface LabelledValue {
+  label: string;
+}
+
+function printLabel(labelledObj: LabelledValue) {
+  console.log(labelledObj.label);
+}
+
+var myObj = {size: 10, label: "Size 10 Object"};
+printLabel(myObj);
+</code></pre>
+
+<p>接口LabelledValue描述了上例中printLabel的所要求的类型对象。它依然代表包含一个label的字符串属性。可以看见我们利用‘shape’(行)描述了printLabel的传入参数要求。</p>
+
+<h2>可选的Properties</h2>
+
+<p>有时不是所有定义在interface中的属性都是必须的。例如流行的&#8221;option bags&#8221;模式(option配置)，使用者可以之传入部分定制化属性。如下面“option bags”模式：</p>
+
+<p>interface SquareConfig {
+  color?: string;
+  width?: number;
+}</p>
+
+<pre class='green'><code>function createSquare(config: SquareConfig): {color: string; area: number} {
+  var newSquare = {color: "white", area: 100};
+  if (config.color) {
+    newSquare.color = config.color;
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width;
+  }
+  return newSquare;
+}
+
+var mySquare = createSquare({color: "black"});
+</code></pre>
+
+<p>带有可选属性的interface定义和c#语言很相似，以&#8217;?&lsquo;紧跟类型后边表示。</p>
+
+<p>interface的可选属性可以限制那些属性是可用的，这部分能得到类型检查，以及智能感知。例如下例：</p>
+
+<pre class='green'><code>interface SquareConfig {
+  color?: string;
+  width?: number;
+}
+
+function createSquare(config: SquareConfig): {color: string; area: number} {
+  var newSquare = {color: "white", area: 100};
+  if (config.color) {
+    newSquare.color = config.collor;  // 类型检查系统能识别不正确的属性collor.
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width;
+  }
+  return newSquare;
+}
+
+var mySquare = createSquare({color: "black"});  
+</code></pre>
+
+<h2>函数类型</h2>
+
+<p>Interfaces为了描述对象能接收的数据形(shapes)的返回。对于interface不仅难呢过描述对象的属性，也能描述函数类型。</p>
+
+<p>下面是定义的interface signature是一个接收两个string的输入参数，并返回boolean的函数类型：</p>
+
+<pre class='green'><code>interface SearchFunc {
+  (source: string, subString: string): boolean;
+}
+</code></pre>
+
+<p>我也可以使用函数类型的interface去描述我们的数据。下面演示如何将一个相同类型的函数赋值给interface：</p>
+
+<pre class='green'><code>var mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+  var result = source.search(subString);
+  if (result == -1) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+</code></pre>
+
+<p>对于函数类型的interface，并不需要参数名的对应相同，如下例：</p>
+
+<pre class='green'><code>var mySearch: SearchFunc;
+mySearch = function(src: string, sub: string) {
+  var result = src.search(sub);
+  if (result == -1) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+</code></pre>
+
+<p>对于函数参数的检查，会按照参数的顺序检查对应的类型是否匹配。同时也会检查函数的返回类型是否匹配，在这个函数我们期望返回boolean类型true/false， 如果返回的是numbers或者string，则类型检查系统会提示返回值类型不匹配。</p>
+
+<h2>数组类型</h2>
+
+<p>类似于函数类型，TypeScript也可以描述数组类型。在数组类型中有一个&#8217;index&#8217;类型其描述数组下标的类型，以及返回值类型描述每项的类型，如下：</p>
+
+<pre class='green'><code>interface StringArray {
+  [index: number]: string;
+}
+
+var myArray: StringArray;
+myArray = ["Bob", "Fred"]
+</code></pre>
+
+<p>index的支持两种类型，分别是字符串和数值类型. 我们可以限制index的类型，同时也可以检查index项的返回值类型。</p>
+
+<p>index的类型签名可以描述常用的数组或者是‘dictionary’（字典序）模式，这点会强制所有的属性都需要和其返回值匹配。下例中length属性不匹配这点，所以类型检查会给出一个错误：</p>
+
+<pre class='green'><code>interface Dictionary {
+  [index: string]: string;
+  length: number;    // error, the type of 'length' is not a subtype of the indexer
+} 
+</code></pre>
+
+<h2>Class类型</h2>
+
+<h4>实现interface</h4>
+
+<p>在C#和java中interface是很常使用的类型系统，其用来强制其实现类符合其契约。在TypeScript中同样也可以实现：</p>
+
+<pre class='green'><code>interface ClockInterface {
+    currentTime: Date;
+}
+
+class Clock implements ClockInterface  {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+</code></pre>
+
+<p>同样也可以在interface中实现函数类型的契约，并要求clas实现此函数。如下例的‘setTime’函数：</p>
+
+<pre class='green'><code>interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+}
+
+class Clock implements ClockInterface  {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}
+</code></pre>
+
+<p>interface描述的的是class的公开(public)部分，而不是私有部分.</p>
+
+<h4>类static/instance区别</h4>
+
+<p>当使用类和接口的时候，我们需要知道类有两种类型：static(静态)部分和instance(实例)部分。如果尝试一个类去实现一个带有构造签名的interface，TypeScript类型检查会提示你错误。</p>
+
+<pre class='green'><code>interface ClockInterface {
+    new (hour: number, minute: number);
+}
+
+class Clock implements ClockInterface  {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+</code></pre>
+
+<p>这是因为一个类去实现接口的时候，只有instance(实例)的部分才会被检查。而构造函数属于静态部分，所以不会被类型检查。</p>
+
+<p>相反你可以直接在类中实现这些(static)静态部分，如下例：</p>
+
+<pre class='green'><code>interface ClockStatic {
+    new (hour: number, minute: number);
+}
+
+class Clock  {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+
+var cs: ClockStatic = Clock;
+var newClock = new cs(7, 30);
+</code></pre>
+
+<h4>interface的继承</h4>
+
+<p>和类一样，接口也能集成其他的接口。这相当于复制接口的所有成员。接口的集成是的我们可以自由的抽象和分离到可重用的组件。</p>
+
+<pre class='green'><code>interface Shape {
+    color: string;
+}
+
+interface Square extends Shape {
+    sideLength: number;
+}
+
+var square = &lt;Square&gt;{};
+square.color = "blue";
+square.sideLength = 10;
+</code></pre>
+
+<p>一个interface可以同时集成多个interface，实现多个接口成员的合并。</p>
+
+<pre class='green'><code>interface Shape {
+    color: string;
+}
+
+interface PenStroke {
+    penWidth: number;
+}
+
+interface Square extends Shape, PenStroke {
+    sideLength: number;
+}
+
+var square = &lt;Square&gt;{};
+square.color = "blue";
+square.sideLength = 10;
+square.penWidth = 5.0;
+</code></pre>
+
+<h2>混合式类型</h2>
+
+<p>如前边提到的一样，在interface几乎可以描述JavaScript世界的一切对象。因为JavaScript是一个动态，灵活的脚本语言，所以偶尔也希望一个对象能够描述一些多个类型.</p>
+
+<p>下面是一个混合式描述函数，对象以及额外属性的实例：</p>
+
+<pre class='green'><code>interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}
+
+var c: Counter;
+c(10);
+c.reset();
+c.interval = 5.0;
+</code></pre>
+
+<p>和第三方JavaScript库交互的时候，也许我们也会上面的模式来描述一个完整的类型。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/13/typescript-basic-types/">TypeScript - 基本类型系统</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-13T19:53:50+08:00" pubdate data-updated="true">Nov 13<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>对于程序来说我们需要基本的数据单元,如：numbers, strings, structures, boolean 等数据结构。在TypeScript中我们支持很多你所期望在JavaScript中所拥有的数据类型系统。</p>
+
+<h4>Boolean</h4>
+
+<p>在JavaScript和TypeScript中也具有最基本的逻辑断言值true/false，采用&#8217;boolean&#8217;类型。</p>
+
+<pre class='green'><code>var isDone: boolean = false;
+</code></pre>
+
+<h4>Number</h4>
+
+<p>如JavaScript，TypeScript所有的数值类型采用浮点型计数，其类型为‘number’。</p>
+
+<pre class='green'><code>var height: number = 6;
+</code></pre>
+
+<h4>String</h4>
+
+<p>在webpages的JavaScript或者服务端的应用程序最基本的功能就是处理文本数据。在其他语言中大多使用&#8217;string&#8217;去代表文本数据类型。TypeScript和JavaScript一样也是用双引号(&ldquo;)或者单引号包裹文本数据。</p>
+
+<pre class='green'><code>var name: string = "bob";
+    name = 'smith';
+</code></pre>
+
+<h4>Array</h4>
+
+<p>在TypeScript中如JavaScript一样允许我们操结合操作。数组类型可以使用下边两种方式之一。</p>
+
+<p>第一种方式，你可以在数据类型之后带上&#8217;[]&lsquo;:</p>
+
+<pre class='green'><code>var list:number[] = [1, 2, 3];
+</code></pre>
+
+<p>第二种方式，也可以采用泛型的数组类型：</p>
+
+<pre class='green'><code>var list:Array&lt;number&gt; = [1, 2, 3];
+</code></pre>
+
+<h4>Enum</h4>
+
+<p>TypeScript为JavaScript新增了枚举这种标准的集合数据类型。和在c#中一样，枚举是为一组数值类型一组更友好的名称。</p>
+
+<pre class='green'><code>enum Color {Red, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>默认枚举类型其实数值从0开始，你可以可用手动设置某一个成员的数值。例如我们可以将上文的起始值定为1：</p>
+
+<pre class='green'><code>enum Color {Red = 1, Green, Blue};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>或是手动设置全部的枚举成员：</p>
+
+<pre class='green'><code>enum Color {Red = 1, Green = 2, Blue = 4};
+var c: Color = Color.Green;
+</code></pre>
+
+<p>枚举类型可以和容易从一个数值类型获取对应枚举名称。例如我们有一个数值类型2，但不确认将匹配哪一个枚举成员，那么我们可以如下使用：</p>
+
+<pre class='green'><code>enum Color {Red = 1, Green, Blue};
+var colorName: string = Color[2];
+
+alert(colorName);
+</code></pre>
+
+<h4>Any</h4>
+
+<p>有时我们需要描述一些我们不知道的什么写进应用的动态数据类型，这可能来自第三方用户或者lib。在这里我们希望该数据不要加入TypeScript的类型检查,是的此值通过编译时检查。为此我们可以采用‘any’类型标注：</p>
+
+<pre class='green'><code>var notSure: any = 4;
+notSure = "maybe a string instead";
+notSure = false; // okay, definitely a boolean
+</code></pre>
+
+<p>‘any’类型是一种强大的兼容存在的JavaScript库的类型系统。他允许跳过TypeScript的编译时类型的检查。</p>
+
+<p>&lsquo;any&#8217;类型对于我们只知道部分数据类型，但是不是所有的数据类型的类型系统。如一个混合了多种类型的集合数组。</p>
+
+<pre class='green'><code>var list:any[] = [1, true, "free"];
+
+list[1] = 100;
+</code></pre>
+
+<h4>Void</h4>
+
+<p>和‘any’相对的数据类型则是’Void‘，它代表没有任何数据类型。我们常用的一个方法没有任何返回值：</p>
+
+<pre class='green'><code>function warnUser(): void {
+    alert("This is my warning message");
+}
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/12/vsftpd-refusing-to-run-with-writable-root-inside-chroot/">Vsftpd Refusing to Run With Writable Root Inside Chroot</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T19:38:05+08:00" pubdate data-updated="true">Nov 12<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/blog_img/vsftpd.jpg" alt="vsftpd" /></p>
+
+<p>今天记录一个在安装vsftpd的时候遇见错误：</p>
+
+<pre class='green'><code>500 OOPS: vsftpd: refusing to run with writable root inside chroot ()
+</code></pre>
+
+<p>在一阵的外文查找，最后定为到是因为用户的根目录可写，并且使用了chroot限制，而这在最近的更新里是不被允许的。要修复这个错误，可以用命令chmod a-w /home/$user去除用户根目录的写权限,或者在vsftpd。conf配置允许writeable。</p>
+
+<p>设置允许writeable为：</p>
+
+<pre class='green'><code>allow_writeable_chroot=YES
+</code></pre>
+
+<p>最简单的方式就是允许writeable。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/12/mockito-custom-verify-matcher/">Mockito自定义verify参数Matcher</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T13:53:13+08:00" pubdate data-updated="true">Nov 12<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在TDD开发中，也许我们会遇见对一些重要的无返回值的行为测试，比如在用户的积分DB中增加用户的积分，这个行为对于我们的业务具有重要的价值，所以我们也希望能测试覆盖这部分业务价值。这个时候我们就得使用mockito带来的verify断言，但verify的参数断言主要有eq，或者any常见的方式。有时我们也希望能够断言对象的一部分属性，比如上文的积分数值，对于不同的场景增加的用户积分可能不同。</p>
+
+<p>回到Mockito的参数Matcher，Mockito给我们提供了ArgumentMatcher，以供我们来扩展Matcher。下面假设一个增加用户积分的场景：</p>
+
+<pre class='green'><code>     public class Game {
+        private String type;
+        private int rate;
+
+        public Game(String type, int rate) {
+            this.type = type;
+            this.rate = rate;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public int getRate() {
+            return rate;
+        }
+
+    }
+
+    public class GameDao {
+        public void addRate(Game game) {
+            //TODO: insert to db
+        }
+    }
+</code></pre>
+
+<p>我们希望能够对verify GameDao调用了addRate，并且是积分rate为特定值。</p>
+
+<p>所以我们可以扩展Mockito的ArgumentMatcher：</p>
+
+<pre class='green'><code>public class PartyMatcher&lt;T&gt; extends ArgumentMatcher&lt;T&gt; {
+    private Object value;
+    private Function&lt;T, Object&gt; function;
+
+    public PartyMatcher(Function&lt;T, Object&gt; getProperty, Object value) {
+        this.value = value;
+        this.function = getProperty;
+    }
+
+    public static &lt;F&gt; PartyMatcher&lt;F&gt; partyMatcher(Function&lt;F, Object&gt; getProperty, Object value) {
+        return new PartyMatcher&lt;F&gt;(getProperty, value);
+    }
+
+    @Override
+    public boolean matches(Object o) {
+        return function.apply((T) o).equals(value);
+    }
+}
+</code></pre>
+
+<p>所以我们的测试可以如下：</p>
+
+<pre class='green'><code>    @Test
+    public void should_run_customer_mockito_matcher() throws Exception {
+
+        final GameDao gameDao = mock(GameDao.class);
+        gameDao.addRate(new Game("签到", 7));
+
+        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
+            @Override
+            public Object apply(Game game) {
+                return game.getRate();
+            }
+        }, 7)));
+
+        verify(gameDao).addRate(argThat(new PartyMatcher&lt;Game&gt;(new Function&lt;Game, Object&gt;() {
+            @Override
+            public Object apply(Game game) {
+                return game.getType();
+            }
+        }, "签到")));
+    }
+</code></pre>
+
+<p>Mockito给我们提供了很多关于Matcher扩展的方法，本文只是ArgumentMatcher的实例。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/07/jian-jie-gulp-grunt-bower-npm-vs/">简介Gulp, Grunt, Bower, 和 Npm 对Visual Studio的支持</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-07T12:18:24+08:00" pubdate data-updated="true">Oct 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p> [原文发表地址]<a href="http://www.hanselman.com/blog/IntroducingGulpGruntBowerAndNpmSupportForVisualStudio.aspx">Introducing Gulp, Grunt, Bower, and npm support for Visual Studio</a></p>
+
+<p>Web 开发，特别是前端 Web 开发，正迅速变得像传统的后端开发一样复杂和精密。<strong>大多数项目不仅仅是通过</strong> FTP上传一些 JS 和 CSS 文件。而现在的<strong>前端生成过程，</strong>可以囊括SASS 和LESS扩展、CSS/JS的压缩包、JSHint 或 JSLint的运行时 、或者更多。这些生成任务和进程都和像Gulp和Grunt这样的工具一起协调工作。此外，类似于npm和bower这样的管理系统将客户端库作为软件包来管理。</p>
+
+<h5>ASP.NET客户端软件包的管理者，为什么不用 NuGet？或MSBuild？</h5>
+
+<p>你们中的一些人可能会问，为什么JavaScript不使用 NuGet？为什么不扩展 MSBuild 去构建 CSS/JS？原因很简单。因为已经有了丰富的系统，来做这种事情。对于服务器端库 （和一些客户端）来说，使用NuGet 就已经很棒了。npm和bower 上已经有了很多的，而且还会有更多的 CSS 和 JS 库。而对于服务器端的应用程序构建来说，使用MSBuild很棒，但当构建客户端应用程序时，它有些多余了。</p>
+
+<p>所以，两者都可以使用。这些都是您工具包中的工具。添加Gulp，Grun，Bower，npm的支持（和将来需要其他东西） ，这意味着为ASP.NET前端开发者提供了一个更熟悉的环境。它允许 ASP.NET 开发人员引入 JS 和 CSS 库，使他们可以每天使用。</p>
+
+<h5>引入任务资源管理器</h5>
+
+<p>我们从你们中，以及整个社会收到了相当多的、关于Grunt/Gulp的功能请求。我们利用Visual Studio “14的充分可扩展性正在构建对Grunt/Gulp第一流的支持。现在我们已经准备好将这个支持作为VS2013的一个扩展加入到预览版本中， 并且我们感激您帮助我们测试和考察这个功能。</p>
+
+<p>今天我们介绍一个预览版本，在这个预览版本中，“<a href="http://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708">任务资源管理器</a>”将作为VSIX<strong>的一个扩展。</strong><strong>同时也推荐两个其他的</strong><strong>VSIX</strong><strong>来完善对这个功能的体验。</strong></p>
+
+<p><strong>注意：</strong><strong> </strong><strong>VSIX</strong><strong>扩展中的大多数功能都被内置到</strong><strong>Visual Studio</strong><strong>中，因此你不需要安装其他别的东西。而且，</strong><strong>在</strong><strong>VS2013</strong><strong>和此预览版本中我们需要更多的</strong><strong>VSIX</strong><strong>，让你迟早能得到这些扩展。</strong><strong> </strong><strong>请注意，今天任务资源管理器只工作于</strong><strong>Vsiaual Studio Express </strong><strong>版本中，但</strong><strong>VS14</strong><strong>的所有功能都将出现在</strong><strong>VS</strong><strong>免费版本中。</strong></p>
+
+<p>类似于VS Productivity Power Tools一样， “DevLabs”这样的功能现在还在预览版中。但是他们终将会集成到最终的产品中。</p>
+
+<h5>你需要什么？</h5>
+
+<h5>首先，你将需要<a href="http://www.microsoft.com/en-us/download/details.aspx?id=43721">Visual Studio 2013.3</a> ，3的意思是免费的更新&#8221;Update 3&#8221;。</h5>
+
+<ol>
+<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F8e1b4368-4afb-467a-bc13-9650572db708"><strong>TRX-</strong><strong>任务资源管理器</strong></a><strong> </strong>Visual Studio 扩展</li>
+<li><a href="http://www.microsofttranslator.com/bv.aspx?from=en&amp;amp;to=zh-CHS&amp;amp;a=http%3A%2F%2Fvisualstudiogallery.msdn.microsoft.com%2F65748cdb-4087-497e-a394-2e3449c8e61e">NMP/NBower包智能感知</a>-搜索NPM 和Bower包在线版，它直接附加智能感知功能。</li>
+<li><p>可选的<a href="http://visualstudiogallery.msdn.microsoft.com/dcbc5325-79ef-4b72-960e-0a51ee33a0ff">Grunt Launcher</a>（在解决方案资源管理器上右键单击选项— — 你会看到&#8221; npm install &ldquo;）</p>
+
+<ul>
+<li>如果你现在没有这种扩展，那么你将需要自己运行npm install来还原/添加软件包</li>
+<li>如果你有这种扩展，那么请在运行grunt/gulp之前，右键单击 packages.json 和&#8221;npm install&#8221;</li>
+</ul>
+</li>
+</ol>
+
+
+<p>要打开 TRX （任务资源管理器），只需用鼠标右键单击您的项目中任何一个 gruntfile.js文件：</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image002_60531aad-06cb-4ce7-83ea-5629fa7e8b8d.png" alt="" /></p>
+
+<p>默认情况下，TRX 位于VS的底部，，看起来像这样：</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image001_8eae3676-2331-461b-bfe6-fec463c7f49c.png" alt="" /></p>
+
+<p>在这里，我们看到 gruntfile.js 在该解决方案中的一个或多个项目的根目录中。它还有<strong>任务绑定功能，也就是说任何任务或目标可以由</strong><strong> 4 </strong><strong>个</strong><strong>不同</strong><strong> Visual Studio </strong><strong>事件触发。</strong></p>
+
+<p>要想将一个任务/目标和一个VS事件绑定在一起，只需右键单击进行绑定设置。</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image003_9d3aeb6c-f450-4e68-8d4c-010b619f7da8.png" alt="" /></p>
+
+<p>要想运行任何一个任务/目标，只需双击它，然后控制台将显示如下：</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/image004_1db90c39-a4cd-42a7-81df-b3ec2493e8c0.png" alt="" /></p>
+
+<p>当你有了软件包智能感知扩展功能时，你会发现通过bower 和 npm来直接编辑package.json很容易添加并更新软件包。</p>
+
+<p>甚至，你也有了异步填充元数据工具提示功能。</p>
+
+<p><img src="http://www.hanselman.com/blog/content/binary/Windows-Live-Writer/Introducing-Gulp-Grunt_E733/tooltip-animated_thumb.gif" alt="" /></p>
+
+<p>现在你可以去测试它了，记住在你用任务资源管理器来运行Grunt任务之前，你需要运行“ npm install” 。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/ng-ui-set-for-long-expression/">解决ng界面长表达式(ui-set)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T16:52:55+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文来自网友sun shine的问题，问题如下：</p>
+
+<pre class='green'><code>    您好, 我想求教一个问题.
+    在$scope中我的对象名字写的特别深, 在 html中我又多次用到了同一个对象, 对不对在 html中让它绑定到一个临时变量呢?
+    比如:
+    $scope.this.is.a.very.deep.obj = {
+    'name': 'xxx',
+    'state': 'active'};
+
+    在 模板中,
+
+    {{this.is.a.very.deep.obj.name}}
+    {{this.is.a.very.deep.obj.state}}
+    类似于这种, 我能否把 this.is.a.very.deep.obj 预先赋给一个临时的变量, 然后在 两个 span中只需 o.name, o.state 就行了呢? 我觉得这样解析起来是不是快一点.
+
+    但是我试了, 并没有成功. 求指点.
+    先谢了.
+</code></pre>
+
+<p>在这里首先需要说明的是ng界面的所有引用都需要在$scope这个viewmodel(ui和view的胶水层)，所以如果我们希望能够把表达式变得更可读，更友好，那么我们就必须在$scope上创建这个变量。</p>
+
+<p>再则对于ng其使用使用的一堆的$watch，实现脏检查，如果你理解这些了，那么我们就可以很容易的实现一套如spring的</p>
+
+<pre class='green'><code>&lt;c:set var="xxx" expression="xxx" /&gt;
+</code></pre>
+
+<p>的tag.</p>
+
+<p>对于实现这类tag，我们最好的方式则是利用ng的directive来实现，代码如下：</p>
+
+<pre class='green'><code>        angular.module("greengerong.ui.tag", [])
+          .directive("uiSet", [
+            function() {
+              return {
+                restrict: "EA",
+                link: function(scope, elm, iAttrs) {
+                  scope.$watch(iAttrs.expression, function(val) {
+                    scope[iAttrs.
+                      var] = val;
+                    var apply = !scope.$$phase ? scope.$apply : angular.noop;
+                    apply();
+                  });
+                }
+              };
+            }
+          ]);
+</code></pre>
+
+<p>demo效果请移步<a href="http://jsbin.com/neqow/3/edit">jsbin demo</a>;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/testing-promises-with-jasmine-provide-and-spy/">Jasmine测试ng Promises - Provide and Spy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T15:53:45+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>jasmine提供了很多些很实用的处理Promises的方法，首先我们来考虑下面的这个例子：</p>
+
+<pre class='green'><code>    angular.module("myApp.store").controller("StoresCtrl", function($scope, StoreService, Contact) {
+      StoreService.listStores().then(function(branches) {
+        Contact.retrieveContactInfo().then(function(userInfo) {
+            //more code here crossing user and stores data
+        });  
+      });
+    });
+</code></pre>
+
+<p>下面让我们来尝试如何用angular提供的$provide创建一个依赖的实现，以及利用jasmine帮助我们fake方法的返回值：</p>
+
+<p>代码如下，有详细注释帮助你去理解这段代码：</p>
+
+<pre class='green'><code>    describe("Store Controller", function() {
+      var $controller, Contact, StoreService, createController, scope;
+
+      beforeEach(function() {
+        module('myApp.store');
+
+        // Provide will help us create fake implementations for our dependencies
+        module(function($provide) {
+
+          // Fake StoreService Implementation returning a promise
+          $provide.value('StoreService', {
+            listStores: function() {
+              return { 
+                then: function(callback) {return callback([{ some: "thing", hoursInfo: {isOpen: true}}]);}
+              };
+            },
+            chooseStore: function() { return null;}
+          });
+
+          // Fake Contact Implementation return an empty object 
+          $provide.value('Contact', {
+            retrieveContactInfo: function() {
+              return {
+                then: function(callback) { return callback({});}
+              };
+            }
+          });
+
+          return null;
+        });
+      });
+
+      beforeEach(function() {
+
+        // When Angular Injects the StoreService and Contact dependencies, 
+        // it will use the implementation we provided above
+        inject(function($controller, $rootScope, _StoreService_, _Contact_) {
+          scope = $rootScope.$new();
+          StoreService = _StoreService_;
+          Contact = _Contact_;
+          createController = function(params) {
+            return $controller("StoresCtrl", {
+              $scope: scope,
+              $stateParams: params || {}
+            });
+          };
+        });
+      });
+
+      it("should call the store service to retrieve the store list", function() {
+        var user = { address: {street: 1}};
+
+        // Jasmine spy over the listStores service. 
+        // Since we provided a fake response already we can just call through. 
+        spyOn(StoreService, 'listStores').and.callThrough();
+
+        // Jasmine spy also allows to call Fake implementations via the callFake function 
+        // or we can return our own response via 'and.returnValue
+        // Here we can override the response we previously defined and return a promise with a user object
+        spyOn(Contact, 'retrieveContactInfo').and.callFake(function() {
+          return {
+            then: function(callback) { return callback(user); }
+          };
+        });
+
+        createController();
+        // Since we setup a spy we can now expect that spied function to have been called 
+        // or to have been called with certain parameters..etc
+        expect(StoreService.listStores).toHaveBeenCalled();
+      });
+    });
+</code></pre>
+
+<p>原文地址:<a href="http://ng-learn.org/2014/08/Testing_Promises_with_Jasmine_Provide_Spy/">Testing Promises with Jasmine &ndash; Provide and Spy</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/29/android-settag-key/">Android setTag方法的key问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-29T10:22:25+08:00" pubdate data-updated="true">Sep 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>android在设计View类时，为了能储存一些辅助信息，设计一个一个setTag/getTag的方法。这让我想起在Winform设计中每个Control同样存在一个Tag。</p>
+
+<p>今天要说的是我最近学习android遇见的setTag的坑。一般情况下我们只需要使用唯一参数的setTag方法。但有时我们需要存储多个数据，所以这个时候我们就需要使用带key的重载。</p>
+
+<p>文档是描述：“ The specified key should be an id declared in the resources of the application to ensure it is unique (see the ID resource type). Keys identified as belonging to the Android framework or not associated with any package will cause an IllegalArgumentExceptionto be thrown.”</p>
+
+<p>这里说明必须保证key的唯一，但是如果我们使用java常量定义key（private static final int TAG_ID = 1;）这样你任然会遇见如下错误：</p>
+
+<pre class='green'><code>java.lang.IllegalArgumentException: The key must be an application-specific resource id
+</code></pre>
+
+<p>正确的解决方案是：</p>
+
+<p>在res/values/strings.xml中定义这个key常量，如下：</p>
+
+<pre class='green'><code>    &lt;resources&gt;
+        &lt;item type="id" name="tag_first"&gt;&lt;/item&gt;
+        &lt;item type="id" name="tag_second"&gt;&lt;/item&gt;
+    &lt;/resources&gt;
+</code></pre>
+
+<p>使用如下：</p>
+
+<pre class='green'><code>    imageView.setTag(R.id.tag_first, "Hello");
+    imageView.setTag(R.id.tag_second, "Success");
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/03/karma-for-jquery-unit-test/">karma作为jQuery单元测试Runner</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-03T22:27:20+08:00" pubdate data-updated="true">Sep 3<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>karma作为angular测试runner出现，如果你使用过karma一定感受到这很不错的javascript测试runner。简单干净的配置文件karma.config.js，以及karma init一些快捷的配置command。以及整套测试套件，如html2js,coverage。对于angular单元测试karma就是一个全生态的测试套件，能够简洁快速的搭建整个测试流程。</p>
+
+<p>本文将尝试运用karma作为jQuery单元测试runner。对于jQuery这种DOM操作的框架，有时难于分离view逻辑，以及ajax这种外部资源的mock，所以比较难于实施对jQuery程序的TDD开发。</p>
+
+<h4>jasmime测试套件</h4>
+
+<p>对于jasmine测试框架为了解决这些问题有两个插件jasmine-jquery和jasmine-ajax。</p>
+
+<h4>jasmine-jquery</h4>
+
+<p>jasmine-jQuery主要解决加载测试所需的DOM元素，为单元测试构建前置环境。jasmine-jQuery加载DOM方法：</p>
+
+<pre class='green'><code>jasmine.getFixtures().fixturesPath = 'base path';
+loadFixtures('myfixture.html');
+jasmine.getFixtures().load(...);
+</code></pre>
+
+<p>这里的loadFixtures需要真实ajax获取html fixtures所以我们需要提前host html fixtures。jasmine-jQuery还框架了一些有用的matchers，如toBeChecked， toBeDisabled， toBeFocused，toBeInDOM&hellip;&hellip;</p>
+
+<h4>jasmine-ajax</h4>
+
+<p>jasmine-ajax则是对于一般ajax测试的mock框架，其从底层xmlhttprequest实施mock。所以让我们能偶很容易实施对于jQuery的$.ajax,$.get&hellip;mock。如</p>
+
+<pre class='green'><code> beforeEach(function() {
+    jasmine.Ajax.requests.when = function (url) {
+      return this.filter("/jquery/ajax")[0];
+    };
+    jasmine.Ajax.install();
+});
+
+it("jquery ajax success with getResponse", function() {
+    var result;
+
+    $.get("/jquery/ajax").success(function(data) {
+        result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+});
+
+
+afterEach(function() {
+    jasmine.Ajax.uninstall();
+});
+</code></pre>
+
+<p>对于jasmine-ajax是实施mock之前一定需要jasmine.Ajax.install()，以及测试完成后需要jasmine.Ajax.uninstall();jasmine-ajax在install后会把所有的ajax mock掉，所以如果有需要真实ajax的需要在install之前完成，如jasmine-jQuery加载view loadFixtures。</p>
+
+<h4>运用karma runner</h4>
+
+<p>我们已经了解了jasmine测试的两个框架jasmine-jQuery和jasmine-ajax，所以运用karma作为runner，我们需要解决的问题就是把他们和karma集成在一起。</p>
+
+<p>所以分为以下几步：
+1：karma中引入jasmine-jQuery和jasmine-ajax(可以利用bowerinstall)
+2：host 测试的html fixtures。
+3：加载html fixtures 与install ajax之前。</p>
+
+<p>对于host 文件karma提供了pattern模式，所以karma配置为：</p>
+
+<pre class='green'><code>files: [
+    {
+      pattern: 'view/**/*.html',
+      watched: true,
+      included: false,
+      served: true
+    },
+    'bower_components/jquery/dist/jquery.js',
+    'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+    'bower_components/jasmine-ajax/lib/mock-ajax.js',
+    'src/*.js',
+    'test/*.js'
+],
+</code></pre>
+
+<p>这里需要注意karma自带的jasmine是低版本的，所以我们需要npm install karma-jasmine@2.0获取最新的karma-jasmine插件。</p>
+
+<p>我们就可以完成了karma的配置，我们可以简单测试我们的配置：<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+
+<p>测试html fixtures加载：</p>
+
+<pre class='green'><code>describe('console html content', function() {
+
+  beforeEach(function() {
+    jasmine.getFixtures().fixturesPath = 'base/view/';
+    loadFixtures("index.html");
+  });
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+})
+</code></pre>
+
+<p>测试mock ajax：</p>
+
+<pre class='green'><code>describe('console html content', function() {
+
+  beforeEach(function() {
+     jasmine.Ajax.requests.when = function(url) {
+         return this.filter("/jquery/ajax")[0];
+     };
+     jasmine.Ajax.install();
+ });
+
+
+  it('index html', function() {
+    expect($("h2")).toBeInDOM();
+    expect($("h2")).toContainText("this is index page");
+  });
+
+  it("ajax mock", function() {
+    var doneFn = jasmine.createSpy("success");
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(args) {
+      if (this.readyState == this.DONE) {
+        doneFn(this.responseText);
+      }
+    };
+
+    xhr.open("GET", "/some/cool/url");
+    xhr.send();
+
+    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
+    expect(doneFn).not.toHaveBeenCalled();
+
+    jasmine.Ajax.requests.mostRecent().response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'awesome response'
+    });
+
+    expect(doneFn).toHaveBeenCalledWith('awesome response');
+  });
+
+  it("jquery ajax success with getResponse", function() {
+    var result;
+    getResponse().then(function(data){
+      result = data;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": 'data from mock ajax'
+    });
+
+    expect(result).toEqual('data from mock ajax');
+  });
+
+  it("jquery ajax error", function() {
+    var status;
+    $.get("/jquery/ajax").error(function(response) {
+      status = response.status;
+    });
+
+    jasmine.Ajax.requests.when("/jquery/ajax").response({
+      "status": 400
+    });
+
+    expect(status).toEqual(400);
+  });
+
+  afterEach(function() {
+    jasmine.Ajax.uninstall();
+  });
+})      
+</code></pre>
+
+<p>更多请参见<a href="https://github.com/greengerong/karma-jasmine-jquery/">demo on github</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/02/ng-http-transformrequest/">Ng Http Request/response格式转换</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-02T22:59:05+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>angular作为Single Page Application推荐的交互方式当然是基于json的ajax调用。但今天要说的是当你不幸工作在一个遗留或者不可控制的服务上，而这服务是基于非json提交方式(或许是常规表单(form)提交，或者其他自定义数据格式)，那么我们只能改变ng内部$http默认request/response格式转化方式。</p>
+
+<p>所幸的是ng $http给我们提供了多种可用方式转化数据格式(下面demo将以form提交方式为例):</p>
+
+<p>***对于部分单独的http request设置：</p>
+
+<p>对于http ajax方式最后一个参数都是关于http的配置信息，其中包括一项transformRequest，我们可以利用transformRequest在ajax发送数据之前改变数据的格式，例如下边的demo:</p>
+
+<pre class='green'><code>$http.post("/url", {
+      id: 1,
+      name: "greengerong"
+    }, {
+      transformRequest: function(request) {
+        return $.param(request);
+    }
+});
+</code></pre>
+
+<p>这里利用jQuery的$.param进行表单提交方式的格式转化，所以我们能够看见的request body 为：</p>
+
+<pre class='green'><code>id=1&amp;name=greengerong
+</code></pre>
+
+<p>online <a href="http://plnkr.co/edit/hxAb2V">demo</a>;</p>
+
+<p>***对于整个app的http request设置：</p>
+
+<p>如果我们需要对整个http的数据转化格式进行设置，那么可以选用在config阶段对$httpProvider默认行为进行设置：</p>
+
+<pre class='green'><code>angular.module("app", [])
+.config(["$httpProvider", function($httpProvider) {
+      $httpProvider.defaults.transformRequest = [
+        function(request) {
+          return $.param(request);
+        }
+      ];
+    }
+]);
+</code></pre>
+
+<p>这样我们就可以轻易的转化为form提交方式。</p>
+
+<p>同样$http也为我们提供了transformResponse方式，我们也可以创建自己的response转化，比如json之前加入自定义前缀防止json array攻击等等。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/7/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/5/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》&#8211;仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

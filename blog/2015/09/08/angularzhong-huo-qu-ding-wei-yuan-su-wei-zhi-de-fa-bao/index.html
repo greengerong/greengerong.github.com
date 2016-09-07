@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>前端获取元素定位位置的法宝 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。 &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/09/08/angularzhong-huo-qu-ding-wei-yuan-su-wei-zhi-de-fa-bao">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">前端获取元素定位位置的法宝</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-08T07:09:23+08:00" pubdate data-updated="true">Sep 8<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img src="/images/blog_img/box-chrome.png" alt="box chrome" /></p>
+
+<p>在前端开发中，我们经常需要定位一个元素。如tooltip、popover或者modal等，或许是我们需要将它们定位在依赖元素的周围或屏幕滚动屏幕中心位置。这对于前端开发的码农来说并不是难事。算出和依赖元素的offset，设置元素的left、right。对于稍复杂的场景我们可能需要考虑被positioned的祖先元素。</p>
+
+<p>但往往不是所有的事情都是这么简单的。笔者最新在项目开发中就遇见这样一个问题：这里的HTML是嵌入的，其来自jpedal商业软件从PDF文件自动生成的；为了展示的样式，jpedal统一使用了 position:absolute和relative来定位PDF元素。然而由于业务的需求，我们需要操作这类HTML。其中一个需求就是需要在每段文字附近显示操作工具条。</p>
+
+<p>对于这类未知的DOM定位，那么我们就需要遍历它的DOM树来计算它的相对位置了。行为下面的这段代码：</p>
+
+<pre class='green'><code>    function isStaticPositioned(element) {
+      return (getStyle(element, 'position') || 'static' ) === 'static';
+    }
+
+    var parentOffsetEl = function(element) {
+      var docDomEl = $document[0];
+      var offsetParent = element.offsetParent || docDomEl;
+      while (offsetParent &amp;&amp; offsetParent !== docDomEl &amp;&amp; isStaticPositioned(offsetParent) ) {
+        offsetParent = offsetParent.offsetParent;
+      }
+      return offsetParent || docDomEl;
+    };
+</code></pre>
+
+<p>在这里，我们会根据元素递归查询它所在的的DOM树中被positioned的最接近的祖先元素，然后才计算它们的相对位置。</p>
+
+<p>这是一段来自Angular-UI bootstrap的$position服务的源码。这也是本文将要提到的获取定位元素位置的法宝。其源码位置在<a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js">https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js</a>。</p>
+
+<p>在$position服务中为我们提供了3个有用的位置服务：position、offset和positionElements。position是计算具体元素的定位位置，返回一个带有width、height、top、left的对象；positionElements则是返回某元素相对于其依赖容器元素的定位位置，一个带有top、left的对象。</p>
+
+<p>笔者为了测试这写API，在jsbin中写了一个特定的指令：</p>
+
+<p>JavaScript:</p>
+
+<pre class='green'><code>angular.module("com.ngbook.demo", ['ui.bootstrap.position'])
+.directive('position', ['$position', function($position){
+    return {
+        restrict: 'EA',
+        templateUrl: '/position.html',
+        scope:{
+            title:"@"
+        },
+        link:function(scope, elm, iAttrs){
+        scope.data =  $position.position(elm);
+       }
+    };
+}]);
+</code></pre>
+
+<p>HTML:</p>
+
+<pre class='green'><code>&lt;script type="text/ng-template" id="/position.html"&gt;
+   &lt;table class="table"&gt;
+       &lt;thead&gt;
+           &lt;th colspan="2"&gt;{{title}}&lt;/th&gt;
+       &lt;/thead&gt;
+    &lt;tbody&gt;
+       &lt;tr ng-repeat="field in ['width', 'height', 'left', 'top']"&gt;
+       &lt;td&gt;{{field}}&lt;/td&gt;
+       &lt;td&gt;{{data[field] | number}}&lt;/td&gt;
+     &lt;/tr&gt;
+    &lt;/tbody&gt;
+   &lt;/table&gt;
+ &lt;/script&gt;
+</code></pre>
+
+<p>所以我们可以如下测试这类API：</p>
+
+<pre class='green'><code>&lt;position title ="no positioned parent"&gt;&lt;/position&gt;
+
+&lt;div style="position: relative;padding:50px;"&gt;
+    &lt;position title ="relative parent"&gt;&lt;/position&gt;
+
+     &lt;div style="position: absolute;top:250px; padding:50px;"&gt;
+         &lt;position title="relative-&gt;absolute parent"&gt;&lt;/position&gt;
+     &lt;/div&gt;
+ &lt;/div&gt;
+
+ &lt;div style="position: absolute;top:0px;left:250px; padding:50px;"&gt;
+         &lt;position title="absolute parent"&gt;&lt;/position&gt;
+ &lt;/div&gt;
+</code></pre>
+
+<p>其效果可以在<a href="http://jsbin.com/deximu/edit?html,js,output">jsbin demo</a>:</p>
+
+<p><img src="/images/blog_img/ng-$position-example.png" alt="$position demo" /></p>
+
+<p>同样你也可以在官方的文档中看见对它的测试: <a href="https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html">https://github.com/angular-ui/bootstrap/blob/master/src/position/test/test.html</a>。</p>
+
+<p>简单的说：如果我们需要获取某个元素的定位信息，则我们可以用 $position.position(element)；获取相对于固定元素的定位，则可以使用$position.positionElements(hostEl, targetEl, positionStr, appendToBody)。其中positionStr是一个横向和纵向的字符串，如：&#8221;top-left&#8221;、&#8221;bottom-left&#8221;。其默认值为center。如笔者项目所期望的在某文字段落的左上角显示工具条：</p>
+
+<pre class='green'><code>$position.after($toolbar);
+var elPosition = $position.positionElements($paragraph, $toolbar, “top-left”);
+$toolbar.css({left: elPosition.left + 'px', top: elPosition.top + 'px'});
+</code></pre>
+
+<p>当然也不要忘记为toolbar元素设置position: absolute;</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-08T07:09:23+08:00" pubdate data-updated="true">Sep 8<span>th</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/angular/'>angular</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/09/03/angular-inputge-shi-hua/" title="Previous Post: Angular input格式化">&laquo; Angular input格式化</a>  
+                <a class="basic-alignment right" href="/blog/2015/09/09/kuo-zhan-bootstrap-tooltipcha-jian-shi-qi-ke-jiao-hu/" title="Next Post: 扩展Bootstrap tooltip插件使其可交互">扩展Bootstrap tooltip插件使其可交互 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

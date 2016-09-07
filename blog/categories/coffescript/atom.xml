@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Coffescript | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/coffescript/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Angular遇上CoffeeScript - NgComponent封装]]></title>
+    <link href="http://greengerong.github.io/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang/"/>
+    <updated>2015-09-12T22:09:23+08:00</updated>
+    <id>http://greengerong.github.io/blog/2015/09/12/coffeescriptban-ngcomponentfeng-zhuang</id>
+    <content type="html"><![CDATA[<p><img src="/images/blog_img/Angular-meetting-CoffeeScript.jpg" alt="angualr meet coffeescript" /></p>
+
+<p>CoffeeScript是基于JavaScript的一门扩展小巧语言，它需要编译成JavaScript，然后再运行与浏览器或者Nodejs平台。JavaScript由于商业原因10天时间就匆忙诞生，所以存在很多弊病。但如《JavaScript精粹》一书中所说：JavaScript也存在着一颗华丽的心脏，如果我们能避开JavaScript中的“坑”，使用其精华的部分，这将是一门令人爱不释手的语言. 而CoffeeScript则是尝试使用这部分简洁的方式展示JavaScript的这部分优秀的精华，避免那些困扰JavaScript开发者的“坑”.CoffeeScript借鉴于Python和Ruby这两门语言，函数式风格、鸭子类型、OO风格一体的一门简洁语言。</p>
+
+<p>Angularjs从2012年以来是火极一时的前端MVVM框架，它引入了module、双向绑定、依赖注入、Directive、MVVM等机制。更多资料参见博主其他博文。当Angular遇见CoffeeScript这门语言，将会发生什么呢？</p>
+
+<p>想让我们来看一眼笔者利用CoffeeScript对Angular1.x代码的封装后效果。</p>
+
+<pre><code>## controller
+class DemoController extends NgComponent
+   @inject 'demoService'
+   @controller 'ng.green.demo'   
+
+   __init__: =&gt;
+      @demoService.getLang().then (data) =&gt;
+        @lang = data 
+
+## service  
+class DemoService extends NgComponent
+   @inject '$q'
+   @service 'ng.green.demo' 
+
+   getLang: =&gt;
+      data = data : ['JavaScript', 'CoffeeScript', 'TypeScript', 'ES6']
+      @$q.when(data)
+
+## directive controller   
+class JsonDumpController extends NgComponent
+   @inject '$log'
+   @controller 'ng.green.demo'   
+
+   __init__: =&gt;
+      @$log.info('This is form directive controller')
+
+## directive       
+class JsonDumpDirective extends NgComponent
+  @inject '$timeout', '$http', '$cacheFactory', '$log'
+  @directive 'ng.green.demo' 
+  restrict: 'EA'
+  templateUrl: '/jsonDump.html'
+  scope: 
+    json: "="
+  controller: 'JsonDumpController'
+  link: (scope, elm, iAttrs) =&gt;
+    @$timeout (() =&gt; @$log.info '$timeout &amp; $log injector worked on link function!' ), 100
+</code></pre>
+
+<p>有了上面的对controller、service、directive的定义，则我们可以如下方式使用：</p>
+
+<pre><code>&lt;div ng-app="ng.green.demo" ng-controller="DemoController as demo" class="container"&gt;
+  &lt;json-dump json="demo.lang"&gt;&lt;/json-dump&gt;
+  &lt;script type="text/ng-template" id="/jsonDump.html"&gt; 
+  &lt;hr /&gt;
+  &lt;pre&gt;&lt;/pre&gt;
+&lt;/script&gt; 
+&lt;/div&gt;
+</code></pre>
+
+<p>不知各位看官对如上代码感觉如何？是不是更简化、语义化、有点ng的感觉。其中笔者还有意模仿Python，如<strong>init</strong>作为初始化方式。在这里每个class会自声明组件类型，以及声明式注入，module自注册。</p>
+
+<p>不管如何看，下面我来看看NgComponent到底做了什么？</p>
+
+<pre><code>class NgComponent
+    @controller: (moduleName, moduleResolver) -&gt;
+      componentName = @$$componentName(true)
+      angular.module(moduleName, moduleResolver).controller componentName, @      
+
+    @service: (moduleName, moduleResolver) -&gt;
+      componentName = @$$componentName()
+      angular.module(moduleName, moduleResolver).service componentName, @
+
+    @directive: (moduleName, moduleResolver) -&gt;
+      componentName = @$$componentName().replace('Directive','')
+      directiveClass = @
+      directiveFactory = (args...) -&gt;
+          new directiveClass(args...)          
+      directiveFactory.$inject = @$inject
+      angular.module(moduleName, moduleResolver).directive componentName, directiveFactory    
+
+    @$$componentName: (upperCaseFirstLetter = false) -&gt;
+      # regex for ie
+      componentName = @name || @toString().match(/function\s*(.*?)\(/)?[1]
+      if upperCaseFirstLetter
+       firstLetter =  componentName.substr(0,1).toUpperCase()
+      else
+        firstLetter = componentName.substr(0,1).toLowerCase()
+      (componentName = "#{firstLetter}#{componentName.substr(1)}") unless upperCaseFirstLetter
+      componentName
+
+    @inject: (args...) -&gt;
+      @$inject = args
+
+    constructor: (args...) -&gt;
+      for key, index in @constructor.$inject
+        @[key] = args[index]
+
+      @__init__?()
+</code></pre>
+
+<p>在NgComponent中定义了controller、service、directive注册接口，这里可以是声明创建module，也可以是在已声明的module上注册这些组件类型。对于组件命名也才采用了约定胜于配置，它们都以class类型为基础，controller为首字母大写的驼峰命名，service则首字母小写驼峰命名，directive则会去掉Directive标记并首字母小写注册。</p>
+
+<p>同时这里也声明了@inject方法，使得我们可以在定义在类型之上定义$inejct属性，Angular的注入声明。对于Angular的注入服务，在构造函数中会将他们一一添加到当前类实例对象之上。在依赖添加完毕后，也会调用对象初始化方法，这里是模拟Python的<strong>init</strong>。</p>
+
+<p>Demo效果可以在codepen查看 <a href="http://codepen.io/greengerong/pen/EVVQZg?editors=101">http://codepen.io/greengerong/pen/EVVQZg?editors=101</a>：</p>
+
+<p data-height="268" data-theme-id="0" data-slug-hash="EVVQZg" data-default-tab="result" data-user="greengerong" class='codepen'>See the Pen <a href='http://codepen.io/greengerong/pen/EVVQZg/'>Angular meet CoffeeScript</a> by green (<a href='http://codepen.io/greengerong'>@greengerong</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+
+
+<script async src="http://greengerong.github.io//assets.codepen.io/assets/embed/ei.js"></script>
+
+
+<p>本文笔者的突发奇想，希望能给读者一些启发，也许你还有更好的DSL封装，欢迎多多交流。</p>
+]]></content>
+  </entry>
+  
+</feed>

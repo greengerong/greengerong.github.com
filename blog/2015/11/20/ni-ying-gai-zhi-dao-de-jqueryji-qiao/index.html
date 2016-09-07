@@ -1,0 +1,527 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>(译)你应该知道的jQuery技巧 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="帮助提高你jQuery应用的简单小技巧。 回到顶部按钮
+图片预加载
+判断图片是否加载完
+自动修补破损图像
+Hover切换class类
+禁用输入
+停止正在加载的链接
+toggle fade/slide
+简单的手风琴
+使两个DIV同等高度
+在浏览器标签/新窗口打开外部链接
+根据文本获取元素 &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">(译)你应该知道的jQuery技巧</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-20T18:54:40+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>帮助提高你jQuery应用的简单小技巧。</p>
+
+<ol>
+<li>回到顶部按钮</li>
+<li>图片预加载</li>
+<li>判断图片是否加载完</li>
+<li>自动修补破损图像</li>
+<li>Hover切换class类</li>
+<li>禁用输入</li>
+<li>停止正在加载的链接</li>
+<li>toggle fade/slide</li>
+<li>简单的手风琴</li>
+<li>使两个DIV同等高度</li>
+<li>在浏览器标签/新窗口打开外部链接</li>
+<li>根据文本获取元素</li>
+<li>可见变化的触发</li>
+<li>Ajax调用错误处理</li>
+<li>链式操作</li>
+</ol>
+
+
+<h3>回到顶部按钮</h3>
+
+<p>利用jQuery里的animate和scrollTop方法，你便不需要使用插件创建简单的滚动到顶部动画。</p>
+
+<pre class='green'><code>// Back to top
+$('.top').click(function (e) {
+  e.preventDefault();
+  $('html, body').animate({scrollTop: 0}, 800);
+});
+&lt;!-- Create an anchor tag --&gt;
+&lt;a class="top" href="#"&gt;Back to top&lt;/a&gt;
+</code></pre>
+
+<p>通过scrollTop的值来改变你想要滚动到的位置。其实你就是做了：在接下来的800毫秒中让页面滚动，直到它滚动到文档的顶部。</p>
+
+<p><strong>备注</strong>：来看一些scrollTop的调皮行为 。</p>
+
+<h3>图片预加载</h3>
+
+<p>如果你的网页使用了很多隐藏图片文件（例如：鼠标悬停展示的图片），那么图片的预加载是有意义的：</p>
+
+<pre class='green'><code>$.preloadImages = function () {
+  for (var i = 0; i &lt; arguments.length; i++) {
+    $('&lt;img&gt;').attr('src', arguments[i]);
+  }
+};
+
+$.preloadImages('img/hover-on.png', 'img/hover-off.png');
+</code></pre>
+
+<h3>判断图片是否加载完</h3>
+
+<p>有时候你可能需要检查图像是否已经加载完成，以便于可以继续执行相应的js代码：</p>
+
+<pre class='green'><code>$('img').load(function () {
+  console.log('image load successful');
+});
+</code></pre>
+
+<p>你还可以检查一个特定的图片是否加载完并且被带有Id或者class的<code>&lt;img&gt;</code>标签代替。</p>
+
+<h3>自动修补破损图像</h3>
+
+<p>如果你碰巧发现在你的网站上发现破损的图像链接，一个个去替代他们是痛苦的。这个简单的代码可以节省很多的麻烦：</p>
+
+<pre class='green'><code>$('img').on('error', function () {
+  if(!$(this).hasClass('broken-image')) {
+    $(this).prop('src', 'img/broken.png').addClass('broken-image');
+  }
+});
+</code></pre>
+
+<p>即使你没有任何断开的链接，加入这代码也不会有任何影响。</p>
+
+<h3>Hover切换class类</h3>
+
+<p>比方说，当用户将鼠标悬停在你页面上的元素时，你想改变其视觉效果。当用户鼠标悬停在元素上，你可以在该元素上添加一个class类，当鼠标停止悬停事件时移除此class类：</p>
+
+<pre class='green'><code>$('.btn').hover(function () {
+  $(this).addClass('hover');
+}, function () {
+  $(this).removeClass('hover');
+});
+</code></pre>
+
+<p>如果你想要一个更简单的方式使用toggleClass方法，则仅仅需要添加必要的CSS：</p>
+
+<pre class='green'><code>$('.btn').hover(function () {
+  $(this).toggleClass('hover');
+});
+</code></pre>
+
+<p><em>备注</em>：CSS在这种情况下使用是一个快速的解决方案，但要知道这点知识依旧是值得去了解下的。</p>
+
+<h3>禁用输入</h3>
+
+<p>有时你可能需要用表单的提交按钮或者某个输入框直到用户执行了某个动作（比如：检查“我已阅读条款”复选框）。在你的输入框上设置disabled属性，然后当你需要的时候启用该属性：</p>
+
+<pre class='green'><code>$('input[type="submit"]').prop('disabled', true);
+</code></pre>
+
+<p>你需要做的只是需要在输入框上再次运行prop方法，但设置的被禁用值是false：</p>
+
+<pre class='green'><code>$('input[type="submit"]').prop('disabled', false);
+</code></pre>
+
+<h3>停止正在加载的链接</h3>
+
+<p>有时你不想链接到特定的网页或者重新载入页面；你可能想让他们做一些其他事情，如触发一些其他的脚本。这是防止违约行动的技巧：</p>
+
+<pre class='green'><code>$('a.no-link').click(function (e) {
+  e.preventDefault();
+});
+</code></pre>
+
+<h3>toggle fade/slide</h3>
+
+<p>滑动和淡入/淡出 是我们在jQuery中经常大量使用的动画。你可能仅仅想在用户做某些点击事件的时候显示一个元素，这时候需要淡入/淡出或者滑动方法。但是如果你需要那个元素在你第一次点击的时候出现，在第二次点击的时候消失，代码如下：</p>
+
+<pre class='green'><code>// Fade
+$('.btn').click(function () {
+  $('.element').fadeToggle('slow');
+});
+
+// Toggle
+$('.btn').click(function () {
+  $('.element').slideToggle('slow');
+});
+</code></pre>
+
+<h3>简单的手风琴</h3>
+
+<p>这是个简单快速的方法创建一个手风琴：</p>
+
+<pre class='green'><code>// Close all panels
+$('#accordion').find('.content').hide();
+
+// Accordion
+$('#accordion').find('.accordion-header').click(function () {
+  var next = $(this).next();
+  next.slideToggle('fast');
+  $('.content').not(next).slideUp('fast');
+  return false;
+});
+</code></pre>
+
+<p>通过添加这个脚本，你需要做的则是必要的HTML操作在你的页面上。</p>
+
+<h3>使两个DIV同等高度</h3>
+
+<p>有时你会想要两个DIV有相同的高度，无论他们都有什么内容：</p>
+
+<pre class='green'><code>$('.div').css('min-height', $('.main-div').height());
+</code></pre>
+
+<p>这个例子设置了DIV的最小高度，这意味着它的高度只可以比这个设置的高度大而不能小。然而，一个更灵活的方法是循环的一组元素，并设置将最高元素的高度作为高度：</p>
+
+<pre class='green'><code>var $columns = $('.column');
+var height = 0;
+$columns.each(function () {
+  if ($(this).height() &gt; height) {
+    height = $(this).height();
+  }
+});
+$columns.height(height);
+</code></pre>
+
+<p>如果你想要所有的列有相同的高度：</p>
+
+<pre class='green'><code>var $rows = $('.same-height-columns');
+$rows.each(function () {
+  $(this).find('.column').height($(this).height());
+});
+</code></pre>
+
+<h3>在浏览器标签/新窗口打开外部链接</h3>
+
+<p>在新的浏览器标签或窗口中打开外部链接，并确保在同一个标签或窗口中打开的是同一个源的链接：</p>
+
+<pre class='green'><code>$('a[href^="http"]').attr('target', '_blank');
+$('a[href^="//"]').attr('target', '_blank');
+$('a[href^="' + window.location.origin + '"]').attr('target', '_self');
+</code></pre>
+
+<p><em>备注</em>：window.location.origin 在IE10不工作。</p>
+
+<h3>根据文本获取元素</h3>
+
+<p>通过jQuery中的contains()选择器，你能找到一个元素内的文本内容。如果文本不存在，则这个元素将被隐藏：</p>
+
+<pre class='green'><code>var search = $('#search').val();
+$('div:not(:contains("' + search + '"))').hide();
+</code></pre>
+
+<h3>可见变化的触发</h3>
+
+<p>当用户不再聚焦或者重新聚焦一个标签时触发javascript脚本：</p>
+
+<pre class='green'><code>$(document).on('visibilitychange', function (e) {
+  if (e.target.visibilityState === "visible") {
+    console.log('Tab is now in view!');
+  } else if (e.target.visibilityState === "hidden") {
+    console.log('Tab is now hidden!');
+  }
+});
+</code></pre>
+
+<h3>Ajax调用错误处理</h3>
+
+<p>当一个Ajax调用返回一个404或500的错误时，将执行该错误处理。如果该处理未定义，则其他jQuery代码便可能不会执行了。定义一个全局Ajax错误处理程序：</p>
+
+<pre class='green'><code>$(document).ajaxError(function (e, xhr, settings, error) {
+  console.log(error);
+});
+</code></pre>
+
+<h3>链式操作</h3>
+
+<p>jQuery允许通过链式操作来减轻反复查询DOM和创建多个jQuery对象的过程。比如下面是你的方法调用：</p>
+
+<pre class='green'><code>$('#elem').show();
+$('#elem').html('bla');
+$('#elem').otherStuff();
+</code></pre>
+
+<p>这代码可以通过链式大大的提高：</p>
+
+<pre class='green'><code>$('#elem')
+  .show()
+  .html('bla')
+  .otherStuff();
+</code></pre>
+
+<p>另一个方法是在一个可变的元素缓存（$作为前置）：</p>
+
+<pre class='green'><code>var $elem = $('#elem');
+$elem.hide();
+$elem.html('bla');
+$elem.otherStuff();
+</code></pre>
+
+<p>链式和jQuery缓存方法是最好的做法，导致更短、更快的代码。</p>
+
+<p>翻译：野兽</p>
+
+<p>英文原文地址：<a href="https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know">https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know</a>。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-20T18:54:40+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/jquery/'>jquery</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/" title="Previous Post: JavaScript多线程之HTML5 Web Worker">&laquo; JavaScript多线程之HTML5 Web Worker</a>  
+                <a class="basic-alignment right" href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/" title="Next Post: 《AngularJS深度剖析与最佳实践》简介">《AngularJS深度剖析与最佳实践》简介 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

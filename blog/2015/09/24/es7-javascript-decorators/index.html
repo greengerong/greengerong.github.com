@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>细说ES7 JavaScript Decorators - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="开篇概述 在上篇的ES7之Decorators实现AOP示例中，我们预先体验了ES7的Decorators，虽然它只是一个简单的日志AOP拦截Demo。但它也足以让我们体会到ES7 Decorators的强大魅力所在。所以为什么博主会为它而专门写作此文。在Angular2中的TypeScript &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/09/24/es7-javascript-decorators">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">细说ES7 JavaScript Decorators</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-24T15:00:40+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>开篇概述</h2>
+
+<p>在上篇的<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中，我们预先体验了ES7的Decorators，虽然它只是一个简单的日志AOP拦截Demo。但它也足以让我们体会到ES7 Decorators的强大魅力所在。所以为什么博主会为它而专门写作此文。在Angular2中的TypeScript Annotate就是标注装潢器的另一类实现。同样如果你也是一个React的爱好者，你应该已经发现了redux2中也开始利用ES7的Decorators进行了大量重构。</p>
+
+<p>尝试过Python的同学们，我相信你做难忘的应该是装潢器。由<a href="https://github.com/wycats">Yehuda Katz</a>提出的<a href="https://github.com/wycats/javascript-decorators">decorator模式</a>，就是借鉴于Python的这一特性。作为读者的你，可以从上一篇博文<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中看到它们之间的联系。</p>
+
+<h2>Decorators</h2>
+
+<h4>背后原理</h4>
+
+<p>ES7的Decorators让我们能够在设计时对类、属性等进行标注和修改成为了可能。Decorators利用了ES5的</p>
+
+<pre class='green'><code>Object.defineProperty(target, name, descriptor);
+</code></pre>
+
+<p>来实现这一特性。如果你还不了解Object.defineProperty，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">MDN文档</a>。首先我们来考虑一个普通的ES6类：</p>
+
+<pre class='green'><code>class Person {
+  name() { return `${this.first} ${this.last}` }
+}
+</code></pre>
+
+<p>执行这一段class，给Person.prototype注册一个name属性，粗略的和如下代码相似：</p>
+
+<pre class='green'><code>Object.defineProperty(Person.prototype, 'name', {
+  value: specifiedFunction,
+  enumerable: false,
+  configurable: true,
+  writable: true
+});
+</code></pre>
+
+<p>如果利用装潢器来标注一个属性呢？</p>
+
+<pre class='green'><code>class Person {
+  @readonly
+  name() { return `${this.first} ${this.last}` }
+}
+</code></pre>
+
+<p>在这种装潢下的属性，则会在利用Object.defineProperty为Person.prototype注册name属性之前，执行这段装潢器：</p>
+
+<pre class='green'><code>let descriptor = {
+  value: specifiedFunction,
+  enumerable: false,
+  configurable: true,enumerable、
+  writable: true
+};
+
+descriptor = readonly(Person.prototype, 'name', descriptor) || descriptor;
+Object.defineProperty(Person.prototype, 'name', descriptor);
+</code></pre>
+
+<p>从上面的伪代码中，我们能看出，装潢器只是在Object.defineProperty为Person.prototype注册属性之前，执行一个装饰函数，其属于一类对Object.defineProperty的拦截。所以它和Object.defineProperty具有一致的方法签名，它们的3个参数分别为：</p>
+
+<ol>
+<li>obj：作用的目标对象；</li>
+<li>prop：作用的属性名；</li>
+<li>descriptor: 针对该属性的描述符。</li>
+</ol>
+
+
+<p>这里最重要的是descriptor这个参数，它是一个数据或访问器的属性描述对象。在对数据和访问器属性描述时，它们都具有configurable、enumerable属性可用。而在数据描述时，value、writable属性则是数据所特有的。get、set属性则是访问器属性描述所特有的。属性描述器中的属性决定了对象prop属性的一些特性。比如 enumerable，它决定了目标对象是否可被枚举，能够在for…in循环中遍历到，或者出现在Object.keys法的返回值中；writable则决定了目标对象的属性是否可以被更改。完整的属性描述，请参见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description">MDN文档</a>。</p>
+
+<p>对于descriptor中的属性，它们可以被我们在Decorators中使用，或者修改的，以达到我们标注或者拦截的目的。这也是装潢器拦截的主体信息。</p>
+
+<h4>作用于访问器</h4>
+
+<p>装潢器也可以作用与属性的getter/setter访问器之上，如下将属性标注为不可枚举的代码：</p>
+
+<pre class='green'><code>class Person {
+  @nonenumerable
+  get kidCount() { return this.children.length; }
+}
+
+function nonenumerable(target, name, descriptor) {
+  descriptor.enumerable = false;
+  return descriptor;
+}
+</code></pre>
+
+<p>下面是一个更复杂的对访问器的备用录模式运用：</p>
+
+<pre class='green'><code>class Person {
+  @memoize
+  get name() { return `${this.first} ${this.last}` }
+  set name(val) {
+    let [first, last] = val.split(' ');
+    this.first = first;
+    this.last = last;
+  }
+}
+
+let memoized = new WeakMap();
+function memoize(target, name, descriptor) {
+  let getter = descriptor.get, setter = descriptor.set;
+
+  descriptor.get = function() {
+    let table = memoizationFor(this);
+    if (name in table) { return table[name]; }
+    return table[name] = getter.call(this);
+  }
+
+  descriptor.set = function(val) {
+    let table = memoizationFor(this);
+    setter.call(this, val);
+    table[name] = val;
+  }
+}
+
+function memoizationFor(obj) {
+  let table = memoized.get(obj);
+  if (!table) { table = Object.create(null); memoized.set(obj, table); }
+  return table;
+}   
+</code></pre>
+
+<h4>作用域类上</h4>
+
+<p>同样Decorators也可以为class装潢，如下对类是否annotated的标注：</p>
+
+<pre class='green'><code>// A simple decorator
+@annotation
+class MyClass { }
+
+function annotation(target) {
+   // Add a property on target
+   target.annotated = true;
+}
+</code></pre>
+
+<h4>也可以是一个工厂方法</h4>
+
+<p>对于装潢器来说，它同样也可以是一个工厂方法，接受配置参数信息，并返回一个应用于目标函数的装潢函数。如下例子，对类可测试性的标记：</p>
+
+<pre class='green'><code>@isTestable(true)
+class MyClass { }
+
+function isTestable(value) {
+   return function decorator(target) {
+      target.isTestable = value;
+   }
+}
+</code></pre>
+
+<p>同样工厂方法，也可以被应用于属性之上，如下对可枚举属性的配置：</p>
+
+<pre class='green'><code>class C {
+  @enumerable(false)
+  method() { }
+}
+
+function enumerable(value) {
+  return function (target, key, descriptor) {
+     descriptor.enumerable = value;
+     return descriptor;
+  }
+}
+</code></pre>
+
+<p>同样在上篇<a href="http://greengerong.com/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/">ES7之Decorators实现AOP示例</a>中对于日志拦截的日志类型配置信息，也是利用工厂方法来实现的。它是一个更复杂的工厂方式的Decorators实现。</p>
+
+<h4>后续</h4>
+
+<p>如上一篇博问所说：虽然它是ES7的特性，但在Babel大势流行的今天，我们可以利用Babel来使用它。我们可以利用Babel命令行工具，或者grunt、gulp、webpack的babel插件来使用Decorators。</p>
+
+<p>关于ES7 Decorators的更有意思的玩法，你可以参见牛人实现的常用的Decorators：<a href="https://github.com/jayphelps/core-decorators.js">core-decorators</a>。以及<a href="http://raganwald.com/">raganwald</a>的<a href="http://raganwald.com/2015/06/26/decorators-in-es7.html">如何用Decorators来实现Mixin</a>。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-24T15:00:40+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/decorators/'>decorators</a>, <a class='category' href='/blog/categories/es7/'>es7</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/09/23/es7-zhi-decorators-shi-xian-aopshi-li/" title="Previous Post: ES7之Decorators实现AOP示例">&laquo; ES7之Decorators实现AOP示例</a>  
+                <a class="basic-alignment right" href="/blog/2015/09/28/duo-cai-de-consolexin-wan-fa/" title="Next Post: 多彩的Console打印新玩法">多彩的Console打印新玩法 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

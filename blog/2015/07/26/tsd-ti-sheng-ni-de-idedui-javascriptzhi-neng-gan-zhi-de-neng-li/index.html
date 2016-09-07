@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>tsd-提升IDE对JavaScript智能感知的能力 - 破狼 Blog</title>
+    <meta name="author" content="破 狼"> 
+    <meta name="description" content="在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。 追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索， &hellip;"> 
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="canonical" href="http://greengerong.github.io/blog/2015/07/26/tsd-ti-sheng-ni-de-idedui-javascriptzhi-neng-gan-zhi-de-neng-li">
+    <link href="/favicon.png" rel="icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="/atom.xml" rel="alternate" title="破狼 Blog" type="application/atom+xml">
+    <script src="/javascripts/modernizr-2.0.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))
+    </script>
+    <script src="/javascripts/octopress.js" type="text/javascript"></script>
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ 
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">破狼 Blog</a></h1>
+  
+    <h2>Write less got more.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:greengerong.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+    <article class="hentry" role="article">
+        
+  <header>
+    
+      <h1 class="entry-title">tsd-提升IDE对JavaScript智能感知的能力</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-26T00:55:31+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在编写前端JavaScript代码时，最痛苦的莫过于代码的智能感知（Intelli Sense）。</p>
+
+<p>追其根源，是因为JavaScript是一门弱类型的动态语言。对于弱类型的动态语言来说，智能感知就是IDE工具的一个“软肋”。IntelliJ等IDE所用智能感知方式，是一种折中的方式：全文搜索，然后展示出已经使用过的对象成员。这种方式的缺点是，其智能感知的的能力并不精准，经常会显示出很多无关的代码提示。</p>
+
+<p>在很多现代化开发方式中，IDE的强大支持和模块化组织这种“工程化”的思想是我们应对大规模开发的方式之一，这也已经被业界所认同。所以在最近两年，JavaScript的世界也提出了大规模开发的方案，其中有Google的Dart和微软的TypeScript。随着Angular2.0放弃了自家的Dart，而选择了TypeScript，也标志着TypeScript的逐渐成熟。TypeScript是微软总架构师Anders Hejlsberg设计的新语言，他是软件界的传奇人物，是Delphi和.NET的设计者。TypeScript是一种可以编译成传统JavaScript的语言，它并不是完全的创造了一门新语言，而TypeScript是JavaScript语言的超集，它最大的特点就是引入了类型系统。并在编译为JavaScript文件后，可以输出“.ts”的类型元数据信息，为我们IDE的智能感知和重构提供了重要的依据。</p>
+
+<p>关于TypeScript的更多知识，在这里笔者就不在叙述过多。有兴趣的读者可以到<a href="http://www.typescriptlang.org/">http://www.typescriptlang.org/</a>学习，本节要讲的，是它的另一个特性：它编译输出的元数据信息文件（<code>*.d.ts</code>），它可以在不需要修改原有JavaScript文件的情况下，而给JavaScript添加元数据类型信息，而这些类型信息则可以辅助IDE，给出有智能的提示信息，以及重构的依据。</p>
+
+<p>在TypeScript的开源社区，已经为很多的第三方库实现了这类模板文件，我们可以很快的应用在我们的项目之中。当然这里所说的额第三方包含我们常用的：Angular、jQuery、underscore、lodash、jasmine等。</p>
+
+<p>在官方同时也为我们提供了一个方便的工具叫TSD（全称为：TypeScript Definition manager for DefinitelyTyped），它是借鉴NPM包管理工具的思想，实现了一个类似的包管理工具，我们不需要任何的学习成本，只管像使用NPM一样使用它。</p>
+
+<p>这里是TSD主页:<a href="http://definitelytyped.org/tsd/">http://definitelytyped.org/tsd/</a>，你可以在这里深入了解它，或者是查询你所需要的模板库是否存在于TSD仓库。</p>
+
+<p>TSD也是一个Nodejs的工具，所以我们安装它非常容易，只需要在命令行中输入（对于有些Linux用户需要sudo）：</p>
+
+<pre class='green'><code>npm install tsd -g
+</code></pre>
+
+<p>安装我们需要的模板库，也很简单，如jQuery和Angular的安装：</p>
+
+<pre class='green'><code>tsd install jquery angular --save
+</code></pre>
+
+<p>这样TSD就会帮助我们下载jQuery和Angular的d.ts文件，并存放在当前目录的typings独立子目录下，并且它会将我们需要的依赖信息保存在一个叫tsd.json的文件，如NPM的package.json一样，方便于我们的版本管理，以及团队之间的共享。我们只需要共享这个tsd.json文件给其他同事，然后</p>
+
+<pre class='green'><code>tsd install
+</code></pre>
+
+<p>一切都可以满意就绪了。</p>
+
+<p>tsd.json文件的格式如下：</p>
+
+<p><img src="/images/blog_img/tsd-install.png" alt="tsd文件目录" /></p>
+
+<p>同时候TSD工具还会为我们在typing目录下生产一个tsd.d.ts文件，它会为我们引入这些模板文件，使得IDE能够识别出这样模板文件：</p>
+
+<pre class='green'><code>/// &lt;reference path="angularjs/angular.d.ts" /&gt;
+/// &lt;reference path="jquery/jquery.d.ts" /&gt;
+</code></pre>
+
+<p>下面是我们在Intellij中得到的智能感知图：</p>
+
+<p><img src="/images/blog_img/tsd-intellij-%E6%99%BA%E8%83%BD%E6%84%9F%E5%BA%94.png" alt="tsd智能感应" /></p>
+
+<p>目前能够很好支持TypeScript这一特性的工具有：Intellij家族、微软自家的VS工具、Sublime。有了TSD这一工具，也许我们虽然还不能尝试TypeScript的特性，但我们仍然可以利用它来帮助我们的普通JavaScript开发。</p>
+</div>
+
+
+        <footer>
+            <p class="meta">
+                
+  
+
+<span class="byline author vcard">Posted by <span class="fn">破 狼</span></span>
+ 
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-26T00:55:31+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2015</time> 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>JavaScript</a>, <a class='category' href='/blog/categories/typescript/'>TypeScript</a>, <a class='category' href='/blog/categories/tsd/'>tsd</a>
+  
+</span>
+
+
+            </p>
+             <!-- <div class="sharing">
+  
+  
+  
+</div>
+ -->
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+    <a href="http://www.jiathis.com/share?uid=1893648" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback: 'true'
+};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1390461225091792" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+ 
+            <p class="meta">
+                
+                <a class="basic-alignment left" href="/blog/2015/07/25/tui-jian-shu-ji-yi-dong-appce-shi-de-22tiao-jun-gui/" title="Previous Post: 推荐书籍 -《移动App测试的22条军规》">&laquo; 推荐书籍 -《移动App测试的22条军规》</a>  
+                <a class="basic-alignment right" href="/blog/2015/07/29/swagger-qian-hou-duan-fen-chi-hou-de-qi-yue/" title="Next Post: Swagger - 前后端分离后的契约">Swagger - 前后端分离后的契约 &raquo;</a> 
+            </p>
+        </footer>
+    </article>
+    <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread" aria-live="polite"><!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1893648"></script>
+<!-- UY END -->
+</div>
+    </section>
+</div>
+
+<aside class="sidebar">
+     <section>
+  <h1>破 狼</h1>
+  <p>    那一夜，我听了一宿梵唱，不为参悟，只为寻你的一丝气息。 那一月，我转过所有经轮，不为超度，只为触摸你的指纹。 那一年，我磕长头拥抱尘埃，不为朝佛，只为贴着了你的温暖。 那一世，我翻遍十万大山，不为修来世，只为路中能与你相遇。 那一瞬，我飞升成仙，不为长生，只为佑你平安喜乐。<a href="http://greengerong.github.io/blog/2009/12/24/cang-yang-jia-cuo-na-yi-tian-na-yi-yue-na-yi-nian-na-yi-shi/">《那一天，那一月，那一年，那一世》--仓央嘉措。</a></p>
+</section>
+<section>
+  <p style="align: center"><a href="http://www.amazingcounters.com"><img border="0" src="http://cc.amazingcounters.com/counter.php?i=3158890&amp;c=9476983" alt="count web site visits"/></a></p>
+</section>
+<section>
+    <h1>博客友情链接</h1>
+    <ul>
+        <li><a href="http://www.cnblogs.com/whitewolf/">博客园-破狼</a></li>
+        <li><img src="http://greengerong.com/self/wei-xin-wolf-er-wei-ma.jpg" alt="破狼微信号订阅号" /></li>
+    </ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/03/angular2-demo-rebirth/">最新Angular2案例rebirth开源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/30/zone-dot-js-bao-li-zhi-mei/">Zone.js - 暴力之美</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/angularjsshen-du-pou-xi-yu-zui-jia-shi-jian-jian-jie/">《AngularJS深度剖析与最佳实践》简介</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/20/ni-ying-gai-zhi-dao-de-jqueryji-qiao/">(译)你应该知道的jQuery技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/18/javascript-duo-xian-cheng-zhi-html5-web-worker/">JavaScript多线程之HTML5 Web Worker</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/11/angular-remove-unnecessary-watch-to-improve-performance/">Angular移除不必要的$watch之性能优化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/27/javascript-single-thread-and-browser-event-loop/">JavaScript单线程和浏览器事件循环简述</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/22/promisede-miao-yong/">Promise的前世今生和妙用技巧</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/greengerong">@greengerong</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'greengerong',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+ 
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 破 狼 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress
+</a></span>
+</p>
+
+</footer>
+  
+ 
+ 
+
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ci | 破狼 Blog]]></title>
+  <link href="http://greengerong.github.io/blog/categories/ci/atom.xml" rel="self"/>
+  <link href="http://greengerong.github.io/"/>
+  <updated>2016-09-07T13:09:42+08:00</updated>
+  <id>http://greengerong.github.io/</id>
+  <author>
+    <name><![CDATA[破 狼]]></name>
+    <email><![CDATA[grzx2210@163.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[[翻译]docker生态圈Mindmap]]></title>
+    <link href="http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out/"/>
+    <updated>2014-03-18T05:01:09+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/03/18/docker-ecosystem-mapped-out</id>
+    <content type="html"><![CDATA[<p>Docker是一个开源的Linux容器，其被业界所接受，很快成为了一个产业标准。Docker可以减少应用程序启动
+时候的大量资源的筹备。docker很快的成为了新兴的应用程序容器标准。现在有很多项目正围绕着它处于开发中。
+下面将是Mindmap出我所知道的一些项目。你可以在这里访问<a href="http://www.mindmeister.com/389671722/docker-ecosystem">Mindmap</a>.</p>
+
+<p><a href="http://www.mindmeister.com/389671722/docker-ecosystem"><img src="http://i0.wp.com/allthingsplatforms.com/wp-content/uploads/2014/03/Docker-Ecosystem-v0.1.png?resize=717%2C432" alt="docker mindmap" /></a></p>
+
+<p>英语原文链接<a href="http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/">http://allthingsplatforms.com/platforms/docker-ecosystem-mapped-out/</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ThoughtWorks持续集成平台GO开源了]]></title>
+    <link href="http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source/"/>
+    <updated>2014-02-28T22:11:34+08:00</updated>
+    <id>http://greengerong.github.io/blog/2014/02/28/ci-tools-go-open-source</id>
+    <content type="html"><![CDATA[<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk1lR8OseSHNcsAhWTlYia2Ld59ibrwIjwibliaI2ZkghyDhjIibhyl1sqNfA/0" alt="go" /></p>
+
+<p>ThoughtWorks 持续集成平台Go最近宣布开源了。其基于Apache 2.0 开源协议。</p>
+
+<p>Go下载地址为<a href="http://www.go.cd/download/">http://www.go.cd/download/</a>.</p>
+
+<p>下面是几张来自官方的视图：</p>
+
+<p>GO流程图：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkhIEdu6Sm9BeCTvC3ianeMpWF3ibl9uE9GnKiaZhfucjenfpVHdj7ia8dug/0" /></p>
+
+<p>GO截面图：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk0g8A2LFhCSqo9sV213sbrmIPYx6mico1LOqcPYLgyJgCQce9OibHsRog/0" /></p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKkkYYPxPhy3ZSQugDEvuZkQwXockGPDF75Oia3yvoKAOAFxmHayDYNMIg/0" /></p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKk2gON7AZ80zhsSlHZVy8EtT9NUqX3Z6dholdgMgFsyltondWYL2dxlg/0" /></p>
+
+<p>GO的版本：</p>
+
+<p><img src="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" alt="http://mmbiz.qpic.cn/mmbiz/aaVJqS7LaMKkxxgkibo01eichwVuOmHzKklp3IsiaGMqDswMeKSEno8JmdnasOkwt3bWwQoAmjiaIoeCX2du2SWFlQ/0" /></p>
+
+<ul>
+<li> <a href="http://www.thoughtworks.com/cn/news/go-continuous-delivery-now-available-as-free-open-source#rd?sukey=910132d0e6ac3190d1e520e951a74f6cec37de934f95c61f6c7069ae1e806ed7d1df5175970e3f6b8a2057979d44cc7c">Thoughtworks官方的宣布文章</a></li>
+<li> 你也可以在ThoughtWorks中国微信雷小达看到:<a href="http://mp.weixin.qq.com/s?__biz=MjM5MjY3OTgwMA==&amp;mid=200062098&amp;idx=1&amp;sn=25198a84122904cd113ef010637d27ed&amp;uin=MjA0MjY0NDk0MA%3D%3D">GO！我们开源了！</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
